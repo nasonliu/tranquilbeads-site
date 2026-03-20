@@ -1,0 +1,156 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5efe5;
+  --background-soft: #fbf7f1;
+  --panel: rgba(255, 251, 245, 0.86);
+  --panel-strong: rgba(255, 248, 238, 0.94);
+  --foreground: #211b16;
+  --muted: #65584a;
+  --border: rgba(62, 49, 34, 0.14);
+  --accent: #ad8456;
+  --accent-deep: #6b7a51;
+  --shadow: 0 24px 60px rgba(44, 31, 17, 0.12);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-soft: var(--background-soft);
+  --color-panel: var(--panel);
+  --color-panel-strong: var(--panel-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(173, 132, 86, 0.2), transparent 35%),
+    radial-gradient(circle at top right, rgba(107, 122, 81, 0.14), transparent 28%),
+    linear-gradient(180deg, #f8f2e8 0%, #f4eee4 40%, #f2ede7 100%);
+  color: var(--foreground);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--foreground);
+  font-family: var(--font-body), sans-serif;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 28rem),
+    radial-gradient(circle at 15% 10%, rgba(173, 132, 86, 0.1), transparent 18rem),
+    radial-gradient(circle at 85% 0%, rgba(107, 122, 81, 0.08), transparent 18rem);
+}
+
+a {
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(173, 132, 86, 0.24);
+}
+
+[lang="ar"],
+[lang="ar"] * {
+  font-family: var(--font-arabic), serif;
+}
+
+[lang="ar"] .latin-ui,
+[lang="ar"] .latin-ui * {
+  font-family: var(--font-body), sans-serif;
+}
+
+.noor-shell {
+  position: relative;
+  min-height: 100vh;
+}
+
+.noor-shell::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(55, 42, 29, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(55, 42, 29, 0.025) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.3), transparent 72%);
+}
+
+.noor-container {
+  width: min(1160px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.noor-panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.noor-pattern {
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(173, 132, 86, 0.14) 0 18%, transparent 19%),
+    radial-gradient(circle at 100% 50%, rgba(107, 122, 81, 0.1) 0 13%, transparent 14%);
+  background-size: 42px 42px;
+}
+
+.noor-title {
+  font-family: var(--font-display), serif;
+  letter-spacing: -0.03em;
+}
+
+.noor-kicker {
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.noor-input {
+  width: 100%;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(62, 49, 34, 0.18);
+  background: rgba(255, 252, 247, 0.92);
+  padding: 0.9rem 1rem;
+  color: var(--foreground);
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.noor-input:focus {
+  border-color: rgba(173, 132, 86, 0.7);
+  box-shadow: 0 0 0 4px rgba(173, 132, 86, 0.14);
+}
+
+.noor-card-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.noor-card-glow::after {
+  position: absolute;
+  inset: auto -20% -40% auto;
+  width: 10rem;
+  height: 10rem;
+  content: "";
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(173, 132, 86, 0.22), transparent 68%);
+}
