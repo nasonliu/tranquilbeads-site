@@ -649,6 +649,168 @@
           }
         }
       ]
+    },
+    {
+      "slug": "silver-sheen-obsidian-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Silver Sheen Obsidian Tasbih",
+        "ar": "سبحة Obsidian فضية اللمعان"
+      },
+      "summary": {
+        "en": "A 33-bead Silver Sheen Obsidian tasbih with silver spacer accents and crystal details. Volcanic glass with a subtle metallic shimmer.",
+        "ar": "سبحة من 33 حبة من Obsidian فضي اللمعان مع فواصل فضية وتفاصيل كريستالية. زجاج بركاني مع بريق معدني خفيف."
+      },
+      "image": "/images/imported/silver-sheen-obsidian/tasbih-03.jpg",
+      "material": {
+        "en": "Silver Sheen Obsidian (volcanic glass) with silver accents",
+        "ar": "Obsidian فضي اللمعان (زجاج بركاني) مع لمسات فضية"
+      },
+      "tags": {
+        "en": ["Obsidian", "Volcanic Glass", "Silver Accents", "33 Beads"],
+        "ar": ["Obsidian", "زجاج بركاني", "لمسات فضية", "33 حبة"]
+      },
+      "detailIntro": {
+        "en": "A sophisticated obsidian tasbih featuring volcanic glass beads with a natural metallic sheen, accented by silver spacers and crystal details.",
+        "ar": "سبحة Obsidian أنيقة تتميز بحبات من الزجاج البركاني مع بريق معدني طبيعي، ومزينة بفواصل فضية وتفاصيل كريستالية."
+      },
+      "detailBody": {
+        "en": "Silver Sheen Obsidian is prized for its deep black body and subtle silver reflections. This 33-bead format is ideal for daily dhikr and makes a strong statement on retail shelves. Suitable for distributors, boutique retailers, and premium gifting programs.",
+        "ar": "يُقدَّر Obsidian فضي اللمعان لونه الأسود العميق وانعكاساته الفضية الخفيفة. هذه الصيغة من 33 حبة مثالية للذكر اليومي وتُحدث أثرًا قويًا على رفوف التجزئة. مناسبة للموزعين ومتاجر البوتيك وبرامج الهدايا الفاخرة."
+      },
+      "idealFor": {
+        "en": "Boutiques, executive gifting, Ramadan and Eid programs, museum shops",
+        "ar": "البوتيكات، الهدايا التنفيذية، برامج رمضان والعيد، متاجر المتاحف"
+      },
+      "heroAlt": {
+        "en": "Silver Sheen Obsidian Tasbih hero",
+        "ar": "الصورة الرئيسية لسبحة Obsidian فضي اللمعان"
+      },
+      "gallery": [
+        {
+          "image": "/images/imported/silver-sheen-obsidian/tasbih-12.jpg",
+          "alt": { "en": "Silver Sheen Obsidian detail 1", "ar": "تفصيل 1 لسبحة Obsidian فضي اللمعان" }
+        },
+        {
+          "image": "/images/imported/silver-sheen-obsidian/tasbih-22.jpg",
+          "alt": { "en": "Silver Sheen Obsidian detail 2", "ar": "تفصيل 2 لسبحة Obsidian فضي اللمعان" }
+        },
+        {
+          "image": "/images/imported/silver-sheen-obsidian/tasbih-23.jpg",
+          "alt": { "en": "Silver Sheen Obsidian detail 3", "ar": "تفصيل 3 لسبحة Obsidian فضي اللمعان" }
+        },
+        {
+          "image": "/images/imported/silver-sheen-obsidian/tasbih-24.jpg",
+          "alt": { "en": "Silver Sheen Obsidian detail 4", "ar": "تفصيل 4 لسبحة Obsidian فضي اللمعان" }
+        },
+        {
+          "image": "/images/imported/silver-sheen-obsidian/tasbih-40.jpg",
+          "alt": { "en": "Silver Sheen Obsidian detail 5", "ar": "تفصيل 5 لسبحة Obsidian فضي اللمعان" }
+        }
+      ],
+      "specs": [
+        {
+          "key": "bead_count",
+          "label": { "en": "Bead count", "ar": "عدد الحبات" },
+          "value": { "en": "33 beads", "ar": "33 حبة" }
+        },
+        {
+          "key": "material",
+          "label": { "en": "Material", "ar": "الخامة" },
+          "value": { "en": "Silver Sheen Obsidian", "ar": "Obsidian فضي اللمعان" }
+        },
+        {
+          "key": "accent",
+          "label": { "en": "Accent", "ar": "اللمسة" },
+          "value": { "en": "Silver spacers with crystal details", "ar": "فواصل فضية مع تفاصيل كريستالية" }
+        },
+        {
+          "key": "moq",
+          "label": { "en": "MOQ", "ar": "الحد الأدنى للطلب" },
+          "value": { "en": "50 pieces", "ar": "50 قطعة" }
+        }
+      ]
+    },
+    {
+      "slug": "blue-tigers-eye-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Blue Tiger's Eye Tasbih",
+        "ar": "سبحة عين النمر الزرقاء"
+      },
+      "summary": {
+        "en": "A 33-bead Blue Tiger's Eye tasbih with gold-plated brass spacers. Known for its chatoyant blue silky luster.",
+        "ar": "سبحة من 33 حبة من عين النمر الزرقاء مع فواصل من النحاس المطلي بالذهب. معروفة ببريقها الحريري الأزرق المتغير."
+      },
+      "image": "/images/imported/blue-tigers-eye/tasbih-01.jpg",
+      "material": {
+        "en": "Blue Tiger's Eye (Hawk's Eye) with gold-plated brass accents",
+        "ar": "عين النمر الزرقاء (عين الصقر) مع لمسات من النحاس المطلي بالذهب"
+      },
+      "tags": {
+        "en": ["Tiger's Eye", "Blue", "Gold Accents", "33 Beads", "Chatoyant"],
+        "ar": ["عين النمر", "أزرق", "لمسات ذهبية", "33 حبة", "متغير اللون"]
+      },
+      "detailIntro": {
+        "en": "Blue Tiger's Eye is a member of the quartz family known for its distinctive chatoyant effect — a silky blue band that shimmers as light hits the stone at different angles.",
+        "ar": "عين النمر الزرقاء هي عضو في عائلة الكوارتز معروفة بتأثيرها المتغير المميز — شريط حريري أزرق يتلألأ مع تغير زاوية الضوء على الحجر."
+      },
+      "detailBody": {
+        "en": "This tasbih features perfectly round, highly polished Blue Tiger's Eye beads with two decorative gold-plated spacers. The deep navy base with royal blue flashes creates a sophisticated dark palette perfect for modern retail displays. Ideal for boutiques, gift programs, and collectors seeking unusual gemstone tasbih.",
+        "ar": "تتميز هذه المسبحة بحبات عين النمر الزرقاء المستديرة عالية التلميع مع فاصلين مزخرفين من النحاس المطلي بالذهب. القاعدة البحرية الداكنة مع ومضات باللون الأزرق الملكي تخلق لوحة ألوان متطورة مثالية لرفوف التجزئة الحديثة. مناسبة للبوتيكات وبرامج الهدايا والهواة الذين يبحثون عن تسابيح الأحجار الكريمة غير العادية."
+      },
+      "idealFor": {
+        "en": "Boutiques, gemstone collectors, premium gifting, cultural retail",
+        "ar": "البوتيكات، هواة الأحجار الكريمة، الهدايا الفاخرة، متاجر الثقافة"
+      },
+      "heroAlt": {
+        "en": "Blue Tiger's Eye Tasbih hero",
+        "ar": "الصورة الرئيسية لسبحة عين النمر الزرقاء"
+      },
+      "gallery": [
+        {
+          "image": "/images/imported/blue-tigers-eye/tasbih-05.jpg",
+          "alt": { "en": "Blue Tiger's Eye detail 1", "ar": "تفصيل 1 لسبحة عين النمر الزرقاء" }
+        },
+        {
+          "image": "/images/imported/blue-tigers-eye/tasbih-10.jpg",
+          "alt": { "en": "Blue Tiger's Eye detail 2", "ar": "تفصيل 2 لسبحة عين النمر الزرقاء" }
+        },
+        {
+          "image": "/images/imported/blue-tigers-eye/tasbih-11.jpg",
+          "alt": { "en": "Blue Tiger's Eye detail 3", "ar": "تفصيل 3 لسبحة عين النمر الزرقاء" }
+        },
+        {
+          "image": "/images/imported/blue-tigers-eye/tasbih-25.jpg",
+          "alt": { "en": "Blue Tiger's Eye detail 4", "ar": "تفصيل 4 لسبحة عين النمر الزرقاء" }
+        },
+        {
+          "image": "/images/imported/blue-tigers-eye/tasbih-26.jpg",
+          "alt": { "en": "Blue Tiger's Eye detail 5", "ar": "تفصيل 5 لسبحة عين النمر الزرقاء" }
+        }
+      ],
+      "specs": [
+        {
+          "key": "bead_count",
+          "label": { "en": "Bead count", "ar": "عدد الحبات" },
+          "value": { "en": "33 beads", "ar": "33 حبة" }
+        },
+        {
+          "key": "material",
+          "label": { "en": "Material", "ar": "الخامة" },
+          "value": { "en": "Blue Tiger's Eye (Hawk's Eye)", "ar": "عين النمر الزرقاء (عين الصقر)" }
+        },
+        {
+          "key": "accent",
+          "label": { "en": "Accent", "ar": "اللمسة" },
+          "value": { "en": "Gold-plated brass spacers", "ar": "فواصل نحاس مطلي بالذهب" }
+        },
+        {
+          "key": "moq",
+          "label": { "en": "MOQ", "ar": "الحد الأدنى للطلب" },
+          "value": { "en": "50 pieces", "ar": "50 قطعة" }
+        }
+      ]
     }
   ]
 }
