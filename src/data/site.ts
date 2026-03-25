@@ -76,8 +76,8 @@ export const siteSettings = {
     ar: "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع.",
   },
   email: "sales@tranquilbeads.com",
-  whatsappHref: "https://wa.me/971500000000",
-  whatsappDisplay: "+971 50 000 0000",
+  whatsappHref: "https://wa.me/8618929564545",
+  whatsappDisplay: "+86 189 2956 4545",
   socialProof: [
     {
       value: "12+",
