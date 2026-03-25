@@ -1,4 +1,5 @@
 {
+  "// DEPLOY_VERIFY: 2026-03-25-1255-CHINESE-NUMBER": "If you see this comment in the deployed site, the build is using the latest JSON",
   "siteSettings": {
     "brandName": "TranquilBeads",
     "tagline": {
