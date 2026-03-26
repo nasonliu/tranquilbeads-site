@@ -570,9 +570,7 @@ export const products: Product[] = [
       { label: { en: "Accent", ar: "اللمسة" }, value: { en: "Gold-plated brass spacers", ar: "فواصل نحاس مطلي بالذهب" } },
     ],
   },
-];
-  {
-    slug: "red-agate-tasbih",
+  {    slug: "red-agate-tasbih",
     collection: "signature-tasbih",
     title: { en: "Red Agate Tasbih", ar: "سبحة عقيق أحمر" },
     summary: { en: "A 33-bead Red Agate tasbih with premium finish. Perfect for daily dhikr and spiritual practice.", ar: "سبحة من 33 حبة من عقيق أحمر بتشطيب فاخر. مثالية للذكر اليومي والممارسة الروحية." },
@@ -2820,6 +2818,7 @@ export const products: Product[] = [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Tiger Eye", ar: "عين النمر" } },
     ],
   },
+];
 
 export const contactFormCopy: ContactFormCopy = {
   title: {
