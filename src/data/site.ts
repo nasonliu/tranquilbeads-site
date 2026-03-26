@@ -179,315 +179,1114 @@ export const collections: Collection[] = [
   },
 ];
 
-export const products: Product[] = [export const products: Product[] = [
+export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
-    title: { en: "Natural Kuka Wood Tasbih", ar: "مسابح من خشب الكوكا الطبيعي" },
     collection: "signature-tasbih",
-    specs: { material: "Natural kuka wood", beads: "33" },
-    price: 0,
+    title: { en: "Natural Kuka Wood Tasbih", ar: "سبحة كوكا خشبية طبيعية" },
+    summary: {
+      en: "A 33-bead natural wood tasbih with a calm vintage tone and a presentation-ready gift box.",
+      ar: "سبحة من 33 حبة من خشب طبيعي بطابع هادئ ولمسة كلاسيكية مع صندوق هدية جاهز للعرض.",
+    },
     image: "/images/real-products/natural-kuka-wood/hero.jpeg",
-    images: ["/images/real-products/natural-kuka-wood/hero.jpeg", "/images/real-products/natural-kuka-wood/detail-1.jpeg", "/images/real-products/natural-kuka-wood/detail-2.jpeg", "/images/real-products/natural-kuka-wood/detail-3.jpeg"]
+    material: { en: "Natural kuka wood", ar: "خشب كوكا طبيعي" },
+    tags: {
+      en: ["Natural material", "Gift box", "Daily dhikr"],
+      ar: ["خامة طبيعية", "علبة هدية", "للذكر اليومي"],
+    },
+    detailIntro: {
+      en: "One of the cleanest commercial tasbih directions in the current assortment, with natural wood character and a steady 33-bead format.",
+      ar: "واحدة من أكثر اتجاهات التسابيح التجارية توازنًا في التشكيلة الحالية، مع حضور الخشب الطبيعي وصيغة 33 حبة الواضحة.",
+    },
+    detailBody: {
+      en: "Selected from your current goods list, this item translates well to B2B because it is easy to understand on shelf: natural material story, modest profile, and gifting-ready packaging without looking over-designed.",
+      ar: "تم اختيار هذه القطعة من قائمة بضائعك الحالية لأنها مناسبة جدًا لعرض B2B: قصة خامة طبيعية واضحة، مظهر متوازن، وتغليف هدايا جاهز دون مبالغة بصرية.",
+    },
+    idealFor: {
+      en: "Built for boutiques, Ramadan gifting, and museum-style retail.",
+      ar: "مناسبة للبوتيكات وهدايا رمضان ومتاجر التجزئة ذات الطابع الثقافي.",
+    },
+    heroAlt: {
+      en: "Natural Kuka Wood Tasbih hero",
+      ar: "الصورة الرئيسية لسبحة الكوكا الطبيعية",
+    },
+    gallery: [
+      {
+        image: "/images/real-products/natural-kuka-wood/detail-1.jpeg",
+        alt: {
+          en: "Natural Kuka Wood Tasbih detail 1",
+          ar: "تفصيل 1 لسبحة الكوكا الطبيعية",
+        },
+      },
+      {
+        image: "/images/real-products/natural-kuka-wood/detail-2.jpeg",
+        alt: {
+          en: "Natural Kuka Wood Tasbih detail 2",
+          ar: "تفصيل 2 لسبحة الكوكا الطبيعية",
+        },
+      },
+      {
+        image: "/images/real-products/natural-kuka-wood/detail-3.jpeg",
+        alt: {
+          en: "Natural Kuka Wood Tasbih detail 3",
+          ar: "تفصيل 3 لسبحة الكوكا الطبيعية",
+        },
+      },
+    ],
+    specs: [
+      {
+        label: { en: "Bead count", ar: "عدد الحبات" },
+        value: { en: "33 beads", ar: "33 حبة" },
+      },
+      {
+        label: { en: "Material", ar: "الخامة" },
+        value: { en: "Natural kuka wood", ar: "خشب كوكا طبيعي" },
+      },
+      {
+        label: { en: "Packaging", ar: "التغليف" },
+        value: { en: "Gift box included", ar: "يتضمن علبة هدية" },
+      },
+    ],
   },
   {
     slug: "golden-hematite-medallion-tasbih",
-    title: { en: "Golden Hematite Medallion Tasbih", ar: "ميدالية الهيماتيت الذهبية التسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Natural hematite stone", beads: "33" },
-    price: 0,
+    title: { en: "Golden Hematite Medallion Tasbih", ar: "سبحة هيماتيت ذهبية بمدالية" },
+    summary: {
+      en: "A polished 33-bead hematite tasbih finished with golden accents and an Islamic medallion pendant.",
+      ar: "سبحة هيماتيت من 33 حبة مع لمسات ذهبية ومدالية إسلامية تضيف حضورًا مميزًا.",
+    },
     image: "/images/real-products/golden-hematite/hero.jpeg",
-    images: ["/images/real-products/golden-hematite/hero.jpeg", "/images/real-products/golden-hematite/detail-1.jpeg", "/images/real-products/golden-hematite/detail-2.jpeg", "/images/real-products/golden-hematite/detail-3.jpeg"]
+    material: { en: "Natural hematite stone", ar: "حجر هيماتيت طبيعي" },
+    tags: {
+      en: ["Metallic accents", "Executive gifting", "Premium presence"],
+      ar: ["لمسات معدنية", "هدايا راقية", "حضور فاخر"],
+    },
+    detailIntro: {
+      en: "This one reads immediately as premium, which makes it strong for higher-ticket gifting edits and more formal retail shelves.",
+      ar: "تظهر هذه القطعة بطابع فاخر مباشر، ما يجعلها قوية للهدايا الأعلى قيمة ولرفوف البيع الأكثر رسمية.",
+    },
+    detailBody: {
+      en: "From your downloaded product list, this SKU has one of the clearest luxury signals: stone body, metallic rhythm, medallion focal point, and gift-box positioning that works well for Ramadan and Eid programs.",
+      ar: "من قائمتك الحالية، يحمل هذا المنتج أوضح إشارات الفخامة: جسم حجري، إيقاع معدني، نقطة تركيز عبر المدالية، وتموضع مناسب لصناديق الهدايا في رمضان والعيد.",
+    },
+    idealFor: {
+      en: "Ideal for executive gifting, premium Ramadan edits, and boutique display walls.",
+      ar: "مناسب للهدايا التنفيذية وتحريرات رمضان الفاخرة وجدران العرض الراقية.",
+    },
+    heroAlt: {
+      en: "Golden Hematite Medallion Tasbih hero",
+      ar: "الصورة الرئيسية لسبحة الهيماتيت الذهبية",
+    },
+    gallery: [
+      {
+        image: "/images/real-products/golden-hematite/detail-1.jpeg",
+        alt: { en: "Golden Hematite Medallion Tasbih detail 1", ar: "تفصيل 1 لسبحة الهيماتيت الذهبية" },
+      },
+      {
+        image: "/images/real-products/golden-hematite/detail-2.jpeg",
+        alt: { en: "Golden Hematite Medallion Tasbih detail 2", ar: "تفصيل 2 لسبحة الهيماتيت الذهبية" },
+      },
+      {
+        image: "/images/real-products/golden-hematite/detail-3.jpeg",
+        alt: { en: "Golden Hematite Medallion Tasbih detail 3", ar: "تفصيل 3 لسبحة الهيماتيت الذهبية" },
+      },
+    ],
+    specs: [
+      {
+        label: { en: "Bead count", ar: "عدد الحبات" },
+        value: { en: "33 beads", ar: "33 حبة" },
+      },
+      {
+        label: { en: "Accent", ar: "اللمسة" },
+        value: { en: "Golden separators and medallion pendant", ar: "فواصل ذهبية ومدالية معلقة" },
+      },
+      {
+        label: { en: "Packaging", ar: "التغليف" },
+        value: { en: "Gift box presentation", ar: "عرض داخل علبة هدية" },
+      },
+    ],
   },
   {
     slug: "lacquer-art-33-bead-tasbih",
-    title: { en: "Lacquer Art 33-Bead Tasbih", ar: "فن اللاكيه 33-خرزة تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Artisan resin", beads: "33" },
-    price: 0,
+    title: { en: "Lacquer Art 33-Bead Tasbih", ar: "سبحة 33 حبة بتقنية لاكير فنية" },
+    summary: {
+      en: "Multicolor prayer beads with a smooth lacquer finish and a more contemporary visual language.",
+      ar: "سبحة متعددة الألوان بتشطيب لاكير ناعم وطابع بصري أكثر حداثة.",
+    },
     image: "/images/real-products/lacquer-art/hero.jpeg",
-    images: ["/images/real-products/lacquer-art/hero.jpeg", "/images/real-products/lacquer-art/detail-1.jpeg", "/images/real-products/lacquer-art/detail-2.jpeg", "/images/real-products/lacquer-art/detail-3.jpeg"]
+    material: { en: "Artisan resin", ar: "ريزن حرفي" },
+    tags: {
+      en: ["Younger retail", "Multicolor finish", "Accessible gifting"],
+      ar: ["تجزئة شبابية", "تشطيب متعدد الألوان", "هدية سهلة الاختيار"],
+    },
+    detailIntro: {
+      en: "This piece broadens the line beyond classic wood and stone, giving the assortment a younger and more playful entry point.",
+      ar: "توسع هذه القطعة التشكيلة إلى ما بعد الخشب والحجر الكلاسيكيين، وتمنحها نقطة دخول أكثر شبابًا وخفة.",
+    },
+    detailBody: {
+      en: "Selected from the current list because it adds visual range, this SKU is useful when you want the website to show that TranquilBeads can serve both classic Islamic gifting and more design-forward retail channels.",
+      ar: "تم اختيارها من قائمتك الحالية لأنها توسع المدى البصري للتشكيلة، وتوضح أن TranquilBeads قادر على خدمة الهدايا الإسلامية الكلاسيكية وقنوات التجزئة الأكثر حداثة في الوقت نفسه.",
+    },
+    idealFor: {
+      en: "Best for younger gifting audiences, concept stores, and mixed-material shelves.",
+      ar: "أنسب للهدايا الموجهة لجمهور أصغر سنًا، ولمتاجر المفهوم، ورفوف العرض متعددة الخامات.",
+    },
+    heroAlt: {
+      en: "Lacquer Art 33-Bead Tasbih hero",
+      ar: "الصورة الرئيسية لسبحة اللاكير الفنية",
+    },
+    gallery: [
+      {
+        image: "/images/real-products/lacquer-art/detail-1.jpeg",
+        alt: { en: "Lacquer Art 33-Bead Tasbih detail 1", ar: "تفصيل 1 لسبحة اللاكير الفنية" },
+      },
+      {
+        image: "/images/real-products/lacquer-art/detail-2.jpeg",
+        alt: { en: "Lacquer Art 33-Bead Tasbih detail 2", ar: "تفصيل 2 لسبحة اللاكير الفنية" },
+      },
+      {
+        image: "/images/real-products/lacquer-art/detail-3.jpeg",
+        alt: { en: "Lacquer Art 33-Bead Tasbih detail 3", ar: "تفصيل 3 لسبحة اللاكير الفنية" },
+      },
+    ],
+    specs: [
+      {
+        label: { en: "Bead count", ar: "عدد الحبات" },
+        value: { en: "33 beads", ar: "33 حبة" },
+      },
+      {
+        label: { en: "Material", ar: "الخامة" },
+        value: { en: "Resin body with lacquer technique", ar: "جسم من الريزن مع تقنية لاكير" },
+      },
+      {
+        label: { en: "Positioning", ar: "التموضع" },
+        value: { en: "Contemporary entry tasbih", ar: "سبحة عصرية ضمن المدخل السعري" },
+      },
+    ],
   },
   {
     slug: "baltic-amber-gift-set",
-    title: { en: "Baltic Amber Gift Set", ar: "مجموعة هدايا عنبر البلطيق" },
     collection: "gift-sets",
-    specs: { material: "Amber-look bead set with gift box", beads: "33" },
-    price: 0,
+    title: { en: "Baltic Amber Gift Set", ar: "مجموعة هدية من الكهرمان البلطيقي" },
+    summary: {
+      en: "A 33-bead amber-look tasbih presented as a premium gifting set for Ramadan and Eid campaigns.",
+      ar: "سبحة بطابع الكهرمان من 33 حبة مقدمة كطقم هدايا فاخر لحملات رمضان والعيد.",
+    },
     image: "/images/real-products/baltic-amber/hero.jpeg",
-    images: ["/images/real-products/baltic-amber/hero.jpeg", "/images/real-products/baltic-amber/detail-1.jpeg", "/images/real-products/baltic-amber/detail-2.jpeg", "/images/real-products/baltic-amber/detail-3.jpeg"]
+    material: { en: "Amber-look bead set with gift box", ar: "مجموعة بطابع الكهرمان مع علبة هدية" },
+    tags: {
+      en: ["Seasonal gifting", "Presentation box", "Higher gift value"],
+      ar: ["هدايا موسمية", "صندوق عرض", "قيمة هدية أعلى"],
+    },
+    detailIntro: {
+      en: "This is the kind of item that helps the site feel more commercial for B2B buyers because the gifting use case is instantly clear.",
+      ar: "هذا النوع من المنتجات يجعل الموقع أكثر إقناعًا لمشتري B2B لأن استخدامه كهدية واضح ومباشر منذ النظرة الأولى.",
+    },
+    detailBody: {
+      en: "Pulled from your current goods list, the amber direction works well as a campaign product: strong color story, emotional gifting signal, and better perceived value than a plain single-item card.",
+      ar: "تم سحب هذا الاتجاه من قائمتك الحالية، وهو يعمل جيدًا كمنتج حملات: لون قوي، إشارة هدية واضحة، وقيمة مدركة أعلى من عرض المنتج المفرد.",
+    },
+    idealFor: {
+      en: "Great for Ramadan drops, Eid gifting, and premium souvenir counters.",
+      ar: "ممتاز لإطلاقات رمضان، وهدايا العيد، ونقاط بيع التذكارات الراقية.",
+    },
+    heroAlt: {
+      en: "Baltic Amber Gift Set hero",
+      ar: "الصورة الرئيسية لمجموعة هدية الكهرمان البلطيقي",
+    },
+    gallery: [
+      {
+        image: "/images/real-products/baltic-amber/detail-1.jpeg",
+        alt: { en: "Baltic Amber Gift Set detail 1", ar: "تفصيل 1 لمجموعة هدية الكهرمان" },
+      },
+      {
+        image: "/images/real-products/baltic-amber/detail-2.jpeg",
+        alt: { en: "Baltic Amber Gift Set detail 2", ar: "تفصيل 2 لمجموعة هدية الكهرمان" },
+      },
+      {
+        image: "/images/real-products/baltic-amber/detail-3.jpeg",
+        alt: { en: "Baltic Amber Gift Set detail 3", ar: "تفصيل 3 لمجموعة هدية الكهرمان" },
+      },
+    ],
+    specs: [
+      {
+        label: { en: "Bead count", ar: "عدد الحبات" },
+        value: { en: "33 beads", ar: "33 حبة" },
+      },
+      {
+        label: { en: "Presentation", ar: "العرض" },
+        value: { en: "Gift-ready premium box", ar: "صندوق فاخر جاهز للهدايا" },
+      },
+      {
+        label: { en: "Use case", ar: "الاستخدام" },
+        value: { en: "Ramadan and Eid gifting", ar: "هدايا رمضان والعيد" },
+      },
+    ],
   },
   {
     slug: "terahertz-road-safety-pendant",
-    title: { en: "Terahertz Road Safety Pendant", ar: "قلادة تيراهيرتز للسلامة على الطرق" },
     collection: "cultural-accents",
-    specs: { material: "Terahertz stone look", beads: "33" },
-    price: 0,
+    title: { en: "Terahertz Road Safety Pendant", ar: "معلقة تيراهيرتز للسيارة والسلامة" },
+    summary: {
+      en: "A 99-count tasbih-inspired rearview pendant engraved with Bismillah and Ayat al-Kursi cues.",
+      ar: "معلقة مرآة مستوحاة من التسبيح بعدد 99 حبة مع إشارات نقش بسم الله وآية الكرسي.",
+    },
     image: "/images/real-products/terahertz-pendant/hero.jpeg",
-    images: ["/images/real-products/terahertz-pendant/hero.jpeg", "/images/real-products/terahertz-pendant/detail-3.jpeg"]
+    material: { en: "Terahertz stone look", ar: "طابع حجر تيراهيرتز" },
+    tags: {
+      en: ["Car charm", "Travel blessing", "Impulse gift"],
+      ar: ["إكسسوار سيارة", "دعاء سفر", "هدية سريعة"],
+    },
+    detailIntro: {
+      en: "This is a useful supporting product for the website because it shows your assortment can expand beyond hand-held tasbih into Islamic lifestyle accessories.",
+      ar: "هذه قطعة داعمة مهمة للموقع لأنها تُظهر أن تشكيلتك تتجاوز التسابيح اليدوية إلى إكسسوارات أسلوب حياة إسلامي.",
+    },
+    detailBody: {
+      en: "Chosen from the spreadsheet because it has a strong ecommerce hook, this pendant can work well for add-on counters, souvenir edits, and car-related gifting moments such as new drivers or travel blessings.",
+      ar: "تم اختيارها من الجدول لأنها تحمل فكرة بيع واضحة، ويمكن أن تعمل جيدًا في نقاط الإضافة، وتشكيلات التذكارات، وهدايا السائقين الجدد أو دعوات السفر.",
+    },
+    idealFor: {
+      en: "Best for souvenir counters, car accessory edits, and entry-price gifting.",
+      ar: "أنسب لرفوف التذكارات، وتشكيلات إكسسوارات السيارة، والهدايا ضمن المدخل السعري.",
+    },
+    heroAlt: {
+      en: "Terahertz Road Safety Pendant hero",
+      ar: "الصورة الرئيسية لمعلقة التيراهيرتز",
+    },
+    gallery: [
+      {
+        image: "/images/real-products/terahertz-pendant/detail-1.jpeg",
+        alt: { en: "Terahertz Road Safety Pendant detail 1", ar: "تفصيل 1 لمعلقة التيراهيرتز" },
+      },
+      {
+        image: "/images/real-products/terahertz-pendant/detail-2.jpeg",
+        alt: { en: "Terahertz Road Safety Pendant detail 2", ar: "تفصيل 2 لمعلقة التيراهيرتز" },
+      },
+      {
+        image: "/images/real-products/terahertz-pendant/detail-3.jpeg",
+        alt: { en: "Terahertz Road Safety Pendant detail 3", ar: "تفصيل 3 لمعلقة التيراهيرتز" },
+      },
+    ],
+    specs: [
+      {
+        label: { en: "Format", ar: "النوع" },
+        value: { en: "Rearview hanging pendant", ar: "معلقة لمرآة السيارة" },
+      },
+      {
+        label: { en: "Count", ar: "العدد" },
+        value: { en: "99-count strand", ar: "99 حبة" },
+      },
+      {
+        label: { en: "Positioning", ar: "التموضع" },
+        value: { en: "Lifestyle add-on product", ar: "منتج إضافي ضمن نمط الحياة" },
+      },
+    ],
   },
   {
     slug: "silver-sheen-obsidian-tasbih",
-    title: { en: "Silver Sheen Obsidian Tasbih", ar: "لمعان فضي سبج تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Silver Sheen Obsidian (volcanic glass)", beads: "33" },
-    price: 0,
+    title: { en: "Silver Sheen Obsidian Tasbih", ar: "سبحة Obsidian فضية اللمعان" },
+    summary: {
+      en: "A 33-bead Silver Sheen Obsidian tasbih with silver spacer accents and crystal details. Volcanic glass with a subtle metallic shimmer.",
+      ar: "سبحة من 33 حبة من Obsidian فضي اللمعان مع فواصل فضية وتفاصيل كريستالية.",
+    },
     image: "/images/imported/silver-sheen-obsidian/tasbih-03.jpg",
-    images: ["/images/imported/silver-sheen-obsidian/tasbih-03.jpg", "/images/imported/silver-sheen-obsidian/tasbih-12.jpg", "/images/imported/silver-sheen-obsidian/tasbih-22.jpg", "/images/imported/silver-sheen-obsidian/tasbih-23.jpg", "/images/imported/silver-sheen-obsidian/tasbih-24.jpg", "/images/imported/silver-sheen-obsidian/tasbih-40.jpg"]
+    material: { en: "Silver Sheen Obsidian (volcanic glass) with silver accents", ar: "Obsidian فضي اللمعان (زجاج بركاني) مع لمسات فضية" },
+    tags: {
+      en: ["Obsidian", "Volcanic Glass", "Silver Accents", "33 Beads"],
+      ar: ["Obsidian", "زجاج بركاني", "لمسات فضية", "33 حبة"],
+    },
+    detailIntro: {
+      en: "A sophisticated obsidian tasbih featuring volcanic glass beads with a natural metallic sheen, accented by silver spacers and crystal details.",
+      ar: "سبحة Obsidian أنيقة تتميز بحبات من الزجاج البركاني مع بريق معدني طبيعي، ومزينة بفواصل فضية وتفاصيل كريستالية.",
+    },
+    detailBody: {
+      en: "Silver Sheen Obsidian is prized for its deep black body and subtle silver reflections. This 33-bead format is ideal for daily dhikr and makes a strong statement on retail shelves. Suitable for distributors, boutique retailers, and premium gifting programs.",
+      ar: "يُقدَّر Obsidian فضي اللمعان لونه الأسود العميق وانعكاساته الفضية الخفيفة. هذه الصيغة من 33 حبة مثالية للذكر اليومي وتُحدث أثرًا قويًا على رفوف التجزئة. مناسبة للموزعين ومتاجر البوتيك وبرامج الهدايا الفاخرة.",
+    },
+    idealFor: {
+      en: "Boutiques, executive gifting, Ramadan and Eid programs, museum shops",
+      ar: "البوتيكات، الهدايا التنفيذية، برامج رمضان والعيد، متاجر المتاحف",
+    },
+    heroAlt: {
+      en: "Silver Sheen Obsidian Tasbih hero",
+      ar: "الصورة الرئيسية لسبحة Obsidian فضي اللمعان",
+    },
+    gallery: [
+      { image: "/images/imported/silver-sheen-obsidian/tasbih-12.jpg", alt: { en: "Silver Sheen Obsidian detail 1", ar: "تفصيل 1 لسبحة Obsidian فضي اللمعان" } },
+      { image: "/images/imported/silver-sheen-obsidian/tasbih-22.jpg", alt: { en: "Silver Sheen Obsidian detail 2", ar: "تفصيل 2 لسبحة Obsidian فضي اللمعان" } },
+      { image: "/images/imported/silver-sheen-obsidian/tasbih-23.jpg", alt: { en: "Silver Sheen Obsidian detail 3", ar: "تفصيل 3 لسبحة Obsidian فضي اللمعان" } },
+      { image: "/images/imported/silver-sheen-obsidian/tasbih-24.jpg", alt: { en: "Silver Sheen Obsidian detail 4", ar: "تفصيل 4 لسبحة Obsidian فضي اللمعان" } },
+      { image: "/images/imported/silver-sheen-obsidian/tasbih-40.jpg", alt: { en: "Silver Sheen Obsidian detail 5", ar: "تفصيل 5 لسبحة Obsidian فضي اللمعان" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Silver Sheen Obsidian", ar: "Obsidian فضي اللمعان" } },
+      { label: { en: "Accent", ar: "اللمسة" }, value: { en: "Silver spacers with crystal details", ar: "فواصل فضية مع تفاصيل كريستالية" } },
+    ],
   },
   {
     slug: "blue-tigers-eye-tasbih",
-    title: { en: "Blue Tiger's Eye Tasbih", ar: "عين النمر الأزرق تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Blue Tiger's Eye (Hawk's Eye)", beads: "33" },
-    price: 0,
+    title: { en: "Blue Tiger's Eye Tasbih", ar: "سبحة عين النمر الزرقاء" },
+    summary: {
+      en: "A 33-bead Blue Tiger's Eye tasbih with gold-plated brass spacers. Known for its chatoyant blue silky luster.",
+      ar: "سبحة من 33 حبة من عين النمر الزرقاء مع فواصل من النحاس المطلي بالذهب. معروفة ببريقها الحريري الأزرق المتغير.",
+    },
     image: "/images/imported/blue-tigers-eye/tasbih-01.jpg",
-    images: ["/images/imported/blue-tigers-eye/tasbih-01.jpg", "/images/imported/blue-tigers-eye/tasbih-10.jpg", "/images/imported/blue-tigers-eye/tasbih-25.jpg", "/images/imported/blue-tigers-eye/tasbih-26.jpg"]
+    material: { en: "Blue Tiger's Eye (Hawk's Eye) with gold-plated brass accents", ar: "عين النمر الزرقاء (عين الصقر) مع لمسات من النحاس المطلي بالذهب" },
+    tags: {
+      en: ["Tiger's Eye", "Blue", "Gold Accents", "33 Beads", "Chatoyant"],
+      ar: ["عين النمر", "أزرق", "لمسات ذهبية", "33 حبة", "متغير اللون"],
+    },
+    detailIntro: {
+      en: "Blue Tiger's Eye is a member of the quartz family known for its distinctive chatoyant effect — a silky blue band that shimmers as light hits the stone at different angles.",
+      ar: "عين النمر الزرقاء هي عضو في عائلة الكوارتز معروفة بتأثيرها المتغير المميز — شريط حريري أزرق يتلألأ مع تغير زاوية الضوء على الحجر.",
+    },
+    detailBody: {
+      en: "This tasbih features perfectly round, highly polished Blue Tiger's Eye beads with two decorative gold-plated spacers. The deep navy base with royal blue flashes creates a sophisticated dark palette perfect for modern retail displays. Ideal for boutiques, gift programs, and collectors seeking unusual gemstone tasbih.",
+      ar: "تتميز هذه المسبحة بحبات عين النمر الزرقاء المستديرة عالية التلميع مع فاصلين مزخرفين من النحاس المطلي بالذهب. القاعدة البحرية الداكنة مع ومضات باللون الأزرق الملكي تخلق لوحة ألوان متطورة مثالية لرفوف التجزئة الحديثة. مناسبة للبوتيكات وبرامج الهدايا والهواة الذين يبحثون عن تسابيح الأحجار الكريمة غير العادية.",
+    },
+    idealFor: {
+      en: "Boutiques, gemstone collectors, premium gifting, cultural retail",
+      ar: "البوتيكات، هواة الأحجار الكريمة، الهدايا الفاخرة، متاجر الثقافة",
+    },
+    heroAlt: {
+      en: "Blue Tiger's Eye Tasbih hero",
+      ar: "الصورة الرئيسية لسبحة عين النمر الزرقاء",
+    },
+    gallery: [
+      { image: "/images/imported/blue-tigers-eye/tasbih-05.jpg", alt: { en: "Blue Tiger's Eye detail 1", ar: "تفصيل 1 لسبحة عين النمر الزرقاء" } },
+      { image: "/images/imported/blue-tigers-eye/tasbih-10.jpg", alt: { en: "Blue Tiger's Eye detail 2", ar: "تفصيل 2 لسبحة عين النمر الزرقاء" } },
+      { image: "/images/imported/blue-tigers-eye/tasbih-11.jpg", alt: { en: "Blue Tiger's Eye detail 3", ar: "تفصيل 3 لسبحة عين النمر الزرقاء" } },
+      { image: "/images/imported/blue-tigers-eye/tasbih-25.jpg", alt: { en: "Blue Tiger's Eye detail 4", ar: "تفصيل 4 لسبحة عين النمر الزرقاء" } },
+      { image: "/images/imported/blue-tigers-eye/tasbih-26.jpg", alt: { en: "Blue Tiger's Eye detail 5", ar: "تفصيل 5 لسبحة عين النمر الزرقاء" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Blue Tiger's Eye (Hawk's Eye)", ar: "عين النمر الزرقاء (عين الصقر)" } },
+      { label: { en: "Accent", ar: "اللمسة" }, value: { en: "Gold-plated brass spacers", ar: "فواصل نحاس مطلي بالذهب" } },
+    ],
   },
   {
     slug: "pearl-tasbih",
-    title: { en: "Pearl Tasbih", ar: "لؤلؤة تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Pearl", beads: "33" },
-    price: 0,
+    title: { en: "Pearl Tasbih", ar: "سبحة لؤلؤية" },
+    summary: { en: "Pearl Tasbih — premium quality for wholesale.", ar: "سبحة لؤلؤية — جودة عالية للجملة." },
     image: "/images/imported/pearl-tasbih/size.jpg",
-    images: ["/images/imported/pearl-tasbih/size.jpg", "/images/imported/pearl-tasbih/tasbih-45.jpg", "/images/imported/pearl-tasbih/tasbih-46.jpg", "/images/imported/pearl-tasbih/tasbih-47.jpg", "/images/imported/pearl-tasbih/tasbih-50.jpg", "/images/imported/pearl-tasbih/tasbih-51.jpg"]
+    material: { en: "Pearl", ar: "لؤلؤ" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium pearl tasbih for modern retail.", ar: "تسبيحة لؤلؤية فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This pearl tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Pearl Tasbih hero image", ar: "صورة البطل لسبحة اللؤلؤ" },
+    gallery: [
+      { image: "/images/imported/pearl-tasbih/size.jpg", alt: { en: "Pearl Tasbih", ar: "سبحة لؤلؤية" } },
+      { image: "/images/imported/pearl-tasbih/tasbih-45.jpg", alt: { en: "Pearl Tasbih detail", ar: "تفصيل سبحة اللؤلؤ" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Pearl", ar: "لؤلؤ" } },
+    ],
   },
   {
     slug: "obsidian-tasbih",
-    title: { en: "Obsidian Tasbih", ar: "سبج التسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Obsidian", beads: "33" },
-    price: 0,
+    title: { en: "Obsidian Tasbih", ar: "سبحة سبج" },
+    summary: { en: "Obsidian Tasbih — premium quality for wholesale.", ar: "سبحة سبج — جودة عالية للجملة." },
     image: "/images/imported/obsidian-tasbih/size.jpg",
-    images: ["/images/imported/obsidian-tasbih/size.jpg", "/images/imported/obsidian-tasbih/tasbih-03.jpg", "/images/imported/obsidian-tasbih/tasbih-12.jpg", "/images/imported/obsidian-tasbih/tasbih-22.jpg", "/images/imported/obsidian-tasbih/tasbih-23.jpg", "/images/imported/obsidian-tasbih/tasbih-24.jpg"]
+    material: { en: "Obsidian", ar: "سبج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium obsidian tasbih for modern retail.", ar: "تسبيحة سبج فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This obsidian tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Obsidian Tasbih hero image", ar: "صورة البطل لسبحة السبج" },
+    gallery: [
+      { image: "/images/imported/obsidian-tasbih/size.jpg", alt: { en: "Obsidian Tasbih", ar: "سبحة سبج" } },
+      { image: "/images/imported/obsidian-tasbih/tasbih-03.jpg", alt: { en: "Obsidian Tasbih detail", ar: "تفصيل سبحة السبج" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Obsidian", ar: "سبج" } },
+    ],
   },
   {
     slug: "resin-tasbih",
-    title: { en: "Resin Tasbih", ar: "راتنج تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Resin", beads: "33" },
-    price: 0,
+    title: { en: "Resin Tasbih", ar: "سبحة راتنج" },
+    summary: { en: "Resin Tasbih — premium quality for wholesale.", ar: "سبحة راتنج — جودة عالية للجملة." },
     image: "/images/imported/resin-tasbih/resin-01.jpg",
-    images: ["/images/imported/resin-tasbih/resin-01.jpg", "/images/imported/resin-tasbih/resin-02.jpg", "/images/imported/resin-tasbih/resin-03.jpg", "/images/imported/resin-tasbih/resin-04.jpg", "/images/imported/resin-tasbih/resin-05.jpg", "/images/imported/resin-tasbih/resin-06.jpg"]
+    material: { en: "Resin", ar: "راتنج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium resin tasbih for modern retail.", ar: "تسبيحة راتنج فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This resin tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Resin Tasbih hero image", ar: "صورة البطل لسبحة الراتنج" },
+    gallery: [
+      { image: "/images/imported/resin-tasbih/resin-01.jpg", alt: { en: "Resin Tasbih", ar: "سبحة راتنج" } },
+      { image: "/images/imported/resin-tasbih/resin-02.jpg", alt: { en: "Resin Tasbih detail", ar: "تفصيل سبحة الراتنج" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Resin", ar: "راتنج" } },
+    ],
   },
   {
     slug: "crystal-tasbih",
-    title: { en: "Crystal Tasbih", ar: "كريستال تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Crystal", beads: "33" },
-    price: 0,
+    title: { en: "Crystal Tasbih", ar: "سبحة كريستال" },
+    summary: { en: "Crystal Tasbih — premium quality for wholesale.", ar: "سبحة كريستال — جودة عالية للجملة." },
     image: "/images/imported/crystal-tasbih/size.jpg",
-    images: ["/images/imported/crystal-tasbih/size.jpg", "/images/imported/crystal-tasbih/tasbih-16.jpg", "/images/imported/crystal-tasbih/tasbih-17.jpg", "/images/imported/crystal-tasbih/tasbih-43.jpg", "/images/imported/crystal-tasbih/tasbih-49.jpg", "/images/imported/crystal-tasbih/tasbih-52.jpg"]
+    material: { en: "Crystal", ar: "كريستال" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium crystal tasbih for modern retail.", ar: "تسبيحة كريستال فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This crystal tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Crystal Tasbih hero image", ar: "صورة البطل لسبحة الكريستال" },
+    gallery: [
+      { image: "/images/imported/crystal-tasbih/size.jpg", alt: { en: "Crystal Tasbih", ar: "سبحة كريستال" } },
+      { image: "/images/imported/crystal-tasbih/tasbih-16.jpg", alt: { en: "Crystal Tasbih detail", ar: "تفصيل سبحة الكريستال" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Crystal", ar: "كريستال" } },
+    ],
   },
   {
     slug: "kechainrose",
-    title: { en: "Kechain Rose Tasbih", ar: "كشين روز تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Rose Crystal", beads: "33" },
-    price: 0,
+    title: { en: "Kechain Rose Tasbih", ar: "سبحة روز كيتشين" },
+    summary: { en: "Kechain Rose Tasbih — premium quality for wholesale.", ar: "سبحة روز كيتشين — جودة عالية للجملة." },
     image: "/images/imported/kechainrose/phone.jpg",
-    images: ["/images/imported/kechainrose/phone.jpg", "/images/imported/kechainrose/rose-01.jpg", "/images/imported/kechainrose/rose-02.jpg", "/images/imported/kechainrose/rose-03.jpg", "/images/imported/kechainrose/rose-04.jpg", "/images/imported/kechainrose/rose-05.jpg"]
+    material: { en: "Rose Crystal", ar: "كريستال روز" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium rose crystal tasbih for modern retail.", ar: "تسبيحة كريستال روز فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This rose crystal tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Kechain Rose Tasbih hero image", ar: "صورة البطل لسبحة روز كيتشين" },
+    gallery: [
+      { image: "/images/imported/kechainrose/phone.jpg", alt: { en: "Kechain Rose Tasbih", ar: "سبحة روز كيتشين" } },
+      { image: "/images/imported/kechainrose/rose-01.jpg", alt: { en: "Kechain Rose Tasbih detail", ar: "تفصيل سبحة روز كيتشين" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Rose Crystal", ar: "كريستال روز" } },
+    ],
   },
   {
     slug: "pocket",
-    title: { en: "Pocket Tiger Eye Tasbih", ar: "تسبيح عين النمر للجيب" },
     collection: "signature-tasbih",
-    specs: { material: "Mixed Material", beads: "33" },
-    price: 0,
+    title: { en: "Pocket Tiger Eye Tasbih", ar: "سبحة عين النمر للجيب" },
+    summary: { en: "Pocket Tiger Eye Tasbih — premium quality for wholesale.", ar: "سبحة عين النمر للجيب — جودة عالية للجملة." },
     image: "/images/imported/pocket/size.jpg",
-    images: ["/images/imported/pocket/size.jpg", "/images/imported/pocket/tasbih-060.jpg", "/images/imported/pocket/tasbih-061.jpg", "/images/imported/pocket/tasbih-062.jpg", "/images/imported/pocket/tasbih-072.jpg", "/images/imported/pocket/tasbih-073.jpg"]
+    material: { en: "Mixed Material", ar: "خامات مختلطة" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium mixed material tasbih for modern retail.", ar: "تسبيحة خامات مختلطة فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This mixed material tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Pocket Tiger Eye Tasbih hero image", ar: "صورة البطل لسبحة عين النمر للجيب" },
+    gallery: [
+      { image: "/images/imported/pocket/size.jpg", alt: { en: "Pocket Tiger Eye Tasbih", ar: "سبحة عين النمر للجيب" } },
+      { image: "/images/imported/pocket/tasbih-060.jpg", alt: { en: "Pocket Tiger Eye Tasbih detail", ar: "تفصيل سبحة عين النمر للجيب" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Mixed Material", ar: "خامات مختلطة" } },
+    ],
   },
   {
     slug: "99-pla",
-    title: { en: "99-Bead Plastic Tasbih", ar: "99-سبحة بلاستيك خرزة" },
     collection: "signature-tasbih",
-    specs: { material: "Mixed Material", beads: "33" },
-    price: 0,
+    title: { en: "99-Bead Plastic Tasbih", ar: "سبحة 99 حبة بلاستيك" },
+    summary: { en: "99-Bead Plastic Tasbih — premium quality for wholesale.", ar: "سبحة 99 حبة بلاستيك — جودة عالية للجملة." },
     image: "/images/imported/99-pla/size.jpg",
-    images: ["/images/imported/99-pla/size.jpg", "/images/imported/99-pla/tasbih-053.jpg", "/images/imported/99-pla/tasbih-054.jpg", "/images/imported/99-pla/tasbih-085.jpg", "/images/imported/99-pla/tasbih-104.jpg", "/images/imported/99-pla/tasbih-105.jpg"]
+    material: { en: "Mixed Material", ar: "خامات مختلطة" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium plastic tasbih for modern retail.", ar: "تسبيحة بلاستيكية فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This plastic tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "99-Bead Plastic Tasbih hero image", ar: "صورة البطل لسبحة 99 حبة بلاستيك" },
+    gallery: [
+      { image: "/images/imported/99-pla/size.jpg", alt: { en: "99-Bead Plastic Tasbih", ar: "سبحة 99 حبة بلاستيك" } },
+      { image: "/images/imported/99-pla/tasbih-053.jpg", alt: { en: "99-Bead Plastic Tasbih detail", ar: "تفصيل سبحة 99 حبة بلاستيك" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "99 beads", ar: "99 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Mixed Material", ar: "خامات مختلطة" } },
+    ],
   },
   {
     slug: "zebra",
-    title: { en: "Zebra Agate Tasbih", ar: "تسبيح عقيق الزيبرا" },
     collection: "signature-tasbih",
-    specs: { material: "Mixed Material", beads: "33" },
-    price: 0,
+    title: { en: "Zebra Agate Tasbih", ar: "سبحة عين النمر المخططة" },
+    summary: { en: "Zebra Agate Tasbih — premium quality for wholesale.", ar: "سبحة عين النمر المخططة — جودة عالية للجملة." },
     image: "/images/imported/zebra/main.jpg",
-    images: ["/images/imported/zebra/main.jpg", "/images/imported/zebra/size.jpg", "/images/imported/zebra/tasbih-07.jpg", "/images/imported/zebra/tasbih-17.jpg", "/images/imported/zebra/tasbih-21.jpg", "/images/imported/zebra/tasbih-31.jpg"]
+    material: { en: "Agate", ar: "عقيق" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium zebra agate tasbih for modern retail.", ar: "تسبيحة عقيق مخطط فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This zebra agate tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Zebra Agate Tasbih hero image", ar: "صورة البطل لسبحة العقيق المخطط" },
+    gallery: [
+      { image: "/images/imported/zebra/main.jpg", alt: { en: "Zebra Agate Tasbih", ar: "سبحة عين النمر المخططة" } },
+      { image: "/images/imported/zebra/size.jpg", alt: { en: "Zebra Agate Tasbih detail", ar: "تفصيل سبحة العقيق المخطط" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "عقيق" } },
+    ],
   },
   {
     slug: "watergrass",
-    title: { en: "Water Grass Agate Tasbih", ar: "تسبيح عشب الماء بالعقيق" },
     collection: "signature-tasbih",
-    specs: { material: "Mixed Material", beads: "33" },
-    price: 0,
+    title: { en: "Water Grass Agate Tasbih", ar: "سبحة عقيق العشب المائي" },
+    summary: { en: "Water Grass Agate Tasbih — premium quality for wholesale.", ar: "سبحة عقيق العشب المائي — جودة عالية للجملة." },
     image: "/images/imported/watergrass/main.jpg",
-    images: ["/images/imported/watergrass/main.jpg", "/images/imported/watergrass/size.jpg", "/images/imported/watergrass/tasbih-08.jpg", "/images/imported/watergrass/tasbih-14.jpg", "/images/imported/watergrass/tasbih-15.jpg", "/images/imported/watergrass/tasbih-18.jpg"]
+    material: { en: "Agate", ar: "عقيق" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium water grass agate tasbih for modern retail.", ar: "تسبيحة عقيق العشب المائي فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This water grass agate tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Water Grass Agate Tasbih hero image", ar: "صورة البطل لسبحة العقيق" },
+    gallery: [
+      { image: "/images/imported/watergrass/main.jpg", alt: { en: "Water Grass Agate Tasbih", ar: "سبحة عقيق العشب المائي" } },
+      { image: "/images/imported/watergrass/size.jpg", alt: { en: "Water Grass Agate Tasbih detail", ar: "تفصيل سبحة العقيق" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "عقيق" } },
+    ],
   },
   {
     slug: "orangeagate",
-    title: { en: "Orange Agate Tasbih", ar: "تسبيح بالعقيق البرتقالي" },
     collection: "signature-tasbih",
-    specs: { material: "Agate", beads: "33" },
-    price: 0,
+    title: { en: "Orange Agate Tasbih", ar: "سبحة عقيق برتقالي" },
+    summary: { en: "Orange Agate Tasbih — premium quality for wholesale.", ar: "سبحة عقيق برتقالي — جودة عالية للجملة." },
     image: "/images/imported/orangeagate/main.jpg",
-    images: ["/images/imported/orangeagate/main.jpg", "/images/imported/orangeagate/size.jpg", "/images/imported/orangeagate/tasbih-04.jpg", "/images/imported/orangeagate/tasbih-12.jpg", "/images/imported/orangeagate/tasbih-23.jpg", "/images/imported/orangeagate/tasbih-28.jpg"]
+    material: { en: "Agate", ar: "عقيق" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium orange agate tasbih for modern retail.", ar: "تسبيحة عقيق برتقالي فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This orange agate tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Orange Agate Tasbih hero image", ar: "صورة البطل لسبحة العقيق البرتقالي" },
+    gallery: [
+      { image: "/images/imported/orangeagate/main.jpg", alt: { en: "Orange Agate Tasbih", ar: "سبحة عقيق برتقالي" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "عقيق" } },
+    ],
   },
   {
     slug: "bluetiger",
-    title: { en: "Blue Tiger Agate Tasbih", ar: "تسبيح عقيق النمر الأزرق" },
     collection: "signature-tasbih",
-    specs: { material: "Tiger Eye", beads: "33" },
-    price: 0,
+    title: { en: "Blue Tiger Tasbih", ar: "سبحة عين النمر الزرقاء" },
+    summary: { en: "Blue Tiger Tasbih — premium quality for wholesale.", ar: "سبحة عين النمر الزرقاء — جودة عالية للجملة." },
     image: "/images/imported/bluetiger/main.jpg",
-    images: ["/images/imported/bluetiger/main.jpg", "/images/imported/bluetiger/size.jpg", "/images/imported/bluetiger/tasbih-06.jpg", "/images/imported/bluetiger/tasbih-13.jpg", "/images/imported/bluetiger/tasbih-22.jpg", "/images/imported/bluetiger/tasbih-29.jpg"]
+    material: { en: "Tiger's Eye", ar: "عين النمر" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium blue tiger tasbih for modern retail.", ar: "تسبيحة عين النمر الزرقاء فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This blue tiger tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Blue Tiger Tasbih hero image", ar: "صورة البطل لسبحة عين النمر الزرقاء" },
+    gallery: [
+      { image: "/images/imported/bluetiger/main.jpg", alt: { en: "Blue Tiger Tasbih", ar: "سبحة عين النمر الزرقاء" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Tiger's Eye", ar: "عين النمر" } },
+    ],
   },
   {
     slug: "blackagate",
-    title: { en: "Black Agate Tasbih", ar: "تسبيح العقيق الأسود" },
     collection: "signature-tasbih",
-    specs: { material: "Agate", beads: "33" },
-    price: 0,
+    title: { en: "Black Agate Tasbih", ar: "سبحة عقيق أسود" },
+    summary: { en: "Black Agate Tasbih — premium quality for wholesale.", ar: "سبحة عقيق أسود — جودة عالية للجملة." },
     image: "/images/imported/blackagate/main.jpg",
-    images: ["/images/imported/blackagate/main.jpg", "/images/imported/blackagate/size.jpg", "/images/imported/blackagate/tasbih-03.jpg", "/images/imported/blackagate/tasbih-19.jpg", "/images/imported/blackagate/tasbih-32.jpg", "/images/imported/blackagate/tasbih-40.jpg"]
+    material: { en: "Agate", ar: "عقيق" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium black agate tasbih for modern retail.", ar: "تسبيحة عقيق أسود فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This black agate tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Black Agate Tasbih hero image", ar: "صورة البطل لسبحة العقيق الأسود" },
+    gallery: [
+      { image: "/images/imported/blackagate/main.jpg", alt: { en: "Black Agate Tasbih", ar: "سبحة عقيق أسود" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "عقيق" } },
+    ],
   },
   {
     slug: "oud2",
-    title: { en: "Oud Wood Tasbih 2", ar: "تسبيح خشب العود 2" },
     collection: "signature-tasbih",
-    specs: { material: "Wood", beads: "33" },
-    price: 0,
-    image: "/images/imported/oud2/size.jpg",
-    images: ["/images/imported/oud2/size.jpg", "/images/imported/oud2/tasbih-03.jpg", "/images/imported/oud2/tasbih-08.jpg", "/images/imported/oud2/tasbih-09.jpg", "/images/imported/oud2/tasbih-25.jpg", "/images/imported/oud2/tasbih-26.jpg"]
+    title: { en: "Oud Tasbih", ar: "سبحة عود" },
+    summary: { en: "Oud Tasbih — premium quality for wholesale.", ar: "سبحة عود — جودة عالية للجملة." },
+    image: "/images/imported/oud2/main.jpg",
+    material: { en: "Oud", ar: "عود" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium oud tasbih for modern retail.", ar: "تسبيحة عود فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This oud tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Oud Tasbih hero image", ar: "صورة البطل لسبحة العود" },
+    gallery: [
+      { image: "/images/imported/oud2/main.jpg", alt: { en: "Oud Tasbih", ar: "سبحة عود" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Oud", ar: "عود" } },
+    ],
   },
   {
     slug: "shoushan",
-    title: { en: "Shoushan Agate Tasbih", ar: "شوشان عقيق تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Natural Stone", beads: "33" },
-    price: 0,
-    image: "/images/imported/shoushan/ambertasbish-100.jpg",
-    images: ["/images/imported/shoushan/ambertasbish-100.jpg", "/images/imported/shoushan/ambertasbish-101.jpg", "/images/imported/shoushan/ambertasbish-102.jpg", "/images/imported/shoushan/ambertasbish-103.jpg", "/images/imported/shoushan/ambertasbish-36.jpg"]
+    title: { en: "Shoushan Stone Tasbih", ar: "سبحة حجر شوهان" },
+    summary: { en: "Shoushan Stone Tasbih — premium quality for wholesale.", ar: "سبحة حجر شوهان — جودة عالية للجملة." },
+    image: "/images/imported/shoushan/main.jpg",
+    material: { en: "Stone", ar: "حجر" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium shoushan stone tasbih for modern retail.", ar: "تسبيحة حجر شوهان فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This shoushan stone tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Shoushan Stone Tasbih hero image", ar: "صورة البطل لسبحة حجر شوهان" },
+    gallery: [
+      { image: "/images/imported/shoushan/main.jpg", alt: { en: "Shoushan Stone Tasbih", ar: "سبحة حجر شوهان" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Stone", ar: "حجر" } },
+    ],
   },
   {
     slug: "oval-orange",
-    title: { en: "Oval Orange Agate Tasbih", ar: "بيضاوية برتقالية عقيق تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Mixed Material", beads: "33" },
-    price: 0,
-    image: "/images/imported/oval-orange/ambertasbish-094.jpg",
-    images: ["/images/imported/oval-orange/ambertasbish-094.jpg", "/images/imported/oval-orange/ambertasbish-095.jpg", "/images/imported/oval-orange/ambertasbish-38.jpg", "/images/imported/oval-orange/ambertasbish-50.jpg", "/images/imported/oval-orange/ambertasbish-60.jpg", "/images/imported/oval-orange/ambertasbish-74.jpg"]
+    title: { en: "Oval Orange Tasbih", ar: "سبحة برتقالي بيضاوي" },
+    summary: { en: "Oval Orange Tasbih — premium quality for wholesale.", ar: "سبحة برتقالي بيضاوي — جودة عالية للجملة." },
+    image: "/images/imported/oval-orange/main.jpg",
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium oval orange tasbih for modern retail.", ar: "تسبيحة برتقالي بيضاوي فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This oval orange tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Oval Orange Tasbih hero image", ar: "صورة البطل لسبحة البرتقالي البيضاوي" },
+    gallery: [
+      { image: "/images/imported/oval-orange/main.jpg", alt: { en: "Oval Orange Tasbih", ar: "سبحة برتقالي بيضاوي" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "faceted-orange",
-    title: { en: "Faceted Orange Agate Tasbih", ar: "تسبيح العقيق البرتقالي ذو الأوجه" },
     collection: "signature-tasbih",
-    specs: { material: "Natural Agate", beads: "33" },
-    price: 0,
-    image: "/images/imported/faceted-orange/ambertasbish-104.jpg",
-    images: ["/images/imported/faceted-orange/ambertasbish-104.jpg", "/images/imported/faceted-orange/ambertasbish-105.jpg", "/images/imported/faceted-orange/ambertasbish-41.jpg", "/images/imported/faceted-orange/ambertasbish-47.jpg", "/images/imported/faceted-orange/ambertasbish-66.jpg", "/images/imported/faceted-orange/ambertasbish-70.jpg"]
+    title: { en: "Faceted Orange Tasbih", ar: "سبحة برتقالي مقطوع الأوجه" },
+    summary: { en: "Faceted Orange Tasbih — premium quality for wholesale.", ar: "سبحة برتقالي مقطوع الأوجه — جودة عالية للجملة." },
+    image: "/images/imported/faceted-orange/main.jpg",
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium faceted orange tasbih for modern retail.", ar: "تسبيحة برتقالي مقطوع الأوجه فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This faceted orange tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Faceted Orange Tasbih hero image", ar: "صورة البطل لسبحة البرتقالي" },
+    gallery: [
+      { image: "/images/imported/faceted-orange/main.jpg", alt: { en: "Faceted Orange Tasbih", ar: "سبحة برتقالي مقطوع الأوجه" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "redwhiteglass",
-    title: { en: "Red White Glass Tasbih", ar: "تسبيح زجاجي أبيض أحمر" },
     collection: "signature-tasbih",
-    specs: { material: "Glass", beads: "33" },
-    price: 0,
-    image: "/images/imported/redwhiteglass/amber-097.jpg",
-    images: ["/images/imported/redwhiteglass/amber-097.jpg", "/images/imported/redwhiteglass/amber-098.jpg", "/images/imported/redwhiteglass/amber-099.jpg", "/images/imported/redwhiteglass/amber-100.jpg"]
+    title: { en: "Red White Glass Tasbih", ar: "سبحة زجاج أحمر أبيض" },
+    summary: { en: "Red White Glass Tasbih — premium quality for wholesale.", ar: "سبحة زجاج أحمر أبيض — جودة عالية للجملة." },
+    image: "/images/imported/redwhiteglass/main.jpg",
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium red white glass tasbih for modern retail.", ar: "تسبيحة زجاج أحمر أبيض فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This red white glass tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Red White Glass Tasbih hero image", ar: "صورة البطل لسبحة الزجاج" },
+    gallery: [
+      { image: "/images/imported/redwhiteglass/main.jpg", alt: { en: "Red White Glass Tasbih", ar: "سبحة زجاج أحمر أبيض" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "greenresin",
-    title: { en: "Green Resin Tasbih", ar: "تسبيح الراتنج الأخضر" },
     collection: "signature-tasbih",
-    specs: { material: "Resin", beads: "33" },
-    price: 0,
-    image: "/images/imported/greenresin/amber-094.jpg",
-    images: ["/images/imported/greenresin/amber-094.jpg", "/images/imported/greenresin/amber-110.jpg", "/images/imported/greenresin/amber-115.jpg", "/images/imported/greenresin/amber-116.jpg", "/images/imported/greenresin/amber-117.jpg"]
+    title: { en: "Green Resin Tasbih", ar: "سبحة راتنج أخضر" },
+    summary: { en: "Green Resin Tasbih — premium quality for wholesale.", ar: "سبحة راتنج أخضر — جودة عالية للجملة." },
+    image: "/images/imported/greenresin/main.jpg",
+    material: { en: "Resin", ar: "راتنج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium green resin tasbih for modern retail.", ar: "تسبيحة راتنج أخضر فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This green resin tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Green Resin Tasbih hero image", ar: "صورة البطل لسبحة الراتنج الأخضر" },
+    gallery: [
+      { image: "/images/imported/greenresin/main.jpg", alt: { en: "Green Resin Tasbih", ar: "سبحة راتنج أخضر" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Resin", ar: "راتنج" } },
+    ],
   },
   {
     slug: "ambercube33",
-    title: { en: "Amber Cube 33-Bead Tasbih", ar: "مكعب عنبر 33-خرزة تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Amber", beads: "33" },
-    price: 0,
-    image: "/images/imported/ambercube33/amber-53.jpg",
-    images: ["/images/imported/ambercube33/amber-53.jpg", "/images/imported/ambercube33/amber-60.jpg", "/images/imported/ambercube33/amber-63.jpg"]
+    title: { en: "Amber Cube 33-Bead Tasbih", ar: "سبحة مكعب كهرماني 33 حبة" },
+    summary: { en: "Amber Cube 33-Bead Tasbih — premium quality for wholesale.", ar: "سبحة مكعب كهرماني 33 حبة — جودة عالية للجملة." },
+    image: "/images/imported/ambercube33/main.jpg",
+    material: { en: "Amber-look", ar: "كهرماني المظهر" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium amber cube tasbih for modern retail.", ar: "تسبيحة مكعب كهرماني فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This amber cube tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Amber Cube 33-Bead Tasbih hero image", ar: "صورة البطل لسبحة المكعب الكهرماني" },
+    gallery: [
+      { image: "/images/imported/ambercube33/main.jpg", alt: { en: "Amber Cube 33-Bead Tasbih", ar: "سبحة مكعب كهرماني 33 حبة" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Amber-look", ar: "كهرماني المظهر" } },
+    ],
   },
   {
     slug: "colorchangecube",
-    title: { en: "Color Change Cube Tasbih", ar: "تغيير لون مكعب تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Mixed Material", beads: "33" },
-    price: 0,
-    image: "/images/imported/colorchangecube/C0020T01.jpg",
-    images: ["/images/imported/colorchangecube/C0020T01.jpg", "/images/imported/colorchangecube/DSC01400.jpg", "/images/imported/colorchangecube/_DSC1321.jpg", "/images/imported/colorchangecube/_DSC1337.jpg", "/images/imported/colorchangecube/_DSC1345.jpg", "/images/imported/colorchangecube/_DSC1363-Enhanced-NR.jpg"]
+    title: { en: "Color Change Cube Tasbih", ar: "سبحة مكعب متغير اللون" },
+    summary: { en: "Color Change Cube Tasbih — premium quality for wholesale.", ar: "سبحة مكعب متغير اللون — جودة عالية للجملة." },
+    image: "/images/imported/colorchangecube/main.jpg",
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium color change cube tasbih for modern retail.", ar: "تسبيحة مكعب متغير اللون فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This color change cube tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Color Change Cube Tasbih hero image", ar: "صورة البطل لسبحة المكعب" },
+    gallery: [
+      { image: "/images/imported/colorchangecube/main.jpg", alt: { en: "Color Change Cube Tasbih", ar: "سبحة مكعب متغير اللون" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "whiteagate33-s",
-    title: { en: "White Agate 33-Bead Special Tasbih", ar: "العقيق الأبيض 33 حبة تسبيح خاص" },
     collection: "signature-tasbih",
-    specs: { material: "Agate", beads: "33" },
-    price: 0,
-    image: "/images/imported/whiteagate33-s/ram-23.jpg",
-    images: ["/images/imported/whiteagate33-s/ram-23.jpg", "/images/imported/whiteagate33-s/ram-24.jpg", "/images/imported/whiteagate33-s/ram-30.jpg", "/images/imported/whiteagate33-s/ram-31.jpg", "/images/imported/whiteagate33-s/ram-32.jpg", "/images/imported/whiteagate33-s/ram-35.jpg"]
+    title: { en: "White Agate 33-Bead Tasbih", ar: "سبحة عقيق أبيض 33 حبة" },
+    summary: { en: "White Agate 33-Bead Tasbih — premium quality for wholesale.", ar: "سبحة عقيق أبيض 33 حبة — جودة عالية للجملة." },
+    image: "/images/imported/whiteagate33-s/main.jpg",
+    material: { en: "Agate", ar: "عقيق" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium white agate tasbih for modern retail.", ar: "تسبيحة عقيق أبيض فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This white agate tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "White Agate 33-Bead Tasbih hero image", ar: "صورة البطل لسبحة العقيق الأبيض" },
+    gallery: [
+      { image: "/images/imported/whiteagate33-s/main.jpg", alt: { en: "White Agate 33-Bead Tasbih", ar: "سبحة عقيق أبيض 33 حبة" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "عقيق" } },
+    ],
   },
   {
     slug: "greenagate99",
-    title: { en: "Green Agate 99-Bead Tasbih", ar: "العقيق الأخضر 99-خرزة تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Agate", beads: "33" },
-    price: 0,
-    image: "/images/imported/greenagate99/ram-01.jpg",
-    images: ["/images/imported/greenagate99/ram-01.jpg", "/images/imported/greenagate99/ram-02.jpg", "/images/imported/greenagate99/ram-08.jpg", "/images/imported/greenagate99/ram-09.jpg", "/images/imported/greenagate99/ram-10.jpg", "/images/imported/greenagate99/ram-14.jpg"]
+    title: { en: "Green Agate 99-Bead Tasbih", ar: "سبحة عقيق أخضر 99 حبة" },
+    summary: { en: "Green Agate 99-Bead Tasbih — premium quality for wholesale.", ar: "سبحة عقيق أخضر 99 حبة — جودة عالية للجملة." },
+    image: "/images/imported/greenagate99/main.jpg",
+    material: { en: "Agate", ar: "عقيق" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium green agate tasbih for modern retail.", ar: "تسبيحة عقيق أخضر فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This green agate tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Green Agate 99-Bead Tasbih hero image", ar: "صورة البطل لسبحة العقيق الأخضر" },
+    gallery: [
+      { image: "/images/imported/greenagate99/main.jpg", alt: { en: "Green Agate 99-Bead Tasbih", ar: "سبحة عقيق أخضر 99 حبة" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "99 beads", ar: "99 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "عقيق" } },
+    ],
   },
   {
     slug: "glass-smoke",
-    title: { en: "Smoke Glass Tasbih", ar: "تسبيح زجاجي دخاني" },
     collection: "signature-tasbih",
-    specs: { material: "Glass", beads: "33" },
-    price: 0,
+    title: { en: "Smoke Glass Tasbih", ar: "سبحة زجاج مدخن" },
+    summary: { en: "Smoke Glass Tasbih — premium quality for wholesale.", ar: "سبحة زجاج مدخن — جودة عالية للجملة." },
     image: "/images/imported/glass-smoke/main.jpg",
-    images: ["/images/imported/glass-smoke/main.jpg", "/images/imported/glass-smoke/ram-03.jpg", "/images/imported/glass-smoke/ram-04.jpg", "/images/imported/glass-smoke/ram-13.jpg", "/images/imported/glass-smoke/ram-20.jpg", "/images/imported/glass-smoke/ram-21.jpg"]
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium smoke glass tasbih for modern retail.", ar: "تسبيحة زجاج مدخن فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This smoke glass tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Smoke Glass Tasbih hero image", ar: "صورة البطل لسبحة الزجاج المدخن" },
+    gallery: [
+      { image: "/images/imported/glass-smoke/main.jpg", alt: { en: "Smoke Glass Tasbih", ar: "سبحة زجاج مدخن" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "glass-champon",
-    title: { en: "Champon Glass Tasbih", ar: "شامبون جلاس تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Glass", beads: "33" },
-    price: 0,
+    title: { en: "Champon Glass Tasbih", ar: "سبحة زجاج شامبون" },
+    summary: { en: "Champon Glass Tasbih — premium quality for wholesale.", ar: "سبحة زجاج شامبون — جودة عالية للجملة." },
     image: "/images/imported/glass-champon/main.jpg",
-    images: ["/images/imported/glass-champon/main.jpg", "/images/imported/glass-champon/ram-05.jpg", "/images/imported/glass-champon/ram-06.jpg", "/images/imported/glass-champon/ram-07.jpg", "/images/imported/glass-champon/ram-11.jpg", "/images/imported/glass-champon/ram-12.jpg"]
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium champon glass tasbih for modern retail.", ar: "تسبيحة زجاج شامبون فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This champon glass tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Champon Glass Tasbih hero image", ar: "صورة البطل لسبحة الزجاج شامبون" },
+    gallery: [
+      { image: "/images/imported/glass-champon/main.jpg", alt: { en: "Champon Glass Tasbih", ar: "سبحة زجاج شامبون" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "lumnousglass99",
-    title: { en: "Luminous Glass 99-Bead Tasbih", ar: "تسبيح زجاجي مضيء 99 خرزة" },
     collection: "signature-tasbih",
-    specs: { material: "Glass", beads: "33" },
-    price: 0,
-    image: "/images/imported/lumnousglass99/com.jpg",
-    images: ["/images/imported/lumnousglass99/com.jpg", "/images/imported/lumnousglass99/new-02.jpg", "/images/imported/lumnousglass99/new-03.jpg", "/images/imported/lumnousglass99/new-04.jpg", "/images/imported/lumnousglass99/new-05.jpg", "/images/imported/lumnousglass99/new-06.jpg"]
+    title: { en: "Luminous Glass 99-Bead Tasbih", ar: "سبحة زجاج متوهج 99 حبة" },
+    summary: { en: "Luminous Glass 99-Bead Tasbih — premium quality for wholesale.", ar: "سبحة زجاج متوهج 99 حبة — جودة عالية للجملة." },
+    image: "/images/imported/lumnousglass99/main.jpg",
+    material: { en: "Glass", ar: "زجاج" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium luminous glass tasbih for modern retail.", ar: "تسبيحة زجاج متوهج فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This luminous glass tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Luminous Glass 99-Bead Tasbih hero image", ar: "صورة البطل لسبحة الزجاج المتوهج" },
+    gallery: [
+      { image: "/images/imported/lumnousglass99/main.jpg", alt: { en: "Luminous Glass 99-Bead Tasbih", ar: "سبحة زجاج متوهج 99 حبة" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "99 beads", ar: "99 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "زجاج" } },
+    ],
   },
   {
     slug: "99blackrosewood",
-    title: { en: "Black Rosewood 99-Bead Tasbih", ar: "تسبيح من خشب الورد الأسود 99 حبة" },
     collection: "signature-tasbih",
-    specs: { material: "Wood", beads: "33" },
-    price: 0,
+    title: { en: "99-Bead Black Rosewood Tasbih", ar: "سبحة خشب الورد الأسود 99 حبة" },
+    summary: { en: "99-Bead Black Rosewood Tasbih — premium quality for wholesale.", ar: "سبحة خشب الورد الأسود 99 حبة — جودة عالية للجملة." },
     image: "/images/imported/99blackrosewood/main.jpg",
-    images: ["/images/imported/99blackrosewood/main.jpg", "/images/imported/99blackrosewood/newwood-03.jpg", "/images/imported/99blackrosewood/newwood-04.jpg", "/images/imported/99blackrosewood/newwood-06.jpg", "/images/imported/99blackrosewood/newwood-29.jpg", "/images/imported/99blackrosewood/newwood-36.jpg"]
+    material: { en: "Wood", ar: "خشب" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium black rosewood tasbih for modern retail.", ar: "تسبيحة خشب الورد الأسود فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This black rosewood tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "99-Bead Black Rosewood Tasbih hero image", ar: "صورة البطل لسبحة خشب الورد الأسود" },
+    gallery: [
+      { image: "/images/imported/99blackrosewood/main.jpg", alt: { en: "99-Bead Black Rosewood Tasbih", ar: "سبحة خشب الورد الأسود 99 حبة" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "99 beads", ar: "99 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Wood", ar: "خشب" } },
+    ],
   },
   {
     slug: "33shellbar",
-    title: { en: "Shell Bar 33-Bead Tasbih", ar: "بار شل 33-خرزة تسبيح" },
     collection: "signature-tasbih",
-    specs: { material: "Shell", beads: "33" },
-    price: 0,
+    title: { en: "Shell Bar 33-Bead Tasbih", ar: "بار شل 33-خرزة تسبيح" },
+    summary: { en: "Shell Bar 33-Bead Tasbih — premium quality for wholesale.", ar: "سبحة بار شل 33-خرزة — جودة عالية للجملة." },
     image: "/images/imported/33shellbar/ambertest-8.jpg",
-    images: ["/images/imported/33shellbar/ambertest-8.jpg", "/images/imported/33shellbar/main.jpg", "/images/imported/33shellbar/shellnew-05.jpg", "/images/imported/33shellbar/shellnew-06.jpg", "/images/imported/33shellbar/shellnew-14.jpg", "/images/imported/33shellbar/shellnew-15.jpg"]
-  }
+    material: { en: "Shell", ar: "صدف" },
+    tags: { en: ["Wholesale"], ar: ["جملة"] },
+    detailIntro: { en: "A premium shell bar tasbih for modern retail.", ar: "تسبيحة بار صدفي فاخرة للتجزئة العصرية." },
+    detailBody: { en: "This shell bar tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.", ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين." },
+    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
+    heroAlt: { en: "Shell Bar 33-Bead Tasbih hero image", ar: "صورة البطل لسبحة البار الصدفي" },
+    gallery: [
+      { image: "/images/imported/33shellbar/ambertest-8.jpg", alt: { en: "Shell Bar 33-Bead Tasbih", ar: "سبحة بار شل 33-خرزة تسبيح" } },
+      { image: "/images/imported/33shellbar/main.jpg", alt: { en: "Shell Bar detail", ar: "تفصيل سبحة البار الصدفي" } },
+    ],
+    specs: [
+      { label: { en: "Bead count", ar: "عدد الحبات" }, value: { en: "33 beads", ar: "33 حبة" } },
+      { label: { en: "Material", ar: "الخامة" }, value: { en: "Shell", ar: "صدف" } },
+    ],
+  },
 ];
-];
+
+export const contactFormCopy: ContactFormCopy = {
+  title: {
+    en: "Start your wholesale inquiry",
+    ar: "ابدأ استفسارك الخاص بالجملة",
+  },
+  description: {
+    en: "Tell us what you want to source, your target quantity, and your timeline. We will recommend a focused assortment quickly.",
+    ar: "أخبرنا بما تريد شراءه والكمية المستهدفة والجدول الزمني، وسنقترح عليك تشكيلة مناسبة بسرعة.",
+  },
+  fields: {
+    name: { en: "Full name", ar: "الاسم الكامل" },
+    company: { en: "Company", ar: "الشركة" },
+    country: { en: "Country", ar: "الدولة" },
+    contact: { en: "Email or WhatsApp", ar: "البريد أو واتساب" },
+    interest: { en: "Interest category", ar: "فئة الاهتمام" },
+    quantity: { en: "Estimated quantity", ar: "الكمية التقديرية" },
+    message: { en: "Message", ar: "الرسالة" },
+  },
+  submit: { en: "Send inquiry", ar: "إرسال الاستفسار" },
+  success: {
+    en: "Thank you — we will review your inquiry and reply with the best matching assortment.",
+    ar: "شكرًا لك، سنراجع استفسارك ونعود إليك بأفضل تشكيلة مناسبة.",
+  },
+  validation: {
+    name: { en: "Name is required.", ar: "الاسم مطلوب." },
+    company: { en: "Company is required.", ar: "اسم الشركة مطلوب." },
+    country: { en: "Country is required.", ar: "الدولة مطلوبة." },
+    contact: { en: "Contact details are required.", ar: "بيانات التواصل مطلوبة." },
+    interest: { en: "Choose an interest category.", ar: "اختر فئة الاهتمام." },
+    quantity: { en: "Estimated quantity is required.", ar: "الكمية التقديرية مطلوبة." },
+    message: { en: "Message is required.", ar: "الرسالة مطلوبة." },
+  },
+  whatsappLabel: { en: "Chat on WhatsApp", ar: "تحدث عبر واتساب" },
+};
+
+const pageDescriptions = {
+  home: {
+    en: "Premium tasbih collections, Islamic gifts, and distributor-ready assortments for modern B2B buyers.",
+    ar: "مجموعات تسابيح راقية وهدايا إسلامية وتشكيلات جاهزة للموزعين والمشترين بالجملة.",
+  },
+  collections: {
+    en: "Browse tasbih-led collections, gift-ready sets, and supporting cultural accessories for distributors.",
+    ar: "تصفح مجموعات التسابيح ومجموعات الهدايا والمنتجات الثقافية المساندة للموزعين.",
+  },
+  wholesale: {
+    en: "MOQ, packaging, customization, and lead-time information for retail and gifting partners.",
+    ar: "معلومات الحد الأدنى والكرتون والتخصيص ومواعيد التوريد لشركاء التجزئة والهدايا.",
+  },
+  contact: {
+    en: "Send your inquiry and connect with TranquilBeads on WhatsApp for fast wholesale conversations.",
+    ar: "أرسل استفسارك وتواصل مع ترانكويل بيدز عبر واتساب لبدء محادثة جملة سريعة.",
+  },
+} as const;
+
+export function getPageMetadata(
+  locale: Locale,
+  page: keyof typeof pageDescriptions,
+  title: string,
+): Metadata {
+  const description = pageDescriptions[page][locale];
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: withLocale(locale, page === "home" ? "/" : `/${page}`),
+      languages: {
+        en: withLocale("en", page === "home" ? "/" : `/${page}`),
+        ar: withLocale("ar", page === "home" ? "/" : `/${page}`),
+      },
+    },
+    openGraph: {
+      title,
+      description,
+    },
+  };
+}
+
+export function getPageCopy(locale: Locale) {
+  return {
+    locale,
+    nav: navItems.map((item) => ({
+      href: item.href,
+      label: item.label[locale],
+    })),
+    hero: {
+      eyebrow: locale === "en" ? "B2B Tasbih & Cultural Gifts" : "تسابيح وهدايا ثقافية للجملة",
+      title:
+        locale === "en"
+          ? "Tasbih crafted for modern wholesale partners"
+          : "تسابيح مصممة لشركاء الجملة العصريين",
+      description:
+        locale === "en"
+          ? "TranquilBeads pairs elevated design, dependable production, and culturally aligned storytelling for distributors, museum shops, gifting programs, and premium retailers."
+          : "يجمع ترانكويل بيدز بين التصميم الراقي والإنتاج الموثوق والسرد الثقافي المتوازن لخدمة الموزعين ومتاجر المتاحف وبرامج الهدايا وتجار التجزئة المتميزين.",
+      primaryCta: locale === "en" ? "Request Catalog" : "اطلب الكتالوج",
+      secondaryCta: contactFormCopy.whatsappLabel[locale],
+      featuredLabel: locale === "en" ? "Featured collections" : "مجموعات مميزة",
+      metricsIntro:
+        locale === "en"
+          ? "Built for distribution teams that need shelf-ready stories and reliable replenishment."
+          : "مصمم لفرق التوزيع التي تحتاج إلى قصة عرض قوية وتوريد موثوق.",
+    },
+    collectionsPage: {
+      title: locale === "en" ? "Signature Tasbih Collections" : "مجموعات تسابيح مميزة",
+      description:
+        locale === "en"
+          ? "A compact first-edition catalog led by tasbih, supported by gift sets and complementary cultural pieces."
+          : "كتالوج أولي مركز تقوده التسابيح وتدعمه مجموعات هدايا وقطع ثقافية مكملة.",
+      filtersLabel: locale === "en" ? "Tasbih-led catalog" : "كتالوج تقوده التسابيح",
+      inquiryLabel: locale === "en" ? "Inquire now" : "اطلب الآن",
+      detailLabel: locale === "en" ? "View details" : "عرض التفاصيل",
+    },
+    wholesalePage: {
+      title: locale === "en" ? "Built for retail and wholesale rollout" : "مصمم للتوزيع والجملة",
+      description:
+        locale === "en"
+          ? "Everything on the first release is shaped around fast distributor onboarding: MOQ clarity, packaging, customization, and dependable lead times."
+          : "تم تصميم الإصدار الأول لتسهيل انطلاق الشركاء بسرعة: وضوح الحد الأدنى، التغليف، التخصيص، ومواعيد التوريد الموثوقة.",
+      bullets:
+        locale === "en"
+          ? [
+              "MOQ starts from 500 pieces across tasbih-focused assortments.",
+              "Private label sleeves, insert cards, and bilingual packaging available.",
+              "Average lead time from approval to dispatch is 21 days.",
+            ]
+          : [
+              "موك يبدأ من 500 قطعة ضمن تشكيلات تركز على التسابيح.",
+              "التغليف الخاص وبطاقات الإدراج والتغليف الثنائي اللغة متاح.",
+              "متوسط زمن التوريد من الاعتماد إلى الشحن هو 21 يومًا.",
+            ],
+      flowTitle: locale === "en" ? "How cooperation works" : "كيف تتم الشراكة",
+      flow:
+        locale === "en"
+          ? ["Share your market and quantity targets", "Receive a tight assortment proposal", "Approve packaging and launch timeline"]
+          : ["شاركنا السوق والكمية المستهدفة", "استلم اقتراح تشكيلة مركزة", "اعتمد التغليف والجدول الزمني للإطلاق"],
+    },
+    contactPage: {
+      title: contactFormCopy.title[locale],
+      description: contactFormCopy.description[locale],
+      whatsappLabel: contactFormCopy.whatsappLabel[locale],
+      detailCards:
+        locale === "en"
+          ? [
+              "Ideal for distributors, museum stores, gifting programs, and boutique retailers.",
+              "Include your target market, desired material, and timeline for a faster reply.",
+            ]
+          : [
+              "مناسب للموزعين ومتاجر المتاحف وبرامج الهدايا ومتاجر التجزئة المتخصصة.",
+              "أضف السوق المستهدفة والخامة المطلوبة والجدول الزمني لتحصل على رد أسرع.",
+            ],
+    },
+    footer: {
+      summary: siteSettings.tagline[locale],
+      rights:
+        locale === "en"
+          ? "Premium tasbih and Islamic culture goods for contemporary trade partners."
+          : "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء التجارة المعاصرين.",
+    },
+  };
+}
+
+export function getInterestOptions(locale: Locale) {
+  return locale === "en"
+    ? ["Tasbih", "Gift Sets", "Custom Packaging", "Retail Assortment"]
+    : ["تسابيح", "مجموعات هدايا", "تغليف مخصص", "تشكيلة متجر"];
 }
 
 export function getProductBySlug(slug: string) {
