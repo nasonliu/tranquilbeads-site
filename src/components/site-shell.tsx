@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { siteSettings } from "@/src/data/site";
 import type { Locale } from "@/src/lib/i18n";
@@ -21,6 +24,11 @@ export function SiteShell({
   children,
 }: SiteShellProps) {
   const isArabic = locale === "ar";
+  const pathname = usePathname();
+  const otherLocale = locale === "en" ? "ar" : "en";
+  // Strip current locale prefix from pathname
+  const pathWithoutLocale = pathname.replace(/^\/(en|ar)/, "") || "/";
+  const switchLocaleHref = `/${otherLocale}${pathWithoutLocale}`;
 
   return (
     <div className="noor-shell">
@@ -51,6 +59,12 @@ export function SiteShell({
           </nav>
 
           <div className="flex items-center gap-3">
+            <Link
+              href={switchLocaleHref}
+              className="rounded-full border border-border/80 bg-white/55 px-3 py-2 text-xs font-semibold text-muted transition hover:border-accent/40 hover:text-foreground"
+            >
+              {locale === "en" ? "العربية" : "English"}
+            </Link>
             <a
               href={siteSettings.whatsappHref}
               target="_blank"
