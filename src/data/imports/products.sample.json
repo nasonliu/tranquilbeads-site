@@ -1,0 +1,75 @@
+{
+  "products": [
+    {
+      "collection_slug": "signature-tasbih",
+      "title": {
+        "en": "Sandalwood Focus Tasbih",
+        "ar": "سبحة صندل مركزة"
+      },
+      "summary": {
+        "en": "Warm sandalwood tasbih designed for premium wholesale gifting.",
+        "ar": "سبحة من خشب الصندل لهدايا الجملة الراقية."
+      },
+      "material": {
+        "en": "Natural sandalwood with silk tassel",
+        "ar": "خشب صندل طبيعي مع شرابة حريرية"
+      },
+      "tags": {
+        "en": ["Tasbih", "Giftable", "Natural Material"],
+        "ar": ["مسبحة", "مناسبة للهدايا", "مادة طبيعية"]
+      },
+      "detail_intro": {
+        "en": "A refined wholesale tasbih with calm fragrance and balanced weight.",
+        "ar": "مسبحة راقية للجملة برائحة هادئة ووزن متوازن."
+      },
+      "detail_body": {
+        "en": "Suitable for distributors, curated gift programs, and concept stores seeking a timeless Islamic lifestyle product.",
+        "ar": "مناسبة للموزعين وبرامج الهدايا المختارة والمتاجر التي تبحث عن منتج إسلامي بطابع خالد."
+      },
+      "ideal_for": {
+        "en": "Boutiques, Ramadan gifting, distributors, museum shops",
+        "ar": "المتاجر الراقية، هدايا رمضان، الموزعون، متاجر المتاحف"
+      },
+      "hero_image": {
+        "url": "/images/imported/sandalwood-focus/hero.jpg",
+        "alt": {
+          "en": "Sandalwood Focus Tasbih hero",
+          "ar": "الصورة الرئيسية لسبحة الصندل"
+        }
+      },
+      "gallery": [
+        {
+          "url": "/images/imported/sandalwood-focus/detail-1.jpg",
+          "alt": {
+            "en": "Sandalwood Focus detail 1",
+            "ar": "تفصيل 1 لسبحة الصندل"
+          }
+        }
+      ],
+      "specs": [
+        {
+          "key": "bead_count",
+          "label": {
+            "en": "Bead Count",
+            "ar": "عدد الحبات"
+          },
+          "value": {
+            "en": "33 beads",
+            "ar": "33 حبة"
+          }
+        },
+        {
+          "key": "moq",
+          "label": {
+            "en": "MOQ",
+            "ar": "الحد الأدنى للطلب"
+          },
+          "value": {
+            "en": "100 pcs",
+            "ar": "100 قطعة"
+          }
+        }
+      ]
+    }
+  ]
+}

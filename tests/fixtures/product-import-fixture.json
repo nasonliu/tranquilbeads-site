@@ -1,0 +1,64 @@
+{
+  "products": [
+    {
+      "collection_slug": "signature-tasbih",
+      "title": {
+        "en": "Olive Heritage Tasbih",
+        "ar": "سبحة تراث الزيتون"
+      },
+      "summary": {
+        "en": "Warm olive wood tasbih for premium gifting.",
+        "ar": "سبحة من خشب الزيتون للهدايا الراقية."
+      },
+      "material": {
+        "en": "Olive wood",
+        "ar": "خشب الزيتون"
+      },
+      "tags": {
+        "en": ["Tasbih", "Olive Wood"],
+        "ar": ["مسبحة", "خشب الزيتون"]
+      },
+      "detail_intro": {
+        "en": "Balanced 33-bead format with a calm finish.",
+        "ar": "صيغة 33 حبة بتشطيب هادئ ومتوازن."
+      },
+      "detail_body": {
+        "en": "Good fit for boutiques and museum-style shelves.",
+        "ar": "مناسبة للبوتيكات ورفوف المتاجر ذات الطابع الثقافي."
+      },
+      "ideal_for": {
+        "en": "Boutiques and Ramadan edits",
+        "ar": "البوتيكات وتحريرات رمضان"
+      },
+      "hero_image": {
+        "url": "/images/imported/olive-heritage/hero.jpg",
+        "alt": {
+          "en": "Olive Heritage Tasbih hero",
+          "ar": "الصورة الرئيسية لسبحة تراث الزيتون"
+        }
+      },
+      "gallery": [
+        {
+          "url": "/images/imported/olive-heritage/detail-1.jpg",
+          "alt": {
+            "en": "Olive Heritage detail 1",
+            "ar": "تفصيل 1 لسبحة تراث الزيتون"
+          }
+        }
+      ],
+      "specs": [
+        {
+          "key": "bead_count",
+          "label": {
+            "en": "Bead count",
+            "ar": "عدد الحبات"
+          },
+          "value": {
+            "en": "33 beads",
+            "ar": "33 حبة"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TranquilBeads Product Import",
+  "type": "object",
+  "required": ["products"],
+  "properties": {
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "collection_slug",
+          "title",
+          "summary",
+          "material",
+          "tags",
+          "detail_intro",
+          "detail_body",
+          "ideal_for",
+          "hero_image",
+          "gallery",
+          "specs"
+        ],
+        "properties": {
+          "slug": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["active", "draft"]
+          },
+          "sort_order": { "type": "integer" },
+          "collection_slug": { "type": "string" },
+          "featured": { "type": "boolean" },
+          "title": { "$ref": "#/definitions/localizedStringPartial" },
+          "summary": { "$ref": "#/definitions/localizedStringPartial" },
+          "material": { "$ref": "#/definitions/localizedStringPartial" },
+          "tags": {
+            "type": "object",
+            "properties": {
+              "en": { "type": "array", "items": { "type": "string" } },
+              "ar": { "type": "array", "items": { "type": "string" } }
+            }
+          },
+          "detail_intro": { "$ref": "#/definitions/localizedStringPartial" },
+          "detail_body": { "$ref": "#/definitions/localizedStringPartial" },
+          "ideal_for": { "$ref": "#/definitions/localizedStringPartial" },
+          "hero_image": { "$ref": "#/definitions/imageObject" },
+          "gallery": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/imageObject" }
+          },
+          "specs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["label", "value"],
+              "properties": {
+                "key": { "type": "string" },
+                "label": { "$ref": "#/definitions/localizedStringPartial" },
+                "value": { "$ref": "#/definitions/localizedStringPartial" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "localizedStringPartial": {
+      "type": "object",
+      "properties": {
+        "en": { "type": "string" },
+        "ar": { "type": "string" }
+      }
+    },
+    "imageObject": {
+      "type": "object",
+      "required": ["url", "alt"],
+      "properties": {
+        "url": { "type": "string" },
+        "alt": { "$ref": "#/definitions/localizedStringPartial" }
+      }
+    }
+  }
+}
