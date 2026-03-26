@@ -118,7 +118,7 @@ export const collections: Collection[] = [
       en: "Premium prayer beads in sandalwood, stone, and brushed metallic finishes for modern shelves.",
       ar: "تسابيح راقية من خشب الصندل والحجر والتشطيبات المعدنية الهادئة لعرض عصري.",
     },
-    heroImage: "/images/collection-signature.svg",
+    heroImage: "/images/real-products/natural-kuka-wood/hero.jpeg",
     featured: true,
     overview: {
       en: "The hero TranquilBeads line for retailers who want tactile materials, premium finishing, and strong everyday sell-through.",
@@ -140,7 +140,7 @@ export const collections: Collection[] = [
       en: "Curated combinations for Ramadan gifting, cultural retail, and premium hospitality programs.",
       ar: "توليفات منسقة لهدايا رمضان ومتاجر الثقافة وبرامج الضيافة الراقية.",
     },
-    heroImage: "/images/collection-gift.svg",
+    heroImage: "/images/real-products/baltic-amber/hero.jpeg",
     featured: true,
     overview: {
       en: "Presentation-ready combinations designed for seasonal campaigns, hospitality programs, and corporate gifting.",
