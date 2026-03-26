@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Image Manager</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; }
+  h1 { margin-bottom: 20px; font-size: 1.5rem; color: #333; }
+  .info { background: #e8f4fd; border: 1px solid #b8daff; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 0.9rem; color: #004; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .card { background: white; border-radius: 12px; border: 1px solid #e0e0e0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .card-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+  .card-header h3 { font-size: 0.9rem; font-weight: 600; color: #333; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .badge { background: #4caf50; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+  .badge.changed { background: #ff9800; }
+  .current-img { width: 100%; aspect-ratio: 1; background: #fafafa; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .current-img img { width: 100%; height: 100%; object-fit: cover; }
+  .current-img .placeholder { color: #999; font-size: 0.8rem; text-align: center; padding: 20px; }
+  .picker { padding: 12px; }
+  .picker-label { font-size: 0.75rem; color: #666; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; padding: 8px; }
+  .option { cursor: pointer; border-radius: 6px; overflow: hidden; aspect-ratio: 1; border: 2px solid transparent; transition: all 0.15s; }
+  .option:hover { border-color: #2196f3; transform: scale(1.05); }
+  .option.selected { border-color: #4caf50; box-shadow: 0 0 0 2px rgba(76,175,80,0.3); }
+  .option img { width: 100%; height: 100%; object-fit: cover; }
+  .card-footer { padding: 10px 16px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+  .slug { font-size: 0.7rem; color: #888; font-family: monospace; background: #f5f5f5; padding: 3px 8px; border-radius: 4px; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .material { font-size: 0.7rem; color: #666; }
+  .action-btn { background: #2196f3; color: white; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+  .action-btn:hover { background: #1976d2; }
+  .action-btn:disabled { background: #ccc; cursor: not-allowed; }
+  #export { background: #4caf50; color: white; border: none; padding: 12px 32px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; margin-bottom: 20px; }
+  #export:hover { background: #388e3c; }
+  #export.changed { background: #ff9800; }
+  .toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+  .search { margin-bottom: 16px; }
+  .search input { width: 100%; padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+  .search input:focus { outline: none; border-color: #2196f3; }
+  .stats { font-size: 0.8rem; color: #666; margin-bottom: 12px; }
+  .folder-tree { background: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+  .folder-tree h2 { font-size: 0.9rem; margin-bottom: 12px; color: #333; }
+  .folder-tree .folders { display: flex; flex-wrap: wrap; gap: 8px; }
+  .folder-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.75rem; transition: all 0.15s; }
+  .folder-btn:hover { border-color: #2196f3; color: #2196f3; }
+  .folder-btn.active { background: #2196f3; color: white; border-color: #2196f3; }
+</style>
+</head>
+<body>
+<h1>🖼️ Product Image Manager</h1>
+
+<div class="info">
+  <strong>How to use:</strong> Browse products below. Click an option image to select it. Click "Apply" to update the product's image. 
+  When done, click "Export site.ts Changes" to download the updated file. 
+  Images are served from <code>/images/imported/[folder]/</code>
+</div>
+
+<div class="folder-tree">
+  <h2>📁 Image Source Folders</h2>
+  <div class="folders" id="folderList"></div>
+</div>
+
+<div class="search">
+  <input type="text" id="searchInput" placeholder="Search products by name, slug, or material..." oninput="filterProducts()">
+</div>
+
+<div class="stats" id="stats"></div>
+
+<button id="export" onclick="exportChanges()">📤 Export site.ts Changes</button>
+
+<div class="grid" id="productGrid"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+// Image base URL (relative to site)
+// Set this to your deployed site URL for live image previews
+// Leave empty ('') to use relative paths
+const SITE_URL = 'https://www.tranquilbeads.com';
+const IMG_BASE = SITE_URL + '/images/imported/';
+const STATIC_BASE = SITE_URL + '/images/';
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const products = [
+{ slug: "natural-kuka-wood-tasbih", name: "Natural Kuka Wood Tasbih", material: "Wood", current: "/images/imported/33-kuka/size.jpg" },
+{ slug: "golden-hematite-medallion-tasbih", name: "Golden Hematite Medallion Tasbih", material: "Hematite", current: "/images/imported/amber-tasbih/size.jpg" },
+{ slug: "lacquer-art-33-bead-tasbih", name: "Lacquer Art 33-Bead Tasbih", material: "Resin", current: "/images/imported/resin-tasbih/resin-01.jpg" },
+{ slug: "baltic-amber-gift-set", name: "Baltic Amber Gift Set", material: "Amber", current: "/images/imported/ambercube33/amber-53.jpg" },
+{ slug: "terahertz-road-safety-pendant", name: "Terahertz Road Safety Pendant", material: "Terahertz", current: "/images/imported/glass-smoke/main.jpg" },
+{ slug: "silver-sheen-obsidian-tasbih", name: "Silver Sheen Obsidian Tasbih", material: "Obsidian", current: "/images/imported/silver-sheen-obsidian/size.jpg" },
+{ slug: "blue-tigers-eye-tasbih", name: "Blue Tiger's Eye Tasbih", material: "Tiger's Eye", current: "/images/imported/bluetiger/main.jpg" },
+{ slug: "pearl-tasbih", name: "Pearl Tasbih", material: "Pearl", current: "/images/imported/pearl-tasbih/size.jpg" },
+{ slug: "obsidian-tasbih", name: "Obsidian Tasbih", material: "Obsidian", current: "/images/imported/obsidian-tasbih/size.jpg" },
+{ slug: "resin-tasbih", name: "Resin Tasbih", material: "Resin", current: "/images/imported/resin-tasbih/resin-01.jpg" },
+{ slug: "crystal-tasbih", name: "Crystal Tasbih", material: "Crystal", current: "/images/imported/crystal-tasbih/size.jpg" },
+{ slug: "kechainrose", name: "Kechain Rose Tasbih", material: "Rose Crystal", current: "/images/imported/kechainrose/phone.jpg" },
+{ slug: "pocket", name: "Pocket Tiger Eye Tasbih", material: "Mixed", current: "/images/imported/pocket/size.jpg" },
+{ slug: "99-pla", name: "99-Bead Plastic Tasbih", material: "Plastic", current: "/images/imported/99-pla/size.jpg" },
+{ slug: "zebra", name: "Zebra Agate Tasbih", material: "Agate", current: "/images/imported/zebra/main.jpg" },
+{ slug: "watergrass", name: "Water Grass Agate Tasbih", material: "Agate", current: "/images/imported/watergrass/main.jpg" },
+{ slug: "orangeagate", name: "Orange Agate Tasbih", material: "Agate", current: "/images/imported/orangeagate/main.jpg" },
+{ slug: "bluetiger", name: "Blue Tiger Tasbih", material: "Tiger's Eye", current: "/images/imported/bluetiger/main.jpg" },
+{ slug: "blackagate", name: "Black Agate Tasbih", material: "Agate", current: "/images/imported/blackagate/main.jpg" },
+{ slug: "oud2", name: "Oud Tasbih", material: "Oud", current: "/images/imported/oud2/main.jpg" },
+{ slug: "shoushan", name: "Shoushan Stone Tasbih", material: "Stone", current: "/images/imported/shoushan/main.jpg" },
+{ slug: "oval-orange", name: "Oval Orange Tasbih", material: "Glass", current: "/images/imported/oval-orange/main.jpg" },
+{ slug: "faceted-orange", name: "Faceted Orange Tasbih", material: "Glass", current: "/images/imported/faceted-orange/main.jpg" },
+{ slug: "redwhiteglass", name: "Red White Glass Tasbih", material: "Glass", current: "/images/imported/redwhiteglass/main.jpg" },
+{ slug: "greenresin", name: "Green Resin Tasbih", material: "Resin", current: "/images/imported/greenresin/main.jpg" },
+{ slug: "ambercube33", name: "Amber Cube 33-Bead Tasbih", material: "Amber", current: "/images/imported/ambercube33/amber-53.jpg" },
+{ slug: "colorchangecube", name: "Color Change Cube Tasbih", material: "Glass", current: "/images/imported/colorchangecube/main.jpg" },
+{ slug: "whiteagate33-s", name: "White Agate 33-Bead Tasbih", material: "Agate", current: "/images/imported/whiteagate33-s/main.jpg" },
+{ slug: "greenagate99", name: "Green Agate 99-Bead Tasbih", material: "Agate", current: "/images/imported/greenagate99/main.jpg" },
+{ slug: "glass-smoke", name: "Smoke Glass Tasbih", material: "Glass", current: "/images/imported/glass-smoke/main.jpg" },
+{ slug: "glass-champon", name: "Champon Glass Tasbih", material: "Glass", current: "/images/imported/glass-champon/main.jpg" },
+{ slug: "lumnousglass99", name: "Luminous Glass 99-Bead Tasbih", material: "Glass", current: "/images/imported/lumnousglass99/new-02.jpg" },
+{ slug: "99blackrosewood", name: "99-Bead Black Rosewood Tasbih", material: "Wood", current: "/images/imported/99blackrosewood/main.jpg" },
+{ slug: "33shellbar", name: "Shell Bar 33-Bead Tasbih", material: "Shell", current: "/images/imported/33shellbar/ambertest-8.jpg" },
+];
+
+// ── IMAGE FOLDERS ────────────────────────────────────────────────────────────
+const folders = [
+"11","33","33-arc","33-kuka","33-pla-pattren","33shellbar","33whitepine","33wood",
+"64faceset","99-arc","99-pla","99blackrosewood","99shellbrown","99shellgolden","99whitepine",
+"agarwood33new","agate-tasbih","agrwood33","amber-tasbih","amberart33","ambercube33",
+"amberl","amberorange","ambers","argwoodselect","barrowargwood","blackagate",
+"blackagate33-s","blue","blue-tigers-eye","blueglass","bluelight33","bluelight99",
+"blueredtiger33","bluetiger","bluetigereye33","colorchangecube","colorchangedrop",
+"colorful","crystal-tasbih","dreamyagate","faceted-choc","faceted-orange","faceted-redsand",
+"glass-champon","glass-smoke","grayglass33","green","greenagate99","greenresin","greenwood",
+"imamber99","imitateredamber","kechainrose","kuka99","lum99blue","lumicolor","lumigreen",
+"lumnousglass99","necklace","obsidian-tasbih","onxy","orangeagate","oud1","oud2","oudcube",
+"oval-black","oval-orange","oval-peacock","oval-red","peakcock33","pearl-tasbih","pink",
+"pocket","purple","red","red-agate-tasbih","redamber","redglass","redresin","redwhiteglass",
+"resin-tasbih","roundargwood","shoushan","silkagate","silver-sheen-obsidian",
+"tiger-eye-tasbih","tigereye","watergrass","whiteagate33","whiteagate33-s","yellow",
+"yellow-agrwood-amber33","yellowamber","yellowredamber","zebra",
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+const state = {
+  products: products.map(p => ({ ...p, newImage: p.current, changed: false })),
+  activeFolder: null,
+  searchQuery: '',
+};
+
+// ── RENDER FOLDERS ────────────────────────────────────────────────────────────
+function renderFolders() {
+  const el = document.getElementById('folderList');
+  el.innerHTML = `
+    <button class="folder-btn ${state.activeFolder === null ? 'active' : ''}" onclick="setFolder(null)">All</button>
+    ${folders.map(f => `
+      <button class="folder-btn ${state.activeFolder === f ? 'active' : ''}" onclick="setFolder('${f}')">${f}</button>
+    `).join('')}
+  `;
+}
+
+// ── GET OPTIONS FOR PRODUCT ───────────────────────────────────────────────────
+function getOptionsForProduct(product) {
+  let relevantFolders = [product.material.toLowerCase(), product.slug.toLowerCase().replace(/-/g,'')];
+  
+  // Find folders that match keywords
+  if (state.activeFolder) {
+    relevantFolders = [state.activeFolder];
+  } else {
+    const matches = folders.filter(f => 
+      relevantFolders.some(k => f.toLowerCase().includes(k) || k.includes(f.toLowerCase()))
+    );
+    if (matches.length > 0) relevantFolders = matches;
+  }
+  
+  // Get first 4 images from each relevant folder
+  const options = [];
+  const seen = new Set();
+  seen.add(product.current);
+  
+  for (const folder of relevantFolders) {
+    const base = IMG_BASE + folder + '/';
+    // We'll show placeholder URLs - in real use, these would be fetched via API
+    // For now, we show the folder as options
+    if (!seen.has(base)) {
+      options.push({ url: base, label: folder });
+      seen.add(base);
+    }
+  }
+  
+  // If no matches, show all folders limited
+  if (options.length === 0) {
+    for (const folder of folders.slice(0, 12)) {
+      const url = IMG_BASE + folder + '/';
+      if (!seen.has(url)) {
+        options.push({ url, label: folder });
+        seen.add(url);
+      }
+      if (options.length >= 12) break;
+    }
+  }
+  
+  return options;
+}
+
+// ── RENDER PRODUCTS ──────────────────────────────────────────────────────────
+function renderProducts() {
+  const grid = document.getElementById('productGrid');
+  const filtered = state.products.filter(p => {
+    if (!state.searchQuery) return true;
+    const q = state.searchQuery.toLowerCase();
+    return p.name.toLowerCase().includes(q) || 
+           p.slug.toLowerCase().includes(q) || 
+           p.material.toLowerCase().includes(q);
+  });
+  
+  document.getElementById('stats').textContent = 
+    `${filtered.length} of ${state.products.length} products shown | ${state.products.filter(p=>p.changed).length} changed`;
+
+  grid.innerHTML = filtered.map(p => {
+    const options = getOptionsForProduct(p);
+    return `
+    <div class="card" data-slug="${p.slug}">
+      <div class="card-header">
+        <h3 title="${p.name}">${p.name}</h3>
+        <span class="badge ${p.changed ? 'changed' : ''}">${p.changed ? 'Changed' : 'OK'}</span>
+      </div>
+      <div class="current-img">
+        ${p.newImage 
+          ? `<img src="${p.newImage}" alt="${p.name}" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=placeholder>Image not found</div>'">`
+          : `<div class="placeholder">No image</div>`
+        }
+      </div>
+      <div class="picker">
+        <div class="picker-label">Select new image (click to apply)</div>
+        <div class="options">
+          ${options.map(opt => `
+            <div class="option ${p.newImage === opt.url ? 'selected' : ''}" 
+                 onclick="selectImage('${p.slug}', '${opt.url}')"
+                 title="${opt.label}">
+              <img src="${opt.url}" alt="${opt.label}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23eee%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2212%22>${opt.label}</text></svg>'">
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+          <input type="text" id="custom-${p.slug}" placeholder="Or paste image URL..." 
+                 style="flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:0.8rem;"
+                 onkeydown="if(event.key==='Enter'){selectImage('${p.slug}',this.value)}">
+          <button onclick="selectImage('${p.slug}', document.getElementById('custom-${p.slug}').value)" 
+                  style="background:#666;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.8rem;">Set</button>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div>
+          <span class="material">${p.material}</span>
+          <span class="slug" title="${p.slug}">${p.slug}</span>
+        </div>
+        <button class="action-btn ${p.changed ? 'changed' : ''}" 
+                onclick="resetProduct('${p.slug}')" 
+                ${p.changed ? '' : 'disabled'}>
+          Reset
+        </button>
+      </div>
+    </div>
+    `;
+  }).join('');
+  
+  updateExportBtn();
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────────
+function setFolder(folder) {
+  state.activeFolder = folder;
+  renderFolders();
+  renderProducts();
+}
+
+function selectImage(slug, url) {
+  const p = state.products.find(p => p.slug === slug);
+  if (!p) return;
+  if (!url || !url.trim()) return;
+  
+  // Normalize URL
+  url = url.trim();
+  if (!url.startsWith('/') && !url.startsWith('http')) {
+    url = IMG_BASE + url;
+  }
+  
+  p.newImage = url;
+  p.changed = p.newImage !== p.current;
+  
+  // Re-render just this card
+  const card = document.querySelector(`[data-slug="${slug}"]`);
+  if (card) {
+    const badge = card.querySelector('.badge');
+    badge.className = `badge ${p.changed ? 'changed' : ''}`;
+    badge.textContent = p.changed ? 'Changed' : 'OK';
+    
+    const img = card.querySelector('.current-img img');
+    if (img) {
+      img.src = p.newImage;
+      img.onerror = () => { img.style.display='none'; img.parentElement.innerHTML='<div class=placeholder>Image not found</div>'; };
+    }
+    
+    const options = card.querySelectorAll('.option');
+    options.forEach(opt => {
+      const optImg = opt.querySelector('img');
+      opt.classList.toggle('selected', optImg && (optImg.src === p.newImage || optImg.src.endsWith(p.newImage)));
+    });
+    
+    const btn = card.querySelector('.action-btn');
+    btn.disabled = !p.changed;
+    btn.classList.toggle('changed', p.changed);
+  }
+  
+  updateExportBtn();
+  showToast(p.changed ? `✓ Updated ${p.name}` : `Reset ${p.name}`);
+}
+
+function resetProduct(slug) {
+  const p = state.products.find(p => p.slug === slug);
+  if (!p) return;
+  p.newImage = p.current;
+  p.changed = false;
+  renderProducts();
+  showToast(`Reset ${p.name}`);
+}
+
+function filterProducts() {
+  state.searchQuery = document.getElementById('searchInput').value;
+  renderProducts();
+}
+
+function updateExportBtn() {
+  const changed = state.products.filter(p => p.changed);
+  const btn = document.getElementById('export');
+  btn.textContent = changed.length > 0 
+    ? `📤 Export ${changed.length} Change${changed.length > 1 ? 's' : ''} to site.ts`
+    : '📤 Export site.ts (no changes)';
+  btn.classList.toggle('changed', changed.length > 0);
+}
+
+function exportChanges() {
+  const changed = state.products.filter(p => p.changed);
+  
+  if (changed.length === 0) {
+    alert('No changes to export!');
+    return;
+  }
+  
+  // Generate output
+  let output = '# Image updates (copy these into site.ts)\n\n';
+  changed.forEach(p => {
+    output += `# ${p.name} (${p.slug})\n`;
+    output += `OLD: ${p.current}\n`;
+    output += `NEW: ${p.newImage}\n\n`;
+  });
+  
+  // Also generate a JSON summary
+  const json = changed.map(p => ({
+    slug: p.slug,
+    name: p.name,
+    oldImage: p.current,
+    newImage: p.newImage,
+  }));
+  
+  output += '\n# JSON Summary:\n';
+  output += JSON.stringify(json, null, 2);
+  
+  // Download
+  const blob = new Blob([output], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `image-changes-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  
+  showToast(`Exported ${changed.length} change(s)`);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderFolders();
+renderProducts();
+</script>
+</body>
+</html>
