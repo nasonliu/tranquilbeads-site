@@ -182,7 +182,7 @@ export const collections: Collection[] = [
 export const products: Product[] = [export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
-    title: { en: "Natural Kuka Wood Tasbih", ar: "Natural Kuka Wood Tasbih" },
+    title: { en: "Natural Kuka Wood Tasbih", ar: "مسابح من خشب الكوكا الطبيعي" },
     collection: "signature-tasbih",
     specs: { material: "Natural kuka wood", beads: "33" },
     price: 0,
@@ -191,7 +191,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "golden-hematite-medallion-tasbih",
-    title: { en: "Golden Hematite Medallion Tasbih", ar: "Golden Hematite Medallion Tasbih" },
+    title: { en: "Golden Hematite Medallion Tasbih", ar: "ميدالية الهيماتيت الذهبية التسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Natural hematite stone", beads: "33" },
     price: 0,
@@ -200,7 +200,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "lacquer-art-33-bead-tasbih",
-    title: { en: "Lacquer Art 33-Bead Tasbih", ar: "Lacquer Art 33-Bead Tasbih" },
+    title: { en: "Lacquer Art 33-Bead Tasbih", ar: "فن اللاكيه 33-خرزة تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Artisan resin", beads: "33" },
     price: 0,
@@ -209,7 +209,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "baltic-amber-gift-set",
-    title: { en: "Baltic Amber Gift Set", ar: "Baltic Amber Gift Set" },
+    title: { en: "Baltic Amber Gift Set", ar: "مجموعة هدايا عنبر البلطيق" },
     collection: "gift-sets",
     specs: { material: "Amber-look bead set with gift box", beads: "33" },
     price: 0,
@@ -218,7 +218,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "terahertz-road-safety-pendant",
-    title: { en: "Terahertz Road Safety Pendant", ar: "Terahertz Road Safety Pendant" },
+    title: { en: "Terahertz Road Safety Pendant", ar: "قلادة تيراهيرتز للسلامة على الطرق" },
     collection: "cultural-accents",
     specs: { material: "Terahertz stone look", beads: "33" },
     price: 0,
@@ -227,7 +227,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "silver-sheen-obsidian-tasbih",
-    title: { en: "Silver Sheen Obsidian Tasbih", ar: "Silver Sheen Obsidian Tasbih" },
+    title: { en: "Silver Sheen Obsidian Tasbih", ar: "لمعان فضي سبج تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Silver Sheen Obsidian (volcanic glass)", beads: "33" },
     price: 0,
@@ -236,7 +236,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "blue-tigers-eye-tasbih",
-    title: { en: "Blue Tiger's Eye Tasbih", ar: "Blue Tiger's Eye Tasbih" },
+    title: { en: "Blue Tiger's Eye Tasbih", ar: "عين النمر الأزرق تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Blue Tiger's Eye (Hawk's Eye)", beads: "33" },
     price: 0,
@@ -245,7 +245,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "pearl-tasbih",
-    title: { en: "Pearl Tasbih", ar: "Pearl Tasbih" },
+    title: { en: "Pearl Tasbih", ar: "لؤلؤة تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Pearl", beads: "33" },
     price: 0,
@@ -254,7 +254,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "obsidian-tasbih",
-    title: { en: "Obsidian Tasbih", ar: "Obsidian Tasbih" },
+    title: { en: "Obsidian Tasbih", ar: "سبج التسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Obsidian", beads: "33" },
     price: 0,
@@ -263,7 +263,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "resin-tasbih",
-    title: { en: "Resin Tasbih", ar: "Resin Tasbih" },
+    title: { en: "Resin Tasbih", ar: "راتنج تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Resin", beads: "33" },
     price: 0,
@@ -272,7 +272,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "crystal-tasbih",
-    title: { en: "Crystal Tasbih", ar: "Crystal Tasbih" },
+    title: { en: "Crystal Tasbih", ar: "كريستال تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Crystal", beads: "33" },
     price: 0,
@@ -281,7 +281,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "kechainrose",
-    title: { en: "Kechain Rose Tasbih", ar: "Kechain Rose Tasbih" },
+    title: { en: "Kechain Rose Tasbih", ar: "كشين روز تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Rose Crystal", beads: "33" },
     price: 0,
@@ -290,7 +290,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "pocket",
-    title: { en: "Pocket Tiger Eye Tasbih", ar: "Pocket Tiger Eye Tasbih" },
+    title: { en: "Pocket Tiger Eye Tasbih", ar: "تسبيح عين النمر للجيب" },
     collection: "signature-tasbih",
     specs: { material: "Mixed Material", beads: "33" },
     price: 0,
@@ -299,7 +299,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "99-pla",
-    title: { en: "99-Bead Plastic Tasbih", ar: "99-Bead Plastic Tasbih" },
+    title: { en: "99-Bead Plastic Tasbih", ar: "99-سبحة بلاستيك خرزة" },
     collection: "signature-tasbih",
     specs: { material: "Mixed Material", beads: "33" },
     price: 0,
@@ -308,7 +308,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "zebra",
-    title: { en: "Zebra Agate Tasbih", ar: "Zebra Agate Tasbih" },
+    title: { en: "Zebra Agate Tasbih", ar: "تسبيح عقيق الزيبرا" },
     collection: "signature-tasbih",
     specs: { material: "Mixed Material", beads: "33" },
     price: 0,
@@ -317,7 +317,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "watergrass",
-    title: { en: "Water Grass Agate Tasbih", ar: "Water Grass Agate Tasbih" },
+    title: { en: "Water Grass Agate Tasbih", ar: "تسبيح عشب الماء بالعقيق" },
     collection: "signature-tasbih",
     specs: { material: "Mixed Material", beads: "33" },
     price: 0,
@@ -326,7 +326,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "orangeagate",
-    title: { en: "Orange Agate Tasbih", ar: "Orange Agate Tasbih" },
+    title: { en: "Orange Agate Tasbih", ar: "تسبيح بالعقيق البرتقالي" },
     collection: "signature-tasbih",
     specs: { material: "Agate", beads: "33" },
     price: 0,
@@ -335,7 +335,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "bluetiger",
-    title: { en: "Blue Tiger Agate Tasbih", ar: "Blue Tiger Agate Tasbih" },
+    title: { en: "Blue Tiger Agate Tasbih", ar: "تسبيح عقيق النمر الأزرق" },
     collection: "signature-tasbih",
     specs: { material: "Tiger Eye", beads: "33" },
     price: 0,
@@ -344,7 +344,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "blackagate",
-    title: { en: "Black Agate Tasbih", ar: "Black Agate Tasbih" },
+    title: { en: "Black Agate Tasbih", ar: "تسبيح العقيق الأسود" },
     collection: "signature-tasbih",
     specs: { material: "Agate", beads: "33" },
     price: 0,
@@ -353,7 +353,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "oud2",
-    title: { en: "Oud Wood Tasbih 2", ar: "Oud Wood Tasbih 2" },
+    title: { en: "Oud Wood Tasbih 2", ar: "تسبيح خشب العود 2" },
     collection: "signature-tasbih",
     specs: { material: "Wood", beads: "33" },
     price: 0,
@@ -362,7 +362,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "shoushan",
-    title: { en: "Shoushan Agate Tasbih", ar: "Shoushan Agate Tasbih" },
+    title: { en: "Shoushan Agate Tasbih", ar: "شوشان عقيق تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Natural Stone", beads: "33" },
     price: 0,
@@ -371,7 +371,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "oval-orange",
-    title: { en: "Oval Orange Agate Tasbih", ar: "Oval Orange Agate Tasbih" },
+    title: { en: "Oval Orange Agate Tasbih", ar: "بيضاوية برتقالية عقيق تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Mixed Material", beads: "33" },
     price: 0,
@@ -380,7 +380,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "faceted-orange",
-    title: { en: "Faceted Orange Agate Tasbih", ar: "Faceted Orange Agate Tasbih" },
+    title: { en: "Faceted Orange Agate Tasbih", ar: "تسبيح العقيق البرتقالي ذو الأوجه" },
     collection: "signature-tasbih",
     specs: { material: "Natural Agate", beads: "33" },
     price: 0,
@@ -389,7 +389,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "redwhiteglass",
-    title: { en: "Red White Glass Tasbih", ar: "Red White Glass Tasbih" },
+    title: { en: "Red White Glass Tasbih", ar: "تسبيح زجاجي أبيض أحمر" },
     collection: "signature-tasbih",
     specs: { material: "Glass", beads: "33" },
     price: 0,
@@ -398,7 +398,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "greenresin",
-    title: { en: "Green Resin Tasbih", ar: "Green Resin Tasbih" },
+    title: { en: "Green Resin Tasbih", ar: "تسبيح الراتنج الأخضر" },
     collection: "signature-tasbih",
     specs: { material: "Resin", beads: "33" },
     price: 0,
@@ -407,7 +407,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "ambercube33",
-    title: { en: "Amber Cube 33-Bead Tasbih", ar: "Amber Cube 33-Bead Tasbih" },
+    title: { en: "Amber Cube 33-Bead Tasbih", ar: "مكعب عنبر 33-خرزة تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Amber", beads: "33" },
     price: 0,
@@ -416,7 +416,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "colorchangecube",
-    title: { en: "Color Change Cube Tasbih", ar: "Color Change Cube Tasbih" },
+    title: { en: "Color Change Cube Tasbih", ar: "تغيير لون مكعب تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Mixed Material", beads: "33" },
     price: 0,
@@ -425,7 +425,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "whiteagate33-s",
-    title: { en: "White Agate 33-Bead Special Tasbih", ar: "White Agate 33-Bead Special Tasbih" },
+    title: { en: "White Agate 33-Bead Special Tasbih", ar: "العقيق الأبيض 33 حبة تسبيح خاص" },
     collection: "signature-tasbih",
     specs: { material: "Agate", beads: "33" },
     price: 0,
@@ -434,7 +434,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "greenagate99",
-    title: { en: "Green Agate 99-Bead Tasbih", ar: "Green Agate 99-Bead Tasbih" },
+    title: { en: "Green Agate 99-Bead Tasbih", ar: "العقيق الأخضر 99-خرزة تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Agate", beads: "33" },
     price: 0,
@@ -443,7 +443,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "glass-smoke",
-    title: { en: "Smoke Glass Tasbih", ar: "Smoke Glass Tasbih" },
+    title: { en: "Smoke Glass Tasbih", ar: "تسبيح زجاجي دخاني" },
     collection: "signature-tasbih",
     specs: { material: "Glass", beads: "33" },
     price: 0,
@@ -452,7 +452,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "glass-champon",
-    title: { en: "Champon Glass Tasbih", ar: "Champon Glass Tasbih" },
+    title: { en: "Champon Glass Tasbih", ar: "شامبون جلاس تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Glass", beads: "33" },
     price: 0,
@@ -461,7 +461,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "lumnousglass99",
-    title: { en: "Luminous Glass 99-Bead Tasbih", ar: "Luminous Glass 99-Bead Tasbih" },
+    title: { en: "Luminous Glass 99-Bead Tasbih", ar: "تسبيح زجاجي مضيء 99 خرزة" },
     collection: "signature-tasbih",
     specs: { material: "Glass", beads: "33" },
     price: 0,
@@ -470,7 +470,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "99blackrosewood",
-    title: { en: "Black Rosewood 99-Bead Tasbih", ar: "Black Rosewood 99-Bead Tasbih" },
+    title: { en: "Black Rosewood 99-Bead Tasbih", ar: "تسبيح من خشب الورد الأسود 99 حبة" },
     collection: "signature-tasbih",
     specs: { material: "Wood", beads: "33" },
     price: 0,
@@ -479,7 +479,7 @@ export const products: Product[] = [export const products: Product[] = [
   },
   {
     slug: "33shellbar",
-    title: { en: "Shell Bar 33-Bead Tasbih", ar: "Shell Bar 33-Bead Tasbih" },
+    title: { en: "Shell Bar 33-Bead Tasbih", ar: "بار شل 33-خرزة تسبيح" },
     collection: "signature-tasbih",
     specs: { material: "Shell", beads: "33" },
     price: 0,
