@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { collections, getPageCopy, getPageMetadata, siteSettings } from "@/src/data/site";
+import { collections, getPageCopy, getPageMetadata, getProductsByCollection, siteSettings } from "@/src/data/site";
 import { CollectionCard } from "@/src/components/collection-card";
 import { PageHero } from "@/src/components/page-hero";
 import { getDir, isLocale, withLocale } from "@/src/lib/i18n";
@@ -29,6 +29,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 
   const copy = getPageCopy(locale);
   const featuredCollections = collections.filter((item) => item.featured);
+  const signatureProducts = getProductsByCollection("signature-tasbih").slice(0, 8);
 
   return (
     <div className="space-y-14 pt-6 md:space-y-20">
@@ -134,6 +135,46 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             />
           ))}
         </div>
+      </section>
+
+      <section className="noor-container space-y-6">
+        <div>
+          <p className="noor-kicker text-xs font-semibold text-accent-deep">
+            {locale === "en" ? "From the catalog" : "من الكتالوج"}
+          </p>
+          <h2 className="noor-title mt-3 text-4xl">
+            {locale === "en" ? "Browse our product range" : "تصفح مجموعتنا"}
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+          {signatureProducts.map((product) => (
+            <Link
+              key={product.slug}
+              href={withLocale(locale, `/collections/signature-tasbih/${product.slug}`)}
+              className="group space-y-2"
+            >
+              <div className="overflow-hidden rounded-2xl border border-border/60 bg-white">
+                <img
+                  src={product.image}
+                  alt={product.title[locale]}
+                  className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <p className="text-xs font-medium text-muted line-clamp-1">
+                {product.title[locale]}
+              </p>
+              <p className="text-xs text-accent/70 line-clamp-1">
+                {product.material[locale]}
+              </p>
+            </Link>
+          ))}
+        </div>
+        <Link
+          href={withLocale(locale, "/collections")}
+          className="inline-block rounded-full border border-accent/35 px-6 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
+        >
+          {locale === "en" ? "View all products" : "عرض جميع المنتجات"}
+        </Link>
       </section>
 
       <section className="noor-container">
