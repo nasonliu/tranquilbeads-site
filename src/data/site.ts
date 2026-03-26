@@ -87,7 +87,7 @@ export const siteSettings = {
       },
     },
     {
-      value: "500",
+      value: "100",
       label: {
         en: "pieces starting MOQ",
         ar: "قطعة كحد أدنى للطلب",
@@ -1243,12 +1243,12 @@ export function getPageCopy(locale: Locale) {
       bullets:
         locale === "en"
           ? [
-              "MOQ starts from 500 pieces across tasbih-focused assortments.",
+              "MOQ starts from 100 pieces across tasbih-focused assortments.",
               "Private label sleeves, insert cards, and bilingual packaging available.",
               "Average lead time from approval to dispatch is 21 days.",
             ]
           : [
-              "موك يبدأ من 500 قطعة ضمن تشكيلات تركز على التسابيح.",
+              "موك يبدأ من 100 قطعة ضمن تشكيلات تركز على التسابيح.",
               "التغليف الخاص وبطاقات الإدراج والتغليف الثنائي اللغة متاح.",
               "متوسط زمن التوريد من الاعتماد إلى الشحن هو 21 يومًا.",
             ],

@@ -85,7 +85,7 @@ export default async function WholesalePage({
         <div className="grid gap-4">
           {[
             {
-              title: locale === "en" ? "MOQ starts from 500" : "موك يبدأ من 500",
+              title: locale === "en" ? "MOQ starts from 100" : "موك يبدأ من 100",
               body:
                 locale === "en"
                   ? "Ideal for testing a clean first order without overloading a new market."
