@@ -27,7 +27,7 @@ export function SiteShell({
   const pathname = usePathname();
   const otherLocale = locale === "en" ? "ar" : "en";
   // Strip current locale prefix from pathname
-  const pathWithoutLocale = pathname.replace(/^\/(en|ar)/, "") || "/";
+  const pathWithoutLocale = (pathname ?? withLocale(locale)).replace(/^\/(en|ar)/, "") || "/";
   const switchLocaleHref = `/${otherLocale}${pathWithoutLocale}`;
 
   return (

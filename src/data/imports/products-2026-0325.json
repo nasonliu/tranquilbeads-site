@@ -11,14 +11,24 @@
         "en": "A 33-bead Silver Sheen Obsidian tasbih with silver spacer accents and crystal details. Volcanic glass with a subtle metallic shimmer.",
         "ar": "سبحة من 33 حبة من Obsidianفضياللمعان مع فواصل فضية وتفاصيل كريستالية. زجاج بركاني مع بريق معدني خفيف."
       },
-      "image": "/images/imported/silver-sheen-obsidian/tasbih-03.jpg",
+      "image": "/images/imported/silver-sheen-obsidian/size.jpg",
       "material": {
         "en": "Silver Sheen Obsidian (volcanic glass) with silver accents",
         "ar": "Obsidianفضياللمعان (زجاج بركاني) مع لمسات فضية"
       },
       "tags": {
-        "en": ["Obsidian", "Volcanic Glass", "Silver Accents", "33 Beads"],
-        "ar": ["Obsidian", "زجاج بركاني", "لمسات فضية", "33 حبة"]
+        "en": [
+          "Obsidian",
+          "Volcanic Glass",
+          "Silver Accents",
+          "33 Beads"
+        ],
+        "ar": [
+          "Obsidian",
+          "زجاج بركاني",
+          "لمسات فضية",
+          "33 حبة"
+        ]
       },
       "detailIntro": {
         "en": "A sophisticated obsidian tasbih featuring volcanic glass beads with a natural metallic sheen, accented by silver spacers and crystal details.",
@@ -36,48 +46,51 @@
         "en": "Silver Sheen Obsidian Tasbih hero",
         "ar": "الصورة الرئيسية لسبحة Obsidian فضيلمعان"
       },
-      "gallery": [
-        {
-          "image": "/images/imported/silver-sheen-obsidian/tasbih-12.jpg",
-          "alt": { "en": "Silver Sheen Obsidian detail 1", "ar": "تفصيل 1 لسبحة Obsidian فضيلمعان" }
-        },
-        {
-          "image": "/images/imported/silver-sheen-obsidian/tasbih-22.jpg",
-          "alt": { "en": "Silver Sheen Obsidian detail 2", "ar": "تفصيل 2 لسبحة Obsidian فضيلمعان" }
-        },
-        {
-          "image": "/images/imported/silver-sheen-obsidian/tasbih-23.jpg",
-          "alt": { "en": "Silver Sheen Obsidian detail 3", "ar": "تفصيل 3 لسبحة Obsidian فضيلمعان" }
-        },
-        {
-          "image": "/images/imported/silver-sheen-obsidian/tasbih-24.jpg",
-          "alt": { "en": "Silver Sheen Obsidian detail 4", "ar": "تفصيل 4 لسبحة Obsidian فضيلمعان" }
-        },
-        {
-          "image": "/images/imported/silver-sheen-obsidian/tasbih-40.jpg",
-          "alt": { "en": "Silver Sheen Obsidian detail 5", "ar": "تفصيل 5 لسبحة Obsidian فضيلمعان" }
-        }
-      ],
+      "gallery": [],
       "specs": [
         {
           "key": "bead_count",
-          "label": { "en": "Bead count", "ar": "عدد الحبات" },
-          "value": { "en": "33 beads", "ar": "33 حبة" }
+          "label": {
+            "en": "Bead count",
+            "ar": "عدد الحبات"
+          },
+          "value": {
+            "en": "33 beads",
+            "ar": "33 حبة"
+          }
         },
         {
           "key": "material",
-          "label": { "en": "Material", "ar": "الخامة" },
-          "value": { "en": "Silver Sheen Obsidian", "ar": "Obsidian فضيلمعان" }
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Silver Sheen Obsidian",
+            "ar": "Obsidian فضيلمعان"
+          }
         },
         {
           "key": "accent",
-          "label": { "en": "Accent", "ar": "اللمسة" },
-          "value": { "en": "Silver spacers with crystal details", "ar": "فواصل فضية مع تفاصيل كريستالية" }
+          "label": {
+            "en": "Accent",
+            "ar": "اللمسة"
+          },
+          "value": {
+            "en": "Silver spacers with crystal details",
+            "ar": "فواصل فضية مع تفاصيل كريستالية"
+          }
         },
         {
           "key": "moq",
-          "label": { "en": "MOQ", "ar": "الحد الأدنى للطلب" },
-          "value": { "en": "50 pieces", "ar": "50 قطعة" }
+          "label": {
+            "en": "MOQ",
+            "ar": "الحد الأدنى للطلب"
+          },
+          "value": {
+            "en": "50 pieces",
+            "ar": "50 قطعة"
+          }
         }
       ]
     },
@@ -92,14 +105,26 @@
         "en": "A 33-bead Blue Tiger's Eye tasbih with gold-plated brass spacers. Known for its chatoyant blue silky luster.",
         "ar": "سبحة من 33 حبة من عين النمر الزرقاء مع فواصل من النحاس المطلي بالذهب. معروفة ببريقها الحريري الأزرق المتغير."
       },
-      "image": "/images/imported/blue-tigers-eye/tasbih-01.jpg",
+      "image": "/images/imported/bluetiger/main.jpg",
       "material": {
         "en": "Blue Tiger's Eye (Hawk's Eye) with gold-plated brass accents",
         "ar": "عين النمر الزرقاء (عين الصقر) مع لمسات من النحاس المطلي بالذهب"
       },
       "tags": {
-        "en": ["Tiger's Eye", "Blue", "Gold Accents", "33 Beads", "Chatoyant"],
-        "ar": ["عين النمر", "أزرق", "لمسات ذهبية", "33 حبة", "متغيراللون"]
+        "en": [
+          "Tiger's Eye",
+          "Blue",
+          "Gold Accents",
+          "33 Beads",
+          "Chatoyant"
+        ],
+        "ar": [
+          "عين النمر",
+          "أزرق",
+          "لمسات ذهبية",
+          "33 حبة",
+          "متغيراللون"
+        ]
       },
       "detailIntro": {
         "en": "Blue Tiger's Eye is a member of the quartz family known for its distinctive chatoyant effect — a silky blue band that shimmers as light hits the stone at different angles.",
@@ -117,48 +142,1818 @@
         "en": "Blue Tiger's Eye Tasbih hero",
         "ar": "الصورة الرئيسية لسبحة عين النمر الزرقاء"
       },
-      "gallery": [
-        {
-          "image": "/images/imported/blue-tigers-eye/tasbih-05.jpg",
-          "alt": { "en": "Blue Tiger's Eye detail 1", "ar": "تفصيل 1 لسبحة عين النمر الزرقاء" }
-        },
-        {
-          "image": "/images/imported/blue-tigers-eye/tasbih-10.jpg",
-          "alt": { "en": "Blue Tiger's Eye detail 2", "ar": "تفصيل 2 لسبحة عين النمر الزرقاء" }
-        },
-        {
-          "image": "/images/imported/blue-tigers-eye/tasbih-11.jpg",
-          "alt": { "en": "Blue Tiger's Eye detail 3", "ar": "تفصيل 3 لسبحة عين النمر الزرقاء" }
-        },
-        {
-          "image": "/images/imported/blue-tigers-eye/tasbih-25.jpg",
-          "alt": { "en": "Blue Tiger's Eye detail 4", "ar": "تفصيل 4 لسبحة عين النمر الزرقاء" }
-        },
-        {
-          "image": "/images/imported/blue-tigers-eye/tasbih-26.jpg",
-          "alt": { "en": "Blue Tiger's Eye detail 5", "ar": "تفصيل 5 لسبحة عين النمر الزرقاء" }
-        }
-      ],
+      "gallery": [],
       "specs": [
         {
           "key": "bead_count",
-          "label": { "en": "Bead count", "ar": "عدد الحبات" },
-          "value": { "en": "33 beads", "ar": "33 حبة" }
+          "label": {
+            "en": "Bead count",
+            "ar": "عدد الحبات"
+          },
+          "value": {
+            "en": "33 beads",
+            "ar": "33 حبة"
+          }
         },
         {
           "key": "material",
-          "label": { "en": "Material", "ar": "الخامة" },
-          "value": { "en": "Blue Tiger's Eye (Hawk's Eye)", "ar": "عين النمر الزرقاء (عين الصقر)" }
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Blue Tiger's Eye (Hawk's Eye)",
+            "ar": "عين النمر الزرقاء (عين الصقر)"
+          }
         },
         {
           "key": "accent",
-          "label": { "en": "Accent", "ar": "اللمسة" },
-          "value": { "en": "Gold-plated brass spacers", "ar": "فواصل نحاس مطلي بالذهب" }
+          "label": {
+            "en": "Accent",
+            "ar": "اللمسة"
+          },
+          "value": {
+            "en": "Gold-plated brass spacers",
+            "ar": "فواصل نحاس مطلي بالذهب"
+          }
         },
         {
           "key": "moq",
-          "label": { "en": "MOQ", "ar": "الحد الأدنى للطلب" },
-          "value": { "en": "50 pieces", "ar": "50 قطعة" }
+          "label": {
+            "en": "MOQ",
+            "ar": "الحد الأدنى للطلب"
+          },
+          "value": {
+            "en": "50 pieces",
+            "ar": "50 قطعة"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "natural-kuka-wood-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Natural Kuka Wood Tasbih",
+        "ar": "سبحة خشب الكوكا الطبيعي"
+      },
+      "summary": {
+        "en": "Natural Kuka Wood Tasbih - Wood",
+        "ar": "سبحة خشب الكوكا الطبيعي - Wood"
+      },
+      "image": "/images/imported/33-kuka/size.jpg",
+      "material": {
+        "en": "Wood",
+        "ar": "Wood"
+      },
+      "tags": {
+        "en": [
+          "Wood",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Wood",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Natural Kuka Wood Tasbih from TranquilBeads. Premium quality Wood.",
+        "ar": "سبحة خشب الكوكا الطبيعي من ترانكويل بيبرز. جودة عالية Wood."
+      },
+      "detailBody": {
+        "en": "Premium Wood tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Wood عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Natural Kuka Wood Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة خشب الكوكا الطبيعي"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Wood",
+            "ar": "Wood"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "golden-hematite-medallion-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Golden Hematite Medallion Tasbih",
+        "ar": "سبحة ميدالية الهيماتيت الذهبي"
+      },
+      "summary": {
+        "en": "Golden Hematite Medallion Tasbih - Hematite",
+        "ar": "سبحة ميدالية الهيماتيت الذهبي - Hematite"
+      },
+      "image": "/images/imported/amber-tasbih/size.jpg",
+      "material": {
+        "en": "Hematite",
+        "ar": "Hematite"
+      },
+      "tags": {
+        "en": [
+          "Hematite",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Hematite",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Golden Hematite Medallion Tasbih from TranquilBeads. Premium quality Hematite.",
+        "ar": "سبحة ميدالية الهيماتيت الذهبي من ترانكويل بيبرز. جودة عالية Hematite."
+      },
+      "detailBody": {
+        "en": "Premium Hematite tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Hematite عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Golden Hematite Medallion Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة ميدالية الهيماتيت الذهبي"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Hematite",
+            "ar": "Hematite"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "lacquer-art-33-bead-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Lacquer Art 33-Bead Tasbih",
+        "ar": "سبحة الكوارتز المنحوت 33 خرزة"
+      },
+      "summary": {
+        "en": "Lacquer Art 33-Bead Tasbih - Resin",
+        "ar": "سبحة الكوارتز المنحوت 33 خرزة - Resin"
+      },
+      "image": "/images/imported/resin-tasbih/resin-01.jpg",
+      "material": {
+        "en": "Resin",
+        "ar": "Resin"
+      },
+      "tags": {
+        "en": [
+          "Resin",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Resin",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Lacquer Art 33-Bead Tasbih from TranquilBeads. Premium quality Resin.",
+        "ar": "سبحة الكوارتز المنحوت 33 خرزة من ترانكويل بيبرز. جودة عالية Resin."
+      },
+      "detailBody": {
+        "en": "Premium Resin tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Resin عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Lacquer Art 33-Bead Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة الكوارتز المنحوت 33 خرزة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Resin",
+            "ar": "Resin"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "baltic-amber-gift-set",
+      "collection": "gift-sets",
+      "title": {
+        "en": "Baltic Amber Gift Set",
+        "ar": "مجموعة هدايا الكهرماني"
+      },
+      "summary": {
+        "en": "Baltic Amber Gift Set - Amber",
+        "ar": "مجموعة هدايا الكهرماني - Amber"
+      },
+      "image": "/images/imported/ambercube33/amber-53.jpg",
+      "material": {
+        "en": "Amber",
+        "ar": "Amber"
+      },
+      "tags": {
+        "en": [
+          "Amber",
+          "gift-sets"
+        ],
+        "ar": [
+          "Amber",
+          "gift-sets"
+        ]
+      },
+      "detailIntro": {
+        "en": "Baltic Amber Gift Set from TranquilBeads. Premium quality Amber.",
+        "ar": "مجموعة هدايا الكهرماني من ترانكويل بيبرز. جودة عالية Amber."
+      },
+      "detailBody": {
+        "en": "Premium Amber tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Amber عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Baltic Amber Gift Set hero image",
+        "ar": "الصورة الرئيسية لمجموعة هدايا الكهرماني"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Amber",
+            "ar": "Amber"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "terahertz-road-safety-pendant",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Terahertz Road Safety Pendant",
+        "ar": "تعليق الطريق الأمان"
+      },
+      "summary": {
+        "en": "Terahertz Road Safety Pendant - Glass",
+        "ar": "تعليق الطريق الأمان - Glass"
+      },
+      "image": "/images/imported/glass-smoke/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Terahertz Road Safety Pendant from TranquilBeads. Premium quality Glass.",
+        "ar": "تعليق الطريق الأمان من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Terahertz Road Safety Pendant hero image",
+        "ar": "الصورة الرئيسية لتعليق الطريق الأمان"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "pearl-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Pearl Tasbih",
+        "ar": "سبحة اللؤلؤ"
+      },
+      "summary": {
+        "en": "Pearl Tasbih - Pearl",
+        "ar": "سبحة اللؤلؤ - Pearl"
+      },
+      "image": "/images/imported/pearl-tasbih/size.jpg",
+      "material": {
+        "en": "Pearl",
+        "ar": "Pearl"
+      },
+      "tags": {
+        "en": [
+          "Pearl",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Pearl",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Pearl Tasbih from TranquilBeads. Premium quality Pearl.",
+        "ar": "سبحة اللؤلؤ من ترانكويل بيبرز. جودة عالية Pearl."
+      },
+      "detailBody": {
+        "en": "Premium Pearl tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Pearl عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Pearl Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة اللؤلؤ"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Pearl",
+            "ar": "Pearl"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "obsidian-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Obsidian Tasbih",
+        "ar": "سبحة السبج"
+      },
+      "summary": {
+        "en": "Obsidian Tasbih - Obsidian",
+        "ar": "سبحة السبج - Obsidian"
+      },
+      "image": "/images/imported/obsidian-tasbih/size.jpg",
+      "material": {
+        "en": "Obsidian",
+        "ar": "Obsidian"
+      },
+      "tags": {
+        "en": [
+          "Obsidian",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Obsidian",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Obsidian Tasbih from TranquilBeads. Premium quality Obsidian.",
+        "ar": "سبحة السبج من ترانكويل بيبرز. جودة عالية Obsidian."
+      },
+      "detailBody": {
+        "en": "Premium Obsidian tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Obsidian عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Obsidian Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة السبج"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Obsidian",
+            "ar": "Obsidian"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "resin-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Resin Tasbih",
+        "ar": "سبحة الراتنج"
+      },
+      "summary": {
+        "en": "Resin Tasbih - Resin",
+        "ar": "سبحة الراتنج - Resin"
+      },
+      "image": "/images/imported/resin-tasbih/resin-01.jpg",
+      "material": {
+        "en": "Resin",
+        "ar": "Resin"
+      },
+      "tags": {
+        "en": [
+          "Resin",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Resin",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Resin Tasbih from TranquilBeads. Premium quality Resin.",
+        "ar": "سبحة الراتنج من ترانكويل بيبرز. جودة عالية Resin."
+      },
+      "detailBody": {
+        "en": "Premium Resin tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Resin عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Resin Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة الراتنج"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Resin",
+            "ar": "Resin"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "crystal-tasbih",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Crystal Tasbih",
+        "ar": "سبحة الكريستال"
+      },
+      "summary": {
+        "en": "Crystal Tasbih - Crystal",
+        "ar": "سبحة الكريستال - Crystal"
+      },
+      "image": "/images/imported/crystal-tasbih/size.jpg",
+      "material": {
+        "en": "Crystal",
+        "ar": "Crystal"
+      },
+      "tags": {
+        "en": [
+          "Crystal",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Crystal",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Crystal Tasbih from TranquilBeads. Premium quality Crystal.",
+        "ar": "سبحة الكريستال من ترانكويل بيبرز. جودة عالية Crystal."
+      },
+      "detailBody": {
+        "en": "Premium Crystal tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Crystal عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Crystal Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة الكريستال"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Crystal",
+            "ar": "Crystal"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "kechainrose",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Kechain Rose Tasbih",
+        "ar": "سبحة روز كيتشين"
+      },
+      "summary": {
+        "en": "Kechain Rose Tasbih - Rose Crystal",
+        "ar": "سبحة روز كيتشين - Rose Crystal"
+      },
+      "image": "/images/imported/kechainrose/phone.jpg",
+      "material": {
+        "en": "Rose Crystal",
+        "ar": "Rose Crystal"
+      },
+      "tags": {
+        "en": [
+          "Rose Crystal",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Rose Crystal",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Kechain Rose Tasbih from TranquilBeads. Premium quality Rose Crystal.",
+        "ar": "سبحة روز كيتشين من ترانكويل بيبرز. جودة عالية Rose Crystal."
+      },
+      "detailBody": {
+        "en": "Premium Rose Crystal tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Rose Crystal عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Kechain Rose Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة روز كيتشين"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Rose Crystal",
+            "ar": "Rose Crystal"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "pocket",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Pocket Tiger Eye Tasbih",
+        "ar": "سبحة عين النمر للجيب"
+      },
+      "summary": {
+        "en": "Pocket Tiger Eye Tasbih - Tiger's Eye",
+        "ar": "سبحة عين النمر للجيب - Tiger's Eye"
+      },
+      "image": "/images/imported/pocket/size.jpg",
+      "material": {
+        "en": "Tiger's Eye",
+        "ar": "Tiger's Eye"
+      },
+      "tags": {
+        "en": [
+          "Tiger's Eye",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Tiger's Eye",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Pocket Tiger Eye Tasbih from TranquilBeads. Premium quality Tiger's Eye.",
+        "ar": "سبحة عين النمر للجيب من ترانكويل بيبرز. جودة عالية Tiger's Eye."
+      },
+      "detailBody": {
+        "en": "Premium Tiger's Eye tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Tiger's Eye عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Pocket Tiger Eye Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة عين النمر للجيب"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Tiger's Eye",
+            "ar": "Tiger's Eye"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "99-pla",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "99-Bead Plastic Tasbih",
+        "ar": "سبحة 99 حبة بلاستيك"
+      },
+      "summary": {
+        "en": "99-Bead Plastic Tasbih - Plastic",
+        "ar": "سبحة 99 حبة بلاستيك - Plastic"
+      },
+      "image": "/images/imported/99-pla/size.jpg",
+      "material": {
+        "en": "Plastic",
+        "ar": "Plastic"
+      },
+      "tags": {
+        "en": [
+          "Plastic",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Plastic",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "99-Bead Plastic Tasbih from TranquilBeads. Premium quality Plastic.",
+        "ar": "سبحة 99 حبة بلاستيك من ترانكويل بيبرز. جودة عالية Plastic."
+      },
+      "detailBody": {
+        "en": "Premium Plastic tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Plastic عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "99-Bead Plastic Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة 99 حبة بلاستيك"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Plastic",
+            "ar": "Plastic"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "zebra",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Zebra Agate Tasbih",
+        "ar": "سبحة العقيق المخطط"
+      },
+      "summary": {
+        "en": "Zebra Agate Tasbih - Agate",
+        "ar": "سبحة العقيق المخطط - Agate"
+      },
+      "image": "/images/imported/zebra/main.jpg",
+      "material": {
+        "en": "Agate",
+        "ar": "Agate"
+      },
+      "tags": {
+        "en": [
+          "Agate",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Agate",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Zebra Agate Tasbih from TranquilBeads. Premium quality Agate.",
+        "ar": "سبحة العقيق المخطط من ترانكويل بيبرز. جودة عالية Agate."
+      },
+      "detailBody": {
+        "en": "Premium Agate tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Agate عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Zebra Agate Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة العقيق المخطط"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Agate",
+            "ar": "Agate"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "watergrass",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Water Grass Agate Tasbih",
+        "ar": "سبحة عقيق العشب المائي"
+      },
+      "summary": {
+        "en": "Water Grass Agate Tasbih - Agate",
+        "ar": "سبحة عقيق العشب المائي - Agate"
+      },
+      "image": "/images/imported/watergrass/main.jpg",
+      "material": {
+        "en": "Agate",
+        "ar": "Agate"
+      },
+      "tags": {
+        "en": [
+          "Agate",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Agate",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Water Grass Agate Tasbih from TranquilBeads. Premium quality Agate.",
+        "ar": "سبحة عقيق العشب المائي من ترانكويل بيبرز. جودة عالية Agate."
+      },
+      "detailBody": {
+        "en": "Premium Agate tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Agate عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Water Grass Agate Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة عقيق العشب المائي"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Agate",
+            "ar": "Agate"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "orangeagate",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Orange Agate Tasbih",
+        "ar": "سبحة العقيق البرتقالي"
+      },
+      "summary": {
+        "en": "Orange Agate Tasbih - Agate",
+        "ar": "سبحة العقيق البرتقالي - Agate"
+      },
+      "image": "/images/imported/orangeagate/main.jpg",
+      "material": {
+        "en": "Agate",
+        "ar": "Agate"
+      },
+      "tags": {
+        "en": [
+          "Agate",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Agate",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Orange Agate Tasbih from TranquilBeads. Premium quality Agate.",
+        "ar": "سبحة العقيق البرتقالي من ترانكويل بيبرز. جودة عالية Agate."
+      },
+      "detailBody": {
+        "en": "Premium Agate tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Agate عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Orange Agate Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة العقيق البرتقالي"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Agate",
+            "ar": "Agate"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "blackagate",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Black Agate Tasbih",
+        "ar": "سبحة العقيق الأسود"
+      },
+      "summary": {
+        "en": "Black Agate Tasbih - Agate",
+        "ar": "سبحة العقيق الأسود - Agate"
+      },
+      "image": "/images/imported/blackagate/main.jpg",
+      "material": {
+        "en": "Agate",
+        "ar": "Agate"
+      },
+      "tags": {
+        "en": [
+          "Agate",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Agate",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Black Agate Tasbih from TranquilBeads. Premium quality Agate.",
+        "ar": "سبحة العقيق الأسود من ترانكويل بيبرز. جودة عالية Agate."
+      },
+      "detailBody": {
+        "en": "Premium Agate tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Agate عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Black Agate Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة العقيق الأسود"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Agate",
+            "ar": "Agate"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "oud2",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Oud Tasbih",
+        "ar": "سبحة العود"
+      },
+      "summary": {
+        "en": "Oud Tasbih - Oud",
+        "ar": "سبحة العود - Oud"
+      },
+      "image": "/images/imported/oud2/main.jpg",
+      "material": {
+        "en": "Oud",
+        "ar": "Oud"
+      },
+      "tags": {
+        "en": [
+          "Oud",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Oud",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Oud Tasbih from TranquilBeads. Premium quality Oud.",
+        "ar": "سبحة العود من ترانكويل بيبرز. جودة عالية Oud."
+      },
+      "detailBody": {
+        "en": "Premium Oud tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Oud عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Oud Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة العود"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Oud",
+            "ar": "Oud"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "shoushan",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Shoushan Stone Tasbih",
+        "ar": "سبحة حجر شوهان"
+      },
+      "summary": {
+        "en": "Shoushan Stone Tasbih - Stone",
+        "ar": "سبحة حجر شوهان - Stone"
+      },
+      "image": "/images/imported/shoushan/main.jpg",
+      "material": {
+        "en": "Stone",
+        "ar": "Stone"
+      },
+      "tags": {
+        "en": [
+          "Stone",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Stone",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Shoushan Stone Tasbih from TranquilBeads. Premium quality Stone.",
+        "ar": "سبحة حجر شوهان من ترانكويل بيبرز. جودة عالية Stone."
+      },
+      "detailBody": {
+        "en": "Premium Stone tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Stone عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Shoushan Stone Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة حجر شوهان"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Stone",
+            "ar": "Stone"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "oval-orange",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Oval Orange Tasbih",
+        "ar": "سبحة برتقالي بيضاوي"
+      },
+      "summary": {
+        "en": "Oval Orange Tasbih - Glass",
+        "ar": "سبحة برتقالي بيضاوي - Glass"
+      },
+      "image": "/images/imported/oval-orange/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Oval Orange Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة برتقالي بيضاوي من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Oval Orange Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة برتقالي بيضاوي"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "faceted-orange",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Faceted Orange Tasbih",
+        "ar": "سبحة برتقالي مخطط"
+      },
+      "summary": {
+        "en": "Faceted Orange Tasbih - Glass",
+        "ar": "سبحة برتقالي مخطط - Glass"
+      },
+      "image": "/images/imported/faceted-orange/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Faceted Orange Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة برتقالي مخطط من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Faceted Orange Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة برتقالي مخطط"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "redwhiteglass",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Red White Glass Tasbih",
+        "ar": "سبحة زجاج أحمر أبيض"
+      },
+      "summary": {
+        "en": "Red White Glass Tasbih - Glass",
+        "ar": "سبحة زجاج أحمر أبيض - Glass"
+      },
+      "image": "/images/imported/redwhiteglass/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Red White Glass Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة زجاج أحمر أبيض من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Red White Glass Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة زجاج أحمر أبيض"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "greenresin",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Green Resin Tasbih",
+        "ar": "سبحة راتنج أخضر"
+      },
+      "summary": {
+        "en": "Green Resin Tasbih - Resin",
+        "ar": "سبحة راتنج أخضر - Resin"
+      },
+      "image": "/images/imported/greenresin/main.jpg",
+      "material": {
+        "en": "Resin",
+        "ar": "Resin"
+      },
+      "tags": {
+        "en": [
+          "Resin",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Resin",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Green Resin Tasbih from TranquilBeads. Premium quality Resin.",
+        "ar": "سبحة راتنج أخضر من ترانكويل بيبرز. جودة عالية Resin."
+      },
+      "detailBody": {
+        "en": "Premium Resin tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Resin عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Green Resin Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة راتنج أخضر"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Resin",
+            "ar": "Resin"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "ambercube33",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Amber Cube 33-Bead Tasbih",
+        "ar": "سبحة مكعب كهرماني 33 حبة"
+      },
+      "summary": {
+        "en": "Amber Cube 33-Bead Tasbih - Amber",
+        "ar": "سبحة مكعب كهرماني 33 حبة - Amber"
+      },
+      "image": "/images/imported/ambercube33/amber-53.jpg",
+      "material": {
+        "en": "Amber",
+        "ar": "Amber"
+      },
+      "tags": {
+        "en": [
+          "Amber",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Amber",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Amber Cube 33-Bead Tasbih from TranquilBeads. Premium quality Amber.",
+        "ar": "سبحة مكعب كهرماني 33 حبة من ترانكويل بيبرز. جودة عالية Amber."
+      },
+      "detailBody": {
+        "en": "Premium Amber tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Amber عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Amber Cube 33-Bead Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة مكعب كهرماني 33 حبة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Amber",
+            "ar": "Amber"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "colorchangecube",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Color Change Cube Tasbih",
+        "ar": "سبحة مكعب متغير اللون"
+      },
+      "summary": {
+        "en": "Color Change Cube Tasbih - Glass",
+        "ar": "سبحة مكعب متغير اللون - Glass"
+      },
+      "image": "/images/imported/colorchangecube/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Color Change Cube Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة مكعب متغير اللون من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Color Change Cube Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة مكعب متغير اللون"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "whiteagate33-s",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "White Agate 33-Bead Tasbih",
+        "ar": "سبحة عقيق أبيض 33 حبة"
+      },
+      "summary": {
+        "en": "White Agate 33-Bead Tasbih - Agate",
+        "ar": "سبحة عقيق أبيض 33 حبة - Agate"
+      },
+      "image": "/images/imported/whiteagate33-s/main.jpg",
+      "material": {
+        "en": "Agate",
+        "ar": "Agate"
+      },
+      "tags": {
+        "en": [
+          "Agate",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Agate",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "White Agate 33-Bead Tasbih from TranquilBeads. Premium quality Agate.",
+        "ar": "سبحة عقيق أبيض 33 حبة من ترانكويل بيبرز. جودة عالية Agate."
+      },
+      "detailBody": {
+        "en": "Premium Agate tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Agate عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "White Agate 33-Bead Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة عقيق أبيض 33 حبة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Agate",
+            "ar": "Agate"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "greenagate99",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Green Agate 99-Bead Tasbih",
+        "ar": "سبحة عقيق أخضر 99 حبة"
+      },
+      "summary": {
+        "en": "Green Agate 99-Bead Tasbih - Agate",
+        "ar": "سبحة عقيق أخضر 99 حبة - Agate"
+      },
+      "image": "/images/imported/greenagate99/main.jpg",
+      "material": {
+        "en": "Agate",
+        "ar": "Agate"
+      },
+      "tags": {
+        "en": [
+          "Agate",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Agate",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Green Agate 99-Bead Tasbih from TranquilBeads. Premium quality Agate.",
+        "ar": "سبحة عقيق أخضر 99 حبة من ترانكويل بيبرز. جودة عالية Agate."
+      },
+      "detailBody": {
+        "en": "Premium Agate tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Agate عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Green Agate 99-Bead Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة عقيق أخضر 99 حبة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Agate",
+            "ar": "Agate"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "glass-smoke",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Smoke Glass Tasbih",
+        "ar": "سبحة زجاج مدخن"
+      },
+      "summary": {
+        "en": "Smoke Glass Tasbih - Glass",
+        "ar": "سبحة زجاج مدخن - Glass"
+      },
+      "image": "/images/imported/glass-smoke/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Smoke Glass Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة زجاج مدخن من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Smoke Glass Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة زجاج مدخن"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "glass-champon",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Champon Glass Tasbih",
+        "ar": "سبحة زجاج شامبون"
+      },
+      "summary": {
+        "en": "Champon Glass Tasbih - Glass",
+        "ar": "سبحة زجاج شامبون - Glass"
+      },
+      "image": "/images/imported/glass-champon/main.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Champon Glass Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة زجاج شامبون من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Champon Glass Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة زجاج شامبون"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "lumnousglass99",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Luminous Glass 99-Bead Tasbih",
+        "ar": "سبحة زجاج متوهج 99 حبة"
+      },
+      "summary": {
+        "en": "Luminous Glass 99-Bead Tasbih - Glass",
+        "ar": "سبحة زجاج متوهج 99 حبة - Glass"
+      },
+      "image": "/images/imported/lumnousglass99/new-02.jpg",
+      "material": {
+        "en": "Glass",
+        "ar": "Glass"
+      },
+      "tags": {
+        "en": [
+          "Glass",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Glass",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Luminous Glass 99-Bead Tasbih from TranquilBeads. Premium quality Glass.",
+        "ar": "سبحة زجاج متوهج 99 حبة من ترانكويل بيبرز. جودة عالية Glass."
+      },
+      "detailBody": {
+        "en": "Premium Glass tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Glass عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Luminous Glass 99-Bead Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة زجاج متوهج 99 حبة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Glass",
+            "ar": "Glass"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "99blackrosewood",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "99-Bead Black Rosewood Tasbih",
+        "ar": "سبحة خشب الورد الأسود 99 حبة"
+      },
+      "summary": {
+        "en": "99-Bead Black Rosewood Tasbih - Wood",
+        "ar": "سبحة خشب الورد الأسود 99 حبة - Wood"
+      },
+      "image": "/images/imported/99blackrosewood/main.jpg",
+      "material": {
+        "en": "Wood",
+        "ar": "Wood"
+      },
+      "tags": {
+        "en": [
+          "Wood",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Wood",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "99-Bead Black Rosewood Tasbih from TranquilBeads. Premium quality Wood.",
+        "ar": "سبحة خشب الورد الأسود 99 حبة من ترانكويل بيبرز. جودة عالية Wood."
+      },
+      "detailBody": {
+        "en": "Premium Wood tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Wood عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "99-Bead Black Rosewood Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة خشب الورد الأسود 99 حبة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Wood",
+            "ar": "Wood"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "33shellbar",
+      "collection": "signature-tasbih",
+      "title": {
+        "en": "Shell Bar 33-Bead Tasbih",
+        "ar": "سبحة بار الصدفي 33 خرزة"
+      },
+      "summary": {
+        "en": "Shell Bar 33-Bead Tasbih - Shell",
+        "ar": "سبحة بار الصدفي 33 خرزة - Shell"
+      },
+      "image": "/images/imported/33shellbar/ambertest-8.jpg",
+      "material": {
+        "en": "Shell",
+        "ar": "Shell"
+      },
+      "tags": {
+        "en": [
+          "Shell",
+          "signature-tasbih"
+        ],
+        "ar": [
+          "Shell",
+          "signature-tasbih"
+        ]
+      },
+      "detailIntro": {
+        "en": "Shell Bar 33-Bead Tasbih from TranquilBeads. Premium quality Shell.",
+        "ar": "سبحة بار الصدفي 33 خرزة من ترانكويل بيبرز. جودة عالية Shell."
+      },
+      "detailBody": {
+        "en": "Premium Shell tasbih. Perfect for daily dhikr and spiritual practice. Wholesale available for distributors and retailers.",
+        "ar": "سبحة Shell عالية الجودة. مثالية للذكر اليومي. متاحة للجملة للموزعين وتجار التجزئة."
+      },
+      "idealFor": {
+        "en": "Distributors, retailers, boutiques",
+        "ar": "الموزعين، تجار التجزئة، المحلات"
+      },
+      "heroAlt": {
+        "en": "Shell Bar 33-Bead Tasbih hero image",
+        "ar": "الصورة الرئيسية لسبحة بار الصدفي 33 خرزة"
+      },
+      "gallery": [],
+      "specs": [
+        {
+          "key": "material",
+          "label": {
+            "en": "Material",
+            "ar": "الخامة"
+          },
+          "value": {
+            "en": "Shell",
+            "ar": "Shell"
+          }
         }
       ]
     }

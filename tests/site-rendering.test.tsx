@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import CollectionsPage from "@/app/[locale]/collections/page";
@@ -8,6 +8,7 @@ import ContactPage from "@/app/[locale]/contact/page";
 import LocaleLayout from "@/app/[locale]/layout";
 import HomePage from "@/app/[locale]/page";
 import WholesalePage from "@/app/[locale]/wholesale/page";
+import { getProductBySlug } from "@/src/data/site";
 
 describe("localized site rendering", () => {
   it("renders the English homepage hero and featured collections", async () => {
@@ -22,6 +23,26 @@ describe("localized site rendering", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText(/featured collections/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: /request catalog/i })).toBeInTheDocument();
+  });
+
+  it("uses collection-specific and product-specific homepage links", async () => {
+    render(await HomePage({ params: Promise.resolve({ locale: "en" }) }));
+
+    const giftSetHeading = screen.getByRole("heading", {
+      level: 3,
+      name: /gift-ready sets/i,
+    });
+    const giftSetCard = giftSetHeading.closest("article");
+    expect(giftSetCard).not.toBeNull();
+    expect(
+      within(giftSetCard as HTMLElement).getByRole("link", {
+        name: /explore collection/i,
+      }),
+    ).toHaveAttribute("href", "/en/collections/gift-sets");
+
+    expect(
+      screen.getByRole("link", { name: /baltic amber gift set/i }),
+    ).toHaveAttribute("href", "/en/collections/gift-sets/baltic-amber-gift-set");
   });
 
   it("renders the Arabic layout in RTL mode", async () => {
@@ -93,6 +114,8 @@ describe("localized site rendering", () => {
   });
 
   it("renders a nested product detail page with a large hero image and detail gallery", async () => {
+    const product = getProductBySlug("natural-kuka-wood-tasbih");
+
     render(
       await ProductDetailPage({
         params: Promise.resolve({
@@ -109,7 +132,7 @@ describe("localized site rendering", () => {
     expect(screen.getByAltText(/natural kuka wood tasbih hero/i)).toHaveAttribute(
       "src",
       expect.stringContaining(
-        encodeURIComponent("/images/real-products/natural-kuka-wood/hero.jpeg"),
+        encodeURIComponent(product?.image ?? ""),
       ),
     );
     expect(screen.getAllByAltText(/natural kuka wood tasbih detail/i).length).toBeGreaterThan(1);

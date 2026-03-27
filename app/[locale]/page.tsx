@@ -5,6 +5,7 @@ import {
   collections,
   getPageCopy,
   getPageMetadata,
+  getProductBySlug,
   getProductsByCollection,
   siteSettings,
 } from "@/src/data/site";
@@ -16,63 +17,58 @@ import { getDir, isLocale, withLocale } from "@/src/lib/i18n";
 const topProducts = [
   {
     slug: "natural-kuka-wood-tasbih",
+    collection: "signature-tasbih",
     rank: "1",
     sales30d: 220,
     totalSales: 783,
     rating: 4.8,
     moq: "100 pcs",
     tag: locale => locale === "en" ? "🔥 Top Seller" : "🔥 الأكثر مبيعًا",
-    image: "/images/imported/33-kuka/size.jpg",
-    alt: locale => locale === "en" ? "Hematite Car Tasbih" : "تسبيحة حجر الهيماتيت للسيارة",
-    category: locale => locale === "en" ? "Car Accessories" : "إكسسوارات السيارة",
+    category: { en: "Men's Beads", ar: "خرز رجالي" },
   },
   {
-    slug: "natural-kuka-wood-tasbih",
+    slug: "golden-hematite-medallion-tasbih",
+    collection: "signature-tasbih",
     rank: "2",
     sales30d: 96,
     totalSales: 357,
     rating: 4.69,
     moq: "100 pcs",
     tag: locale => locale === "en" ? "🔥 Top Seller" : "🔥 الأكثر مبيعًا",
-    image: "/images/imported/lumnousglass99/new-02.jpg",
-    alt: locale => locale === "en" ? "Blue Glow Stone Tasbih" : "تسبيحة الحجر المتوهج الأزرق",
-    category: locale => locale === "en" ? "Men's Bracelet" : "سوار رجالي",
+    category: { en: "Premium Tasbih", ar: "مسبحة فاخرة" },
   },
   {
-    slug: "natural-kuka-wood-tasbih",
+    slug: "lacquer-art-33-bead-tasbih",
+    collection: "signature-tasbih",
     rank: "3",
     sales30d: 81,
     totalSales: 235,
     rating: 4.4,
     moq: "100 pcs",
     tag: locale => locale === "en" ? "Bestseller" : "الأكثر مبيعًا",
-    image: "/images/imported/33-kuka/tasbih-063.jpg",
-    alt: locale => locale === "en" ? "Kuka Wood Tasbih" : "تسبيحة خشب الكوكا",
-    category: locale => locale === "en" ? "Men's Beads" : "خرز رجالي",
+    category: { en: "Giftable Tasbih", ar: "مسبحة مناسبة للهدايا" },
   },
   {
-    slug: "natural-kuka-wood-tasbih",
+    slug: "terahertz-road-safety-pendant",
+    collection: "cultural-accents",
     rank: "4",
     sales30d: 46,
     totalSales: 105,
     rating: 4.69,
     moq: "100 pcs",
     tag: locale => locale === "en" ? "Hot" : "ساخن",
-    image: "/images/imported/kuka99/new-01.jpg",
-    alt: locale => locale === "en" ? "Natural Kuka Wood Tasbih" : "تسبيحة خشب الكوكا الطبيعية",
-    category: locale => locale === "en" ? "Men's Beads" : "خرز رجالي",
+    category: { en: "Car Accessories", ar: "إكسسوارات السيارة" },
   },
   {
     slug: "baltic-amber-gift-set",
+    collection: "gift-sets",
     rank: "5",
     sales30d: 35,
     totalSales: 107,
     rating: 5.0,
     moq: "100 pcs",
     tag: locale => locale === "en" ? "New" : "جديد",
-    image: "/images/imported/ambercube33/amber-53.jpg",
-    alt: locale => locale === "en" ? "Double-Sided Car Hanging" : "تعليق السيارة المزدوج",
-    category: locale => locale === "en" ? "Car Accessories" : "إكسسوارات السيارة",
+    category: { en: "Gift Sets", ar: "مجموعات هدايا" },
   },
 ];
 
@@ -163,6 +159,19 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const copy = getPageCopy(locale);
   const featuredCollections = collections.filter((item) => item.featured);
   const signatureProducts = getProductsByCollection("signature-tasbih").slice(0, 8);
+  const rankedProducts = topProducts
+    .map((entry) => {
+      const product = getProductBySlug(entry.slug);
+      if (!product || product.collection !== entry.collection) {
+        return null;
+      }
+
+      return {
+        ...entry,
+        product,
+      };
+    })
+    .filter((entry) => entry !== null);
 
   return (
     <div className="space-y-14 pt-6 md:space-y-20">
@@ -285,47 +294,47 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {topProducts.map((product) => (
+          {rankedProducts.map((entry) => (
             <Link
-              key={product.rank}
+              key={entry.rank}
               href={withLocale(
                 locale,
-                `/collections/signature-tasbih/${product.slug}`,
+                `/collections/${entry.collection}/${entry.slug}`,
               )}
               className="group relative overflow-hidden rounded-2xl border border-border/70 bg-white transition-shadow hover:shadow-lg"
             >
               {/* Rank badge */}
               <div className="absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-xs font-bold text-white shadow">
-                #{product.rank}
+                #{entry.rank}
               </div>
 
               {/* Product image */}
               <div className="aspect-square overflow-hidden bg-gray-50">
                 <img
-                  src={product.image}
-                  alt={product.alt(locale)}
+                  src={entry.product.image}
+                  alt={entry.product.title[locale]}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
 
               {/* Info */}
               <div className="p-3">
-                <p className="text-xs text-muted">{product.category(locale)}</p>
+                <p className="text-xs text-muted">{entry.category[locale]}</p>
                 <p className="mt-1 text-sm font-semibold line-clamp-2">
-                  {product.alt(locale)}
+                  {entry.product.title[locale]}
                 </p>
                 <div className="mt-2 flex items-center gap-2 text-xs text-muted">
                   <span className="rounded bg-accent/10 px-1.5 py-0.5 text-accent-deep">
-                    ⭐ {product.rating}
+                    ⭐ {entry.rating}
                   </span>
-                  <span>MOQ {product.moq}</span>
+                  <span>MOQ {entry.moq}</span>
                 </div>
                 <div className="mt-2 flex items-center justify-between text-xs">
                   <span className="font-medium text-accent-deep">
-                    {product.sales30d}+ / 30d
+                    {entry.sales30d}+ / 30d
                   </span>
                   <span className="text-muted">
-                    Total: {product.totalSales}+
+                    Total: {entry.totalSales}+
                   </span>
                 </div>
               </div>
@@ -423,7 +432,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               name={collection.name[locale]}
               description={collection.description[locale]}
               image={collection.heroImage}
-              href={withLocale(locale, "/collections")}
+              href={withLocale(locale, `/collections/${collection.slug}`)}
               ctaLabel={locale === "en" ? "Explore collection" : "استعرض المجموعة"}
             />
           ))}
