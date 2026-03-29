@@ -194,6 +194,7 @@ export const collections: Collection[] = [
 
 
 
+
 export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
@@ -327,7 +328,7 @@ export const products: Product[] = [
       { image: "/images/real-products/baltic-amber/detail-1.jpeg", alt: { en: "Baltic Amber Gift Set detail 1", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 1" } },
       { image: "/images/real-products/baltic-amber/detail-2.jpeg", alt: { en: "Baltic Amber Gift Set detail 2", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 2" } },
       { image: "/images/real-products/baltic-amber/detail-3.jpeg", alt: { en: "Baltic Amber Gift Set detail 3", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 3" } },
-      { image: "/images/imported/baltic-amber-gift-set/1774764754660-main.jpg", alt: { en: "Baltic Amber Gift Set detail 4", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 4" } },
+      { image: "/images/imported/baltic-amber-gift-set/1774773259235-0417-291.jpg", alt: { en: "Baltic Amber Gift Set detail 4", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 4" } },
       { image: "/images/imported/baltic-amber-gift-set/1774764939986-factory-packaging.jpg", alt: { en: "Baltic Amber Gift Set detail 5", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 5" } },
     ],
     specs: [
@@ -906,70 +907,6 @@ export const products: Product[] = [
     ],
   },
   {
-    slug: "oval-orange",
-    collection: "signature-tasbih",
-    title: { en: "Oval Orange Tasbih", ar: "سبحة برتقالي بيضاوي" },
-    summary: {
-      en: "Oval Orange Tasbih — premium quality for wholesale.",
-      ar: "سبحة برتقالي بيضاوي — جودة عالية للجملة.",
-    },
-    image: "/images/imported/oval-orange/main.jpg",
-    material: { en: "Glass", ar: "Glass" },
-    tags: {
-      en: ["Wholesale", "signature-tasbih"],
-      ar: ["جملة", "signature-tasbih"],
-    },
-    detailIntro: {
-      en: "A premium oval orange tasbih for modern retail.",
-      ar: "تسبيحة برتقالي بيضاوي فاخرة للتجزئة العصرية.",
-    },
-    detailBody: {
-      en: "This oval orange tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.",
-      ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين.",
-    },
-    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
-    heroAlt: { en: "Oval Orange Tasbih hero", ar: "الصورة الرئيسية لسبحة برتقالي بيضاوي" },
-    gallery: [
-      { image: "/images/imported/oval-orange/main.jpg", alt: { en: "Oval Orange Tasbih detail 1", ar: "سبحة برتقالي بيضاوي تفصيل 1" } },
-    ],
-    specs: [
-      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "Glass" } },
-      { label: { en: "Collection", ar: "المجموعة" }, value: { en: "signature-tasbih", ar: "signature-tasbih" } },
-    ],
-  },
-  {
-    slug: "faceted-orange",
-    collection: "signature-tasbih",
-    title: { en: "Faceted Orange Tasbih", ar: "سبحة برتقالي مقطوع الأوجه" },
-    summary: {
-      en: "Faceted Orange Tasbih — premium quality for wholesale.",
-      ar: "سبحة برتقالي مقطوع الأوجه — جودة عالية للجملة.",
-    },
-    image: "/images/imported/faceted-orange/main.jpg",
-    material: { en: "Glass", ar: "Glass" },
-    tags: {
-      en: ["Wholesale", "signature-tasbih"],
-      ar: ["جملة", "signature-tasbih"],
-    },
-    detailIntro: {
-      en: "A premium faceted orange tasbih for modern retail.",
-      ar: "تسبيحة برتقالي مقطوع الأوجه فاخرة للتجزئة العصرية.",
-    },
-    detailBody: {
-      en: "This faceted orange tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.",
-      ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين.",
-    },
-    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
-    heroAlt: { en: "Faceted Orange Tasbih hero", ar: "الصورة الرئيسية لسبحة برتقالي مقطوع الأوجه" },
-    gallery: [
-      { image: "/images/imported/faceted-orange/main.jpg", alt: { en: "Faceted Orange Tasbih detail 1", ar: "سبحة برتقالي مقطوع الأوجه تفصيل 1" } },
-    ],
-    specs: [
-      { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "Glass" } },
-      { label: { en: "Collection", ar: "المجموعة" }, value: { en: "signature-tasbih", ar: "signature-tasbih" } },
-    ],
-  },
-  {
     slug: "redwhiteglass",
     collection: "signature-tasbih",
     title: { en: "Red White Glass Tasbih", ar: "سبحة زجاج أحمر أبيض" },
@@ -977,7 +914,7 @@ export const products: Product[] = [
       en: "Red White Glass Tasbih — premium quality for wholesale.",
       ar: "سبحة زجاج أحمر أبيض — جودة عالية للجملة.",
     },
-    image: "/images/imported/redwhiteglass/main.jpg",
+    image: "/images/imported/redwhiteglass/1774777247449-amber-106.jpg",
     material: { en: "Glass", ar: "Glass" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -994,7 +931,8 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Red White Glass Tasbih hero", ar: "الصورة الرئيسية لسبحة زجاج أحمر أبيض" },
     gallery: [
-      { image: "/images/imported/redwhiteglass/main.jpg", alt: { en: "Red White Glass Tasbih detail 1", ar: "سبحة زجاج أحمر أبيض تفصيل 1" } },
+      { image: "/images/imported/redwhiteglass/1774777270703-amber-097.jpg", alt: { en: "Red White Glass Tasbih detail 1", ar: "سبحة زجاج أحمر أبيض تفصيل 1" } },
+      { image: "/images/imported/redwhiteglass/1774777294243-amber-100.jpg", alt: { en: "Red White Glass Tasbih detail 2", ar: "سبحة زجاج أحمر أبيض تفصيل 2" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "Glass" } },
@@ -1233,7 +1171,7 @@ export const products: Product[] = [
       en: "Luminous Glass 99-Bead Tasbih — premium quality for wholesale.",
       ar: "سبحة زجاج متوهج 99 حبة — جودة عالية للجملة.",
     },
-    image: "/images/imported/lumnousglass99/main.jpg",
+    image: "/images/imported/lumnousglass99/1774776988642-0417-291.jpg",
     material: { en: "Glass", ar: "Glass" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
