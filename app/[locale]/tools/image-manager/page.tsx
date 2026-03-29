@@ -16,6 +16,21 @@ interface Product {
   images: string[];
 }
 
+interface CandidateImage {
+  id: number;
+  product_group: string;
+  material: string | null;
+  bead_count: string | null;
+  product_type: string | null;
+  shot_type: string | null;
+  source_folder?: string | null;
+  filename_pattern?: string | null;
+  original_path: string;
+  previewUrl: string;
+  score: number;
+  reasons: string[];
+}
+
 const ALL_COLLECTIONS = [
   'signature-tasbih',
   'gift-sets',
@@ -38,38 +53,81 @@ const EMPTY_PRODUCT: Product = {
 const TOTAL_SLOTS = 6;
 
 function ImagePickerModal({
-  productSlug,
+  product,
   slotIndex,
   imageData,
   onSelect,
   onUpload,
   onClose,
 }: {
-  productSlug: string;
+  product: Product;
   slotIndex: number;
   imageData: ImageData;
   onSelect: (url: string) => void;
-  onUpload: (url: string) => void;
+  onUpload: (url: string) => Promise<void>;
   onClose: () => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'library' | 'upload'>('library');
+  const [activeTab, setActiveTab] = useState<'recommended' | 'library' | 'upload'>('recommended');
   const [uploading, setUploading] = useState(false);
+  const [recommendations, setRecommendations] = useState<CandidateImage[]>([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+  const [recommendationQuery, setRecommendationQuery] = useState('');
+  const [importingCandidateId, setImportingCandidateId] = useState<number | null>(null);
+  const [visibleRecommendationCount, setVisibleRecommendationCount] = useState(24);
 
   const getAllImages = () => {
     const folderNames = Object.keys(imageData.folders).sort();
-    return folderNames.flatMap(f => imageData.folders[f] || []);
+    return [
+      ...folderNames.flatMap(f => imageData.folders[f] || []),
+      ...(imageData.staticFiles || []),
+    ];
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRecommendations() {
+      setLoadingRecommendations(true);
+      try {
+        const params = new URLSearchParams({
+          material: product.material,
+          name: product.name,
+          limit: '24',
+        });
+        const res = await fetch(`/api/image-manager/candidates?${params.toString()}`);
+        const data = await res.json();
+        if (!cancelled) {
+          setRecommendations(Array.isArray(data.candidates) ? data.candidates : []);
+        }
+      } catch {
+        if (!cancelled) {
+          setRecommendations([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingRecommendations(false);
+        }
+      }
+    }
+
+    loadRecommendations();
+    return () => { cancelled = true; };
+  }, [product.material, product.name]);
+
+  useEffect(() => {
+    setVisibleRecommendationCount(24);
+  }, [recommendations, recommendationQuery, product.slug, slotIndex]);
 
   const handleUpload = async (file: File) => {
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('slug', productSlug);
+      formData.append('slug', product.slug);
       const res = await fetch('/api/images', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.url) {
-        onUpload(data.url);
+        await onUpload(data.url);
       } else {
         alert('Upload failed');
       }
@@ -80,7 +138,44 @@ function ImagePickerModal({
     }
   };
 
+  const handleCandidateImport = async (candidate: CandidateImage) => {
+    setImportingCandidateId(candidate.id);
+    try {
+      const res = await fetch('/api/image-manager/candidates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: product.slug,
+          originalPath: candidate.original_path,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        onSelect(data.url);
+        onClose();
+      } else {
+        alert(data.error || '导入图片失败');
+      }
+    } catch {
+      alert('导入图片失败');
+    } finally {
+      setImportingCandidateId(null);
+    }
+  };
+
   const options = getAllImages();
+  const filteredRecommendations = recommendations.filter((candidate) => {
+    if (!recommendationQuery.trim()) return true;
+    const q = recommendationQuery.trim().toLowerCase();
+    return [
+      candidate.material,
+      candidate.product_group,
+      candidate.filename_pattern,
+      candidate.source_folder,
+      candidate.reasons.join(' '),
+    ].some((value) => (value || '').toLowerCase().includes(q));
+  });
+  const visibleRecommendations = filteredRecommendations.slice(0, visibleRecommendationCount);
 
   return (
     <div
@@ -99,13 +194,19 @@ function ImagePickerModal({
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#333' }}>
-              选择图片 — 槽位 {slotIndex + 1}
+              选择图片 — {product.name} · 槽位 {slotIndex + 1}
+            </div>
+            <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 3 }}>
+              推荐顺序会优先参考材质：{product.material || '未填写'}
             </div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#999', lineHeight: 1 }}>×</button>
         </div>
 
         <div style={{ display: 'flex', borderBottom: '1px solid #eee' }}>
+          <button onClick={() => setActiveTab('recommended')} style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'recommended' ? '#4caf50' : '#f5f5f5', color: activeTab === 'recommended' ? 'white' : '#666', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
+            ✨ 智能推荐
+          </button>
           <button onClick={() => setActiveTab('library')} style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'library' ? '#2196f3' : '#f5f5f5', color: activeTab === 'library' ? 'white' : '#666', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
             📁 图片库
           </button>
@@ -118,6 +219,83 @@ function ImagePickerModal({
         </div>
 
         <div style={{ flex: 1, overflow: 'auto', padding: 16, minHeight: 0 }}>
+          {activeTab === 'recommended' && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  value={recommendationQuery}
+                  onChange={(e) => setRecommendationQuery(e.target.value)}
+                  placeholder="筛选推荐结果，例如 amber / 琥珀 / 33 / main"
+                  style={{ flex: 1, minWidth: 220, padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: '0.82rem' }}
+                />
+                <div style={{ fontSize: '0.74rem', color: '#777' }}>
+                  共 {filteredRecommendations.length} 条候选
+                </div>
+              </div>
+
+              {loadingRecommendations ? (
+                <div style={{ padding: '40px 20px', color: '#777', textAlign: 'center' }}>正在读取本地产品图候选...</div>
+              ) : filteredRecommendations.length === 0 ? (
+                <div style={{ padding: '40px 20px', color: '#777', textAlign: 'center' }}>没有找到匹配候选，请改用图片库或本地上传。</div>
+              ) : (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+                    {visibleRecommendations.map((candidate) => (
+                      <button
+                        key={candidate.id}
+                        onClick={() => void handleCandidateImport(candidate)}
+                        disabled={importingCandidateId === candidate.id}
+                        style={{
+                          border: '1px solid #e5e5e5',
+                          background: 'white',
+                          borderRadius: 12,
+                          overflow: 'hidden',
+                          cursor: importingCandidateId === candidate.id ? 'wait' : 'pointer',
+                          padding: 0,
+                          textAlign: 'left',
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
+                        }}
+                      >
+                        <div style={{ aspectRatio: '1', background: '#f5f5f5', overflow: 'hidden' }}>
+                          <img src={candidate.previewUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                        <div style={{ padding: 10 }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#333' }}>
+                            {candidate.material || '未知材质'} · {candidate.bead_count || '-'}
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: '#666', marginTop: 4 }}>
+                            {candidate.filename_pattern || candidate.shot_type || candidate.product_group}
+                          </div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                            {candidate.reasons.slice(0, 3).map((reason) => (
+                              <span key={reason} style={{ background: '#eef6ea', color: '#2e7d32', fontSize: '0.62rem', padding: '2px 6px', borderRadius: 999 }}>
+                                {reason}
+                              </span>
+                            ))}
+                          </div>
+                          <div style={{ fontSize: '0.64rem', color: '#888', marginTop: 8 }}>
+                            组 {candidate.product_group} · 分数 {candidate.score}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  {visibleRecommendationCount < filteredRecommendations.length && (
+                    <div style={{ marginTop: 14, textAlign: 'center' }}>
+                      <button
+                        onClick={() => setVisibleRecommendationCount((count) => count + 24)}
+                        style={{ border: '1px solid #ddd', background: 'white', borderRadius: 999, padding: '9px 16px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600, color: '#444' }}
+                      >
+                        加载更多候选
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           {activeTab === 'library' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 8, overflowY: 'auto' }}>
               {options.map((url, i) => (
@@ -277,7 +455,7 @@ export default function ImageManagerPage() {
   const [search, setSearch] = useState('');
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [picker, setPicker] = useState<{ productSlug: string; slotIndex: number } | null>(null);
+  const [picker, setPicker] = useState<{ product: Product; slotIndex: number } | null>(null);
   const [editModal, setEditModal] = useState<{ product: Product; mode: 'add' | 'edit' } | null>(null);
   const [originalProducts, setOriginalProducts] = useState<Product[]>([]);
   const [allCollections, setAllCollections] = useState<string[]>([...ALL_COLLECTIONS]);
@@ -306,14 +484,31 @@ export default function ImageManagerPage() {
     setTimeout(() => setToast(null), 2000);
   }, []);
 
-  const setSlotImage = (slug: string, slotIndex: number, url: string) => {
-    setProducts(prev => prev.map(p => {
-      if (p.slug !== slug) return p;
-      const images = [...p.images];
-      images[slotIndex] = url;
-      return { ...p, images };
-    }));
-    showToast(`✓ 槽位 ${slotIndex + 1} 已更新`);
+  const persistProduct = useCallback(async (updatedProduct: Product) => {
+    const res = await fetch('/api/image-manager/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update', product: updatedProduct, slug: updatedProduct.slug }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    setProducts(data.products);
+    setOriginalProducts(data.products);
+  }, []);
+
+  const setSlotImage = async (product: Product, slotIndex: number, url: string) => {
+    const images = [...product.images];
+    images[slotIndex] = url;
+    const updatedProduct = { ...product, images };
+
+    try {
+      await persistProduct(updatedProduct);
+      showToast(`✓ 槽位 ${slotIndex + 1} 已更新`);
+    } catch {
+      alert('保存图片失败');
+    }
   };
 
   const handleSaveProduct = async (product: Product) => {
@@ -487,7 +682,7 @@ export default function ImageManagerPage() {
                     {Array.from({ length: TOTAL_SLOTS }).map((_, slotIndex) => {
                       const img = product.images[slotIndex];
                       return (
-                        <div key={slotIndex} onClick={() => imageData && setPicker({ productSlug: product.slug, slotIndex })} style={{ cursor: 'pointer', borderRadius: 6, overflow: 'hidden', aspectRatio: '1', position: 'relative', border: slotIndex === 0 ? '2px solid #4caf50' : '2px solid #e0e0e0', background: '#f5f5f5', transition: 'all 0.15s' }} title={`Slot ${slotIndex + 1}${img ? ': ' + img.split('/').pop() : ''}`}>
+                        <div key={slotIndex} onClick={() => imageData && setPicker({ product, slotIndex })} style={{ cursor: 'pointer', borderRadius: 6, overflow: 'hidden', aspectRatio: '1', position: 'relative', border: slotIndex === 0 ? '2px solid #4caf50' : '2px solid #e0e0e0', background: '#f5f5f5', transition: 'all 0.15s' }} title={`Slot ${slotIndex + 1}${img ? ': ' + img.split('/').pop() : ''}`}>
                           {img ? <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: '0.6rem' }}>+</div>}
                           <div style={{ position: 'absolute', bottom: 1, left: 1, background: slotIndex === 0 ? '#4caf50' : 'rgba(0,0,0,0.5)', color: 'white', fontSize: '8px', padding: '1px 3px', borderRadius: 3, fontWeight: 700 }}>{slotIndex + 1}</div>
                         </div>
@@ -506,7 +701,18 @@ export default function ImageManagerPage() {
       </div>
 
       {picker && imageData && (
-        <ImagePickerModal productSlug={picker.productSlug} slotIndex={picker.slotIndex} imageData={imageData} onSelect={(url) => setSlotImage(picker.productSlug, picker.slotIndex, url)} onUpload={(url) => { setSlotImage(picker.productSlug, picker.slotIndex, url); setPicker(null); }} onClose={() => setPicker(null)} />
+        <ImagePickerModal
+          product={picker.product}
+          slotIndex={picker.slotIndex}
+          imageData={imageData}
+          onSelect={(url) => { void setSlotImage(picker.product, picker.slotIndex, url); }}
+          onUpload={async (url) => {
+            await setSlotImage(picker.product, picker.slotIndex, url);
+            await loadData();
+            setPicker(null);
+          }}
+          onClose={() => setPicker(null)}
+        />
       )}
 
       {editModal && (
