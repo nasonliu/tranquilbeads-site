@@ -191,6 +191,7 @@ export const collections: Collection[] = [
 
 
 
+
 export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
@@ -340,7 +341,7 @@ export const products: Product[] = [
       en: "A 99-count tasbih-inspired rearview pendant engraved with Bismillah and Ayat al-Kursi cues.",
       ar: "معلقة مرآة مستوحاة من التسبيح بعدد 99 حبة مع إشارات نقش بسم الله وآية الكرسي.",
     },
-    image: "/images/real-products/terahertz-pendant/hero.jpeg",
+    image: "/images/imported/terahertz-road-safety-pendant/1774767451596-0722-18.jpg",
     material: { en: "Terahertz stone look", ar: "Terahertz stone look" },
     tags: {
       en: ["Car charm", "Travel blessing", "Impulse gift", "cultural-accents"],
@@ -357,9 +358,10 @@ export const products: Product[] = [
     idealFor: { en: "Best for souvenir counters, car accessory edits, and entry-price gifting.", ar: "أنسب لرفوف التذكارات، وتشكيلات إكسسوارات السيارة، والهدايا ضمن المدخل السعري." },
     heroAlt: { en: "Terahertz Road Safety Pendant hero", ar: "الصورة الرئيسية لمعلقة تيراهيرتز للسيارة والسلامة" },
     gallery: [
-      { image: "/images/real-products/terahertz-pendant/detail-1.jpeg", alt: { en: "Terahertz Road Safety Pendant detail 1", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 1" } },
-      { image: "/images/real-products/terahertz-pendant/detail-2.jpeg", alt: { en: "Terahertz Road Safety Pendant detail 2", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 2" } },
-      { image: "/images/real-products/terahertz-pendant/detail-3.jpeg", alt: { en: "Terahertz Road Safety Pendant detail 3", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 3" } },
+      { image: "/images/imported/terahertz-road-safety-pendant/1774767478701-main2.jpg", alt: { en: "Terahertz Road Safety Pendant detail 1", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 1" } },
+      { image: "/images/imported/terahertz-road-safety-pendant/1774767523410-0722-19.jpg", alt: { en: "Terahertz Road Safety Pendant detail 2", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 2" } },
+      { image: "/images/imported/terahertz-road-safety-pendant/1774767592915-0722-23.jpg", alt: { en: "Terahertz Road Safety Pendant detail 3", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 3" } },
+      { image: "/images/imported/terahertz-road-safety-pendant/1774767560905-pendanteffect3.jpg", alt: { en: "Terahertz Road Safety Pendant detail 4", ar: "معلقة تيراهيرتز للسيارة والسلامة تفصيل 4" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Terahertz stone look", ar: "Terahertz stone look" } },

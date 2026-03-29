@@ -176,6 +176,78 @@ npm run build
   build is using `app/`. Avoid changing duplicated files in `src/app/` unless
   the project explicitly re-aligns both trees.
 
+## 2026-03-29 follow-up: public product images did not appear on the live site
+
+### Symptom
+
+- Local sync looked correct.
+- [src/data/site.ts](/Volumes/新加卷/Documents/ProjectNoor/src/data/site.ts)
+  already referenced imported product images.
+- The public product page still showed empty images.
+- Direct requests for imported files on production returned `404`.
+
+Example affected page:
+- [natural-kuka-wood-tasbih](/Volumes/新加卷/Documents/ProjectNoor/src/data/site.ts#L196)
+
+### Root cause
+
+The content sync was not the real problem. The real problem was that Vercel
+production was still serving an older deployment because newer deployments were
+failing.
+
+Why they failed:
+
+- Local-only `image-manager` routes were pulling in filesystem- and
+  office-database-related code paths during Vercel tracing.
+- Vercel then reported an oversized serverless function for
+  `/api/image-manager/candidates`.
+- Because the new production build never became current, the public site kept
+  serving the older deployment that did not include the uploaded image assets.
+
+### Fix
+
+1. Keep local `image-manager` behavior for development.
+2. Make the candidates route load the heavy local handler only outside Vercel.
+3. Add explicit tracing exclusions in
+   [next.config.ts](/Volumes/新加卷/Documents/ProjectNoor/next.config.ts) for:
+   - `public/images/**/*`
+   - `scripts/query-image-manager-candidates.py`
+   - `src/lib/local-image-manager-candidates-route.ts`
+   - `app/data/**/*`
+4. Push the fix and wait for a fresh Vercel production deployment to complete.
+5. Re-check the direct imported image URL and then the public product page.
+
+Files:
+- [next.config.ts](/Volumes/新加卷/Documents/ProjectNoor/next.config.ts)
+- [app/api/image-manager/candidates/route.ts](/Volumes/新加卷/Documents/ProjectNoor/app/api/image-manager/candidates/route.ts)
+- [src/lib/local-image-manager-candidates-route.ts](/Volumes/新加卷/Documents/ProjectNoor/src/lib/local-image-manager-candidates-route.ts)
+- [tests/image-manager-candidates-route.test.ts](/Volumes/新加卷/Documents/ProjectNoor/tests/image-manager-candidates-route.test.ts)
+- [tests/next-config.test.ts](/Volumes/新加卷/Documents/ProjectNoor/tests/next-config.test.ts)
+
+### Verification that closed the issue
+
+- `npm run test:run -- tests/image-manager-candidates-route.test.ts tests/next-config.test.ts`
+- `npm run build`
+- Direct production image check:
+
+```bash
+curl -I https://www.tranquilbeads.com/images/imported/natural-kuka-wood-tasbih/1774763467336-kuka_1.jpg
+```
+
+Expected result after the fix:
+- `HTTP/2 200`
+
+### Maintenance rule for OpenClaw
+
+When a live product page appears to have “unsynced” images:
+
+1. Check the production image URL first.
+2. If it is `404`, inspect deployment status before changing content.
+3. Treat Vercel deployment failure as the primary suspect if local data files
+   already contain the imported image paths.
+4. Do not assume `sync-products.py` is broken just because the public page is
+   blank.
+
 ## Files touched in this fix
 
 - [app/[locale]/page.tsx](/Volumes/新加卷/Documents/ProjectNoor/app/[locale]/page.tsx)
