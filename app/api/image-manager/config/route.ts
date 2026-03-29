@@ -16,6 +16,10 @@ export async function GET() {
     return NextResponse.json({
       hasGithubToken: Boolean(config.githubToken),
       githubTokenMask: maskToken(config.githubToken),
+      hasFnosConfig: Boolean(config.fnosBaseUrl && config.fnosToken && config.fnosSecret),
+      fnosBaseUrl: config.fnosBaseUrl || null,
+      fnosTokenMask: maskToken(config.fnosToken),
+      fnosSecretMask: maskToken(config.fnosSecret),
       repo,
     });
   } catch (error) {
@@ -32,9 +36,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = (await request.json().catch(() => ({}))) as { action?: string; githubToken?: string };
+    const body = (await request.json().catch(() => ({}))) as {
+      action?: string;
+      githubToken?: string;
+      fnosBaseUrl?: string;
+      fnosToken?: string;
+      fnosSecret?: string;
+    };
     const config = readLocalConfig();
     const githubToken = body.githubToken?.trim() || "";
+    const fnosBaseUrl = body.fnosBaseUrl?.trim().replace(/\/$/, "") || "";
+    const fnosToken = body.fnosToken?.trim() || "";
+    const fnosSecret = body.fnosSecret?.trim() || "";
     const { repo } = getOriginRepo();
 
     if (body.action === "test") {
@@ -64,13 +77,26 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const nextConfig = githubToken ? { githubToken } : {};
+    const nextConfig = {
+      ...(config.githubToken ? { githubToken: config.githubToken } : {}),
+      ...(config.fnosBaseUrl ? { fnosBaseUrl: config.fnosBaseUrl } : {}),
+      ...(config.fnosToken ? { fnosToken: config.fnosToken } : {}),
+      ...(config.fnosSecret ? { fnosSecret: config.fnosSecret } : {}),
+      ...(githubToken ? { githubToken } : {}),
+      ...(fnosBaseUrl ? { fnosBaseUrl } : {}),
+      ...(fnosToken ? { fnosToken } : {}),
+      ...(fnosSecret ? { fnosSecret } : {}),
+    };
     writeLocalConfig(nextConfig);
 
     return NextResponse.json({
       success: true,
       hasGithubToken: Boolean(githubToken),
       githubTokenMask: maskToken(githubToken),
+      hasFnosConfig: Boolean(nextConfig.fnosBaseUrl && nextConfig.fnosToken && nextConfig.fnosSecret),
+      fnosBaseUrl: nextConfig.fnosBaseUrl || null,
+      fnosTokenMask: maskToken(nextConfig.fnosToken),
+      fnosSecretMask: maskToken(nextConfig.fnosSecret),
       repo,
     });
   } catch (error) {

@@ -3,6 +3,7 @@ type PageHeroProps = {
   title: string;
   description: string;
   actions?: React.ReactNode;
+  showcase?: React.ReactNode;
   aside?: React.ReactNode;
 };
 
@@ -11,6 +12,7 @@ export function PageHero({
   title,
   description,
   actions,
+  showcase,
   aside,
 }: PageHeroProps) {
   return (
@@ -27,6 +29,7 @@ export function PageHero({
           {description}
         </p>
         {actions ? <div className="mt-8 flex flex-wrap gap-4">{actions}</div> : null}
+        {showcase}
       </div>
       {aside ? <div className="space-y-4">{aside}</div> : null}
     </section>

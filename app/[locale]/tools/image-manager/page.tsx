@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
+
+import { applyImagesToSlots } from '@/src/lib/image-slot-utils';
+
+const FNOS_PAGE_SIZE = 60;
 
 interface ImageData {
   folders: Record<string, string[]>;
@@ -31,6 +35,17 @@ interface CandidateImage {
   reasons: string[];
 }
 
+interface FnosGalleryItem {
+  id: number;
+  fileName: string;
+  filePath: string;
+  fileType: string;
+  score: number;
+  reasons: string[];
+  previewUrl: string;
+  importPath: string;
+}
+
 interface PublishPreview {
   hasChanges: boolean;
   branch: string;
@@ -45,6 +60,10 @@ interface ConfigState {
   hasGithubToken: boolean;
   githubTokenMask: string | null;
   repo: string | null;
+  hasFnosConfig: boolean;
+  fnosBaseUrl: string | null;
+  fnosTokenMask: string | null;
+  fnosSecretMask: string | null;
 }
 
 interface DeploymentStatus {
@@ -137,24 +156,34 @@ function ImagePickerModal({
   product,
   slotIndex,
   imageData,
-  onSelect,
-  onUpload,
+  onApplyUrls,
   onClose,
 }: {
   product: Product;
   slotIndex: number;
   imageData: ImageData;
-  onSelect: (url: string) => void;
-  onUpload: (url: string) => Promise<void>;
+  onApplyUrls: (urls: string[], startSlotIndex: number) => Promise<void>;
   onClose: () => void;
 }) {
-  const [activeTab, setActiveTab] = useState<'recommended' | 'library' | 'upload'>('recommended');
+  const [activeTab, setActiveTab] = useState<'recommended' | 'fnos' | 'library' | 'upload'>('recommended');
   const [uploading, setUploading] = useState(false);
   const [recommendations, setRecommendations] = useState<CandidateImage[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(true);
   const [recommendationQuery, setRecommendationQuery] = useState('');
   const [importingCandidateId, setImportingCandidateId] = useState<number | null>(null);
   const [visibleRecommendationCount, setVisibleRecommendationCount] = useState(24);
+  const [fnosItems, setFnosItems] = useState<FnosGalleryItem[]>([]);
+  const [loadingFnosItems, setLoadingFnosItems] = useState(false);
+  const [hasMoreFnosItems, setHasMoreFnosItems] = useState(true);
+  const [fnosQuery, setFnosQuery] = useState('');
+  const [selectedCandidateIds, setSelectedCandidateIds] = useState<number[]>([]);
+  const [selectedFnosIds, setSelectedFnosIds] = useState<number[]>([]);
+  const [selectedLibraryUrls, setSelectedLibraryUrls] = useState<string[]>([]);
+  const [applyingSelection, setApplyingSelection] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const fnosSentinelRef = useRef<HTMLDivElement | null>(null);
+  const fnosOffsetRef = useRef(0);
+  const fnosLoadingRef = useRef(false);
 
   const getAllImages = () => {
     const folderNames = Object.keys(imageData.folders).sort();
@@ -199,19 +228,126 @@ function ImagePickerModal({
     setVisibleRecommendationCount(24);
   }, [recommendations, recommendationQuery, product.slug, slotIndex]);
 
-  const handleUpload = async (file: File) => {
+  useEffect(() => {
+    setSelectedCandidateIds([]);
+    setSelectedFnosIds([]);
+    setSelectedLibraryUrls([]);
+    setFnosItems([]);
+    setHasMoreFnosItems(true);
+    setFnosQuery('');
+    fnosOffsetRef.current = 0;
+    fnosLoadingRef.current = false;
+  }, [product.slug, slotIndex]);
+
+  const loadFnosItems = useCallback(async (mode: 'reset' | 'append' = 'append') => {
+    if (fnosLoadingRef.current) return;
+
+    const offset = mode === 'reset' ? 0 : fnosOffsetRef.current;
+    fnosLoadingRef.current = true;
+    setLoadingFnosItems(true);
+    try {
+      const params = new URLSearchParams({
+        material: product.material,
+        name: product.name,
+        limit: String(FNOS_PAGE_SIZE),
+        offset: String(offset),
+      });
+      const res = await fetch(`/api/image-manager/fnos?${params.toString()}`, { cache: 'no-store' });
+      const data = await res.json();
+      const nextItems = Array.isArray(data.items) ? data.items : [];
+
+      setFnosItems((current) => {
+        if (mode === 'reset') return nextItems;
+        const merged = [...current];
+        const seen = new Set(current.map((item) => item.id));
+        for (const item of nextItems) {
+          if (!seen.has(item.id)) {
+            merged.push(item);
+            seen.add(item.id);
+          }
+        }
+        return merged;
+      });
+      fnosOffsetRef.current = offset + nextItems.length;
+      setHasMoreFnosItems(nextItems.length === FNOS_PAGE_SIZE);
+    } catch {
+      if (mode === 'reset') {
+        setFnosItems([]);
+        fnosOffsetRef.current = 0;
+      }
+      setHasMoreFnosItems(false);
+    } finally {
+      fnosLoadingRef.current = false;
+      setLoadingFnosItems(false);
+    }
+  }, [product.material, product.name]);
+
+  useEffect(() => {
+    if (activeTab !== 'fnos') return;
+    if (fnosItems.length > 0 || loadingFnosItems || !hasMoreFnosItems) return;
+    void loadFnosItems('reset');
+  }, [activeTab, fnosItems.length, loadingFnosItems, hasMoreFnosItems, loadFnosItems]);
+
+  useEffect(() => {
+    if (activeTab !== 'fnos' || !hasMoreFnosItems || loadingFnosItems) return;
+
+    const root = scrollContainerRef.current;
+    const target = fnosSentinelRef.current;
+    if (!root || !target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          void loadFnosItems('append');
+        }
+      },
+      { root, rootMargin: '240px 0px' },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [activeTab, hasMoreFnosItems, loadingFnosItems, loadFnosItems, fnosItems.length]);
+
+  const handleModalScroll = useCallback(() => {
+    if (activeTab !== 'fnos' || !hasMoreFnosItems || loadingFnosItems) return;
+    const root = scrollContainerRef.current;
+    if (!root) return;
+
+    const remaining = root.scrollHeight - root.scrollTop - root.clientHeight;
+    if (remaining <= 320) {
+      void loadFnosItems('append');
+    }
+  }, [activeTab, hasMoreFnosItems, loadingFnosItems, loadFnosItems]);
+
+  const remainingSlots = TOTAL_SLOTS - slotIndex;
+
+  const toggleSequenceSelection = <T,>(current: T[], value: T) => (
+    current.includes(value) ? current.filter((item) => item !== value) : [...current, value]
+  );
+
+  const uploadFiles = async (files: File[]) => {
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('slug', product.slug);
-      const res = await fetch('/api/images', { method: 'POST', body: formData, cache: 'no-store' });
-      const data = await res.json();
-      if (data.url) {
-        await onUpload(data.url);
-      } else {
-        alert('Upload failed');
+      const uploadedUrls: string[] = [];
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('slug', product.slug);
+        const res = await fetch('/api/images', { method: 'POST', body: formData, cache: 'no-store' });
+        const data = await res.json();
+        if (!data.url) {
+          throw new Error(data.error || 'Upload failed');
+        }
+        uploadedUrls.push(data.url);
       }
+
+      if (uploadedUrls.length === 0) {
+        return;
+      }
+
+      await onApplyUrls(uploadedUrls, slotIndex);
+      onClose();
     } catch {
       alert('Upload failed');
     } finally {
@@ -219,28 +355,86 @@ function ImagePickerModal({
     }
   };
 
-  const handleCandidateImport = async (candidate: CandidateImage) => {
-    setImportingCandidateId(candidate.id);
+  const importSelectedCandidates = async () => {
+    if (selectedCandidateIds.length === 0) return;
+    setApplyingSelection(true);
     try {
-      const res = await fetch('/api/image-manager/candidates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          slug: product.slug,
-          originalPath: candidate.original_path,
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        onSelect(data.url);
-        onClose();
-      } else {
-        alert(data.error || '导入图片失败');
+      const urls: string[] = [];
+
+      for (const candidate of visibleRecommendations.filter((item) => selectedCandidateIds.includes(item.id))) {
+        setImportingCandidateId(candidate.id);
+        const res = await fetch('/api/image-manager/candidates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slug: product.slug,
+            originalPath: candidate.original_path,
+          }),
+        });
+        const data = await res.json();
+        if (!data.url) {
+          throw new Error(data.error || '导入图片失败');
+        }
+        urls.push(data.url);
       }
-    } catch {
-      alert('导入图片失败');
+
+      if (urls.length === 0) return;
+      await onApplyUrls(urls, slotIndex);
+      onClose();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '导入图片失败');
     } finally {
       setImportingCandidateId(null);
+      setApplyingSelection(false);
+      setSelectedCandidateIds([]);
+    }
+  };
+
+  const importSelectedFnos = async () => {
+    if (selectedFnosIds.length === 0) return;
+    setApplyingSelection(true);
+    try {
+      const urls: string[] = [];
+
+      for (const item of filteredFnosItems.filter((entry) => selectedFnosIds.includes(entry.id))) {
+        const res = await fetch('/api/image-manager/fnos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slug: product.slug,
+            importPath: item.importPath,
+            fileName: item.fileName,
+          }),
+        });
+        const data = await res.json();
+        if (!data.url) {
+          throw new Error(data.error || '导入飞牛图片失败');
+        }
+        urls.push(data.url);
+      }
+
+      if (urls.length === 0) return;
+      await onApplyUrls(urls, slotIndex);
+      onClose();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '导入飞牛图片失败');
+    } finally {
+      setApplyingSelection(false);
+      setSelectedFnosIds([]);
+    }
+  };
+
+  const applySelectedLibraryUrls = async () => {
+    if (selectedLibraryUrls.length === 0) return;
+    setApplyingSelection(true);
+    try {
+      await onApplyUrls(selectedLibraryUrls, slotIndex);
+      onClose();
+    } catch {
+      alert('保存图片失败');
+    } finally {
+      setApplyingSelection(false);
+      setSelectedLibraryUrls([]);
     }
   };
 
@@ -257,6 +451,20 @@ function ImagePickerModal({
     ].some((value) => (value || '').toLowerCase().includes(q));
   });
   const visibleRecommendations = filteredRecommendations.slice(0, visibleRecommendationCount);
+  const filteredFnosItems = fnosItems.filter((item) => {
+    if (!fnosQuery.trim()) return true;
+    const q = fnosQuery.trim().toLowerCase();
+    return `${item.fileName} ${item.filePath} ${(item.reasons || []).join(" ")}`.toLowerCase().includes(q);
+  });
+  const selectedCount = activeTab === 'recommended'
+    ? selectedCandidateIds.length
+    : activeTab === 'fnos'
+      ? selectedFnosIds.length
+      : selectedLibraryUrls.length;
+  const willFillCount = Math.min(selectedCount, remainingSlots);
+  const selectionSummary = willFillCount > 0
+    ? `将填入槽位 ${slotIndex + 1}-${slotIndex + willFillCount}`
+    : `当前可连续填入 ${remainingSlots} 个槽位`;
 
   return (
     <div
@@ -278,7 +486,7 @@ function ImagePickerModal({
               选择图片 — {product.name} · 槽位 {slotIndex + 1}
             </div>
             <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 3 }}>
-              推荐顺序会优先参考材质：{product.material || '未填写'}
+              推荐顺序会优先参考材质：{product.material || '未填写'} · {selectionSummary}
             </div>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#999', lineHeight: 1 }}>×</button>
@@ -288,18 +496,22 @@ function ImagePickerModal({
           <button onClick={() => setActiveTab('recommended')} style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'recommended' ? '#4caf50' : '#f5f5f5', color: activeTab === 'recommended' ? 'white' : '#666', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
             ✨ 智能推荐
           </button>
+          <button onClick={() => setActiveTab('fnos')} style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'fnos' ? '#5e35b1' : '#f5f5f5', color: activeTab === 'fnos' ? 'white' : '#666', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
+            🗂️ 飞牛图库
+          </button>
           <button onClick={() => setActiveTab('library')} style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'library' ? '#2196f3' : '#f5f5f5', color: activeTab === 'library' ? 'white' : '#666', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
             📁 图片库
           </button>
           <button onClick={() => setActiveTab('upload')} style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'upload' ? '#2196f3' : '#f5f5f5', color: activeTab === 'upload' ? 'white' : '#666', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
             📂 本地上传
           </button>
-          <button onClick={() => window.open('http://192.168.5.76:5666/p/', '_blank')} style={{ padding: '10px 16px', border: 'none', background: '#666', color: 'white', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>
-            📷 外部图库
-          </button>
         </div>
 
-        <div style={{ flex: 1, overflow: 'auto', padding: 16, minHeight: 0 }}>
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleModalScroll}
+          style={{ flex: 1, overflow: 'auto', padding: 16, minHeight: 0 }}
+        >
           {activeTab === 'recommended' && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
@@ -325,14 +537,14 @@ function ImagePickerModal({
                     {visibleRecommendations.map((candidate) => (
                       <button
                         key={candidate.id}
-                        onClick={() => void handleCandidateImport(candidate)}
-                        disabled={importingCandidateId === candidate.id}
+                        onClick={() => setSelectedCandidateIds((current) => toggleSequenceSelection(current, candidate.id))}
+                        disabled={applyingSelection}
                         style={{
-                          border: '1px solid #e5e5e5',
+                          border: selectedCandidateIds.includes(candidate.id) ? '2px solid #2e7d32' : '1px solid #e5e5e5',
                           background: 'white',
                           borderRadius: 12,
                           overflow: 'hidden',
-                          cursor: importingCandidateId === candidate.id ? 'wait' : 'pointer',
+                          cursor: applyingSelection ? 'wait' : 'pointer',
                           padding: 0,
                           textAlign: 'left',
                           boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
@@ -358,6 +570,11 @@ function ImagePickerModal({
                           <div style={{ fontSize: '0.64rem', color: '#888', marginTop: 8 }}>
                             组 {candidate.product_group} · 分数 {candidate.score}
                           </div>
+                          {selectedCandidateIds.includes(candidate.id) && (
+                            <div style={{ fontSize: '0.68rem', color: '#2e7d32', marginTop: 8, fontWeight: 700 }}>
+                              已加入待填充列表
+                            </div>
+                          )}
                         </div>
                       </button>
                     ))}
@@ -377,10 +594,106 @@ function ImagePickerModal({
             </div>
           )}
 
+          {activeTab === 'fnos' && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+                <input
+                  type="text"
+                  value={fnosQuery}
+                  onChange={(e) => setFnosQuery(e.target.value)}
+                  placeholder="筛选飞牛图库结果，例如 amber / hematite / main"
+                  style={{ flex: 1, minWidth: 220, padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: '0.82rem' }}
+                />
+                <div style={{ fontSize: '0.74rem', color: '#777' }}>
+                  共 {filteredFnosItems.length} 条飞牛候选
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#8a6fb3' }}>
+                  已加载 {fnosItems.length} 条，继续下滑会自动加载更多
+                </div>
+              </div>
+
+              {loadingFnosItems && fnosItems.length === 0 ? (
+                <div style={{ padding: '40px 20px', color: '#777', textAlign: 'center' }}>正在读取飞牛图库...</div>
+              ) : filteredFnosItems.length === 0 ? (
+                <div style={{ padding: '40px 20px', color: '#777', textAlign: 'center' }}>没有可用的飞牛图库结果，请先在页面顶部保存飞牛 Token / Secret。</div>
+              ) : (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
+                    {filteredFnosItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => setSelectedFnosIds((current) => toggleSequenceSelection(current, item.id))}
+                        disabled={applyingSelection}
+                        style={{
+                          border: selectedFnosIds.includes(item.id) ? '2px solid #5e35b1' : '1px solid #e5e5e5',
+                          background: 'white',
+                          borderRadius: 12,
+                          overflow: 'hidden',
+                          cursor: applyingSelection ? 'wait' : 'pointer',
+                          padding: 0,
+                          textAlign: 'left',
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.06)',
+                        }}
+                      >
+                        <div style={{ aspectRatio: '1', background: '#f5f5f5', overflow: 'hidden' }}>
+                          <img src={item.previewUrl} alt="" loading="lazy" decoding="async" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                        <div style={{ padding: 10 }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#333' }}>
+                            {item.fileName}
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: '#666', marginTop: 4, wordBreak: 'break-word' }}>
+                            {item.filePath}
+                          </div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                            {(item.reasons || []).slice(0, 3).map((reason) => (
+                              <span key={reason} style={{ background: '#f3e5f5', color: '#6a1b9a', fontSize: '0.62rem', padding: '2px 6px', borderRadius: 999 }}>
+                                {reason}
+                              </span>
+                            ))}
+                          </div>
+                          <div style={{ fontSize: '0.64rem', color: '#888', marginTop: 8 }}>
+                            ID {item.id} · 分数 {item.score}
+                          </div>
+                          {selectedFnosIds.includes(item.id) && (
+                            <div style={{ fontSize: '0.68rem', color: '#5e35b1', marginTop: 8, fontWeight: 700 }}>
+                              已加入待填充列表
+                            </div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                  <div ref={fnosSentinelRef} style={{ height: 1 }} />
+                  <div style={{ padding: '14px 0 8px', textAlign: 'center', fontSize: '0.72rem', color: '#777' }}>
+                    {loadingFnosItems
+                      ? '正在继续加载飞牛图库...'
+                      : hasMoreFnosItems
+                        ? '继续下滑可自动加载更多'
+                        : '已经加载到当前可获取的全部结果'}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
           {activeTab === 'library' && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: 8, overflowY: 'auto' }}>
               {options.map((url, i) => (
-                <div key={i} onClick={() => { onSelect(url); onClose(); }} style={{ cursor: 'pointer', borderRadius: 8, overflow: 'hidden', border: '2px solid transparent', transition: 'all 0.15s', aspectRatio: '1', minWidth: 0 }} title={url.split('/').pop()}>
+                <div
+                  key={i}
+                  onClick={() => setSelectedLibraryUrls((current) => toggleSequenceSelection(current, url))}
+                  style={{
+                    cursor: 'pointer',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                    border: selectedLibraryUrls.includes(url) ? '2px solid #1565c0' : '2px solid transparent',
+                    transition: 'all 0.15s',
+                    aspectRatio: '1',
+                    minWidth: 0,
+                  }}
+                  title={url.split('/').pop()}
+                >
                   <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { const el = e.target as HTMLImageElement; el.style.display = 'none'; el.parentElement!.style.background = '#eee'; }} />
                 </div>
               ))}
@@ -389,15 +702,73 @@ function ImagePickerModal({
 
           {activeTab === 'upload' && (
             <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-              <input type="file" accept="image/*" id="modal-upload" style={{ display: 'none' }} onChange={async (e) => { const file = (e.target as HTMLInputElement).files?.[0]; if (file) await handleUpload(file); }} />
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                id="modal-upload"
+                style={{ display: 'none' }}
+                onChange={async (e) => {
+                  const files = Array.from((e.target as HTMLInputElement).files || []);
+                  if (files.length > 0) {
+                    await uploadFiles(files);
+                    (e.target as HTMLInputElement).value = '';
+                  }
+                }}
+              />
               <label htmlFor="modal-upload" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', padding: '40px 60px', border: '2px dashed #ccc', borderRadius: 16, cursor: 'pointer', background: '#fafafa' }}>
                 <span style={{ fontSize: '3rem', marginBottom: 12 }}>📁</span>
-                <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 600 }}>{uploading ? '上传中...' : '点击选择本地图片'}</span>
-                <span style={{ fontSize: '0.75rem', color: '#999', marginTop: 6 }}>图片将保存到产品专属文件夹</span>
+                <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 600 }}>{uploading ? '上传中...' : '点击选择本地图片（可多选）'}</span>
+                <span style={{ fontSize: '0.75rem', color: '#999', marginTop: 6 }}>图片将保存到产品专属文件夹，并从当前槽位连续填入</span>
               </label>
             </div>
           )}
         </div>
+
+        {activeTab !== 'upload' && (
+          <div style={{ borderTop: '1px solid #eee', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: '0.76rem', color: '#666' }}>
+              已选 {selectedCount} 张
+              {selectedCount > remainingSlots && (
+                <span style={{ color: '#c62828' }}> · 超出部分会自动忽略</span>
+              )}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button
+                onClick={() => {
+                  setSelectedCandidateIds([]);
+                  setSelectedFnosIds([]);
+                  setSelectedLibraryUrls([]);
+                }}
+                disabled={selectedCount === 0 || applyingSelection}
+                style={{ border: '1px solid #ddd', background: 'white', borderRadius: 8, padding: '8px 14px', cursor: selectedCount === 0 || applyingSelection ? 'not-allowed' : 'pointer', fontSize: '0.78rem', color: '#555' }}
+              >
+                清空选择
+              </button>
+              <button
+                onClick={() => {
+                  if (activeTab === 'recommended') {
+                    void importSelectedCandidates();
+                    return;
+                  }
+                  if (activeTab === 'fnos') {
+                    void importSelectedFnos();
+                    return;
+                  }
+                  void applySelectedLibraryUrls();
+                }}
+                disabled={selectedCount === 0 || applyingSelection}
+                style={{ border: 'none', background: activeTab === 'fnos' ? '#5e35b1' : activeTab === 'library' ? '#1565c0' : '#2e7d32', color: 'white', borderRadius: 8, padding: '8px 16px', cursor: selectedCount === 0 || applyingSelection ? 'not-allowed' : 'pointer', fontSize: '0.8rem', fontWeight: 700, opacity: selectedCount === 0 || applyingSelection ? 0.65 : 1 }}
+              >
+                {applyingSelection
+                  ? '处理中...'
+                  : activeTab === 'library'
+                    ? `填入槽位 ${slotIndex + 1}${willFillCount > 1 ? `-${slotIndex + willFillCount}` : ''}`
+                    : `导入并填入槽位 ${slotIndex + 1}${willFillCount > 1 ? `-${slotIndex + willFillCount}` : ''}`}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -686,6 +1057,9 @@ export default function ImageManagerPage() {
   const [publishing, setPublishing] = useState(false);
   const [config, setConfig] = useState<ConfigState | null>(null);
   const [githubTokenInput, setGithubTokenInput] = useState('');
+  const [fnosBaseUrlInput, setFnosBaseUrlInput] = useState('');
+  const [fnosTokenInput, setFnosTokenInput] = useState('');
+  const [fnosSecretInput, setFnosSecretInput] = useState('');
   const [savingConfig, setSavingConfig] = useState(false);
   const [testingConfig, setTestingConfig] = useState(false);
   const [deployStatus, setDeployStatus] = useState<DeploymentStatus | null>(null);
@@ -760,16 +1134,16 @@ export default function ImageManagerPage() {
       : current);
   }, []);
 
-  const setSlotImage = async (product: Product, slotIndex: number, url: string) => {
-    const images = [...product.images];
-    images[slotIndex] = url;
+  const setSlotImages = async (product: Product, startSlotIndex: number, urls: string[]) => {
+    const images = applyImagesToSlots(product.images, startSlotIndex, urls, TOTAL_SLOTS);
     const updatedProduct = { ...product, images };
     applyLocalProductUpdate(updatedProduct);
 
     try {
       await persistProduct(updatedProduct);
       await refreshImageLibrary();
-      showToast(`✓ 槽位 ${slotIndex + 1} 已更新`);
+      const appliedCount = Math.min(urls.filter((url) => url.trim()).length, TOTAL_SLOTS - startSlotIndex);
+      showToast(`✓ 已更新 ${appliedCount} 个槽位`);
     } catch {
       await loadData();
       alert('保存图片失败');
@@ -913,6 +1287,9 @@ export default function ImageManagerPage() {
       }
       setConfig(data);
       setGithubTokenInput('');
+      setFnosBaseUrlInput('');
+      setFnosTokenInput('');
+      setFnosSecretInput('');
       showToast('✓ GitHub Token 已保存');
     } catch {
       alert('保存 GitHub Token 失败');
@@ -940,6 +1317,36 @@ export default function ImageManagerPage() {
       alert('测试 GitHub 连接失败');
     } finally {
       setTestingConfig(false);
+    }
+  };
+
+  const handleSaveFnosConfig = async () => {
+    setSavingConfig(true);
+    try {
+      const res = await fetch('/api/image-manager/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({
+          fnosBaseUrl: fnosBaseUrlInput,
+          fnosToken: fnosTokenInput,
+          fnosSecret: fnosSecretInput,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      setConfig(data);
+      setFnosBaseUrlInput('');
+      setFnosTokenInput('');
+      setFnosSecretInput('');
+      showToast('✓ 飞牛配置已保存');
+    } catch {
+      alert('保存飞牛配置失败');
+    } finally {
+      setSavingConfig(false);
     }
   };
 
@@ -1023,6 +1430,41 @@ export default function ImageManagerPage() {
             </button>
             <button onClick={() => void handleTestGithubToken()} disabled={testingConfig} style={{ background: testingConfig ? '#ccc' : '#455a64', color: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, cursor: testingConfig ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700 }}>
               {testingConfig ? '测试中...' : '测试 GitHub 连接'}
+            </button>
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e0e0e0', padding: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#222', marginBottom: 6 }}>飞牛图库配置</div>
+          <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 12 }}>
+            {config?.hasFnosConfig
+              ? `已连接：${config.fnosBaseUrl || '未填写地址'} · Token ${config.fnosTokenMask || '-'} · Secret ${config.fnosSecretMask || '-'}`
+              : '尚未保存飞牛配置'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr auto', gap: 8 }}>
+            <input
+              type="text"
+              value={fnosBaseUrlInput}
+              onChange={(e) => setFnosBaseUrlInput(e.target.value)}
+              placeholder={config?.fnosBaseUrl || '飞牛地址，例如 http://192.168.5.76:5666'}
+              style={{ minWidth: 220, padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: '0.84rem' }}
+            />
+            <input
+              type="password"
+              value={fnosTokenInput}
+              onChange={(e) => setFnosTokenInput(e.target.value)}
+              placeholder="fnos-token"
+              style={{ minWidth: 180, padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: '0.84rem' }}
+            />
+            <input
+              type="password"
+              value={fnosSecretInput}
+              onChange={(e) => setFnosSecretInput(e.target.value)}
+              placeholder="fnos-Secret"
+              style={{ minWidth: 180, padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: '0.84rem' }}
+            />
+            <button onClick={() => void handleSaveFnosConfig()} disabled={savingConfig} style={{ background: savingConfig ? '#ccc' : '#5e35b1', color: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, cursor: savingConfig ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700 }}>
+              {savingConfig ? '保存中...' : '保存飞牛配置'}
             </button>
           </div>
         </div>
@@ -1129,10 +1571,8 @@ export default function ImageManagerPage() {
           product={picker.product}
           slotIndex={picker.slotIndex}
           imageData={imageData}
-          onSelect={(url) => { void setSlotImage(picker.product, picker.slotIndex, url); }}
-          onUpload={async (url) => {
-            await setSlotImage(picker.product, picker.slotIndex, url);
-            await loadData();
+          onApplyUrls={async (urls, startSlotIndex) => {
+            await setSlotImages(picker.product, startSlotIndex, urls);
             setPicker(null);
           }}
           onClose={() => setPicker(null)}

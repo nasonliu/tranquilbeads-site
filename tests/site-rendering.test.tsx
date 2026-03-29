@@ -23,6 +23,12 @@ describe("localized site rendering", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText(/featured collections/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: /request catalog/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /next showcase item/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByAltText(/natural kuka wood tasbih showcase/i),
+    ).toBeInTheDocument();
   });
 
   it("uses collection-specific and product-specific homepage links", async () => {
@@ -41,8 +47,10 @@ describe("localized site rendering", () => {
     ).toHaveAttribute("href", "/en/collections/gift-sets");
 
     expect(
-      screen.getByRole("link", { name: /baltic amber gift set/i }),
-    ).toHaveAttribute("href", "/en/collections/gift-sets/baltic-amber-gift-set");
+      screen
+        .getAllByRole("link", { name: /baltic amber gift set/i })
+        .some((link) => link.getAttribute("href") === "/en/collections/gift-sets/baltic-amber-gift-set"),
+    ).toBe(true);
   });
 
   it("renders the Arabic layout in RTL mode", async () => {

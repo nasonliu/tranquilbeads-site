@@ -10,6 +10,7 @@ import {
   siteSettings,
 } from "@/src/data/site";
 import { CollectionCard } from "@/src/components/collection-card";
+import { HomeCoverflow } from "@/src/components/home-coverflow";
 import { PageHero } from "@/src/components/page-hero";
 import { getDir, isLocale, withLocale } from "@/src/lib/i18n";
 
@@ -172,6 +173,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       };
     })
     .filter((entry) => entry !== null);
+  const heroShowcaseItems = rankedProducts.slice(0, 5).map((entry) => ({
+    title: entry.product.title[locale],
+    href: withLocale(locale, `/collections/${entry.collection}/${entry.slug}`),
+    image: entry.product.image,
+    material: entry.product.material[locale],
+    badge: entry.tag(locale).replace(/^🔥\s*/, ""),
+  }));
 
   return (
     <div className="space-y-14 pt-6 md:space-y-20">
@@ -198,6 +206,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </a>
           </>
         }
+        showcase={<HomeCoverflow items={heroShowcaseItems} locale={locale} />}
         aside={
           <>
             <div className="noor-panel noor-pattern rounded-[1.75rem] p-6">

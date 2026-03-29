@@ -10,7 +10,12 @@ describe("image-manager config route", () => {
   it("returns masked github token status and repo info", async () => {
     const fsMock = {
       existsSync: vi.fn(() => true),
-      readFileSync: vi.fn(() => JSON.stringify({ githubToken: "ghp_1234567890abcdef" })),
+      readFileSync: vi.fn(() => JSON.stringify({
+        githubToken: "ghp_1234567890abcdef",
+        fnosBaseUrl: "http://192.168.5.76:5666",
+        fnosToken: "fnos_token_123456",
+        fnosSecret: "fnos_secret_abcdef",
+      })),
       writeFileSync: vi.fn(),
       mkdirSync: vi.fn(),
     };
@@ -33,6 +38,10 @@ describe("image-manager config route", () => {
       hasGithubToken: true,
       githubTokenMask: "ghp_...cdef",
       repo: "nasonliu/tranquilbeads-site",
+      hasFnosConfig: true,
+      fnosBaseUrl: "http://192.168.5.76:5666",
+      fnosTokenMask: "fnos...3456",
+      fnosSecretMask: "fnos...cdef",
     });
   });
 
@@ -74,6 +83,55 @@ describe("image-manager config route", () => {
     });
     expect(JSON.parse(stored)).toMatchObject({
       githubToken: "ghp_savedtoken1234",
+    });
+  });
+
+  it("saves fnos config fields to local config", async () => {
+    let stored = "{}";
+    const fsMock = {
+      existsSync: vi.fn(() => true),
+      readFileSync: vi.fn(() => stored),
+      writeFileSync: vi.fn((_path: string, contents: string) => {
+        stored = contents;
+      }),
+      mkdirSync: vi.fn(),
+    };
+    const execFileSync = vi.fn(() => "https://github.com/nasonliu/tranquilbeads-site.git\n");
+
+    vi.doMock("fs", () => ({
+      __esModule: true,
+      default: fsMock,
+    }));
+    vi.doMock("child_process", () => ({
+      default: { execFileSync },
+      execFileSync,
+    }));
+
+    const route = await import("@/app/api/image-manager/config/route");
+    const response = await route.POST(
+      new Request("http://localhost/api/image-manager/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fnosBaseUrl: "http://192.168.5.76:5666",
+          fnosToken: "fnos_token_123456",
+          fnosSecret: "fnos_secret_abcdef",
+        }),
+      }) as never,
+    );
+    const payload = await response.json();
+
+    expect(payload).toMatchObject({
+      success: true,
+      hasFnosConfig: true,
+      fnosBaseUrl: "http://192.168.5.76:5666",
+      fnosTokenMask: "fnos...3456",
+      fnosSecretMask: "fnos...cdef",
+    });
+    expect(JSON.parse(stored)).toMatchObject({
+      fnosBaseUrl: "http://192.168.5.76:5666",
+      fnosToken: "fnos_token_123456",
+      fnosSecret: "fnos_secret_abcdef",
     });
   });
 

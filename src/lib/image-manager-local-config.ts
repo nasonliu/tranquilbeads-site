@@ -4,6 +4,9 @@ import { execFileSync } from "child_process";
 
 export type ImageManagerLocalConfig = {
   githubToken?: string;
+  fnosBaseUrl?: string;
+  fnosToken?: string;
+  fnosSecret?: string;
 };
 
 const CONFIG_FILE = path.join(process.cwd(), ".image-manager.local.json");
