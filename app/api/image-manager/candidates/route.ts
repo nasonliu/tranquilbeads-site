@@ -10,11 +10,12 @@ import {
   type CandidateImageRecord,
 } from "@/src/lib/image-manager-candidates";
 
-const DB_FILE = "file:/Volumes/office/products/Pic/sorted/products.db?mode=ro&immutable=1";
+const IS_VERCEL = process.env.VERCEL === "1";
 const IMPORTED_DIR = path.join(process.cwd(), "public/images/imported");
+const QUERY_SCRIPT = path.join(process.cwd(), "scripts/query-image-manager-candidates.py");
 
 function readCandidates(sql: string): CandidateImageRecord[] {
-  const stdout = execFileSync("sqlite3", ["-json", DB_FILE, sql], {
+  const stdout = execFileSync("python3", [QUERY_SCRIPT, sql], {
     encoding: "utf8",
   });
   const trimmed = stdout.trim();
@@ -25,6 +26,10 @@ function readCandidates(sql: string): CandidateImageRecord[] {
 }
 
 export async function GET(request: Request | NextRequest) {
+  if (IS_VERCEL) {
+    return NextResponse.json({ error: "Not available on Vercel" }, { status: 403 });
+  }
+
   try {
     const url = new URL(request.url);
     const material = url.searchParams.get("material") ?? "";
@@ -51,6 +56,10 @@ export async function GET(request: Request | NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (IS_VERCEL) {
+    return NextResponse.json({ error: "Not available on Vercel" }, { status: 403 });
+  }
+
   try {
     const payload = await request.json();
     const slug = String(payload.slug ?? "").trim();
