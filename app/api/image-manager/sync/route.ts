@@ -7,6 +7,68 @@ import { revalidatePath } from "next/cache";
 const IS_VERCEL = process.env.VERCEL === "1";
 const SCRIPT = "/Volumes/新加卷/Documents/ProjectNoor/scripts/sync-products.py";
 const SITE_FILE = path.join(process.cwd(), "src/data/site.ts");
+const IMAGE_MANAGER_FILE = path.join(process.cwd(), "app/data/image-manager-products.json");
+
+type ProductRecord = {
+  slug?: string;
+  collection?: string;
+  collections?: string[];
+};
+
+function getSyncRoutes() {
+  const baseRoutes = new Set([
+    "/",
+    "/collections",
+    "/wholesale",
+    "/contact",
+    "/en",
+    "/en/collections",
+    "/en/wholesale",
+    "/en/contact",
+    "/ar",
+    "/ar/collections",
+    "/ar/wholesale",
+    "/ar/contact",
+  ]);
+
+  if (!fs.existsSync(IMAGE_MANAGER_FILE)) {
+    return [...baseRoutes];
+  }
+
+  try {
+    const raw = JSON.parse(fs.readFileSync(IMAGE_MANAGER_FILE, "utf8")) as ProductRecord[];
+    const collections = new Set<string>();
+
+    raw.forEach((product) => {
+      const tags = Array.isArray(product.collections)
+        ? product.collections.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+        : [];
+      const collection = tags[0] || (typeof product.collection === "string" ? product.collection : "");
+      const slug = typeof product.slug === "string" ? product.slug : "";
+
+      if (!collection) {
+        return;
+      }
+
+      collections.add(collection);
+      baseRoutes.add(`/en/collections/${collection}`);
+      baseRoutes.add(`/ar/collections/${collection}`);
+
+      if (slug) {
+        baseRoutes.add(`/en/collections/${collection}/${slug}`);
+        baseRoutes.add(`/ar/collections/${collection}/${slug}`);
+      }
+    });
+
+    collections.forEach((collection) => {
+      baseRoutes.add(`/collections/${collection}`);
+    });
+
+    return [...baseRoutes];
+  } catch {
+    return [...baseRoutes];
+  }
+}
 
 export async function POST() {
   if (IS_VERCEL) {
@@ -31,20 +93,7 @@ export async function POST() {
       fs.writeFileSync(SITE_FILE, content, "utf8");
     }
 
-    [
-      "/",
-      "/collections",
-      "/wholesale",
-      "/contact",
-      "/en",
-      "/en/collections",
-      "/en/wholesale",
-      "/en/contact",
-      "/ar",
-      "/ar/collections",
-      "/ar/wholesale",
-      "/ar/contact",
-    ].forEach((route) => revalidatePath(route));
+    getSyncRoutes().forEach((route) => revalidatePath(route));
 
     return NextResponse.json(parsed);
   } catch (err: unknown) {

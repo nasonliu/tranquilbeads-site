@@ -52,6 +52,63 @@ const EMPTY_PRODUCT: Product = {
 
 const TOTAL_SLOTS = 6;
 
+function withPreviewBust(url: string, seed: string) {
+  if (!url) return url;
+  const divider = url.includes('?') ? '&' : '?';
+  return `${url}${divider}preview=${encodeURIComponent(seed)}`;
+}
+
+function SlotPreview({
+  src,
+  alt,
+  seed,
+  emptyLabel = '空',
+  className = '',
+}: {
+  src?: string;
+  alt: string;
+  seed: string;
+  emptyLabel?: string;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) {
+    return (
+      <div
+        className={className}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#ccc',
+          fontSize: '0.75rem',
+          padding: '20px',
+          textAlign: 'center',
+        }}
+      >
+        {src ? 'Image not found' : emptyLabel}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      key={`${seed}-${src}`}
+      src={withPreviewBust(src, `${seed}-${src}`)}
+      alt={alt}
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function ImagePickerModal({
   product,
   slotIndex,
@@ -94,7 +151,7 @@ function ImagePickerModal({
           name: product.name,
           limit: '24',
         });
-        const res = await fetch(`/api/image-manager/candidates?${params.toString()}`);
+        const res = await fetch(`/api/image-manager/candidates?${params.toString()}`, { cache: 'no-store' });
         const data = await res.json();
         if (!cancelled) {
           setRecommendations(Array.isArray(data.candidates) ? data.candidates : []);
@@ -124,7 +181,7 @@ function ImagePickerModal({
       const formData = new FormData();
       formData.append('file', file);
       formData.append('slug', product.slug);
-      const res = await fetch('/api/images', { method: 'POST', body: formData });
+      const res = await fetch('/api/images', { method: 'POST', body: formData, cache: 'no-store' });
       const data = await res.json();
       if (data.url) {
         await onUpload(data.url);
@@ -462,20 +519,23 @@ export default function ImageManagerPage() {
   const [filterCollections, setFilterCollections] = useState<string[]>([]);
   const [syncing, setSyncing] = useState(false);
 
+  const syncCollectionsFromProducts = useCallback((nextProducts: Product[]) => {
+    const cols = new Set<string>(ALL_COLLECTIONS);
+    nextProducts.forEach((p: Product) => p.collections?.forEach((c: string) => cols.add(c)));
+    setAllCollections([...cols]);
+  }, []);
+
   const loadData = useCallback(async () => {
     const [imgRes, prodRes] = await Promise.all([
-      fetch('/api/images').then(r => r.json()),
-      fetch('/api/image-manager/products').then(r => r.json()),
+      fetch('/api/images', { cache: 'no-store' }).then(r => r.json()),
+      fetch('/api/image-manager/products', { cache: 'no-store' }).then(r => r.json()),
     ]);
     setImageData(imgRes);
     setProducts(prodRes);
     setOriginalProducts(prodRes);
-    // Collect all unique collections
-    const cols = new Set<string>(ALL_COLLECTIONS);
-    prodRes.forEach((p: Product) => p.collections?.forEach((c: string) => cols.add(c)));
-    setAllCollections([...cols]);
+    syncCollectionsFromProducts(prodRes);
     setLoading(false);
-  }, []);
+  }, [syncCollectionsFromProducts]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -488,6 +548,7 @@ export default function ImageManagerPage() {
     const res = await fetch('/api/image-manager/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
       body: JSON.stringify({ action: 'update', product: updatedProduct, slug: updatedProduct.slug }),
     });
     const data = await res.json();
@@ -496,17 +557,35 @@ export default function ImageManagerPage() {
     }
     setProducts(data.products);
     setOriginalProducts(data.products);
+    syncCollectionsFromProducts(data.products);
+  }, [syncCollectionsFromProducts]);
+
+  const refreshImageLibrary = useCallback(async () => {
+    const res = await fetch('/api/images', { cache: 'no-store' });
+    const data = await res.json();
+    setImageData(data);
+  }, []);
+
+  const applyLocalProductUpdate = useCallback((updatedProduct: Product) => {
+    setProducts((current) => current.map((item) => item.slug === updatedProduct.slug ? updatedProduct : item));
+    setOriginalProducts((current) => current.map((item) => item.slug === updatedProduct.slug ? updatedProduct : item));
+    setPicker((current) => current && current.product.slug === updatedProduct.slug
+      ? { ...current, product: updatedProduct }
+      : current);
   }, []);
 
   const setSlotImage = async (product: Product, slotIndex: number, url: string) => {
     const images = [...product.images];
     images[slotIndex] = url;
     const updatedProduct = { ...product, images };
+    applyLocalProductUpdate(updatedProduct);
 
     try {
       await persistProduct(updatedProduct);
+      await refreshImageLibrary();
       showToast(`✓ 槽位 ${slotIndex + 1} 已更新`);
     } catch {
+      await loadData();
       alert('保存图片失败');
     }
   };
@@ -517,16 +596,14 @@ export default function ImageManagerPage() {
       const res = await fetch('/api/image-manager/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ action, product, slug: product.slug }),
       });
       const data = await res.json();
       if (data.error) { alert(data.error); return; }
       setProducts(data.products);
       setOriginalProducts(data.products);
-      // Update allCollections if new ones were added
-      const cols = new Set<string>(ALL_COLLECTIONS);
-      data.products.forEach((p: Product) => p.collections?.forEach((c: string) => cols.add(c)));
-      setAllCollections([...cols]);
+      syncCollectionsFromProducts(data.products);
       setEditModal(null);
       showToast(editModal?.mode === 'add' ? '✓ 产品已添加' : '✓ 产品已保存');
     } catch { alert('保存失败'); }
@@ -537,6 +614,7 @@ export default function ImageManagerPage() {
     const res = await fetch('/api/image-manager/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
       body: JSON.stringify({ action: 'delete', slug }),
     });
     const data = await res.json();
@@ -549,13 +627,15 @@ export default function ImageManagerPage() {
   const handleSyncToSite = async () => {
     setSyncing(true);
     try {
-      const res = await fetch('/api/image-manager/sync', { method: 'POST' });
+      const res = await fetch('/api/image-manager/sync', { method: 'POST', cache: 'no-store' });
       const data = await res.json();
       if (data.error) { alert('同步失败: ' + data.error); }
       else if (typeof data.added === 'number' && typeof data.updated === 'number' && typeof data.total === 'number') {
         showToast(`✓ 同步完成：${data.added} 新增，${data.updated} 更新，共 ${data.total} 个产品`);
+        await loadData();
       } else {
         showToast(`✓ ${data.message || '同步完成'}`);
+        await loadData();
       }
     } catch { alert('同步失败'); }
     finally { setSyncing(false); }
@@ -672,7 +752,12 @@ export default function ImageManagerPage() {
                 </div>
 
                 <div style={{ background: '#fafafa', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
-                  {product.images[0] ? <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { const el = e.target as HTMLImageElement; el.style.display = 'none'; el.parentElement!.innerHTML = '<div style="color:#999;font-size:0.75rem;padding:20px">Image not found</div>'; }} /> : <span style={{ color: '#ccc', fontSize: '0.8rem' }}>空</span>}
+                  <SlotPreview
+                    src={product.images[0]}
+                    alt={product.name}
+                    seed={`${product.slug}-hero`}
+                    emptyLabel="空"
+                  />
                   <div style={{ position: 'absolute', top: 6, left: 6, background: '#4caf50', color: 'white', fontSize: '0.6rem', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>MAIN</div>
                 </div>
 
@@ -683,7 +768,12 @@ export default function ImageManagerPage() {
                       const img = product.images[slotIndex];
                       return (
                         <div key={slotIndex} onClick={() => imageData && setPicker({ product, slotIndex })} style={{ cursor: 'pointer', borderRadius: 6, overflow: 'hidden', aspectRatio: '1', position: 'relative', border: slotIndex === 0 ? '2px solid #4caf50' : '2px solid #e0e0e0', background: '#f5f5f5', transition: 'all 0.15s' }} title={`Slot ${slotIndex + 1}${img ? ': ' + img.split('/').pop() : ''}`}>
-                          {img ? <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc', fontSize: '0.6rem' }}>+</div>}
+                          <SlotPreview
+                            src={img}
+                            alt=""
+                            seed={`${product.slug}-${slotIndex}`}
+                            emptyLabel="+"
+                          />
                           <div style={{ position: 'absolute', bottom: 1, left: 1, background: slotIndex === 0 ? '#4caf50' : 'rgba(0,0,0,0.5)', color: 'white', fontSize: '8px', padding: '1px 3px', borderRadius: 3, fontWeight: 700 }}>{slotIndex + 1}</div>
                         </div>
                       );

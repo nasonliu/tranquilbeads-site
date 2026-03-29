@@ -184,6 +184,13 @@ export const collections: Collection[] = [
 
 
 
+
+
+
+
+
+
+
 export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
@@ -193,7 +200,7 @@ export const products: Product[] = [
       en: "A 33-bead natural wood tasbih with a calm vintage tone and a presentation-ready gift box.",
       ar: "سبحة من 33 حبة من خشب طبيعي بطابع هادئ ولمسة كلاسيكية مع صندوق هدية جاهز للعرض.",
     },
-    image: "/images/imported/natural-kuka-wood-tasbih/upload-1774584897931-ama10-01.jpg",
+    image: "/images/imported/natural-kuka-wood-tasbih/1774763467336-kuka_1.jpg",
     material: { en: "Natural kuka wood", ar: "Natural kuka wood" },
     tags: {
       en: ["Natural material", "Gift box", "Daily dhikr", "signature-tasbih"],
@@ -210,11 +217,11 @@ export const products: Product[] = [
     idealFor: { en: "Built for boutiques, Ramadan gifting, and museum-style retail.", ar: "مناسبة للبوتيكات وهدايا رمضان ومتاجر التجزئة ذات الطابع الثقافي." },
     heroAlt: { en: "Natural Kuka Wood Tasbih hero", ar: "الصورة الرئيسية لسبحة كوكا خشبية طبيعية" },
     gallery: [
-      { image: "/images/imported/natural-kuka-wood-tasbih/upload-1774585698081-kuka_1.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 1", ar: "سبحة كوكا خشبية طبيعية تفصيل 1" } },
-      { image: "/images/imported/natural-kuka-wood-tasbih/upload-1774585706613-size_1.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 2", ar: "سبحة كوكا خشبية طبيعية تفصيل 2" } },
-      { image: "/images/imported/natural-kuka-wood-tasbih/upload-1774585719796-250902-64.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 3", ar: "سبحة كوكا خشبية طبيعية تفصيل 3" } },
-      { image: "/images/imported/natural-kuka-wood-tasbih/upload-1774585727014-250902-37.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 4", ar: "سبحة كوكا خشبية طبيعية تفصيل 4" } },
-      { image: "/images/imported/natural-kuka-wood-tasbih/upload-1774585742636-250902-26.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 5", ar: "سبحة كوكا خشبية طبيعية تفصيل 5" } },
+      { image: "/images/imported/natural-kuka-wood-tasbih/1774763478141-250902-114.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 1", ar: "سبحة كوكا خشبية طبيعية تفصيل 1" } },
+      { image: "/images/imported/natural-kuka-wood-tasbih/1774763485727-size_1.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 2", ar: "سبحة كوكا خشبية طبيعية تفصيل 2" } },
+      { image: "/images/imported/natural-kuka-wood-tasbih/1774763510775-250902-101.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 3", ar: "سبحة كوكا خشبية طبيعية تفصيل 3" } },
+      { image: "/images/imported/natural-kuka-wood-tasbih/1774763525685-250902-40.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 4", ar: "سبحة كوكا خشبية طبيعية تفصيل 4" } },
+      { image: "/images/imported/natural-kuka-wood-tasbih/1774763538977-kuka.jpg", alt: { en: "Natural Kuka Wood Tasbih detail 5", ar: "سبحة كوكا خشبية طبيعية تفصيل 5" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Natural kuka wood", ar: "Natural kuka wood" } },
@@ -317,6 +324,8 @@ export const products: Product[] = [
       { image: "/images/real-products/baltic-amber/detail-1.jpeg", alt: { en: "Baltic Amber Gift Set detail 1", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 1" } },
       { image: "/images/real-products/baltic-amber/detail-2.jpeg", alt: { en: "Baltic Amber Gift Set detail 2", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 2" } },
       { image: "/images/real-products/baltic-amber/detail-3.jpeg", alt: { en: "Baltic Amber Gift Set detail 3", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 3" } },
+      { image: "/images/imported/baltic-amber-gift-set/1774764754660-main.jpg", alt: { en: "Baltic Amber Gift Set detail 4", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 4" } },
+      { image: "/images/imported/baltic-amber-gift-set/1774764939986-factory-packaging.jpg", alt: { en: "Baltic Amber Gift Set detail 5", ar: "مجموعة هدية من الكهرمان البلطيقي تفصيل 5" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Amber-look bead set with gift box", ar: "Amber-look bead set with gift box" } },
