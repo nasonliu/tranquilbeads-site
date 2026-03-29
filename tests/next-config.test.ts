@@ -16,6 +16,14 @@ describe("next config", () => {
       "/api/images": expect.arrayContaining([
         "public/images/**/*",
       ]),
+      "/api/image-manager/fnos": expect.arrayContaining([
+        "public/images/**/*",
+        "src/lib/fnos-gallery.ts",
+      ]),
+      "/api/image-manager/fnos/preview": expect.arrayContaining([
+        "public/images/**/*",
+        "src/lib/fnos-gallery.ts",
+      ]),
     });
   });
 });

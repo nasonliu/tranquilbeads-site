@@ -20,6 +20,16 @@ const nextConfig: NextConfig = {
       "public/images/**/*",
       "app/data/**/*",
     ],
+    "/api/image-manager/fnos": [
+      "public/images/**/*",
+      "app/data/**/*",
+      "src/lib/fnos-gallery.ts",
+    ],
+    "/api/image-manager/fnos/preview": [
+      "public/images/**/*",
+      "app/data/**/*",
+      "src/lib/fnos-gallery.ts",
+    ],
   },
 };
 
