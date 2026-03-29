@@ -522,8 +522,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             </p>
             <h2 className="noor-title mt-3 text-4xl">
               {locale === "en"
-                ? "Designed for buyers who need confidence, not clutter"
-                : "مصمم للمشترين الذين يحتاجون إلى الثقة لا الفوضى"}
+                ? "Built for dependable sourcing and confident reordering"
+                : "مصمم لتوريد موثوق وإعادة طلب بثقة"}
             </h2>
           </div>
           <div
@@ -533,13 +533,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           >
             <p>
               {locale === "en"
-                ? "Our first-edition catalog keeps the offer sharp: tasbih-led hero products, giftable support items, and packaging options that help teams launch faster."
-                : "يحافظ كتالوج الإصدار الأول على عرض مركز: منتجات أساسية من التسابيح، وعناصر داعمة قابلة للإهداء، وخيارات تغليف تساعد الفرق على الإطلاق بسرعة."}
+                ? "Our assortments are structured to help wholesale teams buy faster: clear hero styles, gift-ready support pieces, and packaging options suited to modern retail programs."
+                : "تم تنظيم تشكيلاتنا لتساعد فرق الجملة على الشراء بسرعة أكبر: موديلات رئيسية واضحة، وقطع داعمة جاهزة للهدايا، وخيارات تغليف مناسبة لبرامج البيع الحديثة."}
             </p>
             <p>
               {locale === "en"
-                ? "You get a cleaner story, simpler reorders, and a website that can be deployed fast on Vercel without dragging in unnecessary commerce complexity."
-                : "تحصل على قصة عرض أوضح، وإعادة طلب أسهل، وموقع يمكن نشره بسرعة على Vercel دون تعقيدات تجارة إلكترونية غير ضرورية."}
+                ? "From first order to repeat replenishment, TranquilBeads gives buyers a sharper product story, steadier supply planning, and flexible private-label presentation."
+                : "من الطلب الأول إلى إعادة التوريد، تمنح TranquilBeads المشترين قصة منتج أوضح، وتخطيط توريد أكثر استقرارا، وعرضا مرنا للعلامة الخاصة."}
             </p>
           </div>
         </div>
