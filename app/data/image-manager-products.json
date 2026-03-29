@@ -711,35 +711,6 @@
     ]
   },
   {
-    "slug": "greenresin",
-    "name": "Green Resin Tasbih",
-    "nameAr": "سبحة راتنج أخضر",
-    "material": "Resin",
-    "collections": [
-      "signature-tasbih"
-    ],
-    "images": [
-      "/images/imported/greenresin/main.jpg",
-      "/images/imported/greenresin/main.jpg"
-    ],
-    "titleEn": "Green Resin Tasbih",
-    "titleAr": "سبحة راتنج أخضر",
-    "summaryEn": "Green Resin Tasbih — premium quality for wholesale.",
-    "summaryAr": "سبحة راتنج أخضر — جودة عالية للجملة.",
-    "detailIntroEn": "A premium green resin tasbih for modern retail.",
-    "detailIntroAr": "تسبيحة راتنج أخضر فاخرة للتجزئة العصرية.",
-    "detailBodyEn": "This green resin tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.",
-    "detailBodyAr": "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين.",
-    "idealForEn": "Boutiques, museum shops, and premium gifting.",
-    "idealForAr": "البوتيكات ومتاجر المتاحف والهدايا الفاخرة.",
-    "tagsEn": [
-      "Wholesale"
-    ],
-    "tagsAr": [
-      "جملة"
-    ]
-  },
-  {
     "slug": "ambercube33",
     "name": "Amber Cube 33-Bead Tasbih",
     "nameAr": "سبحة مكعب كهرماني 33 حبة",
@@ -748,8 +719,12 @@
       "signature-tasbih"
     ],
     "images": [
-      "/images/imported/ambercube33/main.jpg",
-      "/images/imported/ambercube33/main.jpg"
+      "/images/imported/ambercube33/1774778835476-main.jpg",
+      "/images/imported/ambercube33/1774778835527-amber-53.jpg",
+      "/images/imported/ambercube33/1774778835611-amber-63.jpg",
+      "/images/imported/ambercube33/1774778835641-amber-84.jpg",
+      "/images/imported/ambercube33/1774778835671-gen.jpg",
+      ""
     ],
     "titleEn": "Amber Cube 33-Bead Tasbih",
     "titleAr": "سبحة مكعب كهرماني 33 حبة",

@@ -195,6 +195,7 @@ export const collections: Collection[] = [
 
 
 
+
 export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
@@ -940,38 +941,6 @@ export const products: Product[] = [
     ],
   },
   {
-    slug: "greenresin",
-    collection: "signature-tasbih",
-    title: { en: "Green Resin Tasbih", ar: "سبحة راتنج أخضر" },
-    summary: {
-      en: "Green Resin Tasbih — premium quality for wholesale.",
-      ar: "سبحة راتنج أخضر — جودة عالية للجملة.",
-    },
-    image: "/images/imported/greenresin/main.jpg",
-    material: { en: "Resin", ar: "Resin" },
-    tags: {
-      en: ["Wholesale", "signature-tasbih"],
-      ar: ["جملة", "signature-tasbih"],
-    },
-    detailIntro: {
-      en: "A premium green resin tasbih for modern retail.",
-      ar: "تسبيحة راتنج أخضر فاخرة للتجزئة العصرية.",
-    },
-    detailBody: {
-      en: "This green resin tasbih offers exceptional quality and craftsmanship, ideal for boutiques and cultural retailers.",
-      ar: "توفر هذه التسبيحة جودة وحرفية استثنائية، مثالية للبوتيكات وتجار التجزئة الثقافيين.",
-    },
-    idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
-    heroAlt: { en: "Green Resin Tasbih hero", ar: "الصورة الرئيسية لسبحة راتنج أخضر" },
-    gallery: [
-      { image: "/images/imported/greenresin/main.jpg", alt: { en: "Green Resin Tasbih detail 1", ar: "سبحة راتنج أخضر تفصيل 1" } },
-    ],
-    specs: [
-      { label: { en: "Material", ar: "الخامة" }, value: { en: "Resin", ar: "Resin" } },
-      { label: { en: "Collection", ar: "المجموعة" }, value: { en: "signature-tasbih", ar: "signature-tasbih" } },
-    ],
-  },
-  {
     slug: "ambercube33",
     collection: "signature-tasbih",
     title: { en: "Amber Cube 33-Bead Tasbih", ar: "سبحة مكعب كهرماني 33 حبة" },
@@ -979,7 +948,7 @@ export const products: Product[] = [
       en: "Amber Cube 33-Bead Tasbih — premium quality for wholesale.",
       ar: "سبحة مكعب كهرماني 33 حبة — جودة عالية للجملة.",
     },
-    image: "/images/imported/ambercube33/main.jpg",
+    image: "/images/imported/ambercube33/1774778835476-main.jpg",
     material: { en: "Amber-look", ar: "Amber-look" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -996,7 +965,10 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Amber Cube 33-Bead Tasbih hero", ar: "الصورة الرئيسية لسبحة مكعب كهرماني 33 حبة" },
     gallery: [
-      { image: "/images/imported/ambercube33/main.jpg", alt: { en: "Amber Cube 33-Bead Tasbih detail 1", ar: "سبحة مكعب كهرماني 33 حبة تفصيل 1" } },
+      { image: "/images/imported/ambercube33/1774778835527-amber-53.jpg", alt: { en: "Amber Cube 33-Bead Tasbih detail 1", ar: "سبحة مكعب كهرماني 33 حبة تفصيل 1" } },
+      { image: "/images/imported/ambercube33/1774778835611-amber-63.jpg", alt: { en: "Amber Cube 33-Bead Tasbih detail 2", ar: "سبحة مكعب كهرماني 33 حبة تفصيل 2" } },
+      { image: "/images/imported/ambercube33/1774778835641-amber-84.jpg", alt: { en: "Amber Cube 33-Bead Tasbih detail 3", ar: "سبحة مكعب كهرماني 33 حبة تفصيل 3" } },
+      { image: "/images/imported/ambercube33/1774778835671-gen.jpg", alt: { en: "Amber Cube 33-Bead Tasbih detail 4", ar: "سبحة مكعب كهرماني 33 حبة تفصيل 4" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Amber-look", ar: "Amber-look" } },
