@@ -193,6 +193,7 @@ export const collections: Collection[] = [
 
 
 
+
 export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
@@ -877,7 +878,7 @@ export const products: Product[] = [
       en: "Shoushan Stone Tasbih — premium quality for wholesale.",
       ar: "سبحة حجر شوهان — جودة عالية للجملة.",
     },
-    image: "/images/imported/shoushan/main.jpg",
+    image: "/images/imported/shoushan/1774771521929-_dsc4065.jpg",
     material: { en: "Stone", ar: "Stone" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -894,7 +895,10 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Shoushan Stone Tasbih hero", ar: "الصورة الرئيسية لسبحة حجر شوهان" },
     gallery: [
-      { image: "/images/imported/shoushan/main.jpg", alt: { en: "Shoushan Stone Tasbih detail 1", ar: "سبحة حجر شوهان تفصيل 1" } },
+      { image: "/images/imported/shoushan/1774771529131-_dsc4063.jpg", alt: { en: "Shoushan Stone Tasbih detail 1", ar: "سبحة حجر شوهان تفصيل 1" } },
+      { image: "/images/imported/shoushan/1774771544468-_dsc4068.jpg", alt: { en: "Shoushan Stone Tasbih detail 2", ar: "سبحة حجر شوهان تفصيل 2" } },
+      { image: "/images/imported/shoushan/1774771551582-_dsc4067.jpg", alt: { en: "Shoushan Stone Tasbih detail 3", ar: "سبحة حجر شوهان تفصيل 3" } },
+      { image: "/images/imported/shoushan/1774771564395-_dsc4069.jpg", alt: { en: "Shoushan Stone Tasbih detail 4", ar: "سبحة حجر شوهان تفصيل 4" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Stone", ar: "Stone" } },
