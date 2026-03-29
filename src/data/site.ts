@@ -192,6 +192,7 @@ export const collections: Collection[] = [
 
 
 
+
 export const products: Product[] = [
   {
     slug: "natural-kuka-wood-tasbih",
@@ -841,7 +842,7 @@ export const products: Product[] = [
       en: "Oud Tasbih — premium quality for wholesale.",
       ar: "سبحة عود — جودة عالية للجملة.",
     },
-    image: "/images/imported/oud2/main.jpg",
+    image: "/images/imported/oud2/1774769941536-car-157.jpg",
     material: { en: "Oud", ar: "Oud" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -858,7 +859,10 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Oud Tasbih hero", ar: "الصورة الرئيسية لسبحة عود" },
     gallery: [
-      { image: "/images/imported/oud2/main.jpg", alt: { en: "Oud Tasbih detail 1", ar: "سبحة عود تفصيل 1" } },
+      { image: "/images/imported/oud2/1774769948804-car-262.jpg", alt: { en: "Oud Tasbih detail 1", ar: "سبحة عود تفصيل 1" } },
+      { image: "/images/imported/oud2/1774769955292-car-198.jpg", alt: { en: "Oud Tasbih detail 2", ar: "سبحة عود تفصيل 2" } },
+      { image: "/images/imported/oud2/1774769960917-car-125.jpg", alt: { en: "Oud Tasbih detail 3", ar: "سبحة عود تفصيل 3" } },
+      { image: "/images/imported/oud2/1774769971442-car-276.jpg", alt: { en: "Oud Tasbih detail 4", ar: "سبحة عود تفصيل 4" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Oud", ar: "Oud" } },

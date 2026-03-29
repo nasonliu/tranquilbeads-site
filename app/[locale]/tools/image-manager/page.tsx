@@ -31,6 +31,30 @@ interface CandidateImage {
   reasons: string[];
 }
 
+interface PublishPreview {
+  hasChanges: boolean;
+  branch: string;
+  files: Array<{
+    path: string;
+    status: 'modified' | 'added' | 'deleted' | 'renamed' | 'copied' | 'untracked';
+  }>;
+  commitMessage: string;
+}
+
+interface ConfigState {
+  hasGithubToken: boolean;
+  githubTokenMask: string | null;
+  repo: string | null;
+}
+
+interface DeploymentStatus {
+  state: 'not_configured' | 'building' | 'ready' | 'error' | 'unknown';
+  repo: string | null;
+  commitSha: string;
+  deploymentUrl: string | null;
+  productionUrl: string | null;
+}
+
 const ALL_COLLECTIONS = [
   'signature-tasbih',
   'gift-sets',
@@ -506,6 +530,145 @@ function EditProductModal({
   );
 }
 
+function PublishModal({
+  preview,
+  publishing,
+  onConfirm,
+  onClose,
+}: {
+  preview: PublishPreview;
+  publishing: boolean;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999 }}
+      onClick={(e) => { if (e.target === e.currentTarget && !publishing) onClose(); }}
+    >
+      <div style={{ background: 'white', borderRadius: 16, width: '90vw', maxWidth: 720, maxHeight: '85vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#222' }}>📤 发布到网站</div>
+            <div style={{ fontSize: '0.74rem', color: '#777', marginTop: 3 }}>
+              将在本地执行 commit + push，然后由 Vercel 自动部署
+            </div>
+          </div>
+          <button onClick={onClose} disabled={publishing} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: publishing ? 'not-allowed' : 'pointer', color: '#999', lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ padding: 20, overflow: 'auto' }}>
+          <div style={{ background: '#f7f7f7', borderRadius: 10, padding: '12px 14px', marginBottom: 16, fontSize: '0.82rem', color: '#444' }}>
+            <div><strong>分支：</strong>{preview.branch}</div>
+            <div style={{ marginTop: 6 }}><strong>提交信息：</strong>{preview.commitMessage}</div>
+          </div>
+
+          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#444', marginBottom: 10 }}>
+            即将发布 {preview.files.length} 个文件
+          </div>
+          <div style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
+            {preview.files.map((file) => (
+              <div key={file.path} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderBottom: '1px solid #f3f3f3', fontSize: '0.78rem' }}>
+                <span style={{
+                  minWidth: 74,
+                  textAlign: 'center',
+                  borderRadius: 999,
+                  padding: '3px 8px',
+                  background: file.status === 'untracked' ? '#e8f5e9' : '#fff3e0',
+                  color: file.status === 'untracked' ? '#2e7d32' : '#ef6c00',
+                  fontWeight: 700,
+                }}>
+                  {file.status}
+                </span>
+                <span style={{ fontFamily: 'monospace', color: '#444', wordBreak: 'break-all' }}>{file.path}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ padding: '16px 20px', borderTop: '1px solid #eee', display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+          <button onClick={onClose} disabled={publishing} style={{ padding: '8px 20px', borderRadius: 8, border: '1px solid #ddd', background: 'white', cursor: publishing ? 'not-allowed' : 'pointer', fontSize: '0.85rem' }}>取消</button>
+          <button onClick={onConfirm} disabled={publishing} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: publishing ? '#ccc' : '#111', color: 'white', cursor: publishing ? 'wait' : 'pointer', fontSize: '0.85rem', fontWeight: 700 }}>
+            {publishing ? '发布中...' : '确认发布'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeploymentStatusPanel({
+  status,
+  loading,
+  onRefresh,
+}: {
+  status: DeploymentStatus | null;
+  loading: boolean;
+  onRefresh: () => void;
+}) {
+  if (!status) return null;
+
+  const stateLabel = {
+    not_configured: '未配置 GitHub Token',
+    building: 'Vercel 部署中',
+    ready: 'Vercel 已完成',
+    error: 'Vercel 部署失败',
+    unknown: '状态未知',
+  }[status.state];
+
+  const stateColor = {
+    not_configured: '#757575',
+    building: '#ef6c00',
+    ready: '#2e7d32',
+    error: '#c62828',
+    unknown: '#455a64',
+  }[status.state];
+
+  return (
+    <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e0e0e0', padding: 16, marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#222' }}>Vercel 部署状态</div>
+          <div style={{ fontSize: '0.74rem', color: '#777', marginTop: 4 }}>
+            当前跟踪 commit：<span style={{ fontFamily: 'monospace' }}>{status.commitSha.slice(0, 7)}</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <span style={{ background: `${stateColor}15`, color: stateColor, borderRadius: 999, padding: '6px 10px', fontSize: '0.75rem', fontWeight: 700 }}>
+            {stateLabel}
+          </span>
+          <button onClick={onRefresh} disabled={loading} style={{ background: loading ? '#ccc' : '#111', color: 'white', border: 'none', padding: '8px 14px', borderRadius: 8, cursor: loading ? 'not-allowed' : 'pointer', fontSize: '0.8rem', fontWeight: 600 }}>
+            {loading ? '刷新中...' : '刷新状态'}
+          </button>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginTop: 14 }}>
+        <div style={{ background: '#f7f7f7', borderRadius: 10, padding: '10px 12px', fontSize: '0.78rem', color: '#444' }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>GitHub Repo</div>
+          <div style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{status.repo || '未识别'}</div>
+        </div>
+        <div style={{ background: '#f7f7f7', borderRadius: 10, padding: '10px 12px', fontSize: '0.78rem', color: '#444' }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>Production</div>
+          {status.productionUrl ? (
+            <a href={status.productionUrl} target="_blank" rel="noreferrer" style={{ color: '#1565c0', wordBreak: 'break-all' }}>{status.productionUrl}</a>
+          ) : (
+            <span style={{ color: '#777' }}>暂无</span>
+          )}
+        </div>
+        <div style={{ background: '#f7f7f7', borderRadius: 10, padding: '10px 12px', fontSize: '0.78rem', color: '#444' }}>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>Deployment</div>
+          {status.deploymentUrl ? (
+            <a href={status.deploymentUrl} target="_blank" rel="noreferrer" style={{ color: '#1565c0', wordBreak: 'break-all' }}>{status.deploymentUrl}</a>
+          ) : (
+            <span style={{ color: '#777' }}>暂无</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ImageManagerPage() {
   const [imageData, setImageData] = useState<ImageData | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
@@ -518,6 +681,15 @@ export default function ImageManagerPage() {
   const [allCollections, setAllCollections] = useState<string[]>([...ALL_COLLECTIONS]);
   const [filterCollections, setFilterCollections] = useState<string[]>([]);
   const [syncing, setSyncing] = useState(false);
+  const [publishPreview, setPublishPreview] = useState<PublishPreview | null>(null);
+  const [loadingPublishPreview, setLoadingPublishPreview] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [config, setConfig] = useState<ConfigState | null>(null);
+  const [githubTokenInput, setGithubTokenInput] = useState('');
+  const [savingConfig, setSavingConfig] = useState(false);
+  const [testingConfig, setTestingConfig] = useState(false);
+  const [deployStatus, setDeployStatus] = useState<DeploymentStatus | null>(null);
+  const [deployStatusLoading, setDeployStatusLoading] = useState(false);
 
   const syncCollectionsFromProducts = useCallback((nextProducts: Product[]) => {
     const cols = new Set<string>(ALL_COLLECTIONS);
@@ -538,6 +710,20 @@ export default function ImageManagerPage() {
   }, [syncCollectionsFromProducts]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const loadConfig = useCallback(async () => {
+    try {
+      const res = await fetch('/api/image-manager/config', { cache: 'no-store' });
+      const data = await res.json();
+      if (!data.error) {
+        setConfig(data);
+      }
+    } catch {
+      // Keep the UI usable even if local config fails to load.
+    }
+  }, []);
+
+  useEffect(() => { void loadConfig(); }, [loadConfig]);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -641,6 +827,122 @@ export default function ImageManagerPage() {
     finally { setSyncing(false); }
   };
 
+  const handleOpenPublishPreview = async () => {
+    setLoadingPublishPreview(true);
+    try {
+      const res = await fetch('/api/image-manager/publish', { cache: 'no-store' });
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      if (!data.hasChanges) {
+        showToast('没有可发布的本地变更');
+        return;
+      }
+      setPublishPreview(data);
+    } catch {
+      alert('读取发布预览失败');
+    } finally {
+      setLoadingPublishPreview(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!publishPreview) return;
+    setPublishing(true);
+    try {
+      const res = await fetch('/api/image-manager/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ commitMessage: publishPreview.commitMessage }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      setPublishPreview(null);
+      showToast(`✓ 已推送 ${data.commitSha.slice(0, 7)}，Vercel 正在部署`);
+      await fetchDeployStatus(data.commitSha);
+      await loadData();
+    } catch {
+      alert('发布失败');
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const fetchDeployStatus = useCallback(async (commitSha: string) => {
+    setDeployStatusLoading(true);
+    try {
+      const res = await fetch(`/api/image-manager/deploy-status?sha=${encodeURIComponent(commitSha)}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (!data.error) {
+        setDeployStatus(data);
+      }
+    } catch {
+      // leave the previous status visible
+    } finally {
+      setDeployStatusLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!deployStatus || deployStatus.state !== 'building') return;
+    const timer = window.setTimeout(() => {
+      void fetchDeployStatus(deployStatus.commitSha);
+    }, 8000);
+    return () => window.clearTimeout(timer);
+  }, [deployStatus, fetchDeployStatus]);
+
+  const handleSaveGithubToken = async () => {
+    setSavingConfig(true);
+    try {
+      const res = await fetch('/api/image-manager/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ githubToken: githubTokenInput }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      setConfig(data);
+      setGithubTokenInput('');
+      showToast('✓ GitHub Token 已保存');
+    } catch {
+      alert('保存 GitHub Token 失败');
+    } finally {
+      setSavingConfig(false);
+    }
+  };
+
+  const handleTestGithubToken = async () => {
+    setTestingConfig(true);
+    try {
+      const res = await fetch('/api/image-manager/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
+        body: JSON.stringify({ action: 'test', githubToken: githubTokenInput }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      showToast(`✓ GitHub 已连接：${data.login || 'ok'}`);
+    } catch {
+      alert('测试 GitHub 连接失败');
+    } finally {
+      setTestingConfig(false);
+    }
+  };
+
   const toggleFilterCollection = (col: string) => {
     setFilterCollections(prev => prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]);
   };
@@ -689,6 +991,9 @@ export default function ImageManagerPage() {
             <button onClick={handleSyncToSite} disabled={syncing} style={{ background: syncing ? '#ccc' : '#e91e63', color: 'white', border: 'none', padding: '10px 20px', borderRadius: 8, cursor: syncing ? 'not-allowed' : 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
               {syncing ? '同步中...' : '🚀 同步到网站'}
             </button>
+            <button onClick={() => void handleOpenPublishPreview()} disabled={loadingPublishPreview || syncing} style={{ background: loadingPublishPreview ? '#ccc' : '#111', color: 'white', border: 'none', padding: '10px 20px', borderRadius: 8, cursor: loadingPublishPreview || syncing ? 'not-allowed' : 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
+              {loadingPublishPreview ? '读取发布预览...' : '📤 提交并发布'}
+            </button>
             <button onClick={() => setEditModal({ product: { ...EMPTY_PRODUCT }, mode: 'add' })} style={{ background: '#4caf50', color: 'white', border: 'none', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
               ➕ 新增产品
             </button>
@@ -696,8 +1001,37 @@ export default function ImageManagerPage() {
         </div>
 
         <div style={{ background: '#fff3e0', border: '1px solid #ffcc80', borderRadius: 8, padding: '12px 16px', marginBottom: 20, fontSize: '0.875rem' }}>
-          <strong>操作说明：</strong>点击槽位选择图片 → 编辑产品信息 → <strong>🚀 同步到网站</strong>推送变更到真实产品文件
+          <strong>操作说明：</strong>点击槽位选择图片 → 编辑产品信息 → <strong>🚀 同步到网站</strong>生成真实产品文件 → <strong>📤 提交并发布</strong>推到 GitHub / Vercel
         </div>
+
+        <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e0e0e0', padding: 16, marginBottom: 16 }}>
+          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#222', marginBottom: 6 }}>GitHub 配置</div>
+          <div style={{ fontSize: '0.75rem', color: '#666', marginBottom: 12 }}>
+            {config?.repo ? `当前仓库：${config.repo}` : '当前仓库未识别'}
+            {config?.hasGithubToken && config.githubTokenMask ? ` · 已保存 Token：${config.githubTokenMask}` : ' · 尚未保存 GitHub Token'}
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <input
+              type="password"
+              value={githubTokenInput}
+              onChange={(e) => setGithubTokenInput(e.target.value)}
+              placeholder="输入 GitHub Personal Access Token"
+              style={{ flex: 1, minWidth: 260, padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: '0.84rem' }}
+            />
+            <button onClick={() => void handleSaveGithubToken()} disabled={savingConfig} style={{ background: savingConfig ? '#ccc' : '#1565c0', color: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, cursor: savingConfig ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700 }}>
+              {savingConfig ? '保存中...' : '保存 Token'}
+            </button>
+            <button onClick={() => void handleTestGithubToken()} disabled={testingConfig} style={{ background: testingConfig ? '#ccc' : '#455a64', color: 'white', border: 'none', padding: '10px 16px', borderRadius: 8, cursor: testingConfig ? 'not-allowed' : 'pointer', fontSize: '0.82rem', fontWeight: 700 }}>
+              {testingConfig ? '测试中...' : '测试 GitHub 连接'}
+            </button>
+          </div>
+        </div>
+
+        <DeploymentStatusPanel
+          status={deployStatus}
+          loading={deployStatusLoading}
+          onRefresh={() => { if (deployStatus) void fetchDeployStatus(deployStatus.commitSha); }}
+        />
 
         {/* Collection filter tags */}
         <div style={{ marginBottom: 12 }}>
@@ -807,6 +1141,15 @@ export default function ImageManagerPage() {
 
       {editModal && (
         <EditProductModal product={editModal.product} mode={editModal.mode} allCollections={allCollections} onSave={handleSaveProduct} onClose={() => setEditModal(null)} />
+      )}
+
+      {publishPreview && (
+        <PublishModal
+          preview={publishPreview}
+          publishing={publishing}
+          onConfirm={() => void handlePublish()}
+          onClose={() => setPublishPreview(null)}
+        />
       )}
 
       {toast && (
