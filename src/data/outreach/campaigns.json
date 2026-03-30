@@ -1,0 +1,22 @@
+[
+  {
+    "id": "camp_whatsapp_launch_2026_03_30",
+    "name": "WhatsApp launch batch",
+    "description": "First live WhatsApp launch batch",
+    "channels": [
+      "whatsapp"
+    ],
+    "status": "active",
+    "createdAt": "2026-03-30T00:00:00.000Z"
+  },
+  {
+    "id": "camp_email_launch_2026_03_30",
+    "name": "Email launch batch",
+    "description": "First live email launch batch",
+    "channels": [
+      "email"
+    ],
+    "status": "active",
+    "createdAt": "2026-03-30T00:00:00.000Z"
+  }
+]

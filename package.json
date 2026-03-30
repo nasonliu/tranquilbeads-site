@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "outreach:import": "tsx scripts/import-obsidian-leads.ts",
+    "outreach:queue": "tsx scripts/queue-outreach-tasks.ts",
+    "outreach:send": "tsx scripts/run-outreach-first-touch.ts",
+    "outreach:sync-replies": "tsx scripts/sync-outreach-replies.ts",
+    "outreach:sync-openclaw-whatsapp": "tsx scripts/sync-openclaw-whatsapp-replies.ts"
   },
   "dependencies": {
     "next": "16.2.0",
@@ -28,6 +33,7 @@
     "eslint-config-next": "16.2.0",
     "jsdom": "^29.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.0"

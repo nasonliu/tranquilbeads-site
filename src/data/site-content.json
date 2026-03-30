@@ -33,6 +33,12 @@
       }
     ]
   },
+  "outreachAttachmentDefaults": {
+    "defaultPair": {
+      "heroImage": "/images/real-products/natural-kuka-wood/hero.jpeg",
+      "secondaryImage": "/images/real-products/natural-kuka-wood/detail-1.jpeg"
+    }
+  },
   "collections": [
     {
       "slug": "signature-tasbih",

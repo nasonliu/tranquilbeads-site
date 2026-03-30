@@ -1,0 +1,50 @@
+[
+  {
+    "id": "whatsapp-personalized",
+    "channel": "whatsapp",
+    "variant": "personalized",
+    "attachmentImageCount": 2,
+    "content": {
+      "en": {
+        "subject": null,
+        "body": "Hello, this is Nason from TranquilBeads.\n\nWe supply premium tasbih and gift-ready Islamic products for wholesale partners, gift shops, and distributors.\n\nI came across {{lead.company}} and thought our collection may be relevant for your market. You can view our website here:\n{{website_url}}\n\nI’m also sharing two product photos for a quick reference. If this is of interest, I’d be happy to send suitable product options with MOQ, packaging, and lead time details."
+      },
+      "ar": {
+        "subject": null,
+        "body": "مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على {{lead.company}} واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\n{{website_url}}\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد."
+      }
+    }
+  },
+  {
+    "id": "whatsapp-generic",
+    "channel": "whatsapp",
+    "variant": "generic",
+    "attachmentImageCount": 2,
+    "content": {
+      "en": {
+        "subject": null,
+        "body": "Hello, this is Nason from TranquilBeads.\n\nWe supply premium tasbih and gift-ready Islamic products for wholesale partners, gift shops, and distributors.\n\nI’m reaching out to introduce our collection. You can view our website here:\n{{website_url}}\n\nI’m also sharing two product photos for a quick reference. If this is of interest, I’d be happy to send suitable product options with MOQ, packaging, and lead time details."
+      },
+      "ar": {
+        "subject": null,
+        "body": "مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nأتواصل معكم للتعريف بمجموعتنا. يمكنكم زيارة موقعنا هنا:\n{{website_url}}\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد."
+      }
+    }
+  },
+  {
+    "id": "email-personalized",
+    "channel": "email",
+    "variant": "personalized",
+    "attachmentImageCount": 2,
+    "content": {
+      "en": {
+        "subject": "Premium Tasbih Collection for {{lead.company}}",
+        "body": "Hello,\n\nThis is Nason from TranquilBeads.\n\nWe supply premium tasbih and gift-ready Islamic products for wholesale partners, gift shops, and distributors.\n\nI came across {{lead.company}} and thought our collection could be a good match for your market. You can view our website here:\n{{website_url}}\n\nI’ve also attached two product images for a quick reference. If relevant for your business, I’d be happy to send suitable product options together with MOQ, packaging, and lead time details.\n\nBest regards,\nNason\nTranquilBeads\n{{website_url}}"
+      },
+      "ar": {
+        "subject": "مجموعة سبح فاخرة لـ {{lead.company}}",
+        "body": "مرحبًا,\n\nأنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على {{lead.company}} واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\n{{website_url}}\n\nلقد أرفقت أيضًا صورتين للمنتج كمرجع سريع. إذا كان ذلك مناسبًا لعملكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد.\n\nمع التحية,\nNason\nTranquilBeads\n{{website_url}}"
+      }
+    }
+  }
+]

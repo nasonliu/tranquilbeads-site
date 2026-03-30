@@ -1,0 +1,302 @@
+[
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-5-al-ishq-fashion-l-l-c-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-5-al-ishq-fashion-l-l-c-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971562527478 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Al Ishq Fashion L.L.C. واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:45.562Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-6-al-safir-gifts-trading-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-6-al-safir-gifts-trading-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971559812022 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على AL-SAFIR GIFTS TRADING LLC واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:47.531Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-1-beads-elegant-gift-trading-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-1-beads-elegant-gift-trading-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971559051926 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Beads Elegant Gift Trading LLC واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:49.373Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-7-belfast-gifts-trading-llc-corporate-gifts-in-dub-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-7-belfast-gifts-trading-llc-corporate-gifts-in-dub-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97142219455 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Belfast Gifts Trading LLC / Corporate Gifts in Dubai واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:51.203Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-bahrain-tasbih-leads-2026-03-19-1-brandx-enterprises-w-l-l-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-bahrain-tasbih-leads-2026-03-19-1-brandx-enterprises-w-l-l-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97335632929 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على BrandX Enterprises W.L.L واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:53.210Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-4-dunhao-trading-fzco-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-4-dunhao-trading-fzco-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97144578674 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على dunhao trading Fzco واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:55.175Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-1-gift-city-qatar-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-1-gift-city-qatar-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97433718277 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على GIFT CITY QATAR واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:57.153Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-8-jasani-l-l-c-corporate-gifts-in-dubai-promotiona-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-8-jasani-l-l-c-corporate-gifts-in-dubai-promotiona-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97144411522 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Jasani (L.L.C.) / Corporate Gifts in Dubai / Promotional Gifts Dubai واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:30:59.212Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-3-maknas-trading-co-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-3-maknas-trading-co-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97142259454 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Maknas Trading Co. LLC. واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:01.085Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-9-qas-gifts-trading-llc-uae-1-corporate-gifts-supp-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-9-qas-gifts-trading-llc-uae-1-corporate-gifts-supp-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971528344665 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على QAS Gifts Trading LLC / UAE #1 Corporate Gifts Supplier واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:02.921Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-2-zayoshe-flowers-i-gifts-i-balloons-i-events-i-pe-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-2-zayoshe-flowers-i-gifts-i-balloons-i-events-i-pe-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971527276160 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على ZAYOSHE - Flowers I Gifts I Balloons I Events I Personalised For all Occasions واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:42.460Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-10-alpha-rubbers-wholesale-trading-l-l-c-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-10-alpha-rubbers-wholesale-trading-l-l-c-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971507750146 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Alpha Rubbers wholesale Trading L.L.C واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:44.370Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-11-alpine-crystals-uae-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-11-alpine-crystals-uae-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971558787555 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Alpine Crystals UAE واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:46.661Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-12-crystal-house-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-12-crystal-house-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97143989380 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Crystal House LLC واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:48.908Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-bahrain-tasbih-leads-2026-03-19-2-pure-stones-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-bahrain-tasbih-leads-2026-03-19-2-pure-stones-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97336229772 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Pure Stones واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:50.843Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-13-sanjay-kumar-trading-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-13-sanjay-kumar-trading-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971527021814 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على SANJAY KUMAR TRADING LLC واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:52.700Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-2-bushtorm-trading-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-2-bushtorm-trading-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97460022239 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Bushtorm Trading واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:54.544Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-3-mia-gift-shop-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-3-mia-gift-shop-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97444224814 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على MIA Gift Shop واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:56.377Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-16-acharya-trading-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-16-acharya-trading-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971581897152 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Acharya Trading LLC واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:31:58.706Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-4-ibn-alqayyim-bookstore-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-4-ibn-alqayyim-bookstore-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97470257623 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Ibn AlQayyim Bookstore واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:00.841Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-15-kalyani-trading-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-15-kalyani-trading-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971551728102 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Kalyani Trading LLC. واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:15.830Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-5-karisma-international-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-5-karisma-international-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97431115557 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Karisma International واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:18.151Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-14-ribbons-trading-llc-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-14-ribbons-trading-llc-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97143588200 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على RIBBONS TRADING LLC واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:20.328Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-6-wah-gifts-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-6-wah-gifts-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97455441129 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Wah Gifts واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:22.193Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-9-al-bazaar-oriental-art-handicrafts-albazaar-shop-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-9-al-bazaar-oriental-art-handicrafts-albazaar-shop-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97433707810 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Al Bazaar Oriental Art & Handicrafts (albazaar.shop) البازار واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:24.070Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-7-alam-al-ressala-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-7-alam-al-ressala-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97430526968 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على ALAM AL RESSALA واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:25.931Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-bahrain-tasbih-leads-2026-03-19-3-bahrain-wholesale-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-bahrain-tasbih-leads-2026-03-19-3-bahrain-wholesale-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97339998894 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Bahrain Wholesale واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:27.825Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-18-deensquare-com-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-18-deensquare-com-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97142675329 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على DeenSquare.com واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:29.702Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-8-gifts-by-fatma-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-qatar-tasbih-leads-2026-03-19-8-gifts-by-fatma-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +97433198260 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على Gifts By Fatma / هدايا باي فاطمة واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:31.557Z"
+  },
+  {
+    "id": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-19-golden-gate-souvenirs-gifts-two-seasons-whatsapp-failed",
+    "taskId": "camp-whatsapp-launch-2026-03-30-united-arab-emirates-tasbih-leads-2026-03-19-19-golden-gate-souvenirs-gifts-two-seasons-whatsapp",
+    "type": "failed",
+    "payload": {
+      "channel": "whatsapp",
+      "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971555763916 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على GOLDEN GATE SOUVENIRS &GIFTS (TWO SEASONS) واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
+    },
+    "createdAt": "2026-03-30T03:32:33.450Z"
+  }
+]

@@ -1,28 +1,6 @@
 import type { Metadata } from "next";
-import {
-  Cormorant_Garamond,
-  Manrope,
-  Noto_Naskh_Arabic,
-} from "next/font/google";
 
 import "./globals.css";
-
-const displayFont = Cormorant_Garamond({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const bodyFont = Manrope({
-  variable: "--font-body",
-  subsets: ["latin"],
-});
-
-const arabicFont = Noto_Naskh_Arabic({
-  variable: "--font-arabic",
-  subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -56,7 +34,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${displayFont.variable} ${bodyFont.variable} ${arabicFont.variable}`}
+      style={
+        {
+          "--font-display": "\"Iowan Old Style\", \"Palatino Linotype\", \"Book Antiqua\", Georgia, serif",
+          "--font-body": "\"Avenir Next\", Avenir, \"Segoe UI\", sans-serif",
+          "--font-arabic": "\"Geeza Pro\", \"Noto Naskh Arabic\", \"Times New Roman\", serif",
+        } as React.CSSProperties
+      }
     >
       <body>{children}</body>
     </html>

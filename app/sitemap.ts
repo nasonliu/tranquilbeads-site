@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
 
 import { collections, products } from "@/src/data/site";
+import { blogPosts } from "@/src/data/blog";
 import { locales, withLocale } from "@/src/lib/i18n";
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tranquilbeads.vercel.app";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["/", "/collections", "/wholesale", "/contact"];
+  const routes = ["/", "/collections", "/wholesale", "/contact", "/blog"];
 
   return locales.flatMap((locale) =>
     [
@@ -20,6 +21,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
       ...products.map((product) => ({
         url: `${baseUrl}${withLocale(locale, `/collections/${product.collection}/${product.slug}`)}`,
+        lastModified: new Date(),
+      })),
+      ...blogPosts.map((post) => ({
+        url: `${baseUrl}${withLocale(locale, `/blog/${post.slug}`)}`,
         lastModified: new Date(),
       })),
     ],
