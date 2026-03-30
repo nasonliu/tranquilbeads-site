@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { isLocale, withLocale } from "@/src/lib/i18n";
@@ -23,19 +24,33 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 const blogPosts = [
   {
     slug: "how-to-identify-real-amber-tasbih",
-    title: { en: "How to Identify Real Amber Tasbih vs Fake", ar: "كيفية التعرف على السبح الكهرماني الحقيقي مقابل المزيف" },
-    description: { en: "Amber tasbih commands premium pricing — but fakes are everywhere. Learn the 5 tests wholesale buyers can do in 2 minutes.", ar: "تحظى السباح الكهرمانية بسعر متميز — لكن المزيفات منتشرة. تعلم 5 اختبارات في دقيقتين." },
+    title: {
+      en: "How to Identify Real Amber Tasbih vs Fake",
+      ar: "كيفية التعرف على السبح الكهرماني الحقيقي مقابل المزيف",
+    },
+    description: {
+      en: "5 practical tests wholesale buyers can do in 2 minutes to verify amber authenticity.",
+      ar: "5 اختبارات عملية يمكن لمشتري الجملة إجراؤها في دقيقتين للتحقق من أصالة الكهرمان.",
+    },
     readTime: { en: "5 min read", ar: "5 دقائق للقراءة" },
     category: { en: "Buyer's Guide", ar: "دليل المشتري" },
-    icon: "🟡",
+    heroImage: "/images/real-products/baltic-amber/hero.jpeg",
+    altImage: { en: "Real Baltic amber tasbih beads", ar: "خرزات سبح كهرماني بلطيقي أصلي" },
   },
   {
     slug: "kuka-wood-tasbih-authenticity-guide",
-    title: { en: "Kuka Wood Tasbih: How to Verify Quality", ar: "سبحان خشب الكوكا: كيفية التحقق من الجودة" },
-    description: { en: "Kuka wood tasbih is one of the most counterfeited prayer beads. Three key checks: grain, weight, and scent.", ar: "سبحان خشب الكوكا من أكثر السباح المقلدة. ثلاثة فحوصات رئيسية: الحبوب والوزن والرائحة." },
+    title: {
+      en: "Kuka Wood Tasbih: How to Verify Quality",
+      ar: "سبحان خشب الكوكا: كيفية التحقق من الجودة",
+    },
+    description: {
+      en: "Three key checks for kuka wood quality: grain, weight, and scent.",
+      ar: "ثلاثة فحوصات رئيسية لجودة خشب الكوكا: الحبوب والوزن والرائحة.",
+    },
     readTime: { en: "6 min read", ar: "6 دقائق للقراءة" },
     category: { en: "Buyer's Guide", ar: "دليل المشتري" },
-    icon: "🪵",
+    heroImage: "/images/real-products/natural-kuka-wood/hero.jpeg",
+    altImage: { en: "Natural kuka wood tasbih", ar: "سبحان خشب كوكا طبيعي" },
   },
 ];
 
@@ -66,15 +81,20 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
             href={withLocale(locale, `/blog/${post.slug}`)}
             className="group space-y-4"
           >
-            <div className="overflow-hidden rounded-2xl border border-border/60 bg-gray-50">
-              <div className="aspect-[16/9] flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-50">
-                <span className="text-6xl opacity-40">{post.icon}</span>
+            <div className="overflow-hidden rounded-2xl border border-border/60">
+              <div className="relative aspect-[16/9] bg-gray-50">
+                <Image
+                  src={post.heroImage}
+                  alt={post.altImage[locale]}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-3 text-xs text-muted">
                 <span className="rounded-full bg-accent/10 px-3 py-1 text-accent-deep">{post.category[locale]}</span>
-                <span>{post.publishedAt}</span>
                 <span>{post.readTime[locale]}</span>
               </div>
               <h2 className="mt-2 text-xl font-semibold group-hover:text-accent-deep transition-colors">{post.title[locale]}</h2>

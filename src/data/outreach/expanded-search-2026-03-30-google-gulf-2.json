@@ -1,0 +1,373 @@
+{
+  "generatedAt": "2026-03-30T05:39:29.753Z",
+  "source": "google-places-server-key",
+  "markets": [
+    {
+      "country": "Bahrain",
+      "city": "Manama"
+    },
+    {
+      "country": "Saudi Arabia",
+      "city": "Riyadh"
+    }
+  ],
+  "rawRecordCount": 30,
+  "totalLeads": 26,
+  "priorityLeadCount": 13,
+  "topPriorityLeads": [
+    {
+      "companyName": "AL AHIBAH TRADING W.L.L",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "https://alahibahtrading.com/",
+      "whatsapp": "+973 3903 8952",
+      "score": 100,
+      "businessRoles": [
+        "wholesaler",
+        "distributor"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Manama Bahrain"
+      ]
+    },
+    {
+      "companyName": "Saleh Al-Saleh Co. W.L.L. (sasco foods)",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "http://salehalsaleh.com/",
+      "whatsapp": "+973 1725 3441",
+      "score": 95,
+      "businessRoles": [
+        "wholesaler",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Manama Bahrain"
+      ]
+    },
+    {
+      "companyName": "صنعة",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "website": "https://sanah-rosary.com/",
+      "whatsapp": "+966 50 669 0496",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Riyadh Saudi Arabia"
+      ]
+    },
+    {
+      "companyName": "Bahrain Wholesale",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "http://www.bahrainwholesale.net/",
+      "whatsapp": "+973 3999 8894",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Manama Bahrain"
+      ]
+    },
+    {
+      "companyName": "Pure Stones",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "https://www.instagram.com/thepurestones/",
+      "whatsapp": "+973 3622 9772",
+      "score": 75,
+      "businessRoles": [
+        "importer",
+        "retailer",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website",
+        "instagram"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Manama Bahrain",
+        "Google Maps: islamic gift shop Manama Bahrain"
+      ]
+    },
+    {
+      "companyName": "Palace Enterprises",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "http://www.palace-enterprises.com/",
+      "whatsapp": "+973 1774 8989",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: islamic gifts wholesaler Manama Bahrain"
+      ]
+    },
+    {
+      "companyName": "شركة عبدالعزيز بن محمدالماضي وشريكه أمبكو",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "website": "https://sahamgroups.com/",
+      "whatsapp": "+966 55 536 3275",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Riyadh Saudi Arabia"
+      ]
+    },
+    {
+      "companyName": "قرطاسية وسم",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "website": "https://wsend.co/966564177362",
+      "whatsapp": "+966 56 417 7362",
+      "score": 75,
+      "businessRoles": [
+        "importer",
+        "retailer",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Riyadh Saudi Arabia"
+      ]
+    },
+    {
+      "companyName": "Al-Noor Islamic",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "whatsapp": "+966 55 969 3587",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: islamic gift shop Riyadh Saudi Arabia"
+      ]
+    },
+    {
+      "companyName": "Aurora",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "https://aurorabh.net/",
+      "whatsapp": "+973 3446 7432",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Manama Bahrain"
+      ]
+    },
+    {
+      "companyName": "Bloomax Flowers Riyadh – بلوماكس فلاورز الرياض",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "whatsapp": "+966 53 908 8611",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Riyadh Saudi Arabia"
+      ]
+    },
+    {
+      "companyName": "شركة بيت الكريستال كريستال وخرز وكلف وخيوط واكسسورات",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "website": "https://gamma.app/docs/-v222bfbln96hfp3",
+      "whatsapp": "+966 58 000 3433",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Riyadh Saudi Arabia"
+      ]
+    },
+    {
+      "companyName": "العماري للسبح والخواتم والتراثيات",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "whatsapp": "+966 50 089 2631",
+      "score": 70,
+      "businessRoles": [
+        "importer",
+        "retailer",
+        "wholesaler",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Riyadh Saudi Arabia",
+        "Google Maps: islamic gifts wholesaler Riyadh Saudi Arabia"
+      ]
+    }
+  ],
+  "filteredExamples": []
+}

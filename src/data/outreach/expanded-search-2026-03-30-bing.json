@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-03-30T05:35:09.978Z",
+  "source": "bing-search-fallback",
+  "markets": [
+    {
+      "country": "United Arab Emirates",
+      "city": "Dubai"
+    },
+    {
+      "country": "Qatar",
+      "city": "Doha"
+    },
+    {
+      "country": "Bahrain",
+      "city": "Manama"
+    },
+    {
+      "country": "Saudi Arabia",
+      "city": "Riyadh"
+    }
+  ],
+  "rawRecordCount": 96,
+  "totalLeads": 36,
+  "priorityLeadCount": 2,
+  "topPriorityLeads": [
+    {
+      "companyName": "U.S. Religious Landscape Survey Religious Beliefs and Practices ...",
+      "country": "Bahrain",
+      "city": "Manama",
+      "website": "https://www.pewforum.org",
+      "email": "3c89de1fec26c527e4eb1b2a777b0007@o4510032606527488.ingest.us.sentry.io",
+      "whatsapp": "+12024194300",
+      "score": 100,
+      "businessRoles": [
+        "unknown"
+      ],
+      "availableChannels": [
+        "email",
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "notes": "Good match for premium Ramadan and gift-channel selling. Lead angle: stable factory production for wholesale orders.",
+      "sourceNames": [
+        "Bing Search"
+      ]
+    },
+    {
+      "companyName": "What is Ramadan? It’s History and Significance for 2 Billion People",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "https://halalfoundation.org",
+      "email": "info@halalfoundation.org",
+      "whatsapp": "+1 (630) 759-4981",
+      "score": 80,
+      "businessRoles": [
+        "unknown"
+      ],
+      "availableChannels": [
+        "email",
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "notes": "Good match for premium Ramadan and gift-channel selling. Lead angle: stable factory production for wholesale orders.",
+      "sourceNames": [
+        "Bing Search"
+      ]
+    }
+  ],
+  "filteredExamples": []
+}

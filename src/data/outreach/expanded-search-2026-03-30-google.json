@@ -1,0 +1,447 @@
+{
+  "generatedAt": "2026-03-30T05:38:11.638Z",
+  "source": "google-places-server-key",
+  "markets": [
+    {
+      "country": "United Arab Emirates",
+      "city": "Dubai"
+    },
+    {
+      "country": "Qatar",
+      "city": "Doha"
+    }
+  ],
+  "rawRecordCount": 23,
+  "totalLeads": 23,
+  "priorityLeadCount": 14,
+  "topPriorityLeads": [
+    {
+      "companyName": "Beads Elegant Gift Trading LLC",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "https://www.beadselegant.com/",
+      "whatsapp": "+971 55 905 1926",
+      "score": 100,
+      "businessRoles": [
+        "wholesaler",
+        "distributor",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "ZAYOSHE - Flowers I Gifts I Balloons I Events I Personalised For all Occasions",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "https://www.zayoshe.com/",
+      "whatsapp": "+971 52 727 6160",
+      "score": 100,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "gift-shop",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Sabha General Trading Co LLC",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "http://www.sabhaa.com/",
+      "whatsapp": "+971 55 667 5959",
+      "score": 100,
+      "businessRoles": [
+        "wholesaler",
+        "distributor",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Maknas Trading Co. LLC.",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "http://www.spanglesandbeads.com/",
+      "whatsapp": "+971 4 225 9454",
+      "score": 100,
+      "businessRoles": [
+        "wholesaler",
+        "distributor",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Saba Trading Group",
+      "country": "Qatar",
+      "city": "Doha",
+      "website": "https://www.sabagroup.net/",
+      "whatsapp": "+974 4458 1655",
+      "score": 100,
+      "businessRoles": [
+        "wholesaler",
+        "distributor",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Doha Qatar"
+      ]
+    },
+    {
+      "companyName": "Alpine Crystals UAE",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "https://alpinecrystalsuae.com/",
+      "whatsapp": "+971 55 878 7555",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Fakhruddin Souq Wholesale UAE",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "https://www.fakhruddinsouq.com/",
+      "whatsapp": "+971 56 533 4159",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Crystal House LLC",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "https://crystalhouseuae.com/",
+      "whatsapp": "+971 4 398 9380",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Q Star Trading Co. WLL, Q PAC - Wholesale market",
+      "country": "Qatar",
+      "city": "Doha",
+      "website": "http://www.qstardoha.com/",
+      "whatsapp": "+974 5009 9330",
+      "score": 80,
+      "businessRoles": [
+        "wholesaler",
+        "distributor"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Doha Qatar"
+      ]
+    },
+    {
+      "companyName": "ALSUBAH trading wll",
+      "country": "Qatar",
+      "city": "Doha",
+      "website": "http://www.astsubah.com/",
+      "whatsapp": "+974 4435 1223",
+      "score": 80,
+      "businessRoles": [
+        "wholesaler",
+        "distributor"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Doha Qatar"
+      ]
+    },
+    {
+      "companyName": "Islamicgifts.ae - Personalised Gift Shop For all Occasions",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "website": "http://www.islamicgifts.ae/",
+      "whatsapp": "+971 50 547 6076",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: islamic gifts wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "ALAM AL RESSALA",
+      "country": "Qatar",
+      "city": "Doha",
+      "website": "https://www.azizqatarstore.com/",
+      "whatsapp": "+974 3052 6968",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: islamic gifts wholesaler Doha Qatar"
+      ]
+    },
+    {
+      "companyName": "Gifts By Fatma | هدايا باي فاطمة",
+      "country": "Qatar",
+      "city": "Doha",
+      "website": "http://byfatma.com/",
+      "whatsapp": "+974 3319 8260",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: islamic gifts wholesaler Doha Qatar"
+      ]
+    },
+    {
+      "companyName": "Almajlis Gulf General trading and services",
+      "country": "Qatar",
+      "city": "Doha",
+      "website": "https://www.almajlis.co/",
+      "whatsapp": "+974 3131 6887",
+      "score": 70,
+      "businessRoles": [
+        "distributor",
+        "retailer",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "whatsapp",
+        "email",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: islamic gift shop Doha Qatar"
+      ]
+    }
+  ],
+  "filteredExamples": [
+    {
+      "companyName": "QAS Gifts Trading LLC | UAE #1 Corporate Gifts Supplier",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "score": 100,
+      "filterReasons": [
+        "promo gifts"
+      ],
+      "businessRoles": [
+        "wholesaler",
+        "distributor",
+        "retailer",
+        "gift-shop",
+        "packaging-supplier",
+        "manufacturer"
+      ],
+      "sourceNames": [
+        "Google Maps: islamic gifts wholesaler Dubai United Arab Emirates"
+      ]
+    },
+    {
+      "companyName": "Pacific Uniforms & Promotional Gifts Supplier",
+      "country": "Qatar",
+      "city": "Doha",
+      "score": 75,
+      "filterReasons": [
+        "promo gifts"
+      ],
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "gift-shop",
+        "packaging-supplier",
+        "manufacturer"
+      ],
+      "sourceNames": [
+        "Google Maps: islamic gifts wholesaler Doha Qatar"
+      ]
+    }
+  ]
+}
