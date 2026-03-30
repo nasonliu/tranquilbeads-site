@@ -25,14 +25,19 @@ export async function generateMetadata({ params }: { params: Record<string, stri
   return {
     title: `${title} | TranquilBeads`,
     description,
-    alternates: {
-      canonical: `https://www.tranquilbeads.com/${locale}/blog/${slug}`,
-    },
     openGraph: {
+      url: `https://www.tranquilbeads.com/${locale}/blog/${slug}`,
       title: `${title} | TranquilBeads`,
       description,
       siteName: "TranquilBeads",
       images: [{ url: `https://www.tranquilbeads.com${article.heroImage}` }],
+    },
+    alternates: {
+      canonical: `https://www.tranquilbeads.com/${locale}/blog/${slug}`,
+      languages: {
+        en: `https://www.tranquilbeads.com/en/blog/${slug}`,
+        ar: `https://www.tranquilbeads.com/ar/blog/${slug}`,
+      },
     },
     twitter: {
       card: "summary_large_image",
@@ -51,12 +56,34 @@ export default async function BlogArticlePage({ params }: BlogParams) {
   if (!article) notFound();
 
   const title = locale === "en" ? article.title_en : article.title_ar;
+  const description = locale === "en" ? article.intro_en : article.intro_ar;
   const intro = locale === "en" ? article.intro_en : article.intro_ar;
   const sections = locale === "en" ? article.sections_en : article.sections_ar;
   const cta = locale === "en" ? article.cta_en : article.cta_ar;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    image: `https://www.tranquilbeads.com${article.heroImage}`,
+    datePublished: "2026-03-30",
+    dateModified: "2026-03-30",
+    author: { "@type": "Organization", name: "TranquilBeads", url: "https://www.tranquilbeads.com" },
+    publisher: {
+      "@type": "Organization",
+      name: "TranquilBeads",
+      logo: { "@type": "ImageObject", url: "https://www.tranquilbeads.com/favicon.ico" },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.tranquilbeads.com/${locale}/blog/${slug}` },
+  };
+
   return (
     <div className="noor-container py-12 md:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-3xl">
         {/* Hero Image */}
         <div className="relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-50">
