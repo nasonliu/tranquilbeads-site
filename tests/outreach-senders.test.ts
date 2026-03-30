@@ -244,12 +244,25 @@ describe("outreach senders", () => {
     vi.useFakeTimers();
     vi.setSystemTime(fixedTime);
 
-    const fetchImpl = vi.fn(async () =>
-      new Response(JSON.stringify({ id: "re_123" }), {
+    const fetchImpl = vi.fn(async (input: string | URL) => {
+      const url = String(input);
+      if (url === "https://api.resend.com/domains") {
+        return new Response(
+          JSON.stringify({
+            data: [{ name: "tranquilbeads.com", status: "verified" }],
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        );
+      }
+
+      return new Response(JSON.stringify({ id: "re_123" }), {
         status: 200,
         headers: { "content-type": "application/json" },
-      }),
-    );
+      });
+    });
     const sender = createConfiguredEmailOutreachSender({
       env: {
         OUTREACH_EMAIL_PROVIDER: "resend",
@@ -270,11 +283,12 @@ describe("outreach senders", () => {
       sender,
     );
 
-    const [, init] = fetchImpl.mock.calls[0] ?? [];
+    const [, init] = fetchImpl.mock.calls[1] ?? [];
     const payload = JSON.parse(String(init?.body ?? "{}")) as Record<string, unknown>;
 
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-    expect(fetchImpl.mock.calls[0]?.[0]).toBe("https://api.resend.com/emails");
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl.mock.calls[0]?.[0]).toBe("https://api.resend.com/domains");
+    expect(fetchImpl.mock.calls[1]?.[0]).toBe("https://api.resend.com/emails");
     expect(init?.method).toBe("POST");
     expect(payload.from).toBe("Nason <sales@tranquilbeads.com>");
     expect(payload.to).toEqual(["buyer@example.com"]);
@@ -288,6 +302,43 @@ describe("outreach senders", () => {
       },
     ]);
     expect(result.channelMessageId).toBe("re_123");
+  });
+
+  it("blocks resend delivery until the sender domain is verified", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(fixedTime);
+
+    const fetchImpl = vi.fn(async () =>
+      new Response(
+        JSON.stringify({
+          data: [{ name: "agent.tranquilbeads.com", status: "pending" }],
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
+      ),
+    );
+    const sender = createConfiguredEmailOutreachSender({
+      env: {
+        OUTREACH_EMAIL_PROVIDER: "resend",
+        OUTREACH_RESEND_API_KEY: "re_test_123",
+        OUTREACH_EMAIL_FROM: "Nason <sales@agent.tranquilbeads.com>",
+      },
+      fetchImpl,
+    });
+
+    await expect(
+      sendQueuedOutreachTask(
+        makeQueuedTask({
+          id: "camp-gulf-2026-lead-1-email",
+          channel: "email",
+          recipientAddress: "buyer@example.com",
+          subject: "Premium Tasbih Collection for Noor Retail Group",
+        }),
+        sender,
+      ),
+    ).rejects.toThrow(/not verified/i);
   });
 
   it("uses the configured OpenClaw transport for WhatsApp delivery", async () => {

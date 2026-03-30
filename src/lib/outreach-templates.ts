@@ -1,3 +1,4 @@
+import { applyComplianceFooter } from "@/src/lib/outreach-guardrails";
 import templatesData from "@/src/data/outreach/templates.json";
 import { defaultLocale, isLocale } from "@/src/lib/i18n";
 import type {
@@ -71,7 +72,11 @@ export function renderOutreachTemplate(
 
   return {
     subject: renderTemplateText(localizedContent.subject, options),
-    body: renderTemplateText(localizedContent.body, options),
+    body: applyComplianceFooter(
+      template.channel,
+      renderTemplateText(localizedContent.body, options),
+      locale,
+    ),
     attachmentImageCount: template.attachmentImageCount,
   };
 }

@@ -55,6 +55,8 @@ function createResendTransport(options: {
       throw new Error("Missing Resend email configuration.");
     }
 
+    await assertVerifiedResendDomain(options.fetchImpl, options.apiKey, options.from);
+
     const response = await options.fetchImpl("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -80,6 +82,56 @@ function createResendTransport(options: {
       channelMessageId: readMessageId(payload) ?? `resend:${task.id}`,
     };
   };
+}
+
+let verifiedDomainCache = new Map<string, Promise<void>>();
+
+async function assertVerifiedResendDomain(
+  fetchImpl: typeof fetch,
+  apiKey: string,
+  from: string,
+) {
+  const domain = extractFromDomain(from);
+  const cacheKey = `${apiKey}:${domain}`;
+
+  if (!verifiedDomainCache.has(cacheKey)) {
+    verifiedDomainCache.set(
+      cacheKey,
+      (async () => {
+        const response = await fetchImpl("https://api.resend.com/domains", {
+          headers: {
+            authorization: `Bearer ${apiKey}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Resend domain lookup failed with status ${response.status}.`);
+        }
+
+        const payload = (await response.json()) as {
+          data?: Array<{ name?: string; status?: string }>;
+        };
+        const match = payload.data?.find((item) => item.name === domain);
+
+        if (match?.status !== "verified") {
+          throw new Error(`Resend sender domain ${domain} is not verified yet.`);
+        }
+      })(),
+    );
+  }
+
+  return verifiedDomainCache.get(cacheKey);
+}
+
+function extractFromDomain(from: string) {
+  const address = from.match(/<([^>]+)>/)?.[1] ?? from;
+  const domain = address.split("@")[1]?.trim().toLowerCase();
+
+  if (!domain) {
+    throw new Error(`Unable to extract sender domain from ${from}.`);
+  }
+
+  return domain;
 }
 
 function createWebhookTransport(options: {

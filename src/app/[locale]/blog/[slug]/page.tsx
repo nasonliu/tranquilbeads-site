@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { blogPosts } from "@/src/data/blog";
+import { blogPosts } from "@/src/data/buyers-guide";
 import { isLocale, locales } from "@/src/lib/i18n";
 
 export function generateStaticParams() {
@@ -9,7 +9,7 @@ export function generateStaticParams() {
   );
 }
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[slug]">) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
   const post = blogPosts.find((p) => p.slug === slug);
@@ -570,7 +570,7 @@ function KukaGuideAR() {
   );
 }
 
-export default async function BlogArticlePage({ params }: PageProps<"/[locale]/blog/[slug]">) {
+export default async function BlogArticlePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
 

@@ -83,7 +83,8 @@ describe("outreach templates", () => {
         "Best regards,\n" +
         "Nason\n" +
         "TranquilBeads\n" +
-        "https://www.tranquilbeads.com",
+        "https://www.tranquilbeads.com\n\n" +
+        "If you prefer not to receive further emails from us, please reply with unsubscribe and we will remove you from future outreach.",
       attachmentImageCount: 2,
     });
   });

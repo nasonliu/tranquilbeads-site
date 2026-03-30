@@ -6,6 +6,7 @@ import type {
   OutreachEvent,
   OutreachLead,
   OutreachStore,
+  SuppressionEntry,
   OutreachTask,
   OutreachTaskBundle,
   OutreachTaskBundleStage,
@@ -34,6 +35,7 @@ export function createEmptyOutreachStore(): OutreachStore {
     tasks: [],
     events: [],
     templates: [],
+    suppressions: [],
   };
 }
 
@@ -44,6 +46,7 @@ export async function readOutreachStore(baseDir = defaultOutreachDir): Promise<O
     tasks: await readArray<OutreachTask>(getDatasetPath(baseDir, "tasks.json")),
     events: await readArray<OutreachEvent>(getDatasetPath(baseDir, "events.json")),
     templates: await readArray<OutreachTemplate>(getDatasetPath(baseDir, "templates.json")),
+    suppressions: await readOptionalArray<SuppressionEntry>(getDatasetPath(baseDir, "suppressions.json")),
   };
 }
 
@@ -59,7 +62,20 @@ export async function writeOutreachStore(
     writeArray(getDatasetPath(baseDir, "tasks.json"), store.tasks),
     writeArray(getDatasetPath(baseDir, "events.json"), store.events),
     writeArray(getDatasetPath(baseDir, "templates.json"), store.templates),
+    writeArray(getDatasetPath(baseDir, "suppressions.json"), store.suppressions),
   ]);
+}
+
+async function readOptionalArray<T>(filePath: string): Promise<T[]> {
+  try {
+    return await readArray<T>(filePath);
+  } catch (error) {
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 export function persistOutreachTaskBundle(

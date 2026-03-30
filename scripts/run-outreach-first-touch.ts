@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 
 import { createConfiguredEmailOutreachSender } from "../src/lib/email-outreach";
+import { filterQueuedEmailTasksForDelivery } from "../src/lib/outreach-guardrails";
 import { processQueuedOutreachTasks, type OutreachSenderRegistry } from "../src/lib/outreach-orchestrator";
 import {
   defaultOutreachDir,
@@ -30,14 +31,18 @@ export async function runOutreachFirstTouch(
   const readStore = options.readStore ?? readOutreachStore;
   const writeStore = options.writeStore ?? writeOutreachStore;
   const currentStore = options.store ?? (await readStore(outreachDir));
+  const guardedStore = applyEmailGuardrails(currentStore);
   const senders = options.senders ?? createDefaultSenders(options);
-  const result = await processQueuedOutreachTasks(currentStore, senders);
+  const result = await processQueuedOutreachTasks(guardedStore, senders);
 
   if (options.persist ?? true) {
-    await writeStore(result.store, outreachDir);
+    await writeStore(mergeGuardedResult(currentStore, result.store), outreachDir);
   }
 
-  return result;
+  return {
+    ...result,
+    store: mergeGuardedResult(currentStore, result.store),
+  };
 }
 
 function createDefaultSenders(
@@ -52,6 +57,54 @@ function createDefaultSenders(
       fetchImpl: options.fetchImpl,
     }),
   };
+}
+
+function applyEmailGuardrails(store: OutreachStore) {
+  const maxPerDay = readDailyEmailLimit(process.env);
+  const { allowedTasks } = filterQueuedEmailTasksForDelivery(store, {
+    suppressions: store.suppressions,
+    maxPerDay,
+  });
+  const allowedTaskIds = new Set(allowedTasks.map((task) => task.id));
+
+  return {
+    ...store,
+    tasks: store.tasks.map((task) =>
+      task.channel === "email" && task.status === "queued" && !allowedTaskIds.has(task.id)
+        ? { ...task, status: "draft" as const }
+        : task,
+    ),
+  };
+}
+
+function mergeGuardedResult(originalStore: OutreachStore, guardedResultStore: OutreachStore) {
+  const resultTasksById = new Map(guardedResultStore.tasks.map((task) => [task.id, task] as const));
+
+  return {
+    ...guardedResultStore,
+    tasks: originalStore.tasks.map((task) => {
+      const updatedTask = resultTasksById.get(task.id);
+
+      if (!updatedTask) {
+        return task;
+      }
+
+      if (
+        task.channel === "email" &&
+        task.status === "queued" &&
+        updatedTask.status === "draft"
+      ) {
+        return task;
+      }
+
+      return updatedTask;
+    }),
+  };
+}
+
+function readDailyEmailLimit(env: NodeJS.ProcessEnv) {
+  const parsed = Number.parseInt(env.OUTREACH_EMAIL_DAILY_LIMIT ?? "20", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 20;
 }
 
 async function main() {

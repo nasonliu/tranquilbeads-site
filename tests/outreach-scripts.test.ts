@@ -200,6 +200,90 @@ describe("outreach scripts", () => {
     expect(result.store.tasks[0]?.channel).toBe("whatsapp");
   });
 
+  it("keeps suppressed email tasks queued during first-touch sending", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(fixedTime);
+
+    const outreachDir = await createOutreachFixtureDir();
+    const lead = makeLead();
+    const bundle = buildOutreachTaskBundle({
+      lead,
+      campaignId: "camp_gulf_2026",
+      websiteUrl: "https://www.tranquilbeads.com",
+      locale: "en",
+    });
+    const store: OutreachStore = {
+      ...createEmptyOutreachStore(),
+      leads: [lead],
+      tasks: bundle.queuedTasks,
+      events: bundle.events,
+      suppressions: [
+        {
+          address: "amina@example.com",
+          channel: "email",
+          reason: "unsubscribe",
+          createdAt: "2026-03-29T11:00:00.000Z",
+        },
+      ],
+    };
+
+    await writeOutreachStore(store, outreachDir);
+
+    const result = await runOutreachFirstTouch({
+      outreachDir,
+      senders: {
+        whatsapp: createWhatsAppOutreachSender(async (task) => `wa:${task.id}`),
+        email: createEmailOutreachSender(async (task) => `email:${task.id}`),
+      },
+    });
+
+    expect(result.sentResults).toHaveLength(1);
+    expect(result.store.tasks.find((task) => task.channel === "whatsapp")?.status).toBe("sent");
+    expect(result.store.tasks.find((task) => task.channel === "email")?.status).toBe("queued");
+  });
+
+  it("respects the daily email send cap while continuing to send whatsapp", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(fixedTime);
+    vi.stubEnv("OUTREACH_EMAIL_DAILY_LIMIT", "1");
+
+    const outreachDir = await createOutreachFixtureDir();
+    const lead = makeLead();
+    const bundle = buildOutreachTaskBundle({
+      lead,
+      campaignId: "camp_gulf_2026",
+      websiteUrl: "https://www.tranquilbeads.com",
+      locale: "en",
+    });
+    const alreadySentEmail = {
+      ...bundle.queuedTasks.find((task) => task.channel === "email")!,
+      id: "already-sent-email",
+      status: "sent" as const,
+      sentAt: "2026-03-29T01:00:00.000Z",
+      recipientAddress: "other@example.com",
+    };
+    const store: OutreachStore = {
+      ...createEmptyOutreachStore(),
+      leads: [lead],
+      tasks: [alreadySentEmail, ...bundle.queuedTasks],
+      events: bundle.events,
+    };
+
+    await writeOutreachStore(store, outreachDir);
+
+    const result = await runOutreachFirstTouch({
+      outreachDir,
+      senders: {
+        whatsapp: createWhatsAppOutreachSender(async (task) => `wa:${task.id}`),
+        email: createEmailOutreachSender(async (task) => `email:${task.id}`),
+      },
+    });
+
+    expect(result.sentResults).toHaveLength(1);
+    expect(result.store.tasks.find((task) => task.channel === "whatsapp" && task.id !== "already-sent-email")?.status).toBe("sent");
+    expect(result.store.tasks.find((task) => task.channel === "email" && task.id !== "already-sent-email")?.status).toBe("queued");
+  });
+
   it("defaults the first-touch script to OpenClaw WhatsApp plus Resend email senders", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(fixedTime);
@@ -208,12 +292,26 @@ describe("outreach scripts", () => {
       stdout: JSON.stringify({ ok: true, messageId: "openclaw-1" }),
       stderr: "",
     }));
-    const fetchImpl = vi.fn(async () =>
-      new Response(JSON.stringify({ id: "re_123" }), {
+    const fetchImpl = vi.fn(async (input: string | URL) => {
+      const url = String(input);
+
+      if (url === "https://api.resend.com/domains") {
+        return new Response(
+          JSON.stringify({
+            data: [{ name: "tranquilbeads.com", status: "verified" }],
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        );
+      }
+
+      return new Response(JSON.stringify({ id: "re_123" }), {
         status: 200,
         headers: { "content-type": "application/json" },
-      }),
-    );
+      });
+    });
     vi.stubEnv("OUTREACH_WHATSAPP_PROVIDER", "openclaw");
     vi.stubEnv("OUTREACH_EMAIL_PROVIDER", "resend");
     vi.stubEnv("OUTREACH_OPENCLAW_CLI_PATH", "/Users/nason/.openclaw/bin/openclaw");
@@ -248,7 +346,7 @@ describe("outreach scripts", () => {
 
     expect(result.sentResults).toHaveLength(2);
     expect(execFileImpl).toHaveBeenCalledTimes(1);
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
   it("syncs replies into handoff items and persists the human follow-up state", async () => {

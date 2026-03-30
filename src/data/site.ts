@@ -107,7 +107,7 @@ export const navItems: NavItem[] = [
   { href: "/", label: { en: "Home", ar: "الرئيسية" } },
   { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
   { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
-  { href: "/blog", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
+  { href: "/guides", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
   { href: "/contact", label: { en: "Contact", ar: "التواصل" } },
 ];
 

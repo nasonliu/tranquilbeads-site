@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { blogPosts } from "@/src/data/blog";
+import { blogPosts } from "@/src/data/buyers-guide";
 import { getPageMetadata, getPageCopy } from "@/src/data/site";
 import { isLocale, withLocale } from "@/src/lib/i18n";
 
@@ -9,7 +9,7 @@ export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "ar" }];
 }
 
-export async function generateMetadata({ params }: PageProps<"/[locale]/blog">) {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   return getPageMetadata(
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog">) 
   );
 }
 
-export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) {
+export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
@@ -49,7 +49,7 @@ export default async function BlogPage({ params }: PageProps<"/[locale]/blog">) 
         {blogPosts.map((post) => (
           <Link
             key={post.slug}
-            href={withLocale(locale, `/blog/${post.slug}`)}
+            href={withLocale(locale, `/buyers-guide/${post.slug}`)}
             className="group space-y-4"
           >
             <div className="overflow-hidden rounded-2xl border border-border/60 bg-gray-50">

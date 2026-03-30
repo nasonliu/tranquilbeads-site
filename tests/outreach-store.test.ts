@@ -9,6 +9,7 @@ import type {
   OutreachEvent,
   OutreachLead,
   OutreachStore,
+  SuppressionEntry,
   OutreachTask,
   OutreachTemplate,
 } from "@/src/lib/outreach-types";
@@ -26,6 +27,7 @@ async function createOutreachFixture() {
     tasks: [],
     events: [],
     templates: [],
+    suppressions: [],
   };
 
   await writeFile(join(dir, "leads.json"), JSON.stringify(store.leads, null, 2), "utf8");
@@ -33,6 +35,7 @@ async function createOutreachFixture() {
   await writeFile(join(dir, "tasks.json"), JSON.stringify(store.tasks, null, 2), "utf8");
   await writeFile(join(dir, "events.json"), JSON.stringify(store.events, null, 2), "utf8");
   await writeFile(join(dir, "templates.json"), JSON.stringify(store.templates, null, 2), "utf8");
+  await writeFile(join(dir, "suppressions.json"), JSON.stringify(store.suppressions, null, 2), "utf8");
 
   return { dir };
 }
@@ -45,6 +48,7 @@ describe("outreach store", () => {
       tasks: [],
       events: [],
       templates: [],
+      suppressions: [],
     });
   });
 
@@ -127,6 +131,14 @@ describe("outreach store", () => {
           attachmentImageCount: 2,
         } satisfies OutreachTemplate,
       ],
+      suppressions: [
+        {
+          address: "sales@example.com",
+          channel: "email",
+          reason: "unsubscribe",
+          createdAt: "2026-03-29T00:00:00.000Z",
+        } satisfies SuppressionEntry,
+      ],
     };
 
     await writeOutreachStore(nextStore, dir);
@@ -139,6 +151,9 @@ describe("outreach store", () => {
     expect(JSON.parse(await readFile(join(dir, "events.json"), "utf8"))).toEqual(nextStore.events);
     expect(JSON.parse(await readFile(join(dir, "templates.json"), "utf8"))).toEqual(
       nextStore.templates,
+    );
+    expect(JSON.parse(await readFile(join(dir, "suppressions.json"), "utf8"))).toEqual(
+      nextStore.suppressions,
     );
   });
 });

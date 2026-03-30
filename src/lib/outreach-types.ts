@@ -89,10 +89,18 @@ export type OutreachTemplate = {
   attachmentImageCount: number;
 };
 
+export type SuppressionEntry = {
+  address: string;
+  channel: OutreachChannel;
+  reason: string;
+  createdAt: string;
+};
+
 export type OutreachStore = {
   leads: OutreachLead[];
   campaigns: OutreachCampaign[];
   tasks: OutreachTask[];
   events: OutreachEvent[];
   templates: OutreachTemplate[];
+  suppressions: SuppressionEntry[];
 };
