@@ -1288,23 +1288,33 @@ const pageDescriptions = {
   },
 } as const;
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com";
+
 export function getPageMetadata(
   locale: Locale,
   page: keyof typeof pageDescriptions,
   title: string,
 ): Metadata {
   const description = pageDescriptions[page][locale];
+  const path = page === "home" ? "/" : `/${page}`;
+  const canonicalPath = withLocale(locale, path);
   return {
     title,
     description,
     alternates: {
-      canonical: withLocale(locale, page === "home" ? "/" : `/${page}`),
+      canonical: `${SITE_URL}${canonicalPath}`,
       languages: {
-        en: withLocale("en", page === "home" ? "/" : `/${page}`),
-        ar: withLocale("ar", page === "home" ? "/" : `/${page}`),
+        en: `${SITE_URL}${withLocale("en", path)}`,
+        ar: `${SITE_URL}${withLocale("ar", path)}`,
       },
     },
     openGraph: {
+      title,
+      description,
+      siteName: "TranquilBeads",
+    },
+    twitter: {
+      card: "summary_large_image",
       title,
       description,
     },

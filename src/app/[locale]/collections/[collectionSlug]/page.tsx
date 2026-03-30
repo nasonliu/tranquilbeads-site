@@ -35,13 +35,22 @@ export async function generateMetadata({
     return {};
   }
 
+  const canonicalPath = withLocale(locale, `/collections/${collectionSlug}`);
   return {
     ...getPageMetadata(locale, "collections", collection.name[locale]),
     description: collection.description[locale],
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com"}${canonicalPath}`,
+    },
     openGraph: {
       title: collection.name[locale],
       description: collection.description[locale],
       images: [collection.heroImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: collection.name[locale],
+      description: collection.description[locale],
     },
   };
 }

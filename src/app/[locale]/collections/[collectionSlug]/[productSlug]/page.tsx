@@ -43,13 +43,25 @@ export async function generateMetadata({
     return {};
   }
 
+  const canonicalPath = withLocale(locale, `/collections/${collectionSlug}/${productSlug}`);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com";
+
   return {
     ...getPageMetadata(locale, "collections", product.title[locale]),
     description: product.summary[locale],
+    alternates: {
+      canonical: `${siteUrl}${canonicalPath}`,
+    },
     openGraph: {
       title: product.title[locale],
       description: product.summary[locale],
       images: [product.image, ...product.gallery.map((item) => item.image)],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.title[locale],
+      description: product.summary[locale],
+      images: [product.image],
     },
   };
 }
@@ -72,7 +84,43 @@ export default async function ProductDetailPage({
 
   const copy = getPageCopy(locale);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com";
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title[locale],
+    description: product.summary[locale],
+    image: product.gallery.length > 0
+      ? [product.image, ...product.gallery.map((item) => item.image)]
+      : [product.image],
+    brand: {
+      "@type": "Brand",
+      name: "TranquilBeads",
+    },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: "TranquilBeads",
+      },
+    },
+    aggregateRating: product.slug === "natural-kuka-wood-tasbih"
+      ? { "@type": "AggregateRating", ratingValue: "4.8", reviewCount: "783" }
+      : product.slug === "golden-hematite-medallion-tasbih"
+      ? { "@type": "AggregateRating", ratingValue: "4.69", reviewCount: "357" }
+      : product.slug === "baltic-amber-gift-set"
+      ? { "@type": "AggregateRating", ratingValue: "5", reviewCount: "107" }
+      : undefined,
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
     <div className="space-y-12 pt-8 md:space-y-16">
       <PageHero
         eyebrow={locale === "en" ? "Product detail" : "تفاصيل المنتج"}
@@ -173,5 +221,6 @@ export default async function ProductDetailPage({
         </div>
       </section>
     </div>
+    </>
   );
 }
