@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-03-30T06:02:05.240Z",
+  "inserted": [
+    {
+      "id": "nigeria-google-places-2026-03-30-hadiya-souq-islamic-store",
+      "sourceType": "google_places",
+      "sourcePath": "/Volumes/新加卷/Documents/ProjectNoor/src/data/outreach/expanded-search-2026-03-30-global.json",
+      "company": "Hadiya Souq - Islamic Store (Books, Clothing & Islamic Materials)",
+      "contactName": "",
+      "country": "Nigeria",
+      "website": "https://www.hadiyasouq.africa/",
+      "whatsapp": "+234 708 007 5871",
+      "email": "info@hadiyasouq.africa",
+      "score": 70,
+      "notes": "Curated global Google Places hit. Islamic books, Eid gifts, prayer mats, and tasbeeh/counters.",
+      "createdAt": "2026-03-30T06:02:05.240Z",
+      "updatedAt": "2026-03-30T06:02:05.240Z"
+    },
+    {
+      "id": "united-kingdom-google-places-2026-03-30-zafar-london",
+      "sourceType": "google_places",
+      "sourcePath": "/Volumes/新加卷/Documents/ProjectNoor/src/data/outreach/expanded-search-2026-03-30-global.json",
+      "company": "Zafar London",
+      "contactName": "",
+      "country": "United Kingdom",
+      "website": "http://zafarlondon.co/",
+      "whatsapp": "+44 7410 985341",
+      "email": "",
+      "score": 70,
+      "notes": "Curated global Google Places hit. Bead store with wholesale and retail positioning in London.",
+      "createdAt": "2026-03-30T06:02:05.240Z",
+      "updatedAt": "2026-03-30T06:02:05.240Z"
+    }
+  ]
+}

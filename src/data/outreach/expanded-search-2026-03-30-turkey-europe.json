@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-03-30T06:04:16.198Z",
+  "source": "google-places-server-key",
+  "markets": [
+    {
+      "country": "Turkey",
+      "city": "Istanbul",
+      "keywords": [
+        "tesbih toptan",
+        "tesbih toptancisi",
+        "islami hediyelik",
+        "dua tespihi toptan",
+        "prayer beads wholesaler",
+        "misbaha wholesaler"
+      ]
+    },
+    {
+      "country": "Turkey",
+      "city": "Ankara",
+      "keywords": [
+        "tesbih toptan",
+        "islami hediyelik",
+        "dua tespihi toptan",
+        "prayer beads wholesaler"
+      ]
+    },
+    {
+      "country": "Turkey",
+      "city": "Bursa",
+      "keywords": [
+        "tesbih toptan",
+        "islami hediyelik",
+        "prayer beads wholesaler"
+      ]
+    },
+    {
+      "country": "Netherlands",
+      "city": "Rotterdam",
+      "keywords": [
+        "islamic gift shop",
+        "tasbih wholesaler",
+        "muslim gift store",
+        "hajj umrah shop",
+        "tesbih groothandel"
+      ]
+    },
+    {
+      "country": "Netherlands",
+      "city": "Amsterdam",
+      "keywords": [
+        "islamic gift shop",
+        "tasbih wholesaler",
+        "muslim gift store",
+        "hajj umrah shop"
+      ]
+    },
+    {
+      "country": "Austria",
+      "city": "Vienna",
+      "keywords": [
+        "islamic gift shop",
+        "tasbih wholesaler",
+        "muslim gift store",
+        "tesbih grosshandel"
+      ]
+    },
+    {
+      "country": "Belgium",
+      "city": "Brussels",
+      "keywords": [
+        "islamic gift shop",
+        "tasbih wholesaler",
+        "muslim gift store",
+        "hajj umrah shop"
+      ]
+    },
+    {
+      "country": "Belgium",
+      "city": "Antwerp",
+      "keywords": [
+        "islamic gift shop",
+        "tasbih wholesaler",
+        "muslim gift store"
+      ]
+    },
+    {
+      "country": "Bosnia and Herzegovina",
+      "city": "Sarajevo",
+      "keywords": [
+        "islamic gift shop",
+        "tasbih wholesaler",
+        "prayer beads wholesaler",
+        "tespih"
+      ]
+    }
+  ],
+  "rawRecordCount": 1,
+  "totalLeads": 1,
+  "priorityLeadCount": 1,
+  "topPriorityLeads": [
+    {
+      "companyName": "Üsküdar Tesbih, Kehribar, Gümüş ve Doğal Taş",
+      "country": "Austria",
+      "city": "Vienna",
+      "whatsapp": "+90 546 636 41 42",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tesbih grosshandel"
+      ]
+    }
+  ],
+  "filteredExamples": []
+}

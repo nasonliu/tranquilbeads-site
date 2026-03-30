@@ -1,0 +1,86 @@
+{
+  "generatedAt": "2026-03-30T06:05:52.384Z",
+  "source": "bing-search-fallback",
+  "searches": [
+    {
+      "country": "Turkey",
+      "city": "Istanbul",
+      "keyword": "tesbih"
+    },
+    {
+      "country": "Turkey",
+      "city": "Istanbul",
+      "keyword": "islami hediyelik"
+    },
+    {
+      "country": "Turkey",
+      "city": "Ankara",
+      "keyword": "tesbih"
+    },
+    {
+      "country": "Netherlands",
+      "city": "Rotterdam",
+      "keyword": "islamic gift shop"
+    },
+    {
+      "country": "Netherlands",
+      "city": "Rotterdam",
+      "keyword": "hajj umrah winkel"
+    },
+    {
+      "country": "Belgium",
+      "city": "Brussels",
+      "keyword": "islamic gift shop"
+    },
+    {
+      "country": "Belgium",
+      "city": "Antwerp",
+      "keyword": "muslim gift store"
+    },
+    {
+      "country": "Bosnia and Herzegovina",
+      "city": "Sarajevo",
+      "keyword": "tespih"
+    },
+    {
+      "country": "Bosnia and Herzegovina",
+      "city": "Sarajevo",
+      "keyword": "islamic gift shop"
+    }
+  ],
+  "rawRecordCount": 45,
+  "totalLeads": 18,
+  "priorityLeadCount": 1,
+  "topPriorityLeads": [
+    {
+      "companyName": "Hajj 2026: The Complete Guide — Dates, Costs, Packages, Rituals ...",
+      "country": "Netherlands",
+      "city": "Rotterdam",
+      "website": "https://houseofsaud.com",
+      "email": "you@example.com",
+      "whatsapp": "+0152-0153",
+      "score": 80,
+      "businessRoles": [
+        "unknown"
+      ],
+      "availableChannels": [
+        "email",
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Bing Search"
+      ]
+    }
+  ],
+  "filteredExamples": [],
+  "errors": []
+}

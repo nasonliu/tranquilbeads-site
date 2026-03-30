@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { isLocale, withLocale } from "@/src/lib/i18n";
+import { blogArticles } from "@/src/data/blog-articles";
 
 export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "ar" }];
@@ -21,39 +22,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-const blogPosts = [
-  {
-    slug: "how-to-identify-real-amber-tasbih",
-    title: {
-      en: "How to Identify Real Amber Tasbih vs Fake",
-      ar: "كيفية التعرف على السبح الكهرماني الحقيقي مقابل المزيف",
-    },
-    description: {
-      en: "5 practical tests wholesale buyers can do in 2 minutes to verify amber authenticity.",
-      ar: "5 اختبارات عملية يمكن لمشتري الجملة إجراؤها في دقيقتين للتحقق من أصالة الكهرمان.",
-    },
-    readTime: { en: "5 min read", ar: "5 دقائق للقراءة" },
-    category: { en: "Buyer's Guide", ar: "دليل المشتري" },
-    heroImage: "/images/real-products/baltic-amber/hero.jpeg",
-    altImage: { en: "Real Baltic amber tasbih beads", ar: "خرزات سبح كهرماني بلطيقي أصلي" },
-  },
-  {
-    slug: "kuka-wood-tasbih-authenticity-guide",
-    title: {
-      en: "Kuka Wood Tasbih: How to Verify Quality",
-      ar: "سبحان خشب الكوكا: كيفية التحقق من الجودة",
-    },
-    description: {
-      en: "Three key checks for kuka wood quality: grain, weight, and scent.",
-      ar: "ثلاثة فحوصات رئيسية لجودة خشب الكوكا: الحبوب والوزن والرائحة.",
-    },
-    readTime: { en: "6 min read", ar: "6 دقائق للقراءة" },
-    category: { en: "Buyer's Guide", ar: "دليل المشتري" },
-    heroImage: "/images/real-products/natural-kuka-wood/hero.jpeg",
-    altImage: { en: "Natural kuka wood tasbih", ar: "سبحان خشب كوكا طبيعي" },
-  },
-];
-
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
@@ -69,13 +37,13 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted">
           {locale === "en"
-            ? "Practical authentication guides for wholesale tasbih buyers. Know what you're sourcing — every time."
-            : "أدلة التحقق العملي لمشتري التسابيح بالجملة. اعرف ما تطلبه في كل مرة."}
+            ? "Practical guides for wholesale tasbih buyers — authentication tests, sourcing checklists, and material education."
+            : "أدلة عملية لمشتري التسابيح بالجملة — اختبارات المصادقة وقوائم الفحص وتعليم المواد."}
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        {blogPosts.map((post) => (
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {blogArticles.map((post) => (
           <Link
             key={post.slug}
             href={withLocale(locale, `/blog/${post.slug}`)}
@@ -85,20 +53,26 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
               <div className="relative aspect-[16/9] bg-gray-50">
                 <Image
                   src={post.heroImage}
-                  alt={post.altImage[locale]}
+                  alt={locale === "en" ? post.heroAlt_en : post.heroAlt_ar}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-3 text-xs text-muted">
-                <span className="rounded-full bg-accent/10 px-3 py-1 text-accent-deep">{post.category[locale]}</span>
-                <span>{post.readTime[locale]}</span>
+                <span className="rounded-full bg-accent/10 px-3 py-1 text-accent-deep">
+                  {locale === "en" ? "Buyer's Guide" : "دليل المشتري"}
+                </span>
+                <span>{post.readTime}</span>
               </div>
-              <h2 className="mt-2 text-xl font-semibold group-hover:text-accent-deep transition-colors">{post.title[locale]}</h2>
-              <p className="mt-2 text-sm text-muted line-clamp-2">{post.description[locale]}</p>
+              <h2 className="mt-2 text-lg font-semibold leading-snug group-hover:text-accent-deep transition-colors">
+                {locale === "en" ? post.title_en : post.title_ar}
+              </h2>
+              <p className="mt-2 text-sm text-muted line-clamp-2">
+                {locale === "en" ? post.intro_en : post.intro_ar}
+              </p>
               <p className="mt-3 text-sm font-semibold text-accent-deep">
                 {locale === "en" ? "Read guide →" : "اقرأ الدليل ←"}
               </p>

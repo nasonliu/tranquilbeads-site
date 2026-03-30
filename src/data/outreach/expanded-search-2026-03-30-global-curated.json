@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-03-30T05:59:57.881Z",
+  "additions": [
+    {
+      "id": "united-kingdom-google-places-2026-03-30-al-haram-london",
+      "company": "Al Haram London",
+      "whatsapp": "+44 7384 357786",
+      "website": "http://www.alharam.co.uk/",
+      "score": 95,
+      "country": "United Kingdom"
+    },
+    {
+      "id": "france-google-places-2026-03-30-red-sun",
+      "company": "RED SUN",
+      "whatsapp": "+33 1 42 76 08 08",
+      "website": "https://habahaparis.com/fr/",
+      "score": 90,
+      "country": "France"
+    },
+    {
+      "id": "south-africa-google-places-2026-03-30-islamic-gifts",
+      "company": "Islamic Gifts",
+      "whatsapp": "+27 61 117 2728",
+      "website": "https://www.igw.co.za/",
+      "score": 75,
+      "country": "South Africa"
+    },
+    {
+      "id": "united-kingdom-google-places-2026-03-30-oriental-trade-ltd-islamic-goods-wholesale",
+      "company": "Oriental Trade Ltd Islamic goods wholesale",
+      "whatsapp": "+44 7899 991743",
+      "website": "http://www.orientaltrade.co.uk/",
+      "score": 70,
+      "country": "United Kingdom"
+    }
+  ]
+}

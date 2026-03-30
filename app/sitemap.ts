@@ -8,6 +8,11 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.c
 const guides = [
   "how-to-identify-real-amber-tasbih",
   "kuka-wood-tasbih-authenticity-guide",
+  "what-is-tasbih-beginner-guide-for-retailers",
+  "how-to-choose-tasbih-for-daily-use",
+  "tasbih-gift-ideas-father-husband-special-occasions",
+  "why-people-keep-tasbih-in-their-cars",
+  "natural-stone-vs-synthetic-beads-tasbih",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -1,0 +1,1603 @@
+{
+  "generatedAt": "2026-03-30T05:59:31.443Z",
+  "source": "google-places-server-key",
+  "markets": [
+    {
+      "country": "United Kingdom",
+      "city": "London",
+      "label": "europe"
+    },
+    {
+      "country": "France",
+      "city": "Paris",
+      "label": "europe"
+    },
+    {
+      "country": "Germany",
+      "city": "Berlin",
+      "label": "europe"
+    },
+    {
+      "country": "Kazakhstan",
+      "city": "Almaty",
+      "label": "central-asia"
+    },
+    {
+      "country": "Uzbekistan",
+      "city": "Tashkent",
+      "label": "central-asia"
+    },
+    {
+      "country": "Russia",
+      "city": "Moscow",
+      "label": "russia"
+    },
+    {
+      "country": "Nigeria",
+      "city": "Lagos",
+      "label": "africa"
+    },
+    {
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "label": "africa"
+    },
+    {
+      "country": "Egypt",
+      "city": "Cairo",
+      "label": "africa"
+    },
+    {
+      "country": "Morocco",
+      "city": "Casablanca",
+      "label": "africa"
+    }
+  ],
+  "rawRecordCount": 87,
+  "totalLeads": 85,
+  "priorityLeadCount": 58,
+  "topPriorityLeads": [
+    {
+      "companyName": "Luxury R Visible",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://www.luxuryrvisible.com/",
+      "whatsapp": "+44 20 3489 2610",
+      "score": 95,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Al Haram London",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://www.alharam.co.uk/",
+      "whatsapp": "+44 7384 357786",
+      "score": 95,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Supreme Wholesale Ltd",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://supremewholesale.co.uk/",
+      "whatsapp": "+44 20 7474 6090",
+      "score": 95,
+      "businessRoles": [
+        "wholesaler",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Rynok Alatau-1",
+      "country": "Kazakhstan",
+      "city": "Almaty",
+      "website": "http://alataumarket.kz/",
+      "whatsapp": "+7 708 949 5665",
+      "score": 95,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "manufacturer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Almaty Kazakhstan"
+      ]
+    },
+    {
+      "companyName": "Azhar Academy Ltd",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://www.azharacademy.com/",
+      "whatsapp": "+44 20 8911 9797",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Shubham Foods UK",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://www.shubhamfoods.co.uk/",
+      "whatsapp": "+44 7342 691021",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Sutaka UK Ltd",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "https://sutaka.co.uk/",
+      "whatsapp": "+44 20 8571 8604",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "RED SUN",
+      "country": "France",
+      "city": "Paris",
+      "website": "https://habahaparis.com/fr/",
+      "whatsapp": "+33 1 42 76 08 08",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Paris France"
+      ]
+    },
+    {
+      "companyName": "Perles Corner",
+      "country": "France",
+      "city": "Paris",
+      "website": "https://www.perlescorner.com/",
+      "whatsapp": "+33 1 60 55 95 62",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Paris France"
+      ]
+    },
+    {
+      "companyName": "J.Lukes SAS",
+      "country": "France",
+      "city": "Paris",
+      "website": "https://www.lukes.net/",
+      "whatsapp": "+33 1 42 72 11 17",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Paris France"
+      ]
+    },
+    {
+      "companyName": "Losmann GmbH",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "https://star-germany24.de/",
+      "whatsapp": "+49 30 98601266",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "Hamberger wholesale market Berlin GmbH & Co. KG",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "http://www.hamberger-cc.de/berlin",
+      "whatsapp": "+49 30 7720500",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "Rooble Lebensmittelgroßhandel Gmbh",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "http://rooble.de/",
+      "whatsapp": "+49 30 54707468",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "BLUE BEADS COMPANY",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "https://www.beads.berlin/",
+      "whatsapp": "+49 30 78705793",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "PERLENMARKT",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "https://www.perlenmarkt.berlin/",
+      "whatsapp": "+49 30 69508333",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "Tiwi Affordable Collections(@tiwi_collections)",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "website": "https://wa.me/message/KXFHWXG2HI6YL1",
+      "whatsapp": "+234 808 039 1850",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "Zuba Online Mall",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "website": "http://www.zuba.com.ng/",
+      "whatsapp": "+234 803 362 3759",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "JC Beads",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "http://www.jcbeads.co.za/",
+      "whatsapp": "+27 72 956 6666",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "S Buys Wholesaler",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "http://www.sbuys.co.za/",
+      "whatsapp": "+27 18 788 2075",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "Lyons Wholesale",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "https://www.mrlyons.co.za/",
+      "whatsapp": "+27 11 484 5826",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "Egypt Abaya",
+      "country": "Egypt",
+      "city": "Cairo",
+      "website": "https://egyptabaya.com/",
+      "whatsapp": "+20 10 17208019",
+      "score": 90,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Cairo Egypt"
+      ]
+    },
+    {
+      "companyName": "Tribal Sun The Hippie shop wholesales",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "whatsapp": "+27 83 394 9077",
+      "score": 80,
+      "businessRoles": [
+        "wholesaler",
+        "distributor"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih distributor Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "BROWNS DISTRIBUTORS",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "whatsapp": "+27 81 784 1483",
+      "score": 80,
+      "businessRoles": [
+        "wholesaler",
+        "distributor"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "Islamic Gifts",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "https://www.igw.co.za/",
+      "whatsapp": "+27 61 117 2728",
+      "score": 75,
+      "businessRoles": [
+        "wholesaler",
+        "retailer",
+        "gift-shop"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "Oriental Trade Ltd Islamic goods wholesale",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://www.orientaltrade.co.uk/",
+      "whatsapp": "+44 7899 991743",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbeeh wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Zafar London",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "http://zafarlondon.co/",
+      "whatsapp": "+44 7410 985341",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "Royal Traders UK",
+      "country": "United Kingdom",
+      "city": "London",
+      "website": "https://royaltraderslondon.co.uk/",
+      "whatsapp": "+44 7961 500111",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler London United Kingdom"
+      ]
+    },
+    {
+      "companyName": "The Perlerie 22",
+      "country": "France",
+      "city": "Paris",
+      "website": "https://www.laperlerie22.com/",
+      "whatsapp": "+33 1 48 87 53 75",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Paris France"
+      ]
+    },
+    {
+      "companyName": "LE COMPTOIR À PERLES",
+      "country": "France",
+      "city": "Paris",
+      "website": "http://www.facebook.com/lecomptoiraperles",
+      "whatsapp": "+33 9 86 20 90 00",
+      "score": 70,
+      "businessRoles": [
+        "importer",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website",
+        "facebook"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Paris France"
+      ]
+    },
+    {
+      "companyName": "BuyMir",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "http://www.buymir.de/",
+      "whatsapp": "+49 162 5291220",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "Sweet Home 36",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "http://www.sweethome36.de/",
+      "whatsapp": "+49 30 54468833",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbeeh wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "Sona Food Traders",
+      "country": "Germany",
+      "city": "Berlin",
+      "website": "http://www.sonafoodtraders.de/",
+      "whatsapp": "+49 30 21961991",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Berlin Germany"
+      ]
+    },
+    {
+      "companyName": "Tarozi Labaratorny",
+      "country": "Uzbekistan",
+      "city": "Tashkent",
+      "website": "https://t.me/tarozi.uzb",
+      "whatsapp": "+998 88 747 42 42",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Tashkent Uzbekistan"
+      ]
+    },
+    {
+      "companyName": "MONDASIA TRADE LLC",
+      "country": "Uzbekistan",
+      "city": "Tashkent",
+      "whatsapp": "+998 99 808 82 80",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Tashkent Uzbekistan"
+      ]
+    },
+    {
+      "companyName": "Subhana Boutique",
+      "country": "Uzbekistan",
+      "city": "Tashkent",
+      "website": "https://www.instagram.com/subhana_boutique/",
+      "whatsapp": "+998 93 866 90 09",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website",
+        "instagram"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Tashkent Uzbekistan",
+        "Google Maps: tasbeeh supplier Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "Pearl Store Samarqand Darvoza",
+      "country": "Uzbekistan",
+      "city": "Tashkent",
+      "website": "https://pearlstore.uz/",
+      "whatsapp": "+998 71 200 30 01",
+      "score": 70,
+      "businessRoles": [
+        "importer",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Tashkent Uzbekistan"
+      ]
+    },
+    {
+      "companyName": "Fonon",
+      "country": "Uzbekistan",
+      "city": "Tashkent",
+      "website": "https://fononjewellery.com/",
+      "whatsapp": "+998 71 205 22 22",
+      "score": 70,
+      "businessRoles": [
+        "importer",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Tashkent Uzbekistan"
+      ]
+    },
+    {
+      "companyName": "ТК \"Садовод\"",
+      "country": "Russia",
+      "city": "Moscow",
+      "website": "https://sadovodtk.ru/",
+      "whatsapp": "+7 499 637-70-00",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Moscow Russia"
+      ]
+    },
+    {
+      "companyName": "Rynok Sadovod",
+      "country": "Russia",
+      "city": "Moscow",
+      "website": "http://рынок-садовод.рф/",
+      "whatsapp": "+20 10 03981418",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Moscow Russia",
+        "Google Maps: prayer beads wholesaler Cairo Egypt"
+      ]
+    },
+    {
+      "companyName": "Moscow Jewellers",
+      "country": "Russia",
+      "city": "Moscow",
+      "website": "https://uvelirmoscow.ru/",
+      "whatsapp": "+7 926 408-00-71",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Moscow Russia"
+      ]
+    },
+    {
+      "companyName": "Babulal Ramchand Kanthi Mala wale",
+      "country": "Russia",
+      "city": "Moscow",
+      "website": "https://www.indiamart.com/babulalramchand/",
+      "whatsapp": "+91 97693 43156",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Moscow Russia"
+      ]
+    },
+    {
+      "companyName": "Hadiya Souq - Islamic Store (Books, Clothing & Islamic Materials)",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "website": "https://www.hadiyasouq.africa/",
+      "whatsapp": "+234 708 007 5871",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "BAGS SUPPLIER IN LAGOS| LADIES BAGS WAREHOUSE IN LAGOS/NIGERIA",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "website": "https://search.google.com/local/writereview?placeid=ChIJe0AHWiiTOxARqo-THODWdL4",
+      "whatsapp": "+234 705 800 7388",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "Bags Wholesale Store",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "whatsapp": "+234 901 789 1725",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbeeh wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "LagosWholesalersPlug",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "whatsapp": "+234 901 501 3112",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "Jewelries and fashion item by Subnofashionng",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "whatsapp": "+234 907 628 3164",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "House.of.joyce|Waistbeads Beads Store, Lagos Nigeria",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "whatsapp": "+234 813 962 5189",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "SONJIEL Enterprises (Hair beads, Accessories and sundries wholesale company)",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "whatsapp": "+234 703 167 7260",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Lagos Nigeria"
+      ]
+    },
+    {
+      "companyName": "Pearls To Paradise",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "http://www.pearlstoparadise.co.za/",
+      "whatsapp": "+27 82 970 0034",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "Swadeshi",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "http://www.swadeshi.co.za/",
+      "whatsapp": "+27 11 492 2036",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: tasbih wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "The Bead Shop",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "website": "http://www.beadshop.co.za/",
+      "whatsapp": "+27 72 125 5582",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Johannesburg South Africa"
+      ]
+    },
+    {
+      "companyName": "Fair Trade Egypt",
+      "country": "Egypt",
+      "city": "Cairo",
+      "website": "http://fairtradeegypt.org/",
+      "whatsapp": "+20 2 27365123",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads wholesaler Cairo Egypt"
+      ]
+    },
+    {
+      "companyName": "Althakeba Maroc",
+      "country": "Morocco",
+      "city": "Casablanca",
+      "whatsapp": "+212 5 22 83 47 57",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Casablanca Morocco"
+      ]
+    },
+    {
+      "companyName": "School Group Misbah",
+      "country": "Morocco",
+      "city": "Casablanca",
+      "website": "http://www.gsmisbah.ma/",
+      "whatsapp": "+212 5 22 36 60 52",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: misbaha wholesaler Casablanca Morocco"
+      ]
+    },
+    {
+      "companyName": "SohoSnacks",
+      "country": "Morocco",
+      "city": "Casablanca",
+      "website": "http://www.sohosnacks.ma/",
+      "whatsapp": "+212 5 22 01 48 01",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Casablanca Morocco"
+      ]
+    },
+    {
+      "companyName": "KERIX, The Professionals Directory",
+      "country": "Morocco",
+      "city": "Casablanca",
+      "website": "https://www.kerix.net/fr/",
+      "whatsapp": "+212 5 22 26 96 96",
+      "score": 70,
+      "businessRoles": [
+        "wholesaler"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: subha wholesaler Casablanca Morocco"
+      ]
+    },
+    {
+      "companyName": "Oromecanica",
+      "country": "Morocco",
+      "city": "Casablanca",
+      "website": "http://www.rafinity.co.ma/",
+      "whatsapp": "+212 5 22 06 31 31",
+      "score": 70,
+      "businessRoles": [
+        "importer",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Casablanca Morocco"
+      ]
+    },
+    {
+      "companyName": "Silver Jalal - Bijoux En Argent Maroc",
+      "country": "Morocco",
+      "city": "Casablanca",
+      "website": "http://www.bijouxargentmaroc.com/",
+      "whatsapp": "+212 7 11 00 73 82",
+      "score": 70,
+      "businessRoles": [
+        "importer",
+        "retailer"
+      ],
+      "availableChannels": [
+        "whatsapp",
+        "website"
+      ],
+      "recommendedChannels": [
+        "email",
+        "whatsapp",
+        "instagram",
+        "facebook",
+        "website"
+      ],
+      "filterReasons": [],
+      "sourceNames": [
+        "Google Maps: prayer beads importer Casablanca Morocco"
+      ]
+    }
+  ],
+  "filteredExamples": []
+}

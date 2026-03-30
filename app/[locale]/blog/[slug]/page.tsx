@@ -2,193 +2,57 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { isLocale } from "@/src/lib/i18n";
+import { isLocale, withLocale } from "@/src/lib/i18n";
+import { blogArticles } from "@/src/data/blog-articles";
 
 export function generateStaticParams() {
-  return [
-    { locale: "en", slug: "how-to-identify-real-amber-tasbih" },
-    { locale: "ar", slug: "how-to-identify-real-amber-tasbih" },
-    { locale: "en", slug: "kuka-wood-tasbih-authenticity-guide" },
-    { locale: "ar", slug: "kuka-wood-tasbih-authenticity-guide" },
-  ];
+  return (
+    ["en", "ar"].flatMap((locale) =>
+      blogArticles.map((article) => ({ locale, slug: article.slug })),
+    )
+  );
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
+  const article = blogArticles.find((a) => a.slug === slug);
+  if (!article) return {};
 
-  const meta: Record<string, Record<string, { title: string; description: string }>> = {
-    "how-to-identify-real-amber-tasbih": {
-      en: {
-        title: "How to Identify Real Amber Tasbih vs Fake | TranquilBeads",
-        description: "5 practical tests wholesale buyers can do in 2 minutes to verify amber authenticity. Learn saltwater float, hot needle, UV light, and more.",
-      },
-      ar: {
-        title: "كيفية التعرف على السبح الكهرماني الحقيقي | ترانكويل بيدز",
-        description: "5 اختبارات عملية يمكن لمشتري الجملة إجراؤها في دقيقتين للتحقق من أصالة الكهرمان.",
-      },
-    },
-    "kuka-wood-tasbih-authenticity-guide": {
-      en: {
-        title: "Kuka Wood Tasbih Quality Guide | TranquilBeads",
-        description: "Three key checks for kuka wood quality: grain pattern, weight, and scent. Essential reading before placing bulk orders.",
-      },
-      ar: {
-        title: "دليل جودة سبحان خشب الكوكا | ترانكويل بيدز",
-        description: "ثلاثة فحوصات رئيسية لجودة خشب الكوكا: نمط الحبوب والوزن والرائحة. قراءة أساسية قبل الطلبات بالجملة.",
-      },
-    },
-  };
-
-  const data = meta[slug]?.[locale];
-  if (!data) return {};
+  const title = locale === "en" ? article.title_en : article.title_ar;
+  const description = locale === "en" ? article.intro_en : article.intro_ar;
 
   return {
-    title: data.title,
-    description: data.description,
+    title: `${title} | TranquilBeads`,
+    description,
     alternates: {
       canonical: `https://www.tranquilbeads.com/${locale}/blog/${slug}`,
     },
     openGraph: {
-      title: data.title,
-      description: data.description,
+      title: `${title} | TranquilBeads`,
+      description,
       siteName: "TranquilBeads",
-      images: slug === "how-to-identify-real-amber-tasbih"
-        ? [{ url: "https://www.tranquilbeads.com/images/real-products/baltic-amber/hero.jpeg" }]
-        : [{ url: "https://www.tranquilbeads.com/images/real-products/natural-kuka-wood/hero.jpeg" }],
+      images: [{ url: `https://www.tranquilbeads.com${article.heroImage}` }],
     },
     twitter: {
       card: "summary_large_image",
-      title: data.title,
-      description: data.description,
+      title: `${title} | TranquilBeads`,
+      description,
     },
   };
 }
-
-// ─── Amber Article Content ───────────────────────────────────────────────
-
-const amberEN = {
-  title: "How to Identify Real Amber Tasbih vs Fake: A Practical Guide for Wholesale Buyers",
-  intro: "For wholesale buyers in the prayer beads and cultural accessories market, sourcing authentic amber tasbih is critical for maintaining product quality, ensuring customer satisfaction, and protecting your business reputation. With the increasing prevalence of imitation materials, distinguishing genuine Baltic amber from fakes like copal or plastic is a key sourcing skill. This practical guide provides wholesale-focused methods to verify authenticity, helping you make informed purchasing decisions for bulk prayer beads and secure reliable supply chains.",
-  sections: [
-    {
-      title: "Understanding Amber: A Fossilized Resin for Durable Tasbih",
-      body: "Genuine amber, particularly Baltic amber, is fossilized tree resin millions of years old, prized for its warmth, lightness, and organic beauty. For wholesale tasbih, this natural origin translates to unique, high-value prayer beads that stand out in the market. Unlike synthetic materials, authentic amber develops subtle characteristics over time, making it a superior choice for bulk prayer beads intended for discerning customers. Recognizing this base material is the first step in effective sourcing.",
-    },
-    {
-      title: "Visual Inspection: Inclusions and Natural Imperfections",
-      body: "Examine beads under a magnifying glass or bright light. Real amber often contains inclusions — tiny trapped insects, plant matter, or air bubbles — that are irregularly shaped and distributed. Uniform, perfectly clear beads or those with perfectly spherical bubbles are likely glass or plastic fakes. Natural color variations (honey, cognac, butter) and cloudiness are common in authentic tasbih, whereas imitations may have overly consistent, artificial hues. This visual check is a quick, non-destructive method for bulk assessment.",
-    },
-    {
-      title: "The Scent Test: Rubbing for a Resinous Aroma",
-      body: "A practical field test for wholesale samples is vigorous rubbing. Heat generated by friction on genuine amber releases a faint, pleasant pine or resinous scent, a remnant of its botanical origin. Fake amber made of plastic will emit a chemical or burnt odor, while copal (young resin) may smell strong but lacks the aged subtlety. This test helps verify batches without damaging the prayer beads, crucial when evaluating large quantities.",
-    },
-    {
-      title: "Static Electricity: The Classic Amber Effect",
-      body: "When rubbed firmly on a soft cloth like wool, real amber generates static electricity, allowing it to attract small pieces of paper or dust. This property, historically known as the amber effect, is due to its electrostatic charge. Most plastics and glass imitations do not exhibit this trait consistently. It is a simple, effective verification step for wholesale buyers to perform on sample tasbih before committing to a bulk order.",
-    },
-    {
-      title: "Red Flags When Sourcing Amber Tasbih Wholesale",
-      body: "For wholesale tasbih buyers, several warning signs indicate non-authentic amber: prices 40% below market rate suggest resin or glass imitations; suppliers who cannot provide material origin certificates should be approached with caution; beads that are uniformly identical in color and size across a large batch are unlikely to be natural; and suppliers who refuse to send samples before bulk orders are a major risk signal. Always insist on sample evaluation before placing bulk prayer beads orders.",
-    },
-  ],
-  cta: "Ready to source authentic amber tasbih wholesale? Browse our collections or request a catalog via WhatsApp.",
-  heroImage: "/images/real-products/baltic-amber/hero.jpeg",
-  heroAlt: "Real Baltic amber tasbih prayer beads wholesale",
-};
-
-const amberAR = {
-  title: "كيفية التمييز بين السبح الكهرمانية الحقيقية والمزيفة",
-  intro: "بالنسبة للمشترين بالجملة في سوار السبحة والإكسسوارات الثقافية، يعد شراء السبح الكهرمانية الأصلية أمرًا بالغ الأهمية للحفاظ على جودة المنتج وضمان رضا العملاء. مع الانتشار المتزايد للمواد المقلدة، يمثل التمييز بين الكهرمان البلطيقي الأصلي والمزيف مثل الكوبال أو البلاستيك مهارة أساسية في التوريد.",
-  sections: [
-    {
-      title: "فهم الكهرمان: راتنج متحجر للمسابح耐久性",
-      body: "الكهرمان الأصلي، وخاصة الكهرمان البلطيقي، هو راتنج شجري متحجر بملايين السنين، يُقدر لدفئه وخفة وزنه وجماله العضوي. يترجم هذا الأصل الطبيعي إلى خرزات صلاة فريدة عالية القيمة في السوق.",
-    },
-    {
-      title: "الفحص البصري: الشوائب والعيوب الطبيعية",
-      body: "افحص الخرزات تحت مكبر أو ضوء ساطع. الكهرمان الحقيقي غالبًا ما يحتوي على شوائب — حشرات محبوسة صغيرة أو مواد نباتية أو فقاعات هوائية — غير منتظمة الشكل والتوزيع. الخرزات الواضحة تمامًا أو تلك التي تحتوي على فقاعات كروية مثالية هي على الأرجح زجاج أو بلاستيك مزيف.",
-    },
-    {
-      title: "اختبار الرائحة: فرك للحصول على رائحة راتنجية",
-      body: "اختبار عملي للعينات هو الفرك القوي. الكهرمان الحقيقي عند فركه يطلق رائحة راتنج صنوبري خفيفة. الكهرمان المزيف من البلاستيك سيطلق رائحة كيميائية أو حريق.",
-    },
-    {
-      title: "الشحنة الكهربائية الثابتة: تأثير الكهرمان الكلاسيكي",
-      body: "عند فرك الكهرمان الحقيقي بقوة على قماش ناعم، يولد كهرباء ثابتة تجذب قطعًا صغيرة من الورق أو الغبار. معظم البلاستيك والزجاج المزيف لا يظهر هذه الخاصية بشكل متسق.",
-    },
-    {
-      title: "علامات تحذيرية عند شراء السبح الكهرمانية بالجملة",
-      body: "علامات تحذيرية للمشترين بالجملة: الأسعار أقل بنسبة 40% من السوق تشير إلى زجاج أو راتنج مزيف؛ الموردون الذين لا يستطيعون تقديم شهادات المنشأ؛ الخرزات المتطابقة تمامًا عبر الدفعة الكبيرة.",
-    },
-  ],
-  cta: "هل أنت مستعد لمصادر سبح كهرماني أصلي بالجملة؟ تصفح مجموعاتنا أو اطلب الكتالوج عبر واتساب.",
-  heroImage: "/images/real-products/baltic-amber/hero.jpeg",
-  heroAlt: "سبح كهرماني بلطيقي أصلي بالجملة",
-};
-
-// ─── Kuka Wood Article Content ───────────────────────────────────────────
-
-const kukaEN = {
-  title: "Kuka Wood Tasbih: How to Verify Quality Before Bulk Purchase",
-  intro: "Sourcing high-quality prayer beads is essential for businesses catering to a discerning clientele. Kuka wood tasbih, prized for their durability and distinctive grain, represent a significant segment of the cultural accessories market. For wholesalers and retailers, a bulk purchase is a major inventory investment. Ensuring the authenticity and superior craftsmanship of these prayer beads before committing to an order protects your brand reputation and customer satisfaction.",
-  sections: [
-    {
-      title: "Authenticating the Material: Beyond the Label",
-      body: "True kuka wood (from the baobab tree) is known for its rich, reddish-brown hue and tight, often slightly irregular grain. First, inspect the color consistency — while natural variation exists, a uniform, cheap stain indicates inferior wood or a substitute. Perform a simple scent test: genuine kuka has a faint, earthy, pleasant woody aroma, unlike the strong chemical smell of treated or fake materials. Assess the weight: authentic kuka is relatively lightweight for its density, feeling substantial but not overly heavy. Be wary of beads that feel unnaturally light (hollow or plastic) or excessively heavy (impregnated with resins).",
-    },
-    {
-      title: "Inspecting Craftsmanship and Durability",
-      body: "Quality in bulk prayer beads is evident in the details. Examine the bead finishing: high-quality tasbih feature smooth, evenly polished surfaces with no rough patches or splinters. Check the drill holes: they should be clean, centered, and consistent in size, with no cracks radiating from the edges. The stringing is crucial for longevity: inquire about the cord material (often strong nylon or silk) and knotting between beads, which prevents total spillage if the cord breaks.",
-    },
-    {
-      title: "Evaluating Consistency for Bulk Orders",
-      body: "When purchasing wholesale tasbih, uniformity across the batch is as important as individual piece quality. Request a sample from the actual production lot. Compare multiple tasbih from your sample order for consistency in bead size, shape, color tone, and finishing. Minor natural variations are expected with a natural material, but significant discrepancies suggest unrefined production processes or mixed sourcing, which can affect your retail presentation.",
-    },
-    {
-      title: "Partnering with a Reputable Supplier",
-      body: "Your final quality assurance step is vetting the supplier. A transparent wholesaler will readily provide information on their wood sourcing, treatment processes, and production standards. Ask about their quality control protocols for bulk prayer beads. A supplier specializing in authentic tasbih will understand these cultural accessories' nuances and emphasize material integrity over cost-cutting. Look for suppliers who offer detailed product specifications and stand behind their quality.",
-    },
-  ],
-  cta: "Need help verifying kuka wood quality on a specific batch? Send a photo via WhatsApp for a preliminary assessment before you order.",
-  heroImage: "/images/real-products/natural-kuka-wood/hero.jpeg",
-  heroAlt: "Natural kuka wood tasbih quality verification",
-};
-
-const kukaAR = {
-  title: "مسبحة خشب الكوكا: كيفية التحقق من الجودة قبل الشراء بالجملة",
-  intro: "يعد اقتناء مسابح عالية الجودة أمرًا أساسيًا للشركات التي تخدم قاعدة عملاء تمتلك ذوقًا رفيعًا. تحظى مسبحة خشب الكوكا بتقدير كبير لمتانتها وحبوب خشبها المميزة، وتشكل قطاعًا مهمًا في سوق الإكسسوارات الثقافية.",
-  sections: [
-    {
-      title: "التأكد من المادة: ما هو أبعد من الملصق",
-      body: "خشب الكوكا الحقيقي (من شجرة الباوباب) يتميز بلونه البني المحمر الغني وحبيباته الضيقة وغير المنتظمة قليلاً. افحص تناسق اللون — الاختلاف الطبيعي متوقع، لكن الصبغ الموحد الرخيص يشير إلى خشب رديء. اجري اختبار الرائحة: الكوكا الأصلي له رائحة خشبية ترابية خفيفة. قيّم الوزن: الكوكا الأصيل خفيف نسبيًا مقارنة بكثافته.",
-    },
-    {
-      title: "فحص الإتقان والمتانة",
-      body: "تظهر جودة مسابح الجملة من خلال التفاصيل. افحص تشطيب الخرزات: المسابح عالية الجودة تكون ملساء ومصقولة بشكل متساوٍ. تحقق من ثقوب الحفر: يجب أن تكون نظيفة وموزونة ومتسقة في الحجم. التخيط حاسمطول العمر: استفسر عن مادة الحبل والعقد بين الخرزات.",
-    },
-    {
-      title: "تقييم الاتساق في طلبات الجملة",
-      body: "عند شراء المسابح بالجملة، يكون التجانس عبر الدفعة بأهمية جودة القطعة الفردية. اطلب عينة من دفعة الإنتاج الفعلية. قارن بين عدة مسابح من حيث الاتساق في حجم الخرزة والشكل ودرجة اللون والتشطيب.",
-    },
-    {
-      title: "الشراكة مع مورد موثوق",
-      body: "خطوة ضمان الجودة النهائية هي فحص المورد. المورد الشفاف سيقدم معلومات عن مصادر الخشب وعمليات المعالجة ومعايير الإنتاج. اسأل عن بروتوكولات مراقبة الجودة. ابحث عن موردين يقدمون مواصفات تفصيلية ويقفون وراء جودة منتجاتهم.",
-    },
-  ],
-  cta: "تحتاج مساعدة في التحقق من جودة خشب الكوكا؟ أرسل صورة عبر واتساب لتقييم أولي قبل الطلب.",
-  heroImage: "/images/real-products/natural-kuka-wood/hero.jpeg",
-  heroAlt: "سبحان خشب كوكا طبيعي أصلي",
-};
 
 export default async function BlogArticlePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
 
-  const isAmber = slug === "how-to-identify-real-amber-tasbih";
-  const data = isAmber
-    ? (locale === "en" ? amberEN : amberAR)
-    : (locale === "en" ? kukaEN : kukaAR);
+  const article = blogArticles.find((a) => a.slug === slug);
+  if (!article) notFound();
+
+  const title = locale === "en" ? article.title_en : article.title_ar;
+  const intro = locale === "en" ? article.intro_en : article.intro_ar;
+  const sections = locale === "en" ? article.sections_en : article.sections_ar;
+  const cta = locale === "en" ? article.cta_en : article.cta_ar;
 
   return (
     <div className="noor-container py-12 md:py-16">
@@ -196,8 +60,8 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ lo
         {/* Hero Image */}
         <div className="relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-50">
           <Image
-            src={data.heroImage}
-            alt={data.heroAlt}
+            src={article.heroImage}
+            alt={locale === "en" ? article.heroAlt_en : article.heroAlt_ar}
             fill
             className="object-cover"
             priority
@@ -210,20 +74,20 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ lo
           <span className="rounded-full bg-accent/10 px-3 py-1 text-accent-deep">
             {locale === "en" ? "Buyer's Guide" : "دليل المشتري"}
           </span>
-          <span>{isAmber ? (locale === "en" ? "5 min read" : "5 دقائق") : (locale === "en" ? "6 min read" : "6 دقائق")}</span>
+          <span>{article.readTime}</span>
         </div>
 
         {/* Title */}
-        <h1 className="noor-title text-3xl md:text-4xl">{data.title}</h1>
+        <h1 className="noor-title text-3xl md:text-4xl">{title}</h1>
 
         {/* Intro */}
-        <p className="mt-4 text-lg text-muted leading-relaxed">{data.intro}</p>
+        <p className="mt-4 text-lg text-muted leading-relaxed">{intro}</p>
 
         <div className="mt-8 h-px bg-border/50" />
 
         {/* Sections */}
         <div className="mt-8 space-y-8">
-          {data.sections.map((section, i) => (
+          {sections.map((section, i) => (
             <div key={i} className="space-y-3">
               <h2 className="text-xl font-semibold">{section.title}</h2>
               <p className="text-muted leading-relaxed">{section.body}</p>
@@ -233,12 +97,18 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ lo
 
         {/* CTA */}
         <div className="mt-12 rounded-2xl border border-accent/20 bg-[linear-gradient(135deg,_rgba(255,248,235,0.8),_rgba(252,240,220,0.9))] p-6 text-center">
-          <p className="text-sm font-semibold text-accent-deep">{data.cta}</p>
+          <p className="text-sm font-semibold text-accent-deep">{cta}</p>
           <div className="mt-4 flex justify-center gap-3">
-            <Link href={locale === "en" ? "/collections" : "/ar/collections"} className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white hover:bg-accent/90">
+            <Link
+              href={withLocale(locale, "/collections")}
+              className="rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white hover:bg-accent/90"
+            >
               {locale === "en" ? "Browse Collections" : "تصفح المجموعات"}
             </Link>
-            <Link href={locale === "en" ? "/contact" : "/ar/contact"} className="rounded-full border border-accent/30 px-5 py-2 text-sm font-semibold text-accent-deep hover:bg-accent/5">
+            <Link
+              href={withLocale(locale, "/contact")}
+              className="rounded-full border border-accent/30 px-5 py-2 text-sm font-semibold text-accent-deep hover:bg-accent/5"
+            >
               {locale === "en" ? "Contact Us" : "تواصل معنا"}
             </Link>
           </div>
@@ -250,7 +120,10 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ lo
             {locale === "en" ? "Related Wholesale Products" : "منتجات بالجملة ذات صلة"}
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            <Link href={locale === "en" ? "/collections/signature-tasbih/natural-kuka-wood-tasbih" : "/ar/collections/signature-tasbih/natural-kuka-wood-tasbih"} className="group flex items-center gap-3 rounded-xl border border-border/60 p-3 transition-colors hover:border-accent/30">
+            <Link
+              href={withLocale(locale, "/collections/signature-tasbih/natural-kuka-wood-tasbih")}
+              className="group flex items-center gap-3 rounded-xl border border-border/60 p-3 transition-colors hover:border-accent/30"
+            >
               <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
                 <Image src="/images/real-products/natural-kuka-wood/hero.jpeg" alt="Kuka Wood" fill className="object-cover" sizes="48px" />
               </div>
@@ -261,7 +134,10 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ lo
                 <p className="text-xs text-muted">MOQ 100 pcs</p>
               </div>
             </Link>
-            <Link href={locale === "en" ? "/collections/gift-sets/baltic-amber-gift-set" : "/ar/collections/gift-sets/baltic-amber-gift-set"} className="group flex items-center gap-3 rounded-xl border border-border/60 p-3 transition-colors hover:border-accent/30">
+            <Link
+              href={withLocale(locale, "/collections/gift-sets/baltic-amber-gift-set")}
+              className="group flex items-center gap-3 rounded-xl border border-border/60 p-3 transition-colors hover:border-accent/30"
+            >
               <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
                 <Image src="/images/real-products/baltic-amber/hero.jpeg" alt="Baltic Amber" fill className="object-cover" sizes="48px" />
               </div>

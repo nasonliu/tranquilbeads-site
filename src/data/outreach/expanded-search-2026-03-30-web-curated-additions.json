@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-03-30T06:07:11.194Z",
+  "inserted": [
+    {
+      "id": "belgium-web-2026-03-30-al-imen-brussels",
+      "sourceType": "google_places",
+      "sourcePath": "https://eu.al-imen.com/",
+      "company": "Al-Imen Islamic Bookstore Brussels",
+      "contactName": "",
+      "country": "Belgium",
+      "website": "https://eu.al-imen.com/",
+      "whatsapp": "",
+      "email": "",
+      "score": 75,
+      "notes": "Curated web lead. Brussels Islamic bookstore since 1982 with Quran, prayer rugs, perfumes, and Muslim gift categories.",
+      "createdAt": "2026-03-30T06:07:11.194Z",
+      "updatedAt": "2026-03-30T06:07:11.194Z"
+    },
+    {
+      "id": "belgium-web-2026-03-30-islam-inspired-antwerp",
+      "sourceType": "google_places",
+      "sourcePath": "https://islaminspired.com/en",
+      "company": "Islam Inspired",
+      "contactName": "",
+      "country": "Belgium",
+      "website": "https://islaminspired.com/en",
+      "whatsapp": "",
+      "email": "",
+      "score": 72,
+      "notes": "Curated web lead. Antwerp-based Islamic gifts brand with gift sets, Muslim kids products, Hajj and Umrah themes, and negotiable store purchasing.",
+      "createdAt": "2026-03-30T06:07:11.194Z",
+      "updatedAt": "2026-03-30T06:07:11.194Z"
+    }
+  ]
+}
