@@ -32,10 +32,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
         url: `${baseUrl}${withLocale(locale, `/collections/${product.collection}/${product.slug}`)}`,
         lastModified: new Date(),
       })),
-      ...guides.map((slug) => ({
-        url: `${baseUrl}/blog/${slug}`,
-        lastModified: new Date(),
-      })),
+      ...locales.flatMap((locale) =>
+        guides.map((slug) => ({
+          url: `${baseUrl}${withLocale(locale, `/blog/${slug}`)}`,
+          lastModified: new Date(),
+        })),
+      ),
     ],
   );
 }
