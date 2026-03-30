@@ -107,7 +107,7 @@ export const navItems: NavItem[] = [
   { href: "/", label: { en: "Home", ar: "الرئيسية" } },
   { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
   { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
-  { href: "/guides", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
+  { href: "/collections/buyers-guide", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
   { href: "/contact", label: { en: "Contact", ar: "التواصل" } },
 ];
 
@@ -176,6 +176,28 @@ export const collections: Collection[] = [
     highlightPoints: {
       en: ["Cross-merchandising support", "Décor-driven storytelling", "Gift counter add-ons"],
       ar: ["دعم البيع المتقاطع", "سرد بصري قائم على الديكور", "منتجات إضافية لمنطقة الهدايا"],
+    },
+  },
+  {
+    slug: "buyers-guide",
+    name: { en: "Buyer's Guides", ar: "أدلة المشتري" },
+    description: {
+      en: "Expert guides to help wholesale tasbih buyers authenticate amber, kuka wood, and premium materials in 5 minutes.",
+      ar: "أدلة الخبراء لمساعدة مشتري التسابيح على التحقق من الكهرمان وخشب الكوكا والمواد الفاخرة.",
+    },
+    heroImage: "/images/collection-guides.svg",
+    featured: false,
+    overview: {
+      en: "Practical authentication guides for serious tasbih buyers — 5-minute tests, red flags, and sourcing checklists for amber and kuka wood tasbih.",
+      ar: "أدلة التحقق العملية لمشتري التسابيح الجادين — اختبارات في 5 دقائق، علامات تحذيرية، وقوائم فحص المصادر للكهرمان وخشب الكوكا.",
+    },
+    positioning: {
+      en: "SEO content hub for B2B tasbih buyers — builds trust, drives organic traffic, and positions TranquilBeads as the authoritative voice in tasbih material knowledge.",
+      ar: "مركز محتوى SEO لمشتري التسابيح B2B — يبني الثقة ويدفع الحركة العضوية ويضع ترانكويل بيدز كصوت مرجعي في معرفة مواد التسابيح.",
+    },
+    highlightPoints: {
+      en: ["5-minute material authentication", "Wholesale buyer checklists", "Sourcing red flags to avoid"],
+      ar: ["اختبارات المصادقة في 5 دقائق", "قوائم فحص مشتري الجملة", "علامات تحذيرية للمصادر يجب تجنبها"],
     },
   },
 ];
@@ -1231,6 +1253,85 @@ export const products: Product[] = [
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Shell", ar: "Shell" } },
       { label: { en: "Collection", ar: "المجموعة" }, value: { en: "signature-tasbih", ar: "signature-tasbih" } },
+    ],
+  },
+  // Blog articles as products (buyers-guide collection)
+  {
+    slug: "how-to-identify-real-amber-tasbih",
+    collection: "buyers-guide",
+    title: {
+      en: "How to Identify Real Amber Tasbih vs Fake: A 5-Minute Wholesale Buyer's Guide",
+      ar: "كيفية التعرف على السبح الكهرماني الحقيقي مقابل المزيف: دليل سريع لمشتري الجملة",
+    },
+    summary: {
+      en: "Amber tasbih commands premium pricing — but fakes are everywhere. Learn the 5 tests wholesale buyers can do in 2 minutes to verify authenticity before placing bulk orders.",
+      ar: "تحظى السباح الكهرمانية بسعر متميز — لكن المزيفات منتشرة. تعلم الاختبارات الخمسة التي يمكن إجراؤها في دقيقتين للتحقق من الأصالة قبل طلبات بالجملة.",
+    },
+    image: "/images/blog/amber-identification.jpg",
+    material: {
+      en: "Buyer's Guide",
+      ar: "دليل المشتري",
+    },
+    tags: {
+      en: ["Amber tasbih", "Authentication guide", "Wholesale buyer", "Material verification"],
+      ar: ["سبحان كهرماني", "دليل المصادقة", "مشتري جملة", "تحقق المادة"],
+    },
+    detailIntro: {
+      en: "Five authentication tests any wholesale buyer can do in minutes, without lab equipment.",
+      ar: "خمسة اختبارات مصادقة يمكن لأي مشتري جملة إجراؤها في دقائق، بدون معدات معملية.",
+    },
+    price: { en: "Article", ar: "مقال" },
+    detailBody: {
+      en: "Real amber is fossilized tree resin — not stone, not glass. Five tests: saltwater float, hot needle, UV light, inclusion inspection, and static charge. Each test takes under 30 seconds and requires no special tools.",
+      ar: "الكهرمان الحقيقي راتنج شجري متحجّر — ليس حجرًا ولا زجاجًا. خمسة اختبارات: الطفو في الماء المالح، الإبرة الساخنة، الضوء فوق البنفسجي، فحص الشوائب، والشحنة الساكنة.",
+    },
+    idealFor: { en: "Wholesale tasbih buyers, retailers, museum shops", ar: "مشتري التسابيح بالجملة، تجار التجزئة، متاجر المتاحف" },
+    heroAlt: { en: "Real vs fake amber tasbih authentication guide", ar: "دليل التحقق من السبح الكهرماني الحقيقي مقابل المزيف" },
+    gallery: [
+      { image: "/images/blog/amber-identification.jpg", alt: { en: "Amber tasbih authenticity test", ar: "اختبار أصالة السبح الكهرماني" } },
+    ],
+    specs: [
+      { label: { en: "Type", ar: "النوع" }, value: { en: "Buyer's Guide", ar: "دليل المشتري" } },
+      { label: { en: "Read time", ar: "وقت القراءة" }, value: { en: "5 min", ar: "5 دقائق" } },
+    ],
+  },
+  {
+    slug: "kuka-wood-tasbih-authenticity-guide",
+    collection: "buyers-guide",
+    title: {
+      en: "Kuka Wood Tasbih: How to Verify Quality Before Bulk Purchase",
+      ar: "سبحان خشب الكوكا: كيفية التحقق من الجودة قبل الشراء بالجملة",
+    },
+    summary: {
+      en: "Kuka wood tasbih is one of the most counterfeited prayer beads. This guide covers grain patterns, weight, scent, and surface finish — everything a professional buyer needs.",
+      ar: "سبحان خشب الكوكا من أكثر السباح المقلدة. يغطي هذا الدليل أنماط الحبوب والوزن والرائحة وتشطيب السطح — كل ما يحتاج المشتري المحترف.",
+    },
+    image: "/images/blog/kuka-wood-identification.jpg",
+    material: {
+      en: "Buyer's Guide",
+      ar: "دليل المشتري",
+    },
+    tags: {
+      en: ["Kuka wood tasbih", "Quality verification", "Wholesale buyer", "Material guide"],
+      ar: ["سبحان خشب الكوكا", "التحقق من الجودة", "مشتري جملة", "دليل المواد"],
+    },
+    detailIntro: {
+      en: "Three key checks for kuka wood quality: grain pattern, weight, and scent. Essential reading before placing bulk orders.",
+      ar: "ثلاثة فحوصات رئيسية لجودة خشب الكوكا: نمط الحبوب، الوزن، والرائحة. قراءة أساسية قبل وضع طلبات بالجملة.",
+    },
+    price: { en: "Article", ar: "مقال" },
+    detailBody: {
+      en: "Kuka wood (Adansonia digitata, baobab family) quality varies by region and tree age. Three checks: grain pattern consistency, weight, and scent. Also: water absorption test and surface finish inspection.",
+      ar: "جودة خشب الكوكا تتفاوت حسب المنطقة وعمر الشجرة. ثلاثة فحوصات: انتظام نمط الحبوب، والوزن، والرائحة. وأيضًا: اختبار امتصاص الماء وفحص تشطيب السطح.",
+    },
+    idealFor: { en: "Wholesale tasbih buyers, retailers, museum shops", ar: "مشتري التسابيح بالجملة، تجار التجزئة، متاجر المتاحف" },
+    heroAlt: { en: "Kuka wood tasbih quality verification guide", ar: "دليل التحقق من جودة سبحان خشب الكوكا" },
+    gallery: [
+      { image: "/images/blog/kuka-wood-identification.jpg", alt: { en: "Kuka wood tasbih authentication", ar: "التحقق من سبحان خشب الكوكا" } },
+    ],
+    specs: [
+      { label: { en: "Type", ar: "النوع" }, value: { en: "Buyer's Guide", ar: "دليل المشتري" } },
+      { label: { en: "Read time", ar: "وقت القراءة" }, value: { en: "6 min", ar: "6 دقائق" } },
     ],
   },
 ];

@@ -18,5 +18,15 @@
     ],
     "status": "active",
     "createdAt": "2026-03-30T00:00:00.000Z"
+  },
+  {
+    "id": "camp_email_launch_2026_03_30_v2",
+    "name": "Email launch batch v2",
+    "description": "First live email launch batch after Resend verification",
+    "channels": [
+      "email"
+    ],
+    "status": "active",
+    "createdAt": "2026-03-30T00:00:00.000Z"
   }
 ]

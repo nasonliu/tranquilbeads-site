@@ -1,0 +1,50 @@
+[
+  {
+    "leadId": "united-arab-emirates-tasbih-leads-2026-03-19-5-al-ishq-fashion-l-l-c",
+    "company": "Al Ishq Fashion L.L.C.",
+    "email": "info@crystalsouq.ae",
+    "priority": "tier_1",
+    "status": "keep",
+    "reason": "Crystal and spiritual gift retail is closely aligned with tasbih and Islamic gift positioning."
+  },
+  {
+    "leadId": "united-arab-emirates-tasbih-leads-2026-03-19-2-zayoshe-flowers-i-gifts-i-balloons-i-events-i-pe",
+    "company": "ZAYOSHE - Flowers I Gifts I Balloons I Events I Personalised For all Occasions",
+    "email": "info@zayoshe.com",
+    "priority": "tier_1",
+    "status": "keep",
+    "reason": "Gift-focused assortment and seasonal gifting angle fit premium Ramadan and Islamic gift outreach."
+  },
+  {
+    "leadId": "united-arab-emirates-tasbih-leads-2026-03-19-13-sanjay-kumar-trading-llc",
+    "company": "SANJAY KUMAR TRADING LLC",
+    "email": "info@souvenirsouq.com",
+    "priority": "tier_2",
+    "status": "keep",
+    "reason": "Souvenir and gift retail is relevant, but likely broader and less focused than dedicated Islamic gift sellers."
+  },
+  {
+    "leadId": "united-arab-emirates-tasbih-leads-2026-03-19-8-jasani-l-l-c-corporate-gifts-in-dubai-promotiona",
+    "company": "Jasani (L.L.C.) / Corporate Gifts in Dubai / Promotional Gifts Dubai",
+    "email": "sales@jasani.ae",
+    "priority": "tier_2",
+    "status": "keep",
+    "reason": "Corporate and promotional gifting is adjacent, but the catalog is likely less naturally aligned with tasbih than spiritual retail."
+  },
+  {
+    "leadId": "united-arab-emirates-tasbih-leads-2026-03-19-3-maknas-trading-co-llc",
+    "company": "Maknas Trading Co. LLC.",
+    "email": "info@maknastrading.com",
+    "priority": "tier_3",
+    "status": "review",
+    "reason": "Beads and accessories can be relevant, but this looks more component and craft adjacent than finished Islamic gift distribution."
+  },
+  {
+    "leadId": "united-arab-emirates-tasbih-leads-2026-03-19-14-ribbons-trading-llc",
+    "company": "RIBBONS TRADING LLC",
+    "email": "info@ribbons.ae",
+    "priority": "tier_4",
+    "status": "exclude_next_batch",
+    "reason": "Brand positioning suggests packaging, ribbons, and presentation materials rather than a true downstream tasbih or Islamic gift buyer."
+  }
+]

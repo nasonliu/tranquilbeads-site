@@ -298,5 +298,71 @@
       "reason": "Command failed: /Users/nason/.openclaw/bin/openclaw message send --channel whatsapp --target +971555763916 --message مرحبًا، أنا Nason من TranquilBeads.\n\nنحن نوفر سبحات ومنتجات إسلامية جاهزة للهدايا بجودة عالية لشركاء الجملة ومتاجر الهدايا والموزعين.\n\nاطلعت على GOLDEN GATE SOUVENIRS &GIFTS (TWO SEASONS) واعتقدت أن مجموعتنا قد تكون مناسبة لسوقكم. يمكنكم زيارة موقعنا هنا:\nhttps://www.tranquilbeads.com\n\nكما أشارك صورتين للمنتج كمرجع سريع. إذا كان هذا مناسبًا لكم، يسعدني إرسال خيارات مناسبة مع الحد الأدنى للطلب والتغليف ومدة التوريد. --json --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/hero.jpeg --media /Volumes/新加卷/Documents/ProjectNoor/public/images/real-products/natural-kuka-wood/detail-1.jpeg\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nConfig warnings:\\n- plugins.entries.brave: plugin not found: brave (stale config entry ignored; remove it from plugins config)\nError: Error: Delivering to WhatsApp requires target <E.164|group JID>\n"
     },
     "createdAt": "2026-03-30T03:32:33.450Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-5-al-ishq-fashion-l-l-c-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-5-al-ishq-fashion-l-l-c-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T05:11:11.906Z",
+      "channelMessageId": "d4e801bd-bf3b-46fa-a1d3-db1d22d4d0f1"
+    },
+    "createdAt": "2026-03-30T05:11:11.906Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-8-jasani-l-l-c-corporate-gifts-in-dubai-promotiona-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-8-jasani-l-l-c-corporate-gifts-in-dubai-promotiona-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T05:11:13.328Z",
+      "channelMessageId": "3eb677f4-f4f8-4d92-95a3-62e6dcc0b1da"
+    },
+    "createdAt": "2026-03-30T05:11:13.328Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-3-maknas-trading-co-llc-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-3-maknas-trading-co-llc-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T05:11:14.039Z",
+      "channelMessageId": "f6d0786f-a8d4-4ee8-988a-e03a7888d80d"
+    },
+    "createdAt": "2026-03-30T05:11:14.039Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-2-zayoshe-flowers-i-gifts-i-balloons-i-events-i-pe-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-2-zayoshe-flowers-i-gifts-i-balloons-i-events-i-pe-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T05:11:14.520Z",
+      "channelMessageId": "53a94140-1548-4154-9731-399a63ec2093"
+    },
+    "createdAt": "2026-03-30T05:11:14.520Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-13-sanjay-kumar-trading-llc-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-13-sanjay-kumar-trading-llc-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T05:11:14.988Z",
+      "channelMessageId": "22efaf21-2ca0-4654-bb24-b556cfcbf0a3"
+    },
+    "createdAt": "2026-03-30T05:11:14.988Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-14-ribbons-trading-llc-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v2-united-arab-emirates-tasbih-leads-2026-03-19-14-ribbons-trading-llc-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T05:11:15.453Z",
+      "channelMessageId": "458fb4a2-aeb6-4c5b-858c-5868d2b50fb7"
+    },
+    "createdAt": "2026-03-30T05:11:15.453Z"
   }
 ]
