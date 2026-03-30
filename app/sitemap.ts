@@ -5,8 +5,13 @@ import { locales, withLocale } from "@/src/lib/i18n";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com";
 
+const guides = [
+  "how-to-identify-real-amber-tasbih",
+  "kuka-wood-tasbih-authenticity-guide",
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["/", "/collections", "/wholesale", "/contact"];
+  const routes = ["/", "/collections", "/wholesale", "/contact", "/blog"];
 
   return locales.flatMap((locale) =>
     [
@@ -20,6 +25,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
       ...products.map((product) => ({
         url: `${baseUrl}${withLocale(locale, `/collections/${product.collection}/${product.slug}`)}`,
+        lastModified: new Date(),
+      })),
+      ...guides.map((slug) => ({
+        url: `${baseUrl}/blog/${slug}`,
         lastModified: new Date(),
       })),
     ],

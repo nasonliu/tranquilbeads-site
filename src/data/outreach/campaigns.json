@@ -28,5 +28,25 @@
     ],
     "status": "active",
     "createdAt": "2026-03-30T00:00:00.000Z"
+  },
+  {
+    "id": "camp_email_launch_2026_03_30_v3",
+    "name": "Email launch batch v3",
+    "description": "Tier 1 and Tier 2 live email batch after priority review",
+    "channels": [
+      "email"
+    ],
+    "status": "active",
+    "createdAt": "2026-03-30T12:30:00.000Z"
+  },
+  {
+    "id": "camp_email_launch_2026_03_30_v4",
+    "name": "Email launch batch v4",
+    "description": "High-fit follow-on email batch",
+    "channels": [
+      "email"
+    ],
+    "status": "active",
+    "createdAt": "2026-03-30T13:00:00.000Z"
   }
 ]
