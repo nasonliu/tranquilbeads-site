@@ -1,0 +1,816 @@
+[
+  {
+    "country": "Uzbekistan",
+    "city": "Tashkent",
+    "query": "tasbih shop Tashkent",
+    "places": [
+      {
+        "name": "National Souvenirs",
+        "address": "Алайский Базар, Тоshkent, Toshkent, Uzbekistan",
+        "website": "http://nationalroom.tilda.ws/",
+        "phone": "+998 97 403 22 44",
+        "types": [
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Sovg'alar podarki Подарки",
+        "address": "56-uy 62-xonadon TTZ-2 mavzesi, 100142, Тоshkent, Toshkent, Uzbekistan",
+        "phone": "+998 90 139 13 31",
+        "types": [
+          "gift_shop",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Tarozi Labaratorny",
+        "address": "Sergeli, 100000, Tashkent, Uzbekistan",
+        "website": "https://t.me/tarozi.uzb",
+        "phone": "+998 88 747 42 42",
+        "types": [
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Teplo Store",
+        "address": "ул. Нукус 31/2, 100000, Тоshkent, Toshkent, Uzbekistan",
+        "website": "https://teplo.store/",
+        "phone": "+998 99 991 20 22",
+        "types": [
+          "department_store",
+          "gift_shop",
+          "clothing_store",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "DariArt",
+        "address": "78QV+9MC Роддом №4, Тоshkent, Toshkent, Uzbekistan",
+        "website": "https://instagram.com/dariart.handmade",
+        "phone": "+998 93 567 04 23",
+        "types": [
+          "jewelry_store",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uzbekistan",
+    "city": "Tashkent",
+    "query": "Islamic gifts Tashkent",
+    "places": [
+      {
+        "name": "National Souvenirs",
+        "address": "Алайский Базар, Тоshkent, Toshkent, Uzbekistan",
+        "website": "http://nationalroom.tilda.ws/",
+        "phone": "+998 97 403 22 44",
+        "types": [
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Uzbegim suviner",
+        "address": "1 Zhokha, Tashkent, Uzbekistan",
+        "website": "https://www.instagram.com/uzbegim_suviner?igsh=MXVuaTBmc2NuY293Yw%3D%3D&utm_source=qr",
+        "phone": "+998 90 116 14 00",
+        "types": [
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Duty Free Uzbekistan",
+        "address": "International Airport Islam Karimov, Kumarik ko'chasi 13, 100167, Тоshkent, Toshkent, Uzbekistan",
+        "website": "https://dutyfree.uz/",
+        "phone": "+998 71 254 39 49",
+        "types": [
+          "gift_shop",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Teplo Store",
+        "address": "ул. Нукус 31/2, 100000, Тоshkent, Toshkent, Uzbekistan",
+        "website": "https://teplo.store/",
+        "phone": "+998 99 991 20 22",
+        "types": [
+          "department_store",
+          "gift_shop",
+          "clothing_store",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "UMMA ISLAMIC SHOP",
+        "address": "улица Бабура 6, Temur Malik Street 3, 100085, Tashkent, Uzbekistan",
+        "website": "https://instagram.com/ummaislamicshop?igshid=YmMyMTA2M2Y=",
+        "phone": "+998 95 193 49 49",
+        "types": [
+          "cosmetics_store",
+          "gift_shop",
+          "book_store",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uzbekistan",
+    "city": "Tashkent",
+    "query": "prayer mat shop Tashkent",
+    "places": [
+      {
+        "name": "SAG (Sam Antep Gilam)",
+        "address": "Kichik Xalqa Yo'li 2, 100022, Тоshkent, Toshkent, Uzbekistan",
+        "phone": "+998 91 201 01 01",
+        "types": [
+          "home_goods_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Qamar kitoblar do‘koni",
+        "address": "Navoiy shoh ko'chasi 42A, Тоshkent, Toshkent, Uzbekistan",
+        "website": "https://qamar.uz/",
+        "phone": "+998 99 845 44 00",
+        "types": [
+          "book_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "aslgilam",
+        "address": "Beruniy shoh ko'chasi дом 18-б, Тоshkent, Toshkent, Uzbekistan",
+        "phone": "+998 97 702 70 70",
+        "types": [
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Sovg'alar podarki Подарки",
+        "address": "56-uy 62-xonadon TTZ-2 mavzesi, 100142, Тоshkent, Toshkent, Uzbekistan",
+        "phone": "+998 90 139 13 31",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Mato",
+        "address": "Sayram ko'chasi 39, Тоshkent, Toshkent, Uzbekistan",
+        "website": "https://mato.uz/",
+        "phone": "+998 71 200 00 39",
+        "types": [
+          "home_goods_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uzbekistan",
+    "city": "Tashkent",
+    "query": "Muslim store Tashkent",
+    "places": [
+      {
+        "name": "Azelya-Muslim",
+        "address": "Furqat ko'chasi 7, Тоshkent, Toshkent, Uzbekistan",
+        "phone": "+998 91 770 16 05",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Al-Hijab Tashkent",
+        "address": "Aloqa Toshkent, 100111, Тоshkent, Toshkent, Uzbekistan",
+        "phone": "+998 71 249 39 00",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Muslima Boutique",
+        "address": "85JX+5FW, Tashkent, Uzbekistan",
+        "types": [
+          "womens_clothing_store",
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "As-Salam",
+        "address": "86JM+338, Tashkent, Uzbekistan",
+        "phone": "+998 97 700 32 42",
+        "types": [
+          "shopping_mall",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Muslimka Ayollar Liboslari",
+        "address": "Yangi Shahar ko'chasi 3, 100194, Тоshkent, Toshkent, Uzbekistan",
+        "website": "http://girlsavenue.uz/",
+        "phone": "+998 97 900 77 88",
+        "types": [
+          "womens_clothing_store",
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Kenya",
+    "city": "Nairobi",
+    "query": "Islamic gifts Nairobi",
+    "places": [
+      {
+        "name": "Tijara Duka Islamic Gift Shop",
+        "address": "PR8C+P5C, Kigali Rd, Nairobi, Kenya",
+        "phone": "+254 794 897245",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Kenya",
+    "city": "Nairobi",
+    "query": "tasbih Nairobi",
+    "places": []
+  },
+  {
+    "country": "Kenya",
+    "city": "Nairobi",
+    "query": "prayer mat shop Nairobi",
+    "places": [
+      {
+        "name": "Tijara Duka Islamic Gift Shop",
+        "address": "PR8C+P5C, Kigali Rd, Nairobi, Kenya",
+        "phone": "+254 794 897245",
+        "types": [
+          "gift_shop",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Nuria: The Home of Independent Authors",
+        "address": "1st floor, A12, The Bazaar Plaza, Moi Ave, Nairobi, Kenya",
+        "website": "https://nuriakenya.com/",
+        "phone": "+254 794 233261",
+        "types": [
+          "general_store",
+          "book_store",
+          "food_store",
+          "food",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Prayer Shop",
+        "address": "Nairobi, Kenya",
+        "phone": "+254 722 316328",
+        "types": [
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Siya Trading Limited",
+        "address": "Nadume Road, Industrial Road, Nairobi, Kenya",
+        "website": "http://siya.co.ke/",
+        "phone": "+254 712 724323",
+        "types": [
+          "gift_shop",
+          "point_of_interest",
+          "store",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Kenya",
+    "city": "Nairobi",
+    "query": "Muslim store Nairobi",
+    "places": [
+      {
+        "name": "House Of Hijabs",
+        "address": "Stall F 3, 1st Floor, Market Stalls Center, Opposite City Market, Nairobi, Kenya",
+        "phone": "+254 708 725466",
+        "types": [
+          "womens_clothing_store",
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Al-Furaat Islamic Dressing Centre",
+        "address": "PRGX+8VJ, Sixth St, Nairobi City, Kenya",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Tijara Duka Islamic Gift Shop",
+        "address": "PR8C+P5C, Kigali Rd, Nairobi, Kenya",
+        "phone": "+254 794 897245",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Zuraam Abayas",
+        "address": "Cross Roads Two appartment, near Masjid Al Ameen, Chai road, Nairobi, Kenya",
+        "phone": "+254 798 760001",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Nizarline",
+        "address": "Applewood, Nizarsline road Ngong Rd, Nairobi, Kenya",
+        "website": "https://nizarline.com/",
+        "phone": "+254 716 297271",
+        "types": [
+          "womens_clothing_store",
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uganda",
+    "city": "Kampala",
+    "query": "Islamic gifts Kampala",
+    "places": [
+      {
+        "name": "Crescent Touch Islamic Gift Shop",
+        "address": "Shop A35, Avemar Shopping Arcade, Kampala, Uganda",
+        "phone": "+256 705 261414",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Hyjab World",
+        "address": "Forest Mall, Kampala, Uganda",
+        "website": "https://hyjabafrica.com/",
+        "phone": "+256 750 886731",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "The Islamic GiftShop - TIGS",
+        "address": "8H4G+58H, Mengo Hill Rd, Kampala, Uganda",
+        "website": "http://www.facebook.com/TheIslamicGiftshop",
+        "phone": "+256 758 462072",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Fair Price Islamic Wear Ltd.",
+        "address": "Floor 1, Katonga business centre, BCC- 10, Plot 6 Nakivubo Rd, Kampala, Uganda",
+        "phone": "+256 776 985100",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Bagala Craft",
+        "address": "Buganda Rd, Kampala, Uganda",
+        "phone": "+256 785 829281",
+        "types": [
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uganda",
+    "city": "Kampala",
+    "query": "tasbih Kampala",
+    "places": [
+      {
+        "name": "Tawheed Islamic Centre in Kampala",
+        "address": "8H49+HM3, Mwanga II Rd, Kampala, Uganda",
+        "phone": "+256 793 637142",
+        "types": [
+          "mosque",
+          "place_of_worship",
+          "point_of_interest",
+          "association_or_organization",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uganda",
+    "city": "Kampala",
+    "query": "prayer mat shop Kampala",
+    "places": [
+      {
+        "name": "Kampala Bible Centre",
+        "address": "No. D.G, Mukwano Arcade: Shop, 10B Ben Kiwanuka St, Kampala, Uganda",
+        "phone": "+256 781 135896",
+        "types": [
+          "book_store",
+          "wholesaler",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Middle East Supermarket / Kampala",
+        "address": "Marigold Heights, Kampala, Uganda",
+        "website": "https://www.facebook.com/middleeastsupermarket/",
+        "phone": "+256 740 511111",
+        "types": [
+          "supermarket",
+          "grocery_store",
+          "food_store",
+          "store",
+          "point_of_interest",
+          "food",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Meinrad Technologies",
+        "address": "new market, Kampala, Uganda",
+        "types": [
+          "market",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "BrandAds Limited",
+        "address": "Nkrumah Road Plot 5/7, 3rd Floor, Room BH374, Blue Heights Plaza, 8 Nkrumah Rd, Kampala, Uganda",
+        "website": "https://brandads.co.ug/",
+        "phone": "+256 702 052607",
+        "types": [
+          "supplier",
+          "manufacturer",
+          "service",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Every Nation Kampala",
+        "address": "Makerere Kikoni, Kampala, Uganda",
+        "website": "http://www.everynationkampala.org/",
+        "phone": "+256 709 969030",
+        "types": [
+          "non_profit_organization",
+          "association_or_organization",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Uganda",
+    "city": "Kampala",
+    "query": "Muslim store Kampala",
+    "places": [
+      {
+        "name": "Zahrax Muslim Collection",
+        "address": "Martin Road New taxi park, Global complex, Hijab City, Shop BS-20, Kampala, Uganda",
+        "website": "https://www.tiktok.com/@zahraxmuslimcollection?_t=8V44XOYc9JO&_r=1",
+        "phone": "+256 750 632212",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "HIJAB CITY",
+        "address": "Kampala, Uganda",
+        "phone": "+256 700 281011",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Hyjab World",
+        "address": "Forest Mall, Kampala, Uganda",
+        "website": "https://hyjabafrica.com/",
+        "phone": "+256 750 886731",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Fair Price Islamic Wear Ltd.",
+        "address": "Floor 1, Katonga business centre, BCC- 10, Plot 6 Nakivubo Rd, Kampala, Uganda",
+        "phone": "+256 776 985100",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Classic Muslim Wear",
+        "address": "Namasuba, Kampala - Entebbe Rd, Kampala, Uganda",
+        "phone": "+256 758 598623",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Tanzania",
+    "city": "Dar es Salaam",
+    "query": "Islamic gifts Dar es Salaam",
+    "places": [
+      {
+        "name": "Jerusalem holy gifts",
+        "address": "Bahari beach Kondo, 9 sokoni point, Dar es Salaam 67347, Tanzania",
+        "phone": "+255 655 103 331",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Gifts Plaza",
+        "address": "Sekenke St, Dar es Salaam, Tanzania",
+        "phone": "+255 712 267 232",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Tanzania Gift Shop",
+        "address": "Livingstone St, Dar es Salaam, Tanzania",
+        "website": "https://www.instagram.com/tanzaniagiftshop/",
+        "phone": "+255 754 461 195",
+        "types": [
+          "home_goods_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Divine gifts company Tanzania limited",
+        "address": "55 Barabara Segerea, Dar es Salaam, Tanzania",
+        "phone": "+255 786 891 404",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "MODERN SHOP",
+        "address": "Dodoma St, Dar es Salaam, Tanzania",
+        "phone": "+255 717 013 340",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Tanzania",
+    "city": "Dar es Salaam",
+    "query": "tasbih Dar es Salaam",
+    "places": []
+  },
+  {
+    "country": "Tanzania",
+    "city": "Dar es Salaam",
+    "query": "prayer mat shop Dar es Salaam",
+    "places": [
+      {
+        "name": "Jerusalem holy gifts",
+        "address": "Bahari beach Kondo, 9 sokoni point, Dar es Salaam 67347, Tanzania",
+        "phone": "+255 655 103 331",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Abby Home Decoration",
+        "address": "Mchikichini, Dar es Salaam, Tanzania",
+        "website": "http://www.abbyhomedecoration.com/",
+        "phone": "+255 676 629 200",
+        "types": [
+          "shopping_mall",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Gifts Plaza",
+        "address": "Sekenke St, Dar es Salaam, Tanzania",
+        "phone": "+255 712 267 232",
+        "types": [
+          "gift_shop",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Hamduni Enterprises (rahaleo)",
+        "address": "47H7+WVG, Dar es Salaam, Tanzania",
+        "phone": "+255 714 793 673",
+        "types": [
+          "home_goods_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "victan chupi vest boxes shopmakit",
+        "address": "57HG+89J, Dar es Salaam, Tanzania",
+        "phone": "+255 715 212 271",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  },
+  {
+    "country": "Tanzania",
+    "city": "Dar es Salaam",
+    "query": "Muslim store Dar es Salaam",
+    "places": [
+      {
+        "name": "MODERN SHOP",
+        "address": "Dodoma St, Dar es Salaam, Tanzania",
+        "phone": "+255 717 013 340",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Kanzu Point",
+        "address": "57MH+FVJ bibiti &, Morogoro Rd, Dar es Salaam, Tanzania",
+        "website": "https://www.instagram.com/kanzupoint/",
+        "phone": "+255 744 577 577",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Hijab Yangu NEW",
+        "address": "Sinza Africa Sana, Kanisani Street, Dar es Salaam, Tanzania",
+        "website": "http://instagram.com/hijabyangu",
+        "phone": "+255 739 150 000",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Zuu modest wear",
+        "address": "sinza, Dar es Salaam, Tanzania",
+        "phone": "+255 765 606 008",
+        "types": [
+          "womens_clothing_store",
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      },
+      {
+        "name": "Islamic Fashion",
+        "address": "57HF+PW4, Narung'ombeStreet, Dar es Salaam, Tanzania",
+        "types": [
+          "clothing_store",
+          "store",
+          "point_of_interest",
+          "establishment"
+        ]
+      }
+    ]
+  }
+]

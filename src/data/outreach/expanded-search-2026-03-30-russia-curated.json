@@ -1,0 +1,36 @@
+{
+  "createdAt": "2026-03-30T06:15:30.840Z",
+  "insertedCount": 2,
+  "inserted": [
+    {
+      "id": "russia-web-2026-03-30-shop-ihlas-kazan",
+      "sourceType": "google_places",
+      "sourcePath": "https://shopihlas.ru/catalog/",
+      "company": "Shop Ihlas",
+      "contactName": "",
+      "country": "Russia",
+      "website": "https://shopihlas.ru/",
+      "whatsapp": "",
+      "email": "shopihlaswork@gmail.com",
+      "score": 68,
+      "notes": "Curated web lead. Kazan Islamic goods and gift shop with prayer accessories, Muslim souvenirs, and direct phone contact +7 (962) 559-18-58 listed on site.",
+      "createdAt": "2026-03-30T06:15:30.840Z",
+      "updatedAt": "2026-03-30T06:15:30.840Z"
+    },
+    {
+      "id": "russia-web-2026-03-30-bismillah-kazan",
+      "sourceType": "google_places",
+      "sourcePath": "https://magazinbismillah.orgs.biz/",
+      "company": "Islamic Store BISMILLAH Kazan",
+      "contactName": "",
+      "country": "Russia",
+      "website": "https://magazinbismillah.orgs.biz/",
+      "whatsapp": "",
+      "email": "",
+      "score": 66,
+      "notes": "Curated web lead. Kazan Islamic gifts store with tasbih, prayer mats, and Islamic themed gifts. Site contact phone: +7 (908) 399-99-55.",
+      "createdAt": "2026-03-30T06:15:30.840Z",
+      "updatedAt": "2026-03-30T06:15:30.840Z"
+    }
+  ]
+}

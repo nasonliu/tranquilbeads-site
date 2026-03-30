@@ -617,5 +617,93 @@
       "channelMessageId": "3c26218b-2991-4d1e-ad57-e006141cdf82"
     },
     "createdAt": "2026-03-30T05:23:53.680Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-turkey-web-2026-03-30-tesbih-factory-istanbul-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-turkey-web-2026-03-30-tesbih-factory-istanbul-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:10.170Z",
+      "channelMessageId": "c35a8463-58af-47e0-92c2-00f6e20ea2c4"
+    },
+    "createdAt": "2026-03-30T06:28:10.170Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-netherlands-web-2026-03-30-darussalam-nl-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-netherlands-web-2026-03-30-darussalam-nl-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:12.102Z",
+      "channelMessageId": "77d0358e-2f16-4b2b-ab3d-232f1a40b316"
+    },
+    "createdAt": "2026-03-30T06:28:12.102Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-austria-web-2026-03-30-zahraa-muslim-lifestyle-shop-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-austria-web-2026-03-30-zahraa-muslim-lifestyle-shop-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:12.763Z",
+      "channelMessageId": "fa622531-58a2-411f-8730-d104c37950b4"
+    },
+    "createdAt": "2026-03-30T06:28:12.763Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-germany-web-2026-03-30-diinsign-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-germany-web-2026-03-30-diinsign-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:13.215Z",
+      "channelMessageId": "e478f25b-5a9d-4237-8ca9-8c0e860e4425"
+    },
+    "createdAt": "2026-03-30T06:28:13.215Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-nigeria-google-places-2026-03-30-hadiya-souq-islamic-store-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-nigeria-google-places-2026-03-30-hadiya-souq-islamic-store-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:13.679Z",
+      "channelMessageId": "0614146f-dc38-45b4-8827-8ebc3f793061"
+    },
+    "createdAt": "2026-03-30T06:28:13.679Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-netherlands-web-2026-03-30-qissah-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-netherlands-web-2026-03-30-qissah-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:14.256Z",
+      "channelMessageId": "97814e7e-2381-44a5-9250-c9e5bfd97b5f"
+    },
+    "createdAt": "2026-03-30T06:28:14.256Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-russia-web-2026-03-30-shop-ihlas-kazan-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-russia-web-2026-03-30-shop-ihlas-kazan-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:14.745Z",
+      "channelMessageId": "01b8e00e-5b67-4bdf-a7c2-088beb9ecedc"
+    },
+    "createdAt": "2026-03-30T06:28:14.745Z"
+  },
+  {
+    "id": "camp-email-launch-2026-03-30-v5-bosnia-and-herzegovina-web-2026-03-30-islam-market-bosna-email-sent",
+    "taskId": "camp-email-launch-2026-03-30-v5-bosnia-and-herzegovina-web-2026-03-30-islam-market-bosna-email",
+    "type": "sent",
+    "payload": {
+      "channel": "email",
+      "sentAt": "2026-03-30T06:28:15.194Z",
+      "channelMessageId": "fd7636d8-8d4a-4ab6-8dcf-dba0f631ee7e"
+    },
+    "createdAt": "2026-03-30T06:28:15.194Z"
   }
 ]

@@ -1,0 +1,36 @@
+{
+  "createdAt": "2026-03-30T06:19:24.147Z",
+  "insertedCount": 2,
+  "inserted": [
+    {
+      "id": "kazakhstan-web-2026-03-30-medina-ekibastuz",
+      "sourceType": "google_places",
+      "sourcePath": "https://muslimtowarekb.orgs.biz/",
+      "company": "МЕДИНА",
+      "contactName": "",
+      "country": "Kazakhstan",
+      "website": "https://muslimtowarekb.orgs.biz/",
+      "whatsapp": "",
+      "email": "",
+      "score": 63,
+      "notes": "Curated web lead. Kazakhstan Muslim goods store carrying Islamic clothing, perfumes, and Muslim merchandise wholesale and retail. Site contact phone: +7 (777) 937-55-87.",
+      "createdAt": "2026-03-30T06:19:24.147Z",
+      "updatedAt": "2026-03-30T06:19:24.147Z"
+    },
+    {
+      "id": "kenya-web-2026-03-30-islamic-gifts-kenya",
+      "sourceType": "google_places",
+      "sourcePath": "https://www.islamicgifts.co.ke/",
+      "company": "Islamic Gifts Kenya",
+      "contactName": "",
+      "country": "Kenya",
+      "website": "https://www.islamicgifts.co.ke/",
+      "whatsapp": "",
+      "email": "",
+      "score": 66,
+      "notes": "Curated web lead. Kenya Islamic gift storefront with Quran gift lines and smart tasbih products indexed in search results; direct contact details still need enrichment.",
+      "createdAt": "2026-03-30T06:19:24.147Z",
+      "updatedAt": "2026-03-30T06:19:24.147Z"
+    }
+  ]
+}

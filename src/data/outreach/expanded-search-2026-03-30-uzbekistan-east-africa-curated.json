@@ -1,0 +1,66 @@
+{
+  "createdAt": "2026-03-30T06:23:14.672Z",
+  "insertedCount": 4,
+  "inserted": [
+    {
+      "id": "uzbekistan-google-2026-03-30-umma-islamic-shop-tashkent",
+      "sourceType": "google_places",
+      "sourcePath": "Google Maps: Islamic gifts Tashkent",
+      "company": "UMMA ISLAMIC SHOP",
+      "contactName": "",
+      "country": "Uzbekistan",
+      "website": "https://instagram.com/ummaislamicshop?igshid=YmMyMTA2M2Y=",
+      "whatsapp": "+998 95 193 49 49",
+      "email": "",
+      "score": 67,
+      "notes": "Google Places lead. Tashkent Islamic shop with religious goods for Muslims, including books, perfumes, souvenirs and gift-shop signal.",
+      "createdAt": "2026-03-30T06:23:14.672Z",
+      "updatedAt": "2026-03-30T06:23:14.672Z"
+    },
+    {
+      "id": "kenya-google-2026-03-30-tijara-duka-islamic-gift-shop",
+      "sourceType": "google_places",
+      "sourcePath": "Google Maps: Islamic gifts Nairobi",
+      "company": "Tijara Duka Islamic Gift Shop",
+      "contactName": "",
+      "country": "Kenya",
+      "website": "",
+      "whatsapp": "+254 794 897245",
+      "email": "",
+      "score": 68,
+      "notes": "Google Places lead. Nairobi Islamic gift shop with strong category match across Islamic gift and prayer mat queries.",
+      "createdAt": "2026-03-30T06:23:14.672Z",
+      "updatedAt": "2026-03-30T06:23:14.672Z"
+    },
+    {
+      "id": "uganda-google-2026-03-30-crescent-touch-islamic-gift-shop",
+      "sourceType": "google_places",
+      "sourcePath": "Google Maps: Islamic gifts Kampala",
+      "company": "Crescent Touch Islamic Gift Shop",
+      "contactName": "",
+      "country": "Uganda",
+      "website": "",
+      "whatsapp": "+256 705 261414",
+      "email": "",
+      "score": 69,
+      "notes": "Google Places lead. Kampala Islamic gift shop with direct phone contact and clear Islamic gifting signal.",
+      "createdAt": "2026-03-30T06:23:14.672Z",
+      "updatedAt": "2026-03-30T06:23:14.672Z"
+    },
+    {
+      "id": "uganda-google-2026-03-30-the-islamic-giftshop-tigs",
+      "sourceType": "google_places",
+      "sourcePath": "Google Maps: Islamic gifts Kampala",
+      "company": "The Islamic GiftShop - TIGS",
+      "contactName": "",
+      "country": "Uganda",
+      "website": "http://www.facebook.com/TheIslamicGiftshop",
+      "whatsapp": "+256 758 462072",
+      "email": "",
+      "score": 67,
+      "notes": "Google Places lead. Kampala Islamic gift shop with direct phone contact and social storefront.",
+      "createdAt": "2026-03-30T06:23:14.672Z",
+      "updatedAt": "2026-03-30T06:23:14.672Z"
+    }
+  ]
+}
