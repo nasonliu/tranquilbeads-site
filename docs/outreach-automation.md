@@ -48,8 +48,10 @@ This workflow automates the first contact with TranquilBeads prospects, then han
 - `OUTREACH_EMAIL_WEBHOOK_URL=...`
 - `OUTREACH_EMAIL_WEBHOOK_TOKEN=...`
 - `OUTREACH_RESEND_API_KEY=...`
+- `OUTREACH_RESEND_WEBHOOK_SECRET=...`
 - `OUTREACH_EMAIL_FROM=...`
 - `OUTREACH_EMAIL_REPLY_TO=...`
+- `OUTREACH_EMAIL_FORWARD_TO=sales@tranquilbeads.com`
 - `OUTREACH_PUBLIC_BASE_URL=https://www.tranquilbeads.com`
 - When no provider is configured, both channels stay in safe dry-run mode and emit deterministic synthetic message ids.
 - Recommended production pairing for this repo is `OUTREACH_WHATSAPP_PROVIDER=openclaw` and `OUTREACH_EMAIL_PROVIDER=resend`.
@@ -66,11 +68,13 @@ This workflow automates the first contact with TranquilBeads prospects, then han
 - Duplicate reply delivery is treated as a no-op once a task is already handed off.
 - App Router webhook endpoints are available at `/api/outreach/webhooks/whatsapp` and `/api/outreach/webhooks/email`.
 - When `OUTREACH_WEBHOOK_SECRET` is configured, inbound requests must include `x-outreach-webhook-secret: <secret>`.
+- Email webhooks also support native Resend `svix-*` signature validation when `OUTREACH_RESEND_WEBHOOK_SECRET` is configured.
 - Current normalized webhook payload expectations are:
 - WhatsApp generic JSON: `messageId` or `channelMessageId`, `from`, `body` or `text`, optional `receivedAt`
 - WhatsApp Twilio form post: `MessageSid`, `From`, `Body`
 - Email generic JSON: `threadId` or `messageId`, `from`, `text` or `body`, optional `receivedAt`
 - Email Resend `email.received`: nested `data.email_id`, `data.from`, `data.thread_id`; the route will fetch the received email body from Resend when `OUTREACH_RESEND_API_KEY` is configured
+- When `OUTREACH_EMAIL_FORWARD_TO` is configured, inbound email replies are also forwarded to that mailbox for human processing.
 
 ## Human Handoff
 
@@ -94,7 +98,10 @@ This workflow automates the first contact with TranquilBeads prospects, then han
 - `OUTREACH_OPENCLAW_WORKSPACE=/Users/nason/.openclaw/workspace`
 - `OUTREACH_EMAIL_PROVIDER=resend`
 - `OUTREACH_RESEND_API_KEY=...`
-- `OUTREACH_EMAIL_FROM="Nason <sales@tranquilbeads.com>"`
+- `OUTREACH_RESEND_WEBHOOK_SECRET=whsec_...`
+- `OUTREACH_EMAIL_FROM="Nason <sales@agent.tranquilbeads.com>"`
+- `OUTREACH_EMAIL_REPLY_TO=reply@agent.tranquilbeads.com`
+- `OUTREACH_EMAIL_FORWARD_TO=sales@tranquilbeads.com`
 - `OUTREACH_PUBLIC_BASE_URL=https://www.tranquilbeads.com`
 - `OUTREACH_WEBHOOK_SECRET=...`
 
@@ -112,6 +119,7 @@ This workflow automates the first contact with TranquilBeads prospects, then han
 5. Sync replies:
 - Email/webhook path: POST to `/api/outreach/webhooks/email`
 - WhatsApp/OpenClaw path: `npm run outreach:sync-openclaw-whatsapp`
+- Recommended production setup is direct Resend `email.received` webhook delivery to `/api/outreach/webhooks/email`, with `svix-*` signature validation enabled by `OUTREACH_RESEND_WEBHOOK_SECRET`
 
 6. Work the handoff queue:
 - Review tasks in `src/data/outreach/tasks.json` with `needs_human_followup: true`

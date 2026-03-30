@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { syncOutreachReplies } from "@/scripts/sync-outreach-replies";
+import { maybeForwardInboundEmailReply } from "@/src/lib/email-inbound-forwarding";
 import {
   assertOutreachWebhookAuthorized,
   parseEmailWebhookRequest,
@@ -8,14 +9,23 @@ import {
 
 export async function POST(request: Request) {
   try {
-    assertOutreachWebhookAuthorized(request);
-    const reply = await parseEmailWebhookRequest(request, {
+    const rawBody = await request.text();
+    assertOutreachWebhookAuthorized(request, {
+      rawBody,
+      resendSigningSecret: process.env.OUTREACH_RESEND_WEBHOOK_SECRET,
+    });
+    const reply = await parseEmailWebhookRequest(rawBody, {
       resendApiKey: process.env.OUTREACH_RESEND_API_KEY,
       fetchImpl: fetch,
     });
     const result = await syncOutreachReplies({
       replies: [reply],
       persist: true,
+    });
+    await maybeForwardInboundEmailReply({
+      reply,
+      env: process.env,
+      fetchImpl: fetch,
     });
 
     return NextResponse.json({

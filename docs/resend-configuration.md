@@ -6,6 +6,7 @@
 
 1. 发首封开发邮件
 2. 接收客户邮件回复，并把回复同步进 outreach reply 流程
+3. 把收到的客户回复自动转发到人工邮箱
 
 相关代码入口：
 
@@ -80,8 +81,10 @@ Resend 支持两种收件方式：
 ```env
 OUTREACH_EMAIL_PROVIDER=resend
 OUTREACH_RESEND_API_KEY=re_xxx
-OUTREACH_EMAIL_FROM="Nason <sales@tranquilbeads.com>"
-OUTREACH_EMAIL_REPLY_TO=reply@tranquilbeads.com
+OUTREACH_RESEND_WEBHOOK_SECRET=whsec_xxx
+OUTREACH_EMAIL_FROM="Nason <sales@agent.tranquilbeads.com>"
+OUTREACH_EMAIL_REPLY_TO=reply@agent.tranquilbeads.com
+OUTREACH_EMAIL_FORWARD_TO=sales@tranquilbeads.com
 OUTREACH_PUBLIC_BASE_URL=https://www.tranquilbeads.com
 OUTREACH_WEBHOOK_SECRET=your_shared_secret
 ```
@@ -92,14 +95,18 @@ OUTREACH_WEBHOOK_SECRET=your_shared_secret
   - 打开 Resend 发信通道
 - `OUTREACH_RESEND_API_KEY`
   - 给发送接口和接收邮件正文拉取接口共用
+- `OUTREACH_RESEND_WEBHOOK_SECRET`
+  - Resend `email.received` webhook 的官方签名秘钥
 - `OUTREACH_EMAIL_FROM`
   - Resend 实际发送时使用的发件人
 - `OUTREACH_EMAIL_REPLY_TO`
   - 客户点回复时的目标地址
+- `OUTREACH_EMAIL_FORWARD_TO`
+  - 收到客户回信后，系统自动转发到的人工作业邮箱
 - `OUTREACH_PUBLIC_BASE_URL`
   - 把本地附件路径转成公开 URL，供 Resend 附件引用
 - `OUTREACH_WEBHOOK_SECRET`
-  - 用来保护你自己的 webhook 路由，不是 Resend 自带签名
+  - 可选的共享 secret，给自定义 webhook 转发层使用
 
 ## 4. 邮件发送链路怎么走
 
@@ -152,12 +159,26 @@ https://www.tranquilbeads.com/api/outreach/webhooks/email
 
 ### 5.2 这个仓库如何校验 webhook
 
-当前代码不是走 Resend 官方签名校验，而是使用一个共享 secret：
+当前代码优先支持两种校验方式：
+
+1. Resend 官方 `svix-*` 签名校验
+2. 共享 secret `x-outreach-webhook-secret`
+
+对直接由 Resend 打进来的生产 webhook，更推荐第一种。
+
+如果你用 Resend 官方签名：
+
+- 在 Resend Dashboard 建 webhook 后，会生成一个 `whsec_...` 签名秘钥
+- 把它填到 `OUTREACH_RESEND_WEBHOOK_SECRET`
+- Resend 会自动带上：
+  - `svix-id`
+  - `svix-timestamp`
+  - `svix-signature`
+
+如果你走中间转发层，仍然可以继续用共享 secret：
 
 - 请求头：`x-outreach-webhook-secret`
 - 值：`OUTREACH_WEBHOOK_SECRET`
-
-也就是说，如果你中间有自己的 webhook 转发层，需要它把这个 header 带上。
 
 ### 5.3 为什么代码还要再调一次 Resend API
 
@@ -196,6 +217,14 @@ Resend `email.received` 事件在当前代码里会映射成：
 - `replied`
 - `needs_human_followup`
 
+接着当前实现还会再做一步：
+
+- 用 `OUTREACH_EMAIL_FORWARD_TO` 把这封回信自动转发到人工邮箱
+
+默认推荐的人工邮箱是：
+
+- `sales@tranquilbeads.com`
+
 ## 7. 生产配置建议
 
 推荐搭配是：
@@ -218,8 +247,10 @@ Resend `email.received` 事件在当前代码里会映射成：
 ```env
 OUTREACH_EMAIL_PROVIDER=resend
 OUTREACH_RESEND_API_KEY=re_xxx
-OUTREACH_EMAIL_FROM="Nason <sales@tranquilbeads.com>"
-OUTREACH_EMAIL_REPLY_TO=reply@tranquilbeads.com
+OUTREACH_RESEND_WEBHOOK_SECRET=whsec_xxx
+OUTREACH_EMAIL_FROM="Nason <sales@agent.tranquilbeads.com>"
+OUTREACH_EMAIL_REPLY_TO=reply@agent.tranquilbeads.com
+OUTREACH_EMAIL_FORWARD_TO=sales@tranquilbeads.com
 OUTREACH_PUBLIC_BASE_URL=https://www.tranquilbeads.com
 OUTREACH_WEBHOOK_SECRET=test_secret
 ```
@@ -243,6 +274,8 @@ npm run outreach:send
 ```http
 x-outreach-webhook-secret: test_secret
 ```
+
+如果你要模拟真实 Resend 直连，则改成带 `svix-id / svix-timestamp / svix-signature`，并确保 `OUTREACH_RESEND_WEBHOOK_SECRET` 已配置。
 
 ### 8.4 检查落库
 

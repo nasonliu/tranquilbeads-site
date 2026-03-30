@@ -13,7 +13,7 @@ export function generateStaticParams() {
   );
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+export async function generateMetadata({ params }: { params: Record<string, string> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
   const article = blogArticles.find((a) => a.slug === slug);
@@ -42,7 +42,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function BlogArticlePage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+type BlogParams = { params: Record<string, string> };
+export default async function BlogArticlePage({ params }: BlogParams) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
 

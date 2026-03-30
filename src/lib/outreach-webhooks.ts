@@ -1,11 +1,36 @@
+import { Webhook } from "svix";
+
 import type { OutreachReplySyncInput } from "@/scripts/sync-outreach-replies";
 
-export function assertOutreachWebhookAuthorized(request: Request, secret = process.env.OUTREACH_WEBHOOK_SECRET) {
-  if (!secret) {
+export function assertOutreachWebhookAuthorized(
+  request: Request,
+  options: {
+    secret?: string;
+    resendSigningSecret?: string;
+    rawBody?: string;
+  } = {},
+) {
+  const secret = options.secret ?? process.env.OUTREACH_WEBHOOK_SECRET;
+  const resendSigningSecret =
+    options.resendSigningSecret ?? process.env.OUTREACH_RESEND_WEBHOOK_SECRET;
+  const provided = request.headers.get("x-outreach-webhook-secret") ?? "";
+
+  if (secret && provided === secret) {
     return;
   }
 
-  const provided = request.headers.get("x-outreach-webhook-secret") ?? "";
+  if (options.rawBody && resendSigningSecret && hasSvixSignatureHeaders(request)) {
+    new Webhook(resendSigningSecret).verify(options.rawBody, {
+      "svix-id": request.headers.get("svix-id") ?? "",
+      "svix-timestamp": request.headers.get("svix-timestamp") ?? "",
+      "svix-signature": request.headers.get("svix-signature") ?? "",
+    });
+    return;
+  }
+
+  if (!secret && !resendSigningSecret) {
+    return;
+  }
 
   if (provided !== secret) {
     throw new Error("Unauthorized webhook request");
@@ -41,13 +66,15 @@ export async function parseWhatsAppWebhookRequest(request: Request): Promise<Out
 }
 
 export async function parseEmailWebhookRequest(
-  request: Request,
+  request: Request | string,
   options: {
     resendApiKey?: string;
     fetchImpl?: typeof fetch;
   } = {},
 ): Promise<OutreachReplySyncInput> {
-  const payload = (await request.json()) as Record<string, unknown>;
+  const payload = (
+    typeof request === "string" ? JSON.parse(request) : await request.json()
+  ) as Record<string, unknown>;
   const resendReply = await maybeParseResendReceivedEmail(payload, {
     resendApiKey: options.resendApiKey,
     fetchImpl: options.fetchImpl ?? fetch,
@@ -78,6 +105,14 @@ function readNestedString(record: Record<string, unknown>, key: string) {
 function normalizeWhatsAppAddress(value?: string) {
   if (!value) return undefined;
   return value.replace(/^whatsapp:/i, "");
+}
+
+function hasSvixSignatureHeaders(request: Request) {
+  return Boolean(
+    request.headers.get("svix-id")
+      && request.headers.get("svix-timestamp")
+      && request.headers.get("svix-signature"),
+  );
 }
 
 async function maybeParseResendReceivedEmail(
