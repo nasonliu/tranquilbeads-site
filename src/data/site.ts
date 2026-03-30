@@ -208,8 +208,8 @@ export const products: Product[] = [
     image: "/images/imported/natural-kuka-wood-tasbih/1774763467336-kuka_1.jpg",
     material: { en: "Natural kuka wood", ar: "Natural kuka wood" },
     tags: {
-      en: ["Natural material", "Gift box", "Daily dhikr", "signature-tasbih"],
-      ar: ["خامة طبيعية", "علبة هدية", "للذكر اليومي", "signature-tasbih"],
+      en: ["Kuka tasbih", "Wood tasbih", "Natural material", "Gift box", "Daily dhikr", "signature-tasbih"],
+      ar: ["سبحان كوكا", "سبحان خشبي", "خامة طبيعية", "علبة هدية", "للذكر اليومي", "signature-tasbih"],
     },
     detailIntro: {
       en: "One of the cleanest commercial tasbih directions in the current assortment, with natural wood character and a steady 33-bead format.",
@@ -278,8 +278,8 @@ export const products: Product[] = [
     image: "/images/real-products/lacquer-art/hero.jpeg",
     material: { en: "Artisan resin", ar: "Artisan resin" },
     tags: {
-      en: ["Younger retail", "Multicolor finish", "Accessible gifting", "signature-tasbih"],
-      ar: ["تجزئة شبابية", "تشطيب متعدد الألوان", "هدية سهلة الاختيار", "signature-tasbih"],
+      en: ["33 bead tasbih", "Resin tasbih wholesale", "Younger retail", "Multicolor finish", "Accessible gifting", "signature-tasbih"],
+      ar: ["سبحان 33 حبة", "سبحان راتنج", "تجزئة شبابية", "تشطيب متعدد الألوان", "هدية سهلة الاختيار", "signature-tasbih"],
     },
     detailIntro: {
       en: "This piece broadens the line beyond classic wood and stone, giving the assortment a younger and more playful entry point.",
@@ -312,8 +312,8 @@ export const products: Product[] = [
     image: "/images/real-products/baltic-amber/hero.jpeg",
     material: { en: "Amber-look bead set with gift box", ar: "Amber-look bead set with gift box" },
     tags: {
-      en: ["Seasonal gifting", "Presentation box", "Higher gift value", "gift-sets"],
-      ar: ["هدايا موسمية", "صندوق عرض", "قيمة هدية أعلى", "gift-sets"],
+      en: ["Baltic amber tasbih", "Amber tasbih wholesale", "Seasonal gifting", "Presentation box", "Higher gift value", "gift-sets"],
+      ar: ["سبحان كهرماني", "سبحان هدية", "هدايا موسمية", "صندوق عرض", "قيمة هدية أعلى", "gift-sets"],
     },
     detailIntro: {
       en: "This is the kind of item that helps the site feel more commercial for B2B buyers because the gifting use case is instantly clear.",
@@ -1271,20 +1271,20 @@ export const contactFormCopy: ContactFormCopy = {
 
 const pageDescriptions = {
   home: {
-    en: "Premium tasbih collections, Islamic gifts, and distributor-ready assortments for modern B2B buyers.",
-    ar: "مجموعات تسابيح راقية وهدايا إسلامية وتشكيلات جاهزة للموزعين والمشترين بالجملة.",
+    en: "Wholesale tasbih and prayer beads supplier — kuka wood tasbih, amber tasbih, stone tasbih and gift sets. MOQ 100 pcs, private label supported. Trusted by 12+ export markets.",
+    ar: "مورد تسابيح وسبح بالجملة — سبحان خشب الكوكا وسبحان الكهرمان وسبحان الحجر ومجموعات هدايا. موك 100 قطعة مع دعم التغليف الخاص. موثوق في أكثر من 12 سوق تصدير.",
   },
   collections: {
-    en: "Browse tasbih-led collections, gift-ready sets, and supporting cultural accessories for distributors.",
-    ar: "تصفح مجموعات التسابيح ومجموعات الهدايا والمنتجات الثقافية المساندة للموزعين.",
+    en: "Browse wholesale tasbih collections: kuka wood tasbih, hematite tasbih, amber tasbih, 33-bead tasbih and resin tasbih for retailers, boutiques, and museum shops.",
+    ar: "تصفح مجموعات التسابيح بالجملة: سبحان خشب الكوكا وسبحان الهيماتيت وسبحان الكهرمان وسبحان 33 حبة وسبحان الراتنج للمتاجر والبوتيكات ومتاجر المتاحف.",
   },
   wholesale: {
-    en: "MOQ, packaging, customization, and lead-time information for retail and gifting partners.",
-    ar: "معلومات الحد الأدنى والكرتون والتخصيص ومواعيد التوريد لشركاء التجزئة والهدايا.",
+    en: "Wholesale tasbih sourcing: MOQ 100 pcs, private label packaging, jewelry certificates, 21-day lead time. Bulk prayer beads and tasbih for retail and gifting programs.",
+    ar: "مصادر التسابيح بالجملة: موك 100 قطعة، تغليف خاص، شهادات مجوهرات، زمن توريد 21 يومًا. تسابيح وسبح بالجملة لبرامج التجزئة والهدايا.",
   },
   contact: {
-    en: "Send your inquiry and connect with TranquilBeads on WhatsApp for fast wholesale conversations.",
-    ar: "أرسل استفسارك وتواصل مع ترانكويل بيدز عبر واتساب لبدء محادثة جملة سريعة.",
+    en: "Source tasbih wholesale — kuka tasbih, amber tasbih, stone tasbih in bulk. Request catalog, sample, or custom order via WhatsApp or email.",
+    ar: "مصادر تسابيح بالجملة — سبحان كوكا وسبحان كهرماني وسبحان حجري بالجملة. اطلب الكتالوج أو العينة أو الطلب المخصص عبر واتساب أو البريد.",
   },
 } as const;
 
