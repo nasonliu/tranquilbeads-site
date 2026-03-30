@@ -1423,3 +1423,54 @@ export function getCollectionBySlug(slug: string) {
 export function getProductsByCollection(collectionSlug: string) {
   return products.filter((product) => product.collection === collectionSlug);
 }
+
+// SEO: map product material to related blog article
+export function getProductRelatedGuide(locale: Locale, product: Product): { slug: string; title: string } | null {
+  const text = [
+    product.material[locale],
+    ...(product.tags[locale] || []),
+    product.collection,
+  ].join(" ").toLowerCase();
+
+  if (text.includes("kuka") || text.includes("wood")) {
+    return {
+      slug: "kuka-wood-tasbih-authenticity-guide",
+      title: locale === "en"
+        ? "Kuka Wood Quality Guide: Spot the Difference"
+        : "دليل جودة تسبيح خشب الكوكا: تعرّف على الفرق",
+    };
+  }
+  if (text.includes("amber")) {
+    return {
+      slug: "how-to-identify-real-amber-tasbih",
+      title: locale === "en"
+        ? "How to Identify Real Amber Tasbih"
+        : "كيفية التعرف على التسبيح الكهرماني الحقيقي",
+    };
+  }
+  if (
+    text.includes("hematite") ||
+    text.includes("stone") ||
+    text.includes("agate") ||
+    text.includes("obsidian") ||
+    text.includes("crystal") ||
+    text.includes("tiger") ||
+    text.includes("pearl")
+  ) {
+    return {
+      slug: "natural-stone-vs-synthetic-beads-tasbih",
+      title: locale === "en"
+        ? "Natural Stone vs Synthetic Beads: Which to Stock?"
+        : "الخرزات الحجرية الطبيعية مقابل الصناعية",
+    };
+  }
+  if (text.includes("resin")) {
+    return {
+      slug: "natural-stone-vs-synthetic-beads-tasbih",
+      title: locale === "en"
+        ? "Natural Stone vs Synthetic Beads: Which to Stock?"
+        : "الخرزات الحجرية الطبيعية مقابل الصناعية",
+    };
+  }
+  return null;
+}

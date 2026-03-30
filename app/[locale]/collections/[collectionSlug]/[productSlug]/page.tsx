@@ -6,6 +6,7 @@ import {
   collections,
   getCollectionBySlug,
   getPageCopy,
+  getProductRelatedGuide,
   getPageMetadata,
   getProductBySlug,
   products,
@@ -157,6 +158,7 @@ export default async function ProductDetailPage({
             </div>
           </div>
 
+
           {product.specs.map((spec) => (
             <div
               key={`${product.slug}-${spec.label.en}`}
@@ -170,6 +172,28 @@ export default async function ProductDetailPage({
               </p>
             </div>
           ))}
+
+          {/* Related Buyer's Guide */}
+          {(function () {
+            const guide = getProductRelatedGuide(locale, product);
+            if (!guide) return null;
+            return (
+              <a
+                href={withLocale(locale, `/blog/${guide.slug}`)}
+                className="group block rounded-[1.5rem] border border-accent/30 bg-[linear-gradient(135deg,_rgba(255,248,235,0.9),_rgba(252,240,220,0.95))] p-5 transition-all hover:border-accent/60 hover:shadow-lg"
+              >
+                <p className="text-xs font-semibold uppercase tracking-widest text-accent-deep">
+                  {locale === "en" ? "📋 Buyer's Guide" : "📋 دليل المشتري"}
+                </p>
+                <p className="mt-2 text-sm font-semibold leading-snug text-foreground group-hover:text-accent-deep transition-colors">
+                  {guide.title}
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  {locale === "en" ? "Read guide →" : "اقرأ الدليل ←"}
+                </p>
+              </a>
+            );
+          })()}
         </div>
       </section>
     </div>
