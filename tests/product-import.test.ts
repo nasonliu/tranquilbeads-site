@@ -18,8 +18,8 @@ async function createSiteContentFixture() {
         ar: "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع.",
       },
       email: "sales@tranquilbeads.com",
-      whatsappHref: "https://wa.me/8618929564545",
-      whatsappDisplay: "+86 189 2956 4545",
+      whatsappHref: "https://wa.me/447840890109",
+      whatsappDisplay: "+44 7840 890109",
       socialProof: [],
     },
     collections: [

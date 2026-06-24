@@ -1,5 +1,5 @@
 {
-  "// DEPLOY_VERIFY: 2026-03-25-1255-CHINESE-NUMBER": "If you see this comment in the deployed site, the build is using the latest JSON",
+  "// DEPLOY_VERIFY: 2026-06-24-UK-WHATSAPP": "If you see this comment in the deployed site, the build is using the latest JSON",
   "siteSettings": {
     "brandName": "TranquilBeads",
     "tagline": {
@@ -7,8 +7,8 @@
       "ar": "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع."
     },
     "email": "sales@tranquilbeads.com",
-    "whatsappHref": "https://wa.me/8618929564545",
-    "whatsappDisplay": "+86 189 2956 4545",
+    "whatsappHref": "https://wa.me/447840890109",
+    "whatsappDisplay": "+44 7840 890109",
     "socialProof": [
       {
         "value": "12+",
