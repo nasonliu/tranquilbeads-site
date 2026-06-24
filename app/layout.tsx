@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://tranquilbeads.vercel.app",
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com",
   ),
   title: {
     default: "TranquilBeads | B2B Tasbih & Islamic Culture Products",
