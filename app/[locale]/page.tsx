@@ -9,9 +9,11 @@ import {
   getProductsByCollection,
   siteSettings,
 } from "@/src/data/site";
+import { noonRetailProducts } from "@/src/data/noon-products";
 import { CollectionCard } from "@/src/components/collection-card";
 import { HomeCoverflow } from "@/src/components/home-coverflow";
 import { PageHero } from "@/src/components/page-hero";
+import { getNoonMarketLabel, getNoonStoreLinks } from "@/src/lib/noon-retail";
 import { getDir, isLocale, withLocale } from "@/src/lib/i18n";
 
 // Top 5 products data from sales analysis (1688 data, March 2026)
@@ -160,6 +162,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const copy = getPageCopy(locale);
   const featuredCollections = collections.filter((item) => item.featured);
   const signatureProducts = getProductsByCollection("signature-tasbih").slice(0, 8);
+  const noonStoreLinks = getNoonStoreLinks();
+  const noonPreviewProducts = noonRetailProducts.slice(0, 3);
   const rankedProducts = topProducts
     .map((entry) => {
       const product = getProductBySlug(entry.slug);
@@ -528,6 +532,78 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               ? "Every shipment includes QC photos before dispatch. Amber and coral items come with jewelry certificates upon request."
               : "كل شحنة تتضمن صور فحص الجودة قبل الإرسال. العناصر الكهرمانية والمرجانية تأتي مع شهادات مجوهرات عند الطلب."}
           </p>
+        </div>
+      </section>
+
+      {/* ── Noon Retail Bridge ───────────────────────────────── */}
+      <section className="noor-container">
+        <div className="grid gap-6 overflow-hidden rounded-[2rem] border border-border/70 bg-[#201b15] p-6 text-[#efe6d8] shadow-[0_24px_50px_rgba(40,28,17,0.16)] md:grid-cols-[0.95fr_1.05fr] md:p-8">
+          <div className="flex flex-col justify-between gap-8">
+            <div>
+              <p className="noor-kicker text-xs font-semibold text-[#c8a06d]">
+                {locale === "en" ? "Retail checkout bridge" : "جسر الشراء بالتجزئة"}
+              </p>
+              <h2 className="noor-title mt-3 text-4xl text-white">
+                {locale === "en"
+                  ? "Personal orders can buy through Noon"
+                  : "يمكن للطلبات الفردية الشراء عبر نون"}
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#dcccb5]">
+                {locale === "en"
+                  ? "For UAE and Saudi shoppers who want familiar checkout, selected TranquilBeads products link directly to Noon. Wholesale buyers can stay here for catalog pricing, OEM, and replenishment support."
+                  : "للمتسوقين في الإمارات والسعودية الذين يفضلون تجربة دفع مألوفة، ترتبط منتجات مختارة مباشرة بنون. أما مشترو الجملة فيمكنهم البقاء هنا لطلب الكتالوج وأسعار الجملة ودعم التوريد."}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={withLocale(locale, "/noon")}
+                className="rounded-full bg-[#c49a62] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#9f7948]"
+              >
+                {locale === "en" ? "View Noon options" : "عرض خيارات نون"}
+              </Link>
+              <a
+                href={noonStoreLinks.uae}
+                target="_blank"
+                rel="noreferrer"
+                className="latin-ui rounded-full border border-[#c49a62]/50 px-5 py-3 text-sm font-semibold text-[#f5dcc0] transition hover:bg-white/10"
+              >
+                Noon UAE
+              </a>
+              <a
+                href={noonStoreLinks.saudi}
+                target="_blank"
+                rel="noreferrer"
+                className="latin-ui rounded-full border border-[#c49a62]/50 px-5 py-3 text-sm font-semibold text-[#f5dcc0] transition hover:bg-white/10"
+              >
+                Noon Saudi
+              </a>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {noonPreviewProducts.map((product) => (
+              <Link
+                key={product.slug}
+                href={withLocale(locale, "/noon")}
+                className="group overflow-hidden rounded-[1.4rem] border border-white/10 bg-white/[0.08]"
+              >
+                <img
+                  src={product.heroImage}
+                  alt={product.title[locale]}
+                  className="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+                <div className="space-y-2 p-4">
+                  <p className="text-xs text-[#c8a06d]">
+                    {product.markets
+                      .map((market) => getNoonMarketLabel(market, locale))
+                      .join(" / ")}
+                  </p>
+                  <h3 className="text-sm font-semibold leading-6 text-white">
+                    {product.title[locale]}
+                  </h3>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

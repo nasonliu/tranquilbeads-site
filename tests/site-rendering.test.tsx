@@ -6,6 +6,7 @@ import CollectionDetailPage from "@/app/[locale]/collections/[collectionSlug]/pa
 import ProductDetailPage from "@/app/[locale]/collections/[collectionSlug]/[productSlug]/page";
 import ContactPage from "@/app/[locale]/contact/page";
 import LocaleLayout from "@/app/[locale]/layout";
+import NoonRetailPage from "@/app/[locale]/noon/page";
 import HomePage from "@/app/[locale]/page";
 import WholesalePage from "@/app/[locale]/wholesale/page";
 import { getProductBySlug } from "@/src/data/site";
@@ -100,6 +101,24 @@ describe("localized site rendering", () => {
         .getAllByRole("link", { name: /chat on whatsapp/i })
         .some((link) => link.getAttribute("href")?.includes("wa.me")),
     ).toBe(true);
+  });
+
+  it("renders a Noon retail page with UAE and Saudi buying options", async () => {
+    render(await NoonRetailPage({ params: Promise.resolve({ locale: "en" }) }));
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: /shop tranquilbeads on noon/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /buy on noon uae/i })).toHaveAttribute(
+      "href",
+      expect.stringContaining("noon.com/uae-en"),
+    );
+    expect(
+      screen.getByRole("link", { name: /buy on noon saudi/i }),
+    ).toHaveAttribute("href", expect.stringContaining("noon.com/saudi-en"));
   });
 
   it("renders a collection detail page with products from that series only", async () => {

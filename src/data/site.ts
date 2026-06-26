@@ -106,6 +106,7 @@ export const siteSettings = {
 export const navItems: NavItem[] = [
   { href: "/", label: { en: "Home", ar: "الرئيسية" } },
   { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
+  { href: "/noon", label: { en: "Noon Retail", ar: "نون للتجزئة" } },
   { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
   { href: "/blog", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
   { href: "/contact", label: { en: "Contact", ar: "التواصل" } },
@@ -1282,6 +1283,10 @@ const pageDescriptions = {
   wholesale: {
     en: "Wholesale tasbih sourcing: MOQ 100 pcs, private label packaging, jewelry certificates, 21-day lead time. Bulk prayer beads and tasbih for retail and gifting programs.",
     ar: "مصادر التسابيح بالجملة: موك 100 قطعة، تغليف خاص، شهادات مجوهرات، زمن توريد 21 يومًا. تسابيح وسبح بالجملة لبرامج التجزئة والهدايا.",
+  },
+  noon: {
+    en: "Shop selected TranquilBeads tasbih products on Noon UAE and Noon Saudi, with deduped product cards and direct regional retail links.",
+    ar: "تسوق منتجات مختارة من TranquilBeads على نون الإمارات ونون السعودية مع روابط شراء إقليمية مباشرة.",
   },
   contact: {
     en: "Source tasbih wholesale — kuka tasbih, amber tasbih, stone tasbih in bulk. Request catalog, sample, or custom order via WhatsApp or email.",
