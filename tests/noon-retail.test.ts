@@ -5,6 +5,7 @@ import {
   getNoonStoreLinks,
   type NoonRetailSeed,
 } from "@/src/lib/noon-retail";
+import { noonRetailProducts } from "@/src/data/noon-products";
 
 describe("Noon retail catalog", () => {
   it("dedupes UAE and Saudi products by the first image fingerprint", () => {
@@ -47,5 +48,22 @@ describe("Noon retail catalog", () => {
       uae: "https://www.noon.com/uae-en/tranquilbeads/",
       saudi: "https://www.noon.com/saudi-en/tranquilbeads/",
     });
+  });
+
+  it("uses current Noon listing links and locally cached Noon product images", () => {
+    expect(noonRetailProducts.length).toBeGreaterThan(0);
+
+    for (const product of noonRetailProducts) {
+      expect(product.heroImage).toMatch(/^\/images\/noon\/.+\.jpg$/);
+
+      for (const link of Object.values(product.retailLinks)) {
+        if (!link) {
+          continue;
+        }
+
+        expect(link).toContain("noon.com/");
+        expect(link).toContain("/p/?o=");
+      }
+    }
   });
 });

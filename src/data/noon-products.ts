@@ -1,48 +1,9 @@
 import { buildNoonRetailCatalog, type NoonRetailSeed } from "@/src/lib/noon-retail";
 
+const uae = "https://www.noon.com/uae-en";
+const saudi = "https://www.noon.com/saudi-en";
+
 export const noonRetailSeeds: NoonRetailSeed[] = [
-  {
-    market: "uae",
-    slug: "peacock-green-agate-gift-set",
-    title: {
-      en: "Peacock Green Agate Stone Tasbih Gift Set",
-      ar: "طقم سبحة عقيق أخضر طاووسي",
-    },
-    summary: {
-      en: "A vivid 33-bead stone tasbih positioned for giftable personal retail orders in the UAE.",
-      ar: "سبحة حجرية من 33 حبة بلون أخضر لافت، مناسبة للهدايا والطلبات الفردية في الإمارات.",
-    },
-    material: { en: "Green agate stone", ar: "حجر عقيق أخضر" },
-    heroImage: "/images/imported/red-agate-tasbih/tasbih-07.jpg",
-    firstImageFingerprint: "noon-z1c94b21f579cb3ce0107z",
-    noonUrl:
-      "https://www.noon.com/uae-en/peacock-green-agate-stone-tasbih-33-beads-gift-set-spiritual-islamic-prayer-beads-for-men-with-gift-box/Z1C94B21F579CB3CE0107Z/p/",
-    tags: [
-      { en: "33 beads", ar: "33 حبة" },
-      { en: "Gift box", ar: "علبة هدية" },
-    ],
-  },
-  {
-    market: "uae",
-    slug: "natural-agate-gift-set",
-    title: {
-      en: "Natural Agate Stone Tasbih Gift Set",
-      ar: "طقم سبحة عقيق طبيعي",
-    },
-    summary: {
-      en: "A polished natural agate tasbih offer for buyers who want an easy Noon retail checkout path.",
-      ar: "عرض سبحة عقيق طبيعي مصقولة للمشترين الذين يريدون شراء سريعًا عبر نون.",
-    },
-    material: { en: "Natural agate stone", ar: "حجر عقيق طبيعي" },
-    heroImage: "/images/imported/red-agate-tasbih/tasbih-15.jpg",
-    firstImageFingerprint: "noon-z9dfe2d1a1411537551c4z",
-    noonUrl:
-      "https://www.noon.com/uae-en/natural-agate-stone-tasbih-33-beads-gift-set-spiritual-islamic-prayer-beads-for-men-with-gift-box/Z9DFE2D1A1411537551C4Z/p/",
-    tags: [
-      { en: "Natural stone", ar: "حجر طبيعي" },
-      { en: "Gift-ready", ar: "جاهز للهدايا" },
-    ],
-  },
   {
     market: "uae",
     slug: "terahertz-car-hanging-tasbih",
@@ -51,14 +12,13 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة تيراهيرتز معلقة للسيارة",
     },
     summary: {
-      en: "A car rear-view mirror hanging tasbih listed for UAE retail customers, with the same SKU also available in Saudi.",
-      ar: "سبحة معلقة لمرآة السيارة متاحة لعملاء الإمارات، والمنتج نفسه متاح أيضًا في السعودية.",
+      en: "A current Noon listing for a 33-bead car hanging tasbih with Ayat al-Kursi and travel dua plaque.",
+      ar: "رابط نون حالي لسبحة سيارة من 33 حبة مع آية الكرسي ودعاء السفر.",
     },
     material: { en: "Terahertz stone", ar: "حجر تيراهيرتز" },
-    heroImage: "/images/imported/terahertz-road-safety-pendant/1774767451596-0722-18.jpg",
-    firstImageFingerprint: "noon-z49db904769da43dd9589z",
-    noonUrl:
-      "https://www.noon.com/uae-en/terahertz-stone-33-beads-car-rear-view-mirror-hanging-tasbih-islamic-prayer-beads-protection-amulet-for-vehicle-travel-safety-accessory/Z49DB904769DA43DD9589Z/p/",
+    heroImage: "/images/noon/terahertz-car-hanging-tasbih.jpg",
+    firstImageFingerprint: "noon-z49dd5269cbc746c64183z",
+    noonUrl: `${uae}/1pc-terahertz-stone-car-hanging-33-beads-tasbih-with-gift-box-dual-sided-pendant-with-ayat-al-kursi-travel-dua-triple-protection-prayer-plaque-for-rearview-mirror-modern-muslim-gift-for-eid-ramadan-hajj-umrah-birthday-car-blessing/Z49DD5269CBC746C64183Z/p/?o=z49dd5269cbc746c64183z-1`,
     tags: [
       { en: "Car accessory", ar: "إكسسوار سيارة" },
       { en: "33 beads", ar: "33 حبة" },
@@ -72,17 +32,14 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة تيراهيرتز معلقة للسيارة",
     },
     summary: {
-      en: "Saudi Noon listing for the Terahertz car hanging tasbih, deduped with the UAE offer by first image.",
-      ar: "رابط نون السعودية لسبحة السيارة من التيراهيرتز، مدمج مع عرض الإمارات حسب الصورة الأولى.",
+      en: "Saudi Noon listing for the same Terahertz car hanging tasbih.",
+      ar: "رابط نون السعودية لنفس سبحة السيارة من التيراهيرتز.",
     },
     material: { en: "Terahertz stone", ar: "حجر تيراهيرتز" },
-    heroImage: "/images/imported/terahertz-road-safety-pendant/1774767451596-0722-18.jpg",
-    firstImageFingerprint: "noon-z49db904769da43dd9589z",
-    noonUrl:
-      "https://www.noon.com/saudi-en/terahertz-stone-33-beads-car-rear-view-mirror-hanging-tasbih-islamic-prayer-beads-protection-amulet-for-vehicle-travel-safety-accessory/Z49DB904769DA43DD9589Z/p/",
-    tags: [
-      { en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" },
-    ],
+    heroImage: "/images/noon/terahertz-car-hanging-tasbih.jpg",
+    firstImageFingerprint: "noon-z49dd5269cbc746c64183z",
+    noonUrl: `${saudi}/1pc-terahertz-stone-car-hanging-33-beads-tasbih-with-gift-box-dual-sided-pendant-with-ayat-al-kursi-travel-dua-triple-protection-prayer-plaque-for-rearview-mirror-modern-muslim-gift-for-eid-ramadan-hajj-umrah-birthday-car-blessing/Z49DD5269CBC746C64183Z/p/?o=z49dd5269cbc746c64183z-1`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
   },
   {
     market: "uae",
@@ -92,14 +49,13 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة كهرمان أصلية فاخرة مع علبة هدية",
     },
     summary: {
-      en: "A premium amber-style retail offer for Eid, Ramadan, Hajj, and personal gifting.",
-      ar: "عرض كهرمان فاخر مناسب للعيد ورمضان والحج والهدايا الشخصية.",
+      en: "A current Noon amber tasbih offer for Eid, Ramadan, Hajj, and personal gifting.",
+      ar: "عرض نون حالي لسبحة كهرمان مناسبة للعيد ورمضان والحج والهدايا الشخصية.",
     },
-    material: { en: "Genuine amber resin", ar: "راتنج كهرمان أصلي" },
-    heroImage: "/images/real-products/baltic-amber/hero.jpeg",
+    material: { en: "Amber resin", ar: "راتنج كهرمان" },
+    heroImage: "/images/noon/premium-amber-gift-box-tasbih.jpg",
     firstImageFingerprint: "noon-z63c4ca10050ce546e620z",
-    noonUrl:
-      "https://www.noon.com/uae-en/1pc-premium-genuine-amber-tasbih-33-beads-with-gift-box-natural-resin-islamic-prayer-beads-for-meditation-car-hanging-eid-ramadan-hajj-gift-for-men-women/Z63C4CA10050CE546E620Z/p/",
+    noonUrl: `${uae}/1pc-premium-genuine-amber-tasbih-33-beads-with-gift-box-natural-resin-islamic-prayer-beads-for-meditation-car-hanging-eid-ramadan-hajj-gift-for-men-women/Z63C4CA10050CE546E620Z/p/?o=aaab6ee4ac27ec4b`,
     tags: [
       { en: "Amber", ar: "كهرمان" },
       { en: "Gift box", ar: "علبة هدية" },
@@ -116,52 +72,64 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       en: "Saudi Noon retail listing for the same premium amber gift-box tasbih.",
       ar: "رابط نون السعودية لنفس سبحة الكهرمان الفاخرة مع علبة الهدية.",
     },
-    material: { en: "Genuine amber resin", ar: "راتنج كهرمان أصلي" },
-    heroImage: "/images/real-products/baltic-amber/hero.jpeg",
+    material: { en: "Amber resin", ar: "راتنج كهرمان" },
+    heroImage: "/images/noon/premium-amber-gift-box-tasbih.jpg",
     firstImageFingerprint: "noon-z63c4ca10050ce546e620z",
-    noonUrl:
-      "https://www.noon.com/saudi-en/1pc-premium-genuine-amber-tasbih-33-beads-with-gift-box-natural-resin-islamic-prayer-beads-for-meditation-car-hanging-eid-ramadan-hajj-gift-for-men-women/Z63C4CA10050CE546E620Z/p/",
-    tags: [
-      { en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" },
-    ],
+    noonUrl: `${saudi}/1pc-premium-genuine-amber-tasbih-33-beads-with-gift-box-natural-resin-islamic-prayer-beads-for-meditation-car-hanging-eid-ramadan-hajj-gift-for-men-women/Z63C4CA10050CE546E620Z/p/?o=aaab6ee4ac27ec4b`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
   },
   {
-    market: "saudi",
-    slug: "black-hematite-magnetic-tasbih",
+    market: "uae",
+    slug: "certified-baltic-amber-33",
     title: {
-      en: "Black Hematite Magnetic Tasbih",
-      ar: "سبحة هيماتيت سوداء مغناطيسية",
+      en: "Certified Baltic Amber Tasbih",
+      ar: "سبحة كهرمان بلطيقي معتمدة",
     },
     summary: {
-      en: "A 99-bead Saudi retail listing with black hematite styling and gold-tone Allah ornament.",
-      ar: "عرض سعودي لسبحة 99 حبة بتصميم هيماتيت أسود وزينة ذهبية باسم الله.",
+      en: "A certificate-led 33-bead Baltic amber tasbih with scan-to-verify presentation.",
+      ar: "سبحة كهرمان بلطيقي من 33 حبة مع شهادة قابلة للتحقق بالمسح.",
     },
-    material: { en: "Black hematite", ar: "هيماتيت أسود" },
-    heroImage: "/images/real-products/golden-hematite/hero.jpeg",
-    firstImageFingerprint: "noon-z5b5f51d4d109e7d59fc0z",
-    noonUrl:
-      "https://www.noon.com/saudi-en/black-hematite-magnetic-tasbih-99-beads-islamic-prayer-beads-natural-stone-tasbih-with-gold-black-allah-ornament-for-eid-hajj-umrah-gift-for-men/Z5B5F51D4D109E7D59FC0Z/p/",
+    material: { en: "Baltic amber", ar: "كهرمان بلطيقي" },
+    heroImage: "/images/noon/baltic-amber-certified-33.jpg",
+    firstImageFingerprint: "noon-zd2ac990999a1d93a5e67z",
+    noonUrl: `${uae}/natural-baltic-amber-tasbih-33-beads-genuine-certified-amber-prayer-beads-one-piece-one-certificate-scan-to-verify-elegant-gift-box-islamic-gift-for-men/ZD2AC990999A1D93A5E67Z/p/?o=d4abec2c9e27926e`,
     tags: [
-      { en: "99 beads", ar: "99 حبة" },
-      { en: "Natural stone", ar: "حجر طبيعي" },
+      { en: "Certificate", ar: "شهادة" },
+      { en: "Premium gift", ar: "هدية فاخرة" },
     ],
   },
   {
     market: "saudi",
+    slug: "certified-baltic-amber-33-saudi",
+    title: {
+      en: "Certified Baltic Amber Tasbih",
+      ar: "سبحة كهرمان بلطيقي معتمدة",
+    },
+    summary: {
+      en: "Saudi Noon listing for the same certificate-led Baltic amber tasbih.",
+      ar: "رابط نون السعودية لنفس سبحة الكهرمان البلطيقي مع الشهادة.",
+    },
+    material: { en: "Baltic amber", ar: "كهرمان بلطيقي" },
+    heroImage: "/images/noon/baltic-amber-certified-33.jpg",
+    firstImageFingerprint: "noon-zd2ac990999a1d93a5e67z",
+    noonUrl: `${saudi}/natural-baltic-amber-tasbih-33-beads-genuine-certified-amber-prayer-beads-one-piece-one-certificate-scan-to-verify-elegant-gift-box-islamic-gift-for-men/ZD2AC990999A1D93A5E67Z/p/?o=d4abec2c9e27926e`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
+  },
+  {
+    market: "uae",
     slug: "authentic-kuka-wood-tasbih",
     title: {
       en: "Authentic Kuka Wood Tasbih",
       ar: "سبحة خشب كوكا أصلية",
     },
     summary: {
-      en: "A Saudi Noon listing for natural Kuka wood beads with side counters and gold-black accents.",
-      ar: "عرض نون السعودية لسبحة خشب كوكا طبيعية مع عدادات جانبية ولمسات ذهبية وسوداء.",
+      en: "Natural wooden prayer beads in a current Noon listing for traditional gifting.",
+      ar: "سبحة خشبية طبيعية ضمن رابط نون حالي للهدايا التقليدية.",
     },
     material: { en: "Kuka wood", ar: "خشب كوكا" },
-    heroImage: "/images/imported/natural-kuka-wood-tasbih/1774763467336-kuka_1.jpg",
-    firstImageFingerprint: "noon-zc53d10af5b55295a0823z",
-    noonUrl:
-      "https://www.noon.com/saudi-en/authentic-kuka-wood-tasbih-33-prayer-beads-with-two-side-counters-gold-black-islamic-misbaha-with-allah-and-mohamed-names-for-ramadan-eid-hajj-umrah-gift/ZC53D10AF5B55295A0823Z/p/",
+    heroImage: "/images/noon/kuka-wood-tasbih.jpg",
+    firstImageFingerprint: "noon-ze51e31fc236c3a673edcz",
+    noonUrl: `${uae}/authentic-kuka-wood-tasbih-33-beads-natural-wooden-prayer-beads-traditional-islamic-tasbih-ramadan-eid-gift-for-men/ZE51E31FC236C3A673EDCZ/p/?o=a65c3c91edaae6bd`,
     tags: [
       { en: "Kuka wood", ar: "خشب كوكا" },
       { en: "33 beads", ar: "33 حبة" },
@@ -169,44 +137,150 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
   },
   {
     market: "saudi",
-    slug: "hematite-compass-charm-tasbih",
+    slug: "authentic-kuka-wood-tasbih-saudi",
     title: {
-      en: "Hematite Stone Tasbih With Compass Charm",
-      ar: "سبحة هيماتيت مع تعليقة بوصلة",
+      en: "Authentic Kuka Wood Tasbih",
+      ar: "سبحة خشب كوكا أصلية",
     },
     summary: {
-      en: "A Saudi retail offer that combines stone prayer beads with a travel-ready compass charm.",
-      ar: "عرض سعودي يجمع بين حبات حجرية وتعليقة بوصلة مناسبة للسفر.",
+      en: "Saudi Noon listing for natural Kuka wood prayer beads.",
+      ar: "رابط نون السعودية لسبحة خشب كوكا طبيعية.",
     },
-    material: { en: "Hematite stone", ar: "حجر هيماتيت" },
-    heroImage: "/images/imported/terahertz-road-safety-pendant/1774767478701-main2.jpg",
-    firstImageFingerprint: "noon-z7fdc9039ad50dff97bb0z",
-    noonUrl:
-      "https://www.noon.com/saudi-en/hematite-stone-tasbih-with-compass-charm-33-beads-natural-stone-islamic-prayer-beads-for-men-gift-set-car-accessory/Z7FDC9039AD50DFF97BB0Z/p/",
+    material: { en: "Kuka wood", ar: "خشب كوكا" },
+    heroImage: "/images/noon/kuka-wood-tasbih.jpg",
+    firstImageFingerprint: "noon-ze51e31fc236c3a673edcz",
+    noonUrl: `${saudi}/authentic-kuka-wood-tasbih-33-beads-natural-wooden-prayer-beads-traditional-islamic-tasbih-ramadan-eid-gift-for-men/ZE51E31FC236C3A673EDCZ/p/?o=a65c3c91edaae6bd`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
+  },
+  {
+    market: "uae",
+    slug: "natural-agate-tasbih",
+    title: {
+      en: "Natural Agate Tasbih",
+      ar: "سبحة عقيق طبيعي",
+    },
+    summary: {
+      en: "A polished 33-bead natural agate tasbih with elegant gift-box positioning.",
+      ar: "سبحة عقيق طبيعي مصقولة من 33 حبة مع عرض مناسب للهدايا.",
+    },
+    material: { en: "Natural agate", ar: "عقيق طبيعي" },
+    heroImage: "/images/noon/natural-agate-tasbih.jpg",
+    firstImageFingerprint: "noon-z22cd14b8dedd6f646c00z",
+    noonUrl: `${uae}/natural-agate-tasbih-33-beads-genuine-stone-prayer-beads-islamic-tasbih-with-elegant-gift-box-ramadan-eid-gift-for-men/Z22CD14B8DEDD6F646C00Z/p/?o=f2aa349d8b91539f`,
     tags: [
-      { en: "Compass charm", ar: "تعليقة بوصلة" },
-      { en: "Car accessory", ar: "إكسسوار سيارة" },
+      { en: "Natural stone", ar: "حجر طبيعي" },
+      { en: "Gift-ready", ar: "جاهز للهدايا" },
     ],
   },
   {
     market: "saudi",
-    slug: "certified-baltic-amber-tasbih",
+    slug: "natural-agate-tasbih-saudi",
     title: {
-      en: "Certified Baltic Amber Tasbih",
-      ar: "سبحة كهرمان بلطيقي معتمدة",
+      en: "Natural Agate Tasbih",
+      ar: "سبحة عقيق طبيعي",
     },
     summary: {
-      en: "A certificate-led amber tasbih offer for premium personal gifting on Noon Saudi.",
-      ar: "عرض سبحة كهرمان مع شهادة مناسب للهدايا الشخصية الفاخرة على نون السعودية.",
+      en: "Saudi Noon listing for the same 33-bead natural agate tasbih.",
+      ar: "رابط نون السعودية لنفس سبحة العقيق الطبيعي من 33 حبة.",
     },
-    material: { en: "Baltic amber", ar: "كهرمان بلطيقي" },
-    heroImage: "/images/real-products/baltic-amber/detail-1.jpeg",
-    firstImageFingerprint: "noon-zd8e3785795e03884b333z",
-    noonUrl:
-      "https://www.noon.com/saudi-en/certified-baltic-amber-tasbih-33-beads-genuine-amber-islamic-prayer-beads-with-certificate-luxury-gift-for-eid-hajj-umrah-ramadan-men-women/ZD8E3785795E03884B333Z/p/",
+    material: { en: "Natural agate", ar: "عقيق طبيعي" },
+    heroImage: "/images/noon/natural-agate-tasbih.jpg",
+    firstImageFingerprint: "noon-z22cd14b8dedd6f646c00z",
+    noonUrl: `${saudi}/natural-agate-tasbih-33-beads-genuine-stone-prayer-beads-islamic-tasbih-with-elegant-gift-box-ramadan-eid-gift-for-men/Z22CD14B8DEDD6F646C00Z/p/?o=f2aa349d8b91539f`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
+  },
+  {
+    market: "uae",
+    slug: "black-hematite-99-tasbih",
+    title: {
+      en: "Black Hematite 99-Bead Tasbih",
+      ar: "سبحة هيماتيت سوداء 99 حبة",
+    },
+    summary: {
+      en: "A current Noon listing for black hematite beads with pendant and gift-box presentation.",
+      ar: "رابط نون حالي لسبحة هيماتيت سوداء مع تعليقة وعلبة هدية.",
+    },
+    material: { en: "Black hematite", ar: "هيماتيت أسود" },
+    heroImage: "/images/noon/black-hematite-99.jpg",
+    firstImageFingerprint: "noon-z87f23639bad482f59ffdz",
+    noonUrl: `${uae}/99-beads-tasbih-with-pendant-and-gift-box-black-hematite-stone-beads-elegant-handcrafted-jewelry-for-men/Z87F23639BAD482F59FFDZ/p/?o=b73a48c6cff546ba`,
     tags: [
-      { en: "Certificate", ar: "شهادة" },
-      { en: "Premium gift", ar: "هدية فاخرة" },
+      { en: "99 beads", ar: "99 حبة" },
+      { en: "Gift box", ar: "علبة هدية" },
+    ],
+  },
+  {
+    market: "saudi",
+    slug: "black-hematite-99-tasbih-saudi",
+    title: {
+      en: "Black Hematite 99-Bead Tasbih",
+      ar: "سبحة هيماتيت سوداء 99 حبة",
+    },
+    summary: {
+      en: "Saudi Noon listing for the same 99-bead black hematite tasbih.",
+      ar: "رابط نون السعودية لنفس سبحة الهيماتيت السوداء 99 حبة.",
+    },
+    material: { en: "Black hematite", ar: "هيماتيت أسود" },
+    heroImage: "/images/noon/black-hematite-99.jpg",
+    firstImageFingerprint: "noon-z87f23639bad482f59ffdz",
+    noonUrl: `${saudi}/99-beads-tasbih-with-pendant-and-gift-box-black-hematite-stone-beads-elegant-handcrafted-jewelry-for-men/Z87F23639BAD482F59FFDZ/p/?o=b73a48c6cff546ba`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
+  },
+  {
+    market: "uae",
+    slug: "hematite-compass-charm-tasbih",
+    title: {
+      en: "Hematite Stone Tasbih With Compass Pendant",
+      ar: "سبحة هيماتيت مع تعليقة بوصلة",
+    },
+    summary: {
+      en: "A luminous compass-pendant tasbih with double-sided Arabic engraving.",
+      ar: "سبحة بتعليقة بوصلة مضيئة ونقش عربي على الجانبين.",
+    },
+    material: { en: "Hematite stone", ar: "حجر هيماتيت" },
+    heroImage: "/images/noon/hematite-compass-charm.jpg",
+    firstImageFingerprint: "noon-z00589abd01c5d313c543z",
+    noonUrl: `${uae}/hematite-stone-tasbih-33-beads-laser-engraved-luminous-compass-pendant-double-sided-arabic-engraving-decorative-compass-design-islamic-tasbih-for-men/Z00589ABD01C5D313C543Z/p/?o=dec04fe2a4015e1c`,
+    tags: [
+      { en: "Compass pendant", ar: "تعليقة بوصلة" },
+      { en: "33 beads", ar: "33 حبة" },
+    ],
+  },
+  {
+    market: "saudi",
+    slug: "hematite-compass-charm-tasbih-saudi",
+    title: {
+      en: "Hematite Stone Tasbih With Compass Pendant",
+      ar: "سبحة هيماتيت مع تعليقة بوصلة",
+    },
+    summary: {
+      en: "Saudi Noon listing for the same compass-pendant hematite tasbih.",
+      ar: "رابط نون السعودية لنفس سبحة الهيماتيت مع تعليقة البوصلة.",
+    },
+    material: { en: "Hematite stone", ar: "حجر هيماتيت" },
+    heroImage: "/images/noon/hematite-compass-charm.jpg",
+    firstImageFingerprint: "noon-z00589abd01c5d313c543z",
+    noonUrl: `${saudi}/hematite-stone-tasbih-33-beads-laser-engraved-luminous-compass-pendant-double-sided-arabic-engraving-decorative-compass-design-islamic-tasbih-for-men/Z00589ABD01C5D313C543Z/p/?o=dec04fe2a4015e1c`,
+    tags: [{ en: "Saudi retail", ar: "بيع بالتجزئة في السعودية" }],
+  },
+  {
+    market: "uae",
+    slug: "peacock-green-agate-tasbih",
+    title: {
+      en: "Peacock Green Agate Tasbih",
+      ar: "سبحة عقيق أخضر طاووسي",
+    },
+    summary: {
+      en: "A peacock green agate prayer-bead listing for UAE retail shoppers.",
+      ar: "رابط نون الإمارات لسبحة عقيق أخضر طاووسي لعملاء التجزئة.",
+    },
+    material: { en: "Green agate", ar: "عقيق أخضر" },
+    heroImage: "/images/noon/peacock-green-agate.jpg",
+    firstImageFingerprint: "noon-zaf0d8c505ccf65ce6f48z",
+    noonUrl: `${uae}/peacock-green-agate-prayer-beads-33-beads-13x8mm-for-men-handmade-tasbih-misbaha-worry-beads-stress-relief-fidget-beads-rosary-style-necklace-eid-ramadan-gift-for-him/ZAF0D8C505CCF65CE6F48Z/p/?o=ce9fd4c5ab9f60ec`,
+    tags: [
+      { en: "Green agate", ar: "عقيق أخضر" },
+      { en: "UAE retail", ar: "بيع بالتجزئة في الإمارات" },
     ],
   },
 ];
