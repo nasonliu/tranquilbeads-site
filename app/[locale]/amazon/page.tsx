@@ -91,25 +91,6 @@ export default async function AmazonRetailPage({
             </a>
           </>
         }
-        aside={
-          <div className="noor-panel rounded-[1.75rem] p-6">
-            <p className="noor-kicker text-xs font-semibold text-accent-deep">
-              {locale === "en" ? "First-image dedupe" : "دمج حسب الصورة الأولى"}
-            </p>
-            <div className="mt-5 space-y-4 text-sm leading-7 text-muted">
-              <p>
-                {locale === "en"
-                  ? "The same product can appear across multiple Amazon marketplaces. Matching first images are collapsed into one card, then each available marketplace gets its own Buy on button."
-                  : "قد يظهر المنتج نفسه في أكثر من سوق على أمازون. عند تطابق الصورة الأولى نعرض بطاقة واحدة، ثم يحصل كل سوق متاح على زر شراء خاص به."}
-              </p>
-              <p>
-                {locale === "en"
-                  ? "Wholesale buyers can still use the main site for catalog pricing, samples, and replenishment support."
-                  : "يمكن لمشتري الجملة استخدام الموقع الرئيسي لطلب أسعار الكتالوج والعينات ودعم إعادة التوريد."}
-              </p>
-            </div>
-          </div>
-        }
       />
 
       <section id="amazon-products" className="noor-container">

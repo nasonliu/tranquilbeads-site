@@ -16,7 +16,11 @@ export function PageHero({
   aside,
 }: PageHeroProps) {
   return (
-    <section className="noor-container grid gap-8 pt-12 md:grid-cols-[1.3fr_0.7fr] md:pt-16">
+    <section
+      className={`noor-container grid gap-8 pt-12 md:pt-16 ${
+        aside ? "md:grid-cols-[1.3fr_0.7fr]" : ""
+      }`}
+    >
       <div className="noor-panel noor-card-glow relative overflow-hidden rounded-[2rem] px-6 py-10 sm:px-8 lg:px-10">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/60 to-transparent" />
         <p className="noor-kicker mb-4 text-xs font-semibold text-accent-deep">

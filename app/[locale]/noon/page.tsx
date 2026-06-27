@@ -82,25 +82,6 @@ export default async function NoonRetailPage({
             </a>
           </>
         }
-        aside={
-          <div className="noor-panel rounded-[1.75rem] p-6">
-            <p className="noor-kicker text-xs font-semibold text-accent-deep">
-              {locale === "en" ? "Traffic strategy" : "استراتيجية الزيارات"}
-            </p>
-            <div className="mt-5 space-y-4 text-sm leading-7 text-muted">
-              <p>
-                {locale === "en"
-                  ? "The independent site keeps the brand story, SEO, and wholesale inquiry flow. Noon handles trust-sensitive retail checkout in the GCC."
-                  : "يحافظ الموقع المستقل على قصة العلامة والظهور في البحث وتدفق طلبات الجملة، بينما يتولى نون الشراء بالتجزئة في الخليج."}
-              </p>
-              <p>
-                {locale === "en"
-                  ? "Products shared across UAE and Saudi are deduped by their first image so shoppers see one clean card with regional choices."
-                  : "تدمج المنتجات المشتركة بين الإمارات والسعودية حسب الصورة الأولى حتى يرى المتسوق بطاقة واحدة بخيارات إقليمية واضحة."}
-              </p>
-            </div>
-          </div>
-        }
       />
 
       <section className="noor-container">
