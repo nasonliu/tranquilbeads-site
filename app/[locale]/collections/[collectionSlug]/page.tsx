@@ -4,13 +4,13 @@ import { notFound } from "next/navigation";
 import {
   getCollectionBySlug,
   getPageCopy,
-  getPageMetadata,
   getProductsByCollection,
   collections,
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import { ProductCard } from "@/src/components/product-card";
 import { isLocale, locales, withLocale } from "@/src/lib/i18n";
+import { buildBreadcrumbJsonLd, buildCollectionMetadata } from "@/src/lib/seo";
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -35,15 +35,7 @@ export async function generateMetadata({
     return {};
   }
 
-  return {
-    ...getPageMetadata(locale, "collections", collection.name[locale]),
-    description: collection.description[locale],
-    openGraph: {
-      title: collection.name[locale],
-      description: collection.description[locale],
-      images: [collection.heroImage],
-    },
-  };
+  return buildCollectionMetadata(locale, collection);
 }
 
 export default async function CollectionDetailPage({
@@ -62,9 +54,14 @@ export default async function CollectionDetailPage({
 
   const collectionProducts = getProductsByCollection(collectionSlug);
   const copy = getPageCopy(locale);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(locale, collection);
 
   return (
     <div className="space-y-12 pt-8 md:space-y-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <PageHero
         eyebrow={locale === "en" ? "Collection detail" : "تفاصيل المجموعة"}
         title={collection.name[locale]}

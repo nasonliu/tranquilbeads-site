@@ -7,22 +7,31 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com",
   ),
   title: {
-    default: "TranquilBeads | B2B Tasbih & Islamic Culture Products",
+    default: "TranquilBeads | Wholesale Tasbih & Prayer Beads Supplier",
     template: "%s | TranquilBeads",
   },
   description:
-    "Bilingual B2B showcase site for tasbih, Islamic gifts, and private-label culture products built for modern distributors.",
+    "Wholesale tasbih and prayer beads supplier for boutiques, distributors, museum shops, and gifting programs. MOQ 100 pcs with private-label packaging.",
   openGraph: {
     title: "TranquilBeads",
     description:
       "Premium tasbih and Islamic culture products for wholesale buyers, distributors, and gifting partners.",
     type: "website",
+    images: [
+      {
+        url: "/images/real-products/natural-kuka-wood/hero.jpeg",
+        width: 1200,
+        height: 900,
+        alt: "Natural Kuka Wood Tasbih wholesale product photo",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "TranquilBeads",
     description:
       "Premium tasbih and Islamic culture products for wholesale buyers and gifting partners.",
+    images: ["/images/real-products/natural-kuka-wood/hero.jpeg"],
   },
 };
 

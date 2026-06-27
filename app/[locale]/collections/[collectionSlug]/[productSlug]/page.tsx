@@ -7,12 +7,16 @@ import {
   getCollectionBySlug,
   getPageCopy,
   getProductRelatedGuide,
-  getPageMetadata,
   getProductBySlug,
   products,
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import { isLocale, locales, withLocale } from "@/src/lib/i18n";
+import {
+  buildBreadcrumbJsonLd,
+  buildProductJsonLd,
+  buildProductMetadata,
+} from "@/src/lib/seo";
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -44,15 +48,7 @@ export async function generateMetadata({
     return {};
   }
 
-  return {
-    ...getPageMetadata(locale, "collections", product.title[locale]),
-    description: product.summary[locale],
-    openGraph: {
-      title: product.title[locale],
-      description: product.summary[locale],
-      images: [product.image, ...product.gallery.map((item) => item.image)],
-    },
-  };
+  return buildProductMetadata(locale, collection, product);
 }
 
 export default async function ProductDetailPage({
@@ -72,9 +68,23 @@ export default async function ProductDetailPage({
   }
 
   const copy = getPageCopy(locale);
+  const productJsonLd = buildProductJsonLd(locale, collection, product);
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd(locale, collection, product);
+  const heroImageAlt =
+    locale === "en"
+      ? `${product.heroAlt.en} wholesale product photo`
+      : `${product.heroAlt.ar} صورة منتج حقيقية للجملة`;
 
   return (
     <div className="space-y-12 pt-8 md:space-y-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <PageHero
         eyebrow={locale === "en" ? "Product detail" : "تفاصيل المنتج"}
         title={product.title[locale]}
@@ -123,7 +133,7 @@ export default async function ProductDetailPage({
             <div className="relative aspect-[4/3] bg-[linear-gradient(135deg,_rgba(173,132,86,0.18),_rgba(25,31,22,0.04))]">
               <Image
                 src={product.image}
-                alt={product.heroAlt[locale]}
+                alt={heroImageAlt}
                 fill
                 className="object-cover"
                 priority
@@ -140,7 +150,11 @@ export default async function ProductDetailPage({
                 <div className="relative aspect-square bg-[linear-gradient(135deg,_rgba(173,132,86,0.18),_rgba(25,31,22,0.04))]">
                   <Image
                     src={item.image}
-                    alt={item.alt[locale]}
+                    alt={
+                      locale === "en"
+                        ? `${item.alt.en} real product detail photo`
+                        : `${item.alt.ar} صورة تفصيلية حقيقية للمنتج`
+                    }
                     fill
                     className="object-cover"
                   />
