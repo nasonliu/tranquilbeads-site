@@ -7,6 +7,11 @@ export const blogArticles = [
     heroAlt_en: "Kuka wood tasbih wholesale for retailers",
     heroAlt_ar: "سبح خشب الكوكا بالجملة لتجار التجزئة",
     readTime: "5 min",
+    relatedProductSlugs: [
+      "natural-kuka-wood-tasbih",
+      "golden-hematite-medallion-tasbih",
+      "baltic-amber-gift-set",
+    ],
     intro_en: "Tasbih — also called misbaha, subha, or prayer beads — are counting tools used across cultures for spiritual remembrance, meditation, and mindfulness practice. For retailers entering this market, understanding the basics: the 33-bead and 99-bead formats, common materials, and how to present tasbih as a meaningful cultural accessory, is the foundation for successful sales.",
     intro_ar: "التسبيح — المسبحة أو السبحة — أداة عَدّ تُستخدم عبر الثقافات للتسبيح الروحي والتأمل وتمارين الوعي الكامل. لتجار التجزئة الدائمين في هذا السوق، فهم الأساسيات: تنسيقات 33 و 99 خرزة، والمواد الشائعة، وكيفية تقديم التسبيح كإكسسوار ثقافي ذي معنى، هو الأساس لزيادة المبيعات.",
     sections_en: [
@@ -32,6 +37,11 @@ export const blogArticles = [
     heroAlt_en: "Daily use tasbih prayer beads wholesale",
     heroAlt_ar: "سبح للاستخدام اليومي بالجملة",
     readTime: "5 min",
+    relatedProductSlugs: [
+      "lacquer-art-33-bead-tasbih",
+      "natural-kuka-wood-tasbih",
+      "golden-hematite-medallion-tasbih",
+    ],
     intro_en: "For daily tasbih use, the right choice depends on three factors: bead count, material weight, and durability. A tasbih meant for frequent handling needs to feel comfortable in the hand, withstand daily use, and be easy to carry. This guide helps retailers advise customers on choosing the best tasbih for their daily spiritual practice.",
     intro_ar: "للاستخدام اليومي للتسبيح، يعتمد الاختيار الصحيح على ثلاثة عوامل: عدد الخرزات، ووزن المادة، والمتانة. التسبيح المخصص للاستخدام المتكرر يحتاج أن يشعر بالراحة في اليد ويتحمل الاستخدام اليومي ويكون سهل الحمل. هذا الدليل يساعد تجار التجزئة على نصيحة العملاء لاختيار أفضل تسبيح لممارستهم الروحية اليومية.",
     sections_en: [
@@ -57,6 +67,11 @@ export const blogArticles = [
     heroAlt_en: "Real Baltic amber tasbih wholesale authentication",
     heroAlt_ar: "التسبيح الكهرماني البلطيقي الحقيقي بالجملة",
     readTime: "8 min",
+    relatedProductSlugs: [
+      "baltic-amber-gift-set",
+      "ambercube33",
+      "redwhiteglass",
+    ],
     intro_en: "Amber tasbih attracts premium buyers, but it is also easy to mislabel: plastic, pressed resin, glass, and young copal can all be sold as amber. For wholesale buyers, the goal is not to rely on one dramatic test. Use a practical sequence: inspect the beads, run safe field checks, request documentation, and keep one reference sample from every approved batch.",
     intro_ar: "تجذب سبحة الكهرمان المشترين الباحثين عن القطع الفاخرة، لكنها من أكثر المواد عرضة للالتباس في السوق؛ فقد تُباع أنواع من البلاستيك أو الراتنج المضغوط أو الزجاج أو الكوبال على أنها كهرمان. لمشتري الجملة، الأفضل ألا تعتمد على اختبار واحد فقط، بل تتبع تسلسلًا واضحًا: الفحص البصري، الاختبارات الآمنة، طلب الوثائق، والاحتفاظ بعينة مرجعية من كل دفعة معتمدة.",
     seoDescription_en: "Safe amber tasbih authentication guide: field checks, traceable certificates, professional lab identification, documents, and batch QC.",
@@ -104,6 +119,11 @@ export const blogArticles = [
     heroAlt_en: "Natural kuka wood tasbih wholesale quality guide",
     heroAlt_ar: "دليل جودة سبح خشب الكوكا الطبيعي بالجملة",
     readTime: "7 min",
+    relatedProductSlugs: [
+      "natural-kuka-wood-tasbih",
+      "99blackrosewood",
+      "oud2",
+    ],
     intro_en: "Kuka is a premium trade name in the tasbih market, but suppliers do not always use it consistently. Some products are natural kuka material, while others are dyed wood, compressed material, resin, or lookalike beads sold under the same label. For wholesale buyers, authenticity starts with a clear material declaration and a repeatable quality-control process, not a single quick test.",
     intro_ar: "الكوكا اسم تجاري فاخر في سوق السبح، لكن استخدامه لا يكون دائمًا دقيقًا بين الموردين. بعض المنتجات من مادة كوكا طبيعية، وبعضها خشب مصبوغ أو مادة مضغوطة أو راتنج أو خرز مشابه يباع بالاسم نفسه. لمشتري الجملة، تبدأ الأصالة من تصريح واضح بالمادة ومن عملية فحص قابلة للتكرار، لا من اختبار سريع واحد.",
     seoDescription_en: "Kuka tasbih authenticity guide for wholesale buyers: material declarations, sample approval, drill-hole checks, finish review, and batch QC.",
@@ -147,6 +167,11 @@ export const blogArticles = [
     heroAlt_en: "Tasbih gift sets wholesale for special occasions",
     heroAlt_ar: "مجموعات هدايا التسبيح بالجملة للمناسبات الخاصة",
     readTime: "6 min",
+    relatedProductSlugs: [
+      "baltic-amber-gift-set",
+      "golden-hematite-medallion-tasbih",
+      "natural-kuka-wood-tasbih",
+    ],
     intro_en: "A tasbih makes a deeply meaningful gift for birthdays, Eid, weddings, anniversaries, and graduations. Unlike disposable gifts, a quality tasbih is kept for years — becoming a daily companion and a lasting symbol of the occasion. For retailers, gift tasbih represents a high-margin opportunity with strong emotional appeal.",
     intro_ar: "التسبيح هدية غاية في المعنى لعيد الميلاد وعيد الفطر والأعراس والذكرى السنوية والتخرج. على عكس الهدايا القابلة للاستهلاك، يُحتفظ بالتسبيح الجيد لسنوات — يصبح رفيقًا يوميًا ورمزًا دائمًا للمناسبة. لتجار التجزئة، يمثل التسبيح كهدية فرصة عالية الهامش مع جاذبية عاطفية قوية.",
     sections_en: [
@@ -172,6 +197,11 @@ export const blogArticles = [
     heroAlt_en: "Car hanging tasbih wholesale for mindful driving",
     heroAlt_ar: "سبح تعليق السيارة بالجملة للقيادة الواعية",
     readTime: "5 min",
+    relatedProductSlugs: [
+      "terahertz-road-safety-pendant",
+      "oud2",
+      "kechainrose",
+    ],
     intro_en: "The car hanging tasbih has become one of the most visible cultural accessories in modern driving life. Hanging from rearview mirrors or resting on dashboards, tasbih serves as a mindful companion during commutes, a symbol of identity, and a decorative element that personalizes the driving space. For wholesalers, this is a high-velocity, gift-friendly product category.",
     intro_ar: "أصبحت سبح تعليق السيارات من أكثر الإكسسوارات الثقافية ظهورًا في حياة القيادة الحديثة. المعلقة من مرايا الرؤية الخلفية أو المركونة على شاشات القيادة، تخدم كرفيق واعٍ خلال التنقل، ورمز للهوية، وعنصر زخرفي يخصص مساحة القيادة. للجملة، هذه فئة منتج عالية السرعة وصديقة للهدايا.",
     sections_en: [
@@ -197,6 +227,11 @@ export const blogArticles = [
     heroAlt_en: "Natural stone tasbih vs synthetic beads wholesale",
     heroAlt_ar: "سبح الحجر الطبيعي مقابل الخرز الصناعي بالجملة",
     readTime: "6 min",
+    relatedProductSlugs: [
+      "golden-hematite-medallion-tasbih",
+      "zebra",
+      "resin-tasbih",
+    ],
     intro_en: "One of the most common sourcing decisions for tasbih wholesalers is choosing between natural stone beads and synthetic alternatives. Agate, hematite, jade, and amber offer premium appeal and higher margins. Resin, glass, and plastic provide accessible price points and faster turnover. Understanding the trade-offs is essential for building a balanced wholesale inventory.",
     intro_ar: "واحدة من أكثر قرارات التوريد شيوعًا لتجار التسبيح بالجملة هي الاختيار بين خرزات الحجر الطبيعي والبدائل الصناعية. العقيق والهيماتيت واليشب والكهرمان توفر جاذبية فاخرة وهوامش أعلى. الراتنج والزجاج والبلاستيك يوفران نقاط سعر في المتناول ودوران أسرع. فهم المفاضلات ضروري لبناء مخزون بالجملة متوازن.",
     sections_en: [

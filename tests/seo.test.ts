@@ -86,4 +86,17 @@ describe("SEO helpers", () => {
     expect(faqJsonLd?.mainEntity).toHaveLength(4);
     expect(faqJsonLd?.mainEntity[3].acceptedAnswer.text).toContain("professional laboratory");
   });
+
+  it("links every blog guide to real catalog products", () => {
+    for (const article of blogArticles) {
+      expect(article.relatedProductSlugs.length).toBeGreaterThan(0);
+
+      for (const productSlug of article.relatedProductSlugs) {
+        const product = getProductBySlug(productSlug);
+
+        expect(product, `${article.slug} references ${productSlug}`).toBeDefined();
+        expect(product?.image).toMatch(/^\/images\//);
+      }
+    }
+  });
 });

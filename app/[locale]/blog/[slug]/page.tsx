@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { isLocale, withLocale } from "@/src/lib/i18n";
 import { blogArticles } from "@/src/data/blog-articles";
+import { getProductBySlug } from "@/src/data/site";
 import {
   buildBlogArticleJsonLd,
   buildBlogArticleMetadata,
@@ -43,6 +44,9 @@ export default async function BlogArticlePage({ params }: BlogParams) {
   const sections = locale === "en" ? article.sections_en : article.sections_ar;
   const cta = locale === "en" ? article.cta_en : article.cta_ar;
   const faq = locale === "en" ? article.faq_en : article.faq_ar;
+  const relatedProducts = article.relatedProductSlugs
+    .map((productSlug) => getProductBySlug(productSlug))
+    .filter((product) => product !== undefined);
   const articleJsonLd = buildBlogArticleJsonLd(locale, article);
   const breadcrumbJsonLd = buildBlogBreadcrumbJsonLd(locale, article);
   const faqJsonLd = buildBlogFaqJsonLd(locale, article);
@@ -142,42 +146,57 @@ export default async function BlogArticlePage({ params }: BlogParams) {
           </div>
         </div>
 
-        {/* Related Products */}
-        <div className="mt-8 rounded-2xl border border-border/60 p-6">
-          <h3 className="mb-4 text-sm font-semibold">
-            {locale === "en" ? "Related Wholesale Products" : "منتجات بالجملة ذات صلة"}
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Link
-              href={withLocale(locale, "/collections/signature-tasbih/natural-kuka-wood-tasbih")}
-              className="group flex items-center gap-3 rounded-xl border border-border/60 p-3 transition-colors hover:border-accent/30"
-            >
-              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
-                <Image src="/images/real-products/natural-kuka-wood/hero.jpeg" alt="Kuka Wood" fill className="object-cover" sizes="48px" />
-              </div>
+        {relatedProducts.length ? (
+          <section className="mt-12 border-y border-border/60 py-8">
+            <div className="mb-5 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold group-hover:text-accent-deep">
-                  {locale === "en" ? "Natural Kuka Wood Tasbih" : "سبحان خشب كوكا طبيعي"}
+                <p className="noor-kicker text-xs font-semibold text-accent-deep">
+                  {locale === "en" ? "Products From This Guide" : "منتجات مرتبطة بهذا الدليل"}
                 </p>
-                <p className="text-xs text-muted">MOQ 100 pcs</p>
+                <h2 className="mt-2 text-2xl font-semibold">
+                  {locale === "en" ? "Related Wholesale Products" : "منتجات بالجملة ذات صلة"}
+                </h2>
               </div>
-            </Link>
-            <Link
-              href={withLocale(locale, "/collections/gift-sets/baltic-amber-gift-set")}
-              className="group flex items-center gap-3 rounded-xl border border-border/60 p-3 transition-colors hover:border-accent/30"
-            >
-              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-50">
-                <Image src="/images/real-products/baltic-amber/hero.jpeg" alt="Baltic Amber" fill className="object-cover" sizes="48px" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold group-hover:text-accent-deep">
-                  {locale === "en" ? "Baltic Amber Gift Set" : "مجموعة هدايا كهرمان بلطيقي"}
-                </p>
-                <p className="text-xs text-muted">MOQ 100 pcs</p>
-              </div>
-            </Link>
-          </div>
-        </div>
+              <Link
+                href={withLocale(locale, "/collections")}
+                className="hidden text-sm font-semibold text-accent-deep hover:underline sm:inline"
+              >
+                {locale === "en" ? "View all" : "عرض الكل"}
+              </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {relatedProducts.map((product) => (
+                <Link
+                  key={product.slug}
+                  href={withLocale(
+                    locale,
+                    `/collections/${product.collection}/${product.slug}`,
+                  )}
+                  className="group block overflow-hidden rounded-xl border border-border/60 bg-white transition-colors hover:border-accent/40"
+                >
+                  <div className="relative aspect-square bg-gray-50">
+                    <Image
+                      src={product.image}
+                      alt={`${product.title[locale]} ${locale === "en" ? "product photo" : "صورة المنتج"}`}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, 240px"
+                    />
+                  </div>
+                  <div className="space-y-2 p-3">
+                    <h3 className="text-sm font-semibold leading-snug group-hover:text-accent-deep">
+                      {product.title[locale]}
+                    </h3>
+                    <p className="text-xs leading-relaxed text-muted line-clamp-2">
+                      {product.summary[locale]}
+                    </p>
+                    <p className="text-xs font-semibold text-accent-deep">MOQ 100 pcs</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
       </div>
     </div>
   );
