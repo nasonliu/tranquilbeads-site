@@ -20,7 +20,8 @@ describe("SEO helpers", () => {
     const metadata = buildProductMetadata("en", collection!, product!);
 
     expect(metadata.title).toBe("Natural Kuka Wood Tasbih Wholesale");
-    expect(metadata.description).toContain("Wholesale tasbih sourcing");
+    expect(metadata.description).toContain("Wholesale: MOQ 100");
+    expect(metadata.description).toContain("private label packaging");
     expect(metadata.alternates?.canonical).toBe(
       "https://www.tranquilbeads.com/en/collections/signature-tasbih/natural-kuka-wood-tasbih",
     );
