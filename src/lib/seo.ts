@@ -54,7 +54,7 @@ export function getProductSeoDescription(product: Product, locale: Locale) {
   }
 
   return compactText(
-    `${product.summary.en} Wholesale tasbih sourcing with MOQ 100 pcs, private-label packaging, and export-ready support.`,
+    `${product.summary.en} Wholesale tasbih sourcing with MOQ 100 pcs, private label packaging, and export support.`,
     155,
   );
 }
