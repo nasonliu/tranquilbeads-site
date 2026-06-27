@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import sitemap from "@/app/sitemap";
+import { blogArticles } from "@/src/data/blog-articles";
 import { getCollectionBySlug, getProductBySlug } from "@/src/data/site";
 import {
+  buildBlogArticleJsonLd,
+  buildBlogArticleMetadata,
+  buildBlogFaqJsonLd,
   buildBreadcrumbJsonLd,
   buildProductJsonLd,
   buildProductMetadata,
@@ -50,6 +54,9 @@ describe("SEO helpers", () => {
     const product = entries.find((entry) =>
       entry.url.endsWith("/en/collections/signature-tasbih/natural-kuka-wood-tasbih"),
     );
+    const amberGuide = entries.find((entry) =>
+      entry.url.endsWith("/en/blog/how-to-identify-real-amber-tasbih"),
+    );
 
     expect(home).toMatchObject({
       changeFrequency: "weekly",
@@ -57,5 +64,25 @@ describe("SEO helpers", () => {
     });
     expect(product?.priority).toBe(0.86);
     expect(product?.images?.some((image) => image.includes("/images/imported/natural-kuka-wood-tasbih/"))).toBe(true);
+    expect(amberGuide?.priority).toBe(0.78);
+    expect(amberGuide?.images).toContain("https://www.tranquilbeads.com/images/real-products/baltic-amber/hero.jpeg");
+  });
+
+  it("builds blog article metadata and FAQ structured data", () => {
+    const article = blogArticles.find((item) => item.slug === "how-to-identify-real-amber-tasbih");
+
+    expect(article).toBeDefined();
+
+    const metadata = buildBlogArticleMetadata("en", article!);
+    const articleJsonLd = buildBlogArticleJsonLd("en", article!);
+    const faqJsonLd = buildBlogFaqJsonLd("en", article!);
+
+    expect(metadata.title).toBe("How to Tell if Amber Tasbih Is Real: Safe Tests for Buyers");
+    expect(metadata.description).toContain("Safe amber tasbih authentication guide");
+    expect(metadata.openGraph?.type).toBe("article");
+    expect(articleJsonLd["@type"]).toBe("Article");
+    expect(articleJsonLd.dateModified).toBe("2026-06-27");
+    expect(faqJsonLd?.["@type"]).toBe("FAQPage");
+    expect(faqJsonLd?.mainEntity).toHaveLength(3);
   });
 });

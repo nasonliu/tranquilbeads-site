@@ -9,6 +9,21 @@ export const SITE_URL =
 
 const brand = "TranquilBeads";
 
+type BlogArticle = {
+  slug: string;
+  title_en: string;
+  title_ar: string;
+  intro_en: string;
+  intro_ar: string;
+  seoDescription_en?: string;
+  seoDescription_ar?: string;
+  heroImage: string;
+  sections_en: Array<{ title: string; body: string }>;
+  sections_ar: Array<{ title: string; body: string }>;
+  faq_en?: Array<{ question: string; answer: string }>;
+  faq_ar?: Array<{ question: string; answer: string }>;
+};
+
 function compactText(input: string, maxLength = 155) {
   const normalized = input.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
@@ -16,6 +31,10 @@ function compactText(input: string, maxLength = 155) {
     .slice(0, maxLength - 1)
     .replace(/\s+\S*$/, "")
     .replace(/[,\s;:-]+$/, "")}.`;
+}
+
+export function serializeJsonLd(payload: unknown) {
+  return JSON.stringify(payload).replace(/</g, "\\u003c");
 }
 
 export function absoluteUrl(pathOrUrl: string) {
@@ -228,5 +247,124 @@ export function buildBreadcrumbJsonLd(
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items,
+  };
+}
+
+export function getBlogArticleTitle(article: BlogArticle, locale: Locale) {
+  return locale === "ar" ? article.title_ar : article.title_en;
+}
+
+export function getBlogArticleDescription(article: BlogArticle, locale: Locale) {
+  const description = locale === "ar"
+    ? article.seoDescription_ar || article.intro_ar
+    : article.seoDescription_en || article.intro_en;
+
+  return compactText(description, 155);
+}
+
+export function buildBlogArticleMetadata(
+  locale: Locale,
+  article: BlogArticle,
+): Metadata {
+  const title = getBlogArticleTitle(article, locale);
+  const description = getBlogArticleDescription(article, locale);
+  const path = `/blog/${article.slug}`;
+  const image = absoluteUrl(article.heroImage);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${SITE_URL}${withLocale(locale, path)}`,
+      languages: {
+        en: `${SITE_URL}${withLocale("en", path)}`,
+        ar: `${SITE_URL}${withLocale("ar", path)}`,
+      },
+    },
+    openGraph: {
+      title: `${title} | ${brand}`,
+      description,
+      type: "article",
+      url: `${SITE_URL}${withLocale(locale, path)}`,
+      siteName: brand,
+      images: [{ url: image }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${brand}`,
+      description,
+      images: [image],
+    },
+  };
+}
+
+export function buildBlogArticleJsonLd(locale: Locale, article: BlogArticle) {
+  const articleUrl = `${SITE_URL}${withLocale(locale, `/blog/${article.slug}`)}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${articleUrl}#article`,
+    headline: getBlogArticleTitle(article, locale),
+    description: getBlogArticleDescription(article, locale),
+    image: absoluteUrl(article.heroImage),
+    datePublished: "2026-03-30",
+    dateModified: "2026-06-27",
+    author: { "@type": "Organization", name: brand, url: SITE_URL },
+    publisher: {
+      "@type": "Organization",
+      name: brand,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/favicon.ico` },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl },
+    articleSection: locale === "ar" ? "دليل المشتري" : "Buyer's Guide",
+    about: (locale === "ar" ? article.sections_ar : article.sections_en)
+      .slice(0, 6)
+      .map((section) => ({ "@type": "Thing", name: section.title })),
+  };
+}
+
+export function buildBlogBreadcrumbJsonLd(locale: Locale, article: BlogArticle) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: locale === "ar" ? "الرئيسية" : "Home",
+        item: `${SITE_URL}${withLocale(locale)}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: locale === "ar" ? "المدونة" : "Blog",
+        item: `${SITE_URL}${withLocale(locale, "/blog")}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: getBlogArticleTitle(article, locale),
+        item: `${SITE_URL}${withLocale(locale, `/blog/${article.slug}`)}`,
+      },
+    ],
+  };
+}
+
+export function buildBlogFaqJsonLd(locale: Locale, article: BlogArticle) {
+  const faq = locale === "ar" ? article.faq_ar : article.faq_en;
+  if (!faq?.length) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
   };
 }

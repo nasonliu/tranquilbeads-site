@@ -4,6 +4,14 @@ import { notFound } from "next/navigation";
 
 import { isLocale, withLocale } from "@/src/lib/i18n";
 import { blogArticles } from "@/src/data/blog-articles";
+import {
+  buildBlogArticleJsonLd,
+  buildBlogArticleMetadata,
+  buildBlogBreadcrumbJsonLd,
+  buildBlogFaqJsonLd,
+  getBlogArticleTitle,
+  serializeJsonLd,
+} from "@/src/lib/seo";
 
 export function generateStaticParams() {
   return (
@@ -19,32 +27,7 @@ export async function generateMetadata({ params }: { params: Record<string, stri
   const article = blogArticles.find((a) => a.slug === slug);
   if (!article) return {};
 
-  const title = locale === "en" ? article.title_en : article.title_ar;
-  const description = locale === "en" ? article.intro_en : article.intro_ar;
-
-  return {
-    title: `${title} | TranquilBeads`,
-    description,
-    openGraph: {
-      url: `https://www.tranquilbeads.com/${locale}/blog/${slug}`,
-      title: `${title} | TranquilBeads`,
-      description,
-      siteName: "TranquilBeads",
-      images: [{ url: `https://www.tranquilbeads.com${article.heroImage}` }],
-    },
-    alternates: {
-      canonical: `https://www.tranquilbeads.com/${locale}/blog/${slug}`,
-      languages: {
-        en: `https://www.tranquilbeads.com/en/blog/${slug}`,
-        ar: `https://www.tranquilbeads.com/ar/blog/${slug}`,
-      },
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${title} | TranquilBeads`,
-      description,
-    },
-  };
+  return buildBlogArticleMetadata(locale, article);
 }
 
 type BlogParams = { params: Record<string, string> };
@@ -55,35 +38,31 @@ export default async function BlogArticlePage({ params }: BlogParams) {
   const article = blogArticles.find((a) => a.slug === slug);
   if (!article) notFound();
 
-  const title = locale === "en" ? article.title_en : article.title_ar;
-  const description = locale === "en" ? article.intro_en : article.intro_ar;
+  const title = getBlogArticleTitle(article, locale);
   const intro = locale === "en" ? article.intro_en : article.intro_ar;
   const sections = locale === "en" ? article.sections_en : article.sections_ar;
   const cta = locale === "en" ? article.cta_en : article.cta_ar;
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: title,
-    description,
-    image: `https://www.tranquilbeads.com${article.heroImage}`,
-    datePublished: "2026-03-30",
-    dateModified: "2026-03-30",
-    author: { "@type": "Organization", name: "TranquilBeads", url: "https://www.tranquilbeads.com" },
-    publisher: {
-      "@type": "Organization",
-      name: "TranquilBeads",
-      logo: { "@type": "ImageObject", url: "https://www.tranquilbeads.com/favicon.ico" },
-    },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.tranquilbeads.com/${locale}/blog/${slug}` },
-  };
+  const faq = locale === "en" ? article.faq_en : article.faq_ar;
+  const articleJsonLd = buildBlogArticleJsonLd(locale, article);
+  const breadcrumbJsonLd = buildBlogBreadcrumbJsonLd(locale, article);
+  const faqJsonLd = buildBlogFaqJsonLd(locale, article);
 
   return (
     <div className="noor-container py-12 md:py-16">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
+      />
+      {faqJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }}
+        />
+      ) : null}
       <div className="mx-auto max-w-3xl">
         {/* Hero Image */}
         <div className="relative mb-8 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-50">
@@ -122,6 +101,27 @@ export default async function BlogArticlePage({ params }: BlogParams) {
             </div>
           ))}
         </div>
+
+        {faq?.length ? (
+          <section className="mt-12 space-y-5">
+            <div>
+              <p className="noor-kicker text-xs font-semibold text-accent-deep">
+                {locale === "en" ? "Quick Answers" : "إجابات سريعة"}
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold">
+                {locale === "en" ? "Frequently Asked Questions" : "أسئلة شائعة"}
+              </h2>
+            </div>
+            <div className="divide-y divide-border/60 border-y border-border/60">
+              {faq.map((item) => (
+                <div key={item.question} className="py-5">
+                  <h3 className="font-semibold">{item.question}</h3>
+                  <p className="mt-2 leading-relaxed text-muted">{item.answer}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* CTA */}
         <div className="mt-12 rounded-2xl border border-accent/20 bg-[linear-gradient(135deg,_rgba(255,248,235,0.8),_rgba(252,240,220,0.9))] p-6 text-center">

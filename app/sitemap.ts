@@ -1,20 +1,11 @@
 import type { MetadataRoute } from "next";
 
+import { blogArticles } from "@/src/data/blog-articles";
 import { collections, products } from "@/src/data/site";
 import { locales, withLocale } from "@/src/lib/i18n";
-import { SITE_URL, getRealProductImages } from "@/src/lib/seo";
+import { SITE_URL, absoluteUrl, getRealProductImages } from "@/src/lib/seo";
 
 const baseUrl = SITE_URL;
-
-const guides = [
-  "how-to-identify-real-amber-tasbih",
-  "kuka-wood-tasbih-authenticity-guide",
-  "what-is-tasbih-beginner-guide-for-retailers",
-  "how-to-choose-tasbih-for-daily-use",
-  "tasbih-gift-ideas-father-husband-special-occasions",
-  "why-people-keep-tasbih-in-their-cars",
-  "natural-stone-vs-synthetic-beads-tasbih",
-];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -48,11 +39,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.86,
         images: getRealProductImages(product),
       })),
-      ...guides.map((slug) => ({
-        url: `${baseUrl}${withLocale(locale, `/blog/${slug}`)}`,
+      ...blogArticles.map((article) => ({
+        url: `${baseUrl}${withLocale(locale, `/blog/${article.slug}`)}`,
         lastModified: new Date(),
         changeFrequency: "monthly" as const,
-        priority: 0.72,
+        priority: article.slug.includes("authenticity") || article.slug.includes("identify-real")
+          ? 0.78
+          : 0.72,
+        images: [absoluteUrl(article.heroImage)],
       })),
     ],
   );
