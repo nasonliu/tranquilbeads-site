@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { isLocale, withLocale } from "@/src/lib/i18n";
 import { blogArticles } from "@/src/data/blog-articles";
 import { getProductBySlug } from "@/src/data/site";
+import { getProductRetailLinks } from "@/src/lib/product-retail-links";
 import {
   buildBlogArticleJsonLd,
   buildBlogArticleMetadata,
@@ -165,14 +166,13 @@ export default async function BlogArticlePage({ params }: BlogParams) {
               </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
-              {relatedProducts.map((product) => (
-                <Link
+              {relatedProducts.map((product) => {
+                const retailLinks = getProductRetailLinks(product.slug, locale);
+
+                return (
+                <article
                   key={product.slug}
-                  href={withLocale(
-                    locale,
-                    `/collections/${product.collection}/${product.slug}`,
-                  )}
-                  className="group block overflow-hidden rounded-xl border border-border/60 bg-white transition-colors hover:border-accent/40"
+                  className="overflow-hidden rounded-xl border border-border/60 bg-white"
                 >
                   <div className="relative aspect-square bg-gray-50">
                     <Image
@@ -184,16 +184,43 @@ export default async function BlogArticlePage({ params }: BlogParams) {
                     />
                   </div>
                   <div className="space-y-2 p-3">
-                    <h3 className="text-sm font-semibold leading-snug group-hover:text-accent-deep">
+                    <h3 className="text-sm font-semibold leading-snug">
                       {product.title[locale]}
                     </h3>
                     <p className="text-xs leading-relaxed text-muted line-clamp-2">
                       {product.summary[locale]}
                     </p>
                     <p className="text-xs font-semibold text-accent-deep">MOQ 100 pcs</p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {retailLinks.map((link) => (
+                        <a
+                          key={`${product.slug}-${link.label}`}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={
+                            link.platform === "amazon"
+                              ? "rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent/90"
+                              : "rounded-full border border-accent/30 px-3 py-1.5 text-xs font-semibold text-accent-deep hover:bg-accent/5"
+                          }
+                        >
+                          {link.label}
+                        </a>
+                      ))}
+                    </div>
+                    <Link
+                      href={withLocale(
+                        locale,
+                        `/collections/${product.collection}/${product.slug}`,
+                      )}
+                      className="inline-flex text-xs font-semibold text-muted hover:text-accent-deep hover:underline"
+                    >
+                      {locale === "en" ? "View details" : "عرض التفاصيل"}
+                    </Link>
                   </div>
-                </Link>
-              ))}
+                </article>
+                );
+              })}
             </div>
           </section>
         ) : null}

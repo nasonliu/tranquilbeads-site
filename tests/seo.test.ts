@@ -12,6 +12,7 @@ import {
   buildProductMetadata,
   getRealProductImages,
 } from "@/src/lib/seo";
+import { getProductRetailLinks } from "@/src/lib/product-retail-links";
 
 describe("SEO helpers", () => {
   it("builds product metadata with a wholesale title and real product images", () => {
@@ -93,9 +94,16 @@ describe("SEO helpers", () => {
 
       for (const productSlug of article.relatedProductSlugs) {
         const product = getProductBySlug(productSlug);
+        const retailLinks = getProductRetailLinks(productSlug, "en");
 
         expect(product, `${article.slug} references ${productSlug}`).toBeDefined();
         expect(product?.image).toMatch(/^\/images\//);
+        expect(retailLinks.length, `${productSlug} has retail links`).toBeGreaterThan(0);
+        expect(
+          retailLinks.some((link) => (
+            link.href.includes("amazon.") || link.href.includes("noon.com")
+          )),
+        ).toBe(true);
       }
     }
   });
