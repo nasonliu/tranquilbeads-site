@@ -50,7 +50,7 @@ describe("Noon retail catalog", () => {
     });
   });
 
-  it("uses current Noon listing links and locally cached Noon product images", () => {
+  it("uses current Noon buy links and locally cached Noon product images", () => {
     expect(noonRetailProducts.length).toBeGreaterThan(0);
 
     for (const product of noonRetailProducts) {

@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import CollectionsPage from "@/app/[locale]/collections/page";
 import CollectionDetailPage from "@/app/[locale]/collections/[collectionSlug]/page";
 import ProductDetailPage from "@/app/[locale]/collections/[collectionSlug]/[productSlug]/page";
+import AmazonRetailPage from "@/app/[locale]/amazon/page";
 import ContactPage from "@/app/[locale]/contact/page";
 import LocaleLayout from "@/app/[locale]/layout";
 import NoonRetailPage from "@/app/[locale]/noon/page";
@@ -112,13 +113,30 @@ describe("localized site rendering", () => {
         name: /shop tranquilbeads on noon/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /buy on noon uae/i })).toHaveAttribute(
-      "href",
-      expect.stringContaining("noon.com/uae-en"),
-    );
     expect(
-      screen.getByRole("link", { name: /buy on noon saudi/i }),
-    ).toHaveAttribute("href", expect.stringContaining("noon.com/saudi-en"));
+      screen
+        .getAllByRole("link", { name: /buy on noon uae/i })
+        .some((link) => link.getAttribute("href")?.includes("noon.com/uae-en")),
+    ).toBe(true);
+    expect(
+      screen
+        .getAllByRole("link", { name: /buy on noon saudi/i })
+        .some((link) => link.getAttribute("href")?.includes("noon.com/saudi-en")),
+    ).toBe(true);
+  });
+
+  it("renders an Amazon retail page with AE, SA, and DE buying options", async () => {
+    render(await AmazonRetailPage({ params: Promise.resolve({ locale: "en" }) }));
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: /buy tranquilbeads on amazon/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /buy on amazon ae/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /buy on amazon sa/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /buy on amazon de/i }).length).toBeGreaterThan(0);
   });
 
   it("renders a collection detail page with products from that series only", async () => {

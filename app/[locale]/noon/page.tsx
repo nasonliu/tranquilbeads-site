@@ -59,8 +59,8 @@ export default async function NoonRetailPage({
         }
         description={
           locale === "en"
-            ? "Selected TranquilBeads products are now mapped to our Noon UAE and Saudi listings. Retail customers can buy regionally through Noon, while distributors can still request catalog pricing and wholesale support here."
-            : "تم ربط منتجات مختارة من TranquilBeads بقوائم نون الإمارات والسعودية. يمكن لعملاء التجزئة الشراء إقليميًا عبر نون، بينما يستطيع الموزعون طلب كتالوج وأسعار الجملة من هنا."
+            ? "Selected TranquilBeads products now have direct Buy on Noon options for UAE and Saudi shoppers. Retail customers can buy regionally through Noon, while distributors can still request catalog pricing and wholesale support here."
+            : "تملك منتجات مختارة من TranquilBeads خيارات شراء مباشرة عبر نون الإمارات والسعودية. يمكن لعملاء التجزئة الشراء إقليميًا عبر نون، بينما يستطيع الموزعون طلب كتالوج وأسعار الجملة من هنا."
         }
         actions={
           <>
@@ -180,7 +180,7 @@ export default async function NoonRetailPage({
                       rel="noreferrer"
                       className="latin-ui rounded-full bg-[#1f1a15] px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-deep"
                     >
-                      UAE listing
+                      Buy on Noon UAE
                     </a>
                   ) : null}
                   {product.retailLinks.noonSaudi ? (
@@ -190,7 +190,7 @@ export default async function NoonRetailPage({
                       rel="noreferrer"
                       className="latin-ui rounded-full bg-[#1f1a15] px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-deep"
                     >
-                      Saudi listing
+                      Buy on Noon Saudi
                     </a>
                   ) : null}
                   <Link

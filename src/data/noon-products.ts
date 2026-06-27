@@ -12,7 +12,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة تيراهيرتز معلقة للسيارة",
     },
     summary: {
-      en: "A current Noon listing for a 33-bead car hanging tasbih with Ayat al-Kursi and travel dua plaque.",
+      en: "A direct Buy on Noon option for a 33-bead car hanging tasbih with Ayat al-Kursi and travel dua plaque.",
       ar: "رابط نون حالي لسبحة سيارة من 33 حبة مع آية الكرسي ودعاء السفر.",
     },
     material: { en: "Terahertz stone", ar: "حجر تيراهيرتز" },
@@ -32,7 +32,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة تيراهيرتز معلقة للسيارة",
     },
     summary: {
-      en: "Saudi Noon listing for the same Terahertz car hanging tasbih.",
+      en: "Buy on Noon Saudi option for the same Terahertz car hanging tasbih.",
       ar: "رابط نون السعودية لنفس سبحة السيارة من التيراهيرتز.",
     },
     material: { en: "Terahertz stone", ar: "حجر تيراهيرتز" },
@@ -69,7 +69,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة كهرمان أصلية فاخرة مع علبة هدية",
     },
     summary: {
-      en: "Saudi Noon retail listing for the same premium amber gift-box tasbih.",
+      en: "Buy on Noon Saudi option for the same premium amber gift-box tasbih.",
       ar: "رابط نون السعودية لنفس سبحة الكهرمان الفاخرة مع علبة الهدية.",
     },
     material: { en: "Amber resin", ar: "راتنج كهرمان" },
@@ -106,7 +106,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة كهرمان بلطيقي معتمدة",
     },
     summary: {
-      en: "Saudi Noon listing for the same certificate-led Baltic amber tasbih.",
+      en: "Buy on Noon Saudi option for the same certificate-led Baltic amber tasbih.",
       ar: "رابط نون السعودية لنفس سبحة الكهرمان البلطيقي مع الشهادة.",
     },
     material: { en: "Baltic amber", ar: "كهرمان بلطيقي" },
@@ -123,7 +123,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة خشب كوكا أصلية",
     },
     summary: {
-      en: "Natural wooden prayer beads in a current Noon listing for traditional gifting.",
+      en: "Natural wooden prayer beads with a direct Buy on Noon option for traditional gifting.",
       ar: "سبحة خشبية طبيعية ضمن رابط نون حالي للهدايا التقليدية.",
     },
     material: { en: "Kuka wood", ar: "خشب كوكا" },
@@ -143,7 +143,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة خشب كوكا أصلية",
     },
     summary: {
-      en: "Saudi Noon listing for natural Kuka wood prayer beads.",
+      en: "Buy on Noon Saudi option for natural Kuka wood prayer beads.",
       ar: "رابط نون السعودية لسبحة خشب كوكا طبيعية.",
     },
     material: { en: "Kuka wood", ar: "خشب كوكا" },
@@ -180,7 +180,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة عقيق طبيعي",
     },
     summary: {
-      en: "Saudi Noon listing for the same 33-bead natural agate tasbih.",
+      en: "Buy on Noon Saudi option for the same 33-bead natural agate tasbih.",
       ar: "رابط نون السعودية لنفس سبحة العقيق الطبيعي من 33 حبة.",
     },
     material: { en: "Natural agate", ar: "عقيق طبيعي" },
@@ -197,7 +197,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة هيماتيت سوداء 99 حبة",
     },
     summary: {
-      en: "A current Noon listing for black hematite beads with pendant and gift-box presentation.",
+      en: "A direct Buy on Noon option for black hematite beads with pendant and gift-box presentation.",
       ar: "رابط نون حالي لسبحة هيماتيت سوداء مع تعليقة وعلبة هدية.",
     },
     material: { en: "Black hematite", ar: "هيماتيت أسود" },
@@ -217,7 +217,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة هيماتيت سوداء 99 حبة",
     },
     summary: {
-      en: "Saudi Noon listing for the same 99-bead black hematite tasbih.",
+      en: "Buy on Noon Saudi option for the same 99-bead black hematite tasbih.",
       ar: "رابط نون السعودية لنفس سبحة الهيماتيت السوداء 99 حبة.",
     },
     material: { en: "Black hematite", ar: "هيماتيت أسود" },
@@ -254,7 +254,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة هيماتيت مع تعليقة بوصلة",
     },
     summary: {
-      en: "Saudi Noon listing for the same compass-pendant hematite tasbih.",
+      en: "Buy on Noon Saudi option for the same compass-pendant hematite tasbih.",
       ar: "رابط نون السعودية لنفس سبحة الهيماتيت مع تعليقة البوصلة.",
     },
     material: { en: "Hematite stone", ar: "حجر هيماتيت" },
@@ -271,7 +271,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
       ar: "سبحة عقيق أخضر طاووسي",
     },
     summary: {
-      en: "A peacock green agate prayer-bead listing for UAE retail shoppers.",
+      en: "A Buy on Noon UAE option for peacock green agate prayer beads.",
       ar: "رابط نون الإمارات لسبحة عقيق أخضر طاووسي لعملاء التجزئة.",
     },
     material: { en: "Green agate", ar: "عقيق أخضر" },

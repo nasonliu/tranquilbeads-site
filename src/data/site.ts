@@ -106,6 +106,7 @@ export const siteSettings = {
 export const navItems: NavItem[] = [
   { href: "/", label: { en: "Home", ar: "الرئيسية" } },
   { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
+  { href: "/amazon", label: { en: "Amazon Retail", ar: "أمازون للتجزئة" } },
   { href: "/noon", label: { en: "Noon Retail", ar: "نون للتجزئة" } },
   { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
   { href: "/blog", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
@@ -1285,8 +1286,12 @@ const pageDescriptions = {
     ar: "مصادر التسابيح بالجملة: موك 100 قطعة، تغليف خاص، شهادات مجوهرات، زمن توريد 21 يومًا. تسابيح وسبح بالجملة لبرامج التجزئة والهدايا.",
   },
   noon: {
-    en: "Shop selected TranquilBeads tasbih products on Noon UAE and Noon Saudi, with deduped product cards and direct regional retail links.",
-    ar: "تسوق منتجات مختارة من TranquilBeads على نون الإمارات ونون السعودية مع روابط شراء إقليمية مباشرة.",
+    en: "Buy selected TranquilBeads tasbih products on Noon UAE and Noon Saudi, with deduped product cards and direct regional buy links.",
+    ar: "اشتر منتجات مختارة من TranquilBeads على نون الإمارات ونون السعودية مع روابط شراء إقليمية مباشرة.",
+  },
+  amazon: {
+    en: "Buy selected TranquilBeads tasbih products on Amazon AE, Amazon SA, and Amazon DE, with product cards deduped by first image.",
+    ar: "اشتر منتجات مختارة من TranquilBeads على أمازون الإمارات والسعودية وألمانيا مع بطاقات مدمجة حسب الصورة الأولى.",
   },
   contact: {
     en: "Source tasbih wholesale — kuka tasbih, amber tasbih, stone tasbih in bulk. Request catalog, sample, or custom order via WhatsApp or email.",

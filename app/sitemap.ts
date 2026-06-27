@@ -16,7 +16,7 @@ const guides = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["/", "/collections", "/noon", "/wholesale", "/contact", "/blog"];
+  const routes = ["/", "/collections", "/amazon", "/noon", "/wholesale", "/contact", "/blog"];
 
   return locales.flatMap((locale) =>
     [
