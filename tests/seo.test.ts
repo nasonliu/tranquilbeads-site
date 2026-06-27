@@ -83,6 +83,7 @@ describe("SEO helpers", () => {
     expect(articleJsonLd["@type"]).toBe("Article");
     expect(articleJsonLd.dateModified).toBe("2026-06-27");
     expect(faqJsonLd?.["@type"]).toBe("FAQPage");
-    expect(faqJsonLd?.mainEntity).toHaveLength(3);
+    expect(faqJsonLd?.mainEntity).toHaveLength(4);
+    expect(faqJsonLd?.mainEntity[3].acceptedAnswer.text).toContain("professional laboratory");
   });
 });
