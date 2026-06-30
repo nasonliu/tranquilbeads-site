@@ -17,7 +17,7 @@ export async function generateMetadata({
   return getPageMetadata(
     locale,
     "wholesale",
-    locale === "en" ? "Wholesale" : "الجملة",
+    locale === "en" ? "Wholesale Tasbih & Misbaha Sourcing" : "توريد تسابيح ومسابح بالجملة",
   );
 }
 
@@ -111,6 +111,66 @@ export default async function WholesalePage({
               <p className="mt-3 text-sm leading-7 text-[#dfcfb8]">{item.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="noor-container">
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="noor-kicker text-xs font-semibold text-accent-deep">
+              {locale === "en" ? "Market-local SEO naming" : "تسمية مناسبة لكل سوق"}
+            </p>
+            <h2 className="noor-title mt-2 text-3xl">
+              {locale === "en"
+                ? "One tasbih catalog, different search languages"
+                : "كتالوج تسابيح واحد بلغات بحث مختلفة"}
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-muted">
+              {locale === "en"
+                ? "We help wholesale partners describe the same product accurately for each channel, from Gulf English listings to German-Turkish search terms, while keeping material claims conservative and certificate-based."
+                : "نساعد شركاء الجملة على وصف المنتج بدقة حسب كل قناة، من قوائم الخليج إلى مصطلحات البحث التركية والألمانية، مع الحفاظ على ادعاءات الخامة مبنية على الشهادات."}
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              {
+                title: locale === "en" ? "Gulf / UAE / Saudi" : "الخليج / الإمارات / السعودية",
+                body:
+                  locale === "en"
+                    ? "Tasbih, Misbaha, Tasbeeh, Prayer Beads, 33 Beads, 99 Beads, Gift Box, Eid Gift, Ramadan Gift, Aqeeq and Aqiq."
+                    : "تسبيح، مسبحة، خرز صلاة، 33 حبة، 99 حبة، علبة هدية، هدية العيد ورمضان، عقيق.",
+              },
+              {
+                title: locale === "en" ? "Germany / Turkish diaspora" : "ألمانيا والجالية التركية",
+                body:
+                  locale === "en"
+                    ? "Tesbih, Tespih, Gebetskette, Kehribar, Bernstein, 33 Perlen, Geschenkbox, Misbaha and worry beads when the channel is more lifestyle-led."
+                    : "تيسبيح، تيسبيه، خرز صلاة، كهرمان، 33 خرزة، علبة هدية، ومسبحة حسب القناة.",
+              },
+              {
+                title: locale === "en" ? "South Asia" : "جنوب آسيا",
+                body:
+                  locale === "en"
+                    ? "Tasbeeh, Tasbih, Aqeeq, Aqiq, Hakik, Hakeek, Sulemani Aqeeq and Carnelian Aqeeq where the material pattern supports it."
+                    : "تسبيح، عقيق، عقيق سليماني وعقيق كارنيليان عندما تدعم الخامة ذلك.",
+              },
+              {
+                title: locale === "en" ? "Southeast Asia" : "جنوب شرق آسيا",
+                body:
+                  locale === "en"
+                    ? "Tasbih Kokka, Kaukah, Kaokah, Koka, Kayu Kokka, original, certified, 33 beads and doorgift for Malay and Indonesian channels."
+                    : "تسبيح كوكا وكوكا خشب، أصلي، معتمد، 33 حبة وهدايا مناسبات لقنوات الملايو وإندونيسيا.",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="rounded-[1.25rem] border border-border/70 bg-white/65 p-5"
+              >
+                <h3 className="font-semibold text-foreground">{item.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-muted">{item.body}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

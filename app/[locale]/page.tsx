@@ -149,7 +149,9 @@ export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   return getPageMetadata(
     locale,
     "home",
-    locale === "en" ? "Premium Tasbih For Wholesale" : "تسابيح راقية لشركاء الجملة",
+    locale === "en"
+      ? "Premium Tasbih, Misbaha & Prayer Beads Wholesale"
+      : "تسابيح ومسابح راقية لشركاء الجملة",
   );
 }
 

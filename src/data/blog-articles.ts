@@ -12,6 +12,8 @@ export const blogArticles = [
       "golden-hematite-medallion-tasbih",
       "baltic-amber-gift-set",
     ],
+    seoDescription_en: "Beginner guide to tasbih, misbaha, subha and Islamic prayer beads for retailers: 33 beads, 99 beads, materials, gift box positioning and wholesale sourcing.",
+    seoDescription_ar: "دليل مبسط للتسبيح والمسبحة وخرز الصلاة لتجار التجزئة: 33 حبة و99 حبة، الخامات، علب الهدايا والتوريد بالجملة.",
     intro_en: "Tasbih — also called misbaha, subha, or prayer beads — are counting tools used across cultures for spiritual remembrance, meditation, and mindfulness practice. For retailers entering this market, understanding the basics: the 33-bead and 99-bead formats, common materials, and how to present tasbih as a meaningful cultural accessory, is the foundation for successful sales.",
     intro_ar: "التسبيح — المسبحة أو السبحة — أداة عَدّ تُستخدم عبر الثقافات للتسبيح الروحي والتأمل وتمارين الوعي الكامل. لتجار التجزئة الدائمين في هذا السوق، فهم الأساسيات: تنسيقات 33 و 99 خرزة، والمواد الشائعة، وكيفية تقديم التسبيح كإكسسوار ثقافي ذي معنى، هو الأساس لزيادة المبيعات.",
     sections_en: [
@@ -42,6 +44,8 @@ export const blogArticles = [
       "natural-kuka-wood-tasbih",
       "golden-hematite-medallion-tasbih",
     ],
+    seoDescription_en: "How retailers choose daily-use tasbih and misbaha prayer beads: 33 beads vs 99 beads, Kuka wood, stone, resin, durability and gift box options.",
+    seoDescription_ar: "كيفية اختيار تسبيح ومسبحة للاستخدام اليومي: 33 حبة مقابل 99 حبة، خشب كوكا، حجر، راتنج، المتانة وخيارات علب الهدايا.",
     intro_en: "For daily tasbih use, the right choice depends on three factors: bead count, material weight, and durability. A tasbih meant for frequent handling needs to feel comfortable in the hand, withstand daily use, and be easy to carry. This guide helps retailers advise customers on choosing the best tasbih for their daily spiritual practice.",
     intro_ar: "للاستخدام اليومي للتسبيح، يعتمد الاختيار الصحيح على ثلاثة عوامل: عدد الخرزات، ووزن المادة، والمتانة. التسبيح المخصص للاستخدام المتكرر يحتاج أن يشعر بالراحة في اليد ويتحمل الاستخدام اليومي ويكون سهل الحمل. هذا الدليل يساعد تجار التجزئة على نصيحة العملاء لاختيار أفضل تسبيح لممارستهم الروحية اليومية.",
     sections_en: [
@@ -172,6 +176,8 @@ export const blogArticles = [
       "golden-hematite-medallion-tasbih",
       "natural-kuka-wood-tasbih",
     ],
+    seoDescription_en: "Tasbih gift guide for men: premium misbaha prayer beads, 33-bead gift box sets, Eid gifts, Ramadan gifts, amber, Kuka wood and hematite.",
+    seoDescription_ar: "دليل هدايا التسبيح للرجال: مسابح فاخرة وخرز صلاة، علب هدايا 33 حبة، هدايا العيد ورمضان، الكهرمان وخشب كوكا والهيماتيت.",
     intro_en: "A tasbih makes a deeply meaningful gift for birthdays, Eid, weddings, anniversaries, and graduations. Unlike disposable gifts, a quality tasbih is kept for years — becoming a daily companion and a lasting symbol of the occasion. For retailers, gift tasbih represents a high-margin opportunity with strong emotional appeal.",
     intro_ar: "التسبيح هدية غاية في المعنى لعيد الميلاد وعيد الفطر والأعراس والذكرى السنوية والتخرج. على عكس الهدايا القابلة للاستهلاك، يُحتفظ بالتسبيح الجيد لسنوات — يصبح رفيقًا يوميًا ورمزًا دائمًا للمناسبة. لتجار التجزئة، يمثل التسبيح كهدية فرصة عالية الهامش مع جاذبية عاطفية قوية.",
     sections_en: [
@@ -202,6 +208,8 @@ export const blogArticles = [
       "oud2",
       "kechainrose",
     ],
+    seoDescription_en: "Car hanging tasbih and rearview mirror prayer beads as cultural accessories: gift-ready misbaha, 33/99 beads, wholesale display and sourcing notes.",
+    seoDescription_ar: "تسابيح تعليق السيارة وخرز الصلاة للمرآة كإكسسوارات ثقافية: مسابح جاهزة للهدايا، 33/99 حبة، العرض والتوريد بالجملة.",
     intro_en: "The car hanging tasbih has become one of the most visible cultural accessories in modern driving life. Hanging from rearview mirrors or resting on dashboards, tasbih serves as a mindful companion during commutes, a symbol of identity, and a decorative element that personalizes the driving space. For wholesalers, this is a high-velocity, gift-friendly product category.",
     intro_ar: "أصبحت سبح تعليق السيارات من أكثر الإكسسوارات الثقافية ظهورًا في حياة القيادة الحديثة. المعلقة من مرايا الرؤية الخلفية أو المركونة على شاشات القيادة، تخدم كرفيق واعٍ خلال التنقل، ورمز للهوية، وعنصر زخرفي يخصص مساحة القيادة. للجملة، هذه فئة منتج عالية السرعة وصديقة للهدايا.",
     sections_en: [
@@ -232,10 +240,12 @@ export const blogArticles = [
       "zebra",
       "resin-tasbih",
     ],
+    seoDescription_en: "Natural stone vs synthetic tasbih sourcing guide: Aqeeq agate, hematite, amber, resin and glass misbaha prayer beads for wholesale buyers.",
+    seoDescription_ar: "دليل توريد التسبيح الحجري والطبيعي مقابل الصناعي: عقيق، هيماتيت، كهرمان، راتنج وزجاج لمشتري الجملة.",
     intro_en: "One of the most common sourcing decisions for tasbih wholesalers is choosing between natural stone beads and synthetic alternatives. Agate, hematite, jade, and amber offer premium appeal and higher margins. Resin, glass, and plastic provide accessible price points and faster turnover. Understanding the trade-offs is essential for building a balanced wholesale inventory.",
     intro_ar: "واحدة من أكثر قرارات التوريد شيوعًا لتجار التسبيح بالجملة هي الاختيار بين خرزات الحجر الطبيعي والبدائل الصناعية. العقيق والهيماتيت واليشب والكهرمان توفر جاذبية فاخرة وهوامش أعلى. الراتنج والزجاج والبلاستيك يوفران نقاط سعر في المتناول ودوران أسرع. فهم المفاضلات ضروري لبناء مخزون بالجملة متوازن.",
     sections_en: [
-      { title: "Natural Stone Tasbih: Agate, Hematite, Jade", body: "Natural stone tasbih are valued for their unique energy, weight, and aesthetic depth. Agate offers striking banded patterns and natural color variation — no two beads are identical. Hematite has a satisfying metallic weight and subtle shine that appeals to modern customers. Jade is prized for its smooth feel and cultural significance in East Asian markets. Natural stone commands 3-5x the price of synthetic equivalents and attracts discerning buyers." },
+      { title: "Natural Stone Tasbih: Agate, Hematite, Jade", body: "Natural stone tasbih are valued for their distinctive weight, hand feel, and aesthetic depth. Agate offers striking banded patterns and natural color variation — no two beads are identical. Hematite has a satisfying metallic weight and subtle shine that appeals to modern customers. Jade is prized for its smooth feel and cultural significance in East Asian markets. Natural stone commands 3-5x the price of synthetic equivalents and attracts discerning buyers." },
       { title: "Synthetic Alternatives: Resin, Glass, Plastic", body: "Resin tasbih replicate the look of natural materials at a fraction of the cost. They are lightweight, durable, and available in vibrant colors that natural stone cannot achieve. Glass beads offer a smooth finish and pleasant weight. Both materials are ideal for high-turnover gift purchases where price sensitivity is high and end customers are casual gift buyers rather than collectors." },
       { title: "Market Positioning: Premium vs Volume Strategy", body: "A balanced wholesale inventory stocks both natural and synthetic tasbih. Use natural stone tasbih as your premium line — higher price points, slower turnover, but strong margins. Use resin and glass tasbih for volume — faster turnover, gift buyers, and reorder customers. This combination attracts the widest customer base and reduces inventory risk." },
       { title: "Material Verification for Wholesale Buyers", body: "Natural stone tasbih at wholesale prices that seem too good to be true usually are. Always request samples and verify material claims before bulk orders. Key test: real hematite is cold and heavy; glass beads have a characteristic smooth, hard surface; resin beads are lightweight and warm to the touch. TranquilBeads provides material certificates for natural stone and amber tasbih upon request." },

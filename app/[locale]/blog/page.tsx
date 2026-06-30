@@ -14,11 +14,28 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) return {};
   return {
     title: locale === "en"
-      ? "Tasbih Buyer's Guides — Amber & Kuka Wood Authentication | TranquilBeads"
+      ? "Tasbih, Misbaha & Prayer Beads Buyer's Guides | TranquilBeads"
       : "أدلة مشتري التسابيح — التحقق من الكهرمان وخشب الكوكا | ترانكويل بيدز",
     description: locale === "en"
-      ? "Practical authentication guides for wholesale tasbih buyers. 5-minute tests for amber and kuka wood."
+      ? "Wholesale tasbih guides covering misbaha, prayer beads, amber certificates, Kuka wood, Aqeeq agate, Tesbih/Tespih and gift box sourcing."
       : "أدلة التحقق العملية لمشتري التسابيح بالجملة. اختبارات في 5 دقائق للكهرمان وخشب الكوكا.",
+    keywords: locale === "en"
+      ? [
+          "tasbih buyer guide",
+          "misbaha wholesale guide",
+          "prayer beads wholesale",
+          "amber tasbih certificate",
+          "Kuka wood tasbih",
+          "Aqeeq agate tasbih",
+          "Tesbih Tespih Gebetskette",
+        ]
+      : [
+          "دليل شراء التسبيح",
+          "تسابيح بالجملة",
+          "مسبحة بالجملة",
+          "خرز صلاة",
+          "شهادة كهرمان",
+        ],
   };
 }
 
@@ -37,7 +54,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-muted">
           {locale === "en"
-            ? "Practical guides for wholesale tasbih buyers — authentication tests, sourcing checklists, and material education."
+            ? "Practical guides for wholesale tasbih and misbaha buyers: authentication tests, sourcing checklists, material naming, amber certificates, Aqeeq agate, Kuka wood, and gift box positioning."
             : "أدلة عملية لمشتري التسابيح بالجملة — اختبارات المصادقة وقوائم الفحص وتعليم المواد."}
         </p>
       </div>

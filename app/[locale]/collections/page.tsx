@@ -22,7 +22,7 @@ export async function generateMetadata({
   return getPageMetadata(
     locale,
     "collections",
-    locale === "en" ? "Collections" : "المجموعات",
+    locale === "en" ? "Tasbih & Misbaha Collections" : "مجموعات التسابيح والمسابح",
   );
 }
 

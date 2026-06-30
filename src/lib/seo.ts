@@ -9,6 +9,21 @@ export const SITE_URL =
 
 const brand = "TranquilBeads";
 
+const coreSeoKeywords = [
+  "wholesale tasbih",
+  "misbaha wholesale",
+  "tasbeeh prayer beads",
+  "Islamic prayer beads",
+  "33 beads tasbih",
+  "99 beads tasbih",
+  "gift box tasbih",
+  "Ramadan gift for men",
+  "Eid gift for men",
+  "tesbih tespih",
+  "Gebetskette",
+  "Kehribar Bernstein",
+];
+
 type BlogArticle = {
   slug: string;
   title_en: string;
@@ -73,9 +88,30 @@ export function getProductSeoDescription(product: Product, locale: Locale) {
   }
 
   return compactText(
-    `${product.summary.en} Wholesale: MOQ 100, private label packaging.`,
+    `${product.summary.en} Wholesale: MOQ 100, private label packaging, gift box for tasbih and misbaha prayer beads.`,
     155,
   );
+}
+
+function getProductSeoKeywords(product: Product, locale: Locale) {
+  const material = product.material.en.toLowerCase();
+  const materialKeywords = [
+    material.includes("agate") ? ["aqeeq agate tasbih", "Aqiq prayer beads", "Hakik tasbeeh"] : [],
+    material.includes("kuka") || material.includes("wood") ? ["Kuka tasbih", "Kokka Kaukah prayer beads", "wood tasbih"] : [],
+    material.includes("amber") ? ["amber tasbih certificate", "Kehribar tasbih", "Bernstein Gebetskette"] : [],
+    material.includes("hematite") ? ["hematite tasbih", "premium gift for men"] : [],
+    material.includes("resin") ? ["amber-style tasbih", "gift box tasbih"] : [],
+  ].flat();
+
+  const localizedTags = product.tags[locale] || [];
+
+  return [
+    product.title.en,
+    product.material.en,
+    ...localizedTags,
+    ...coreSeoKeywords,
+    ...materialKeywords,
+  ];
 }
 
 export function getCollectionSeoTitle(collection: Collection, locale: Locale) {
@@ -83,7 +119,7 @@ export function getCollectionSeoTitle(collection: Collection, locale: Locale) {
     return `${collection.name.ar} بالجملة`;
   }
 
-  return `${collection.name.en} Wholesale Collection`;
+  return `${collection.name.en} Wholesale Tasbih Collection`;
 }
 
 export function getCollectionSeoDescription(collection: Collection, locale: Locale) {
@@ -95,9 +131,21 @@ export function getCollectionSeoDescription(collection: Collection, locale: Loca
   }
 
   return compactText(
-    `${collection.description.en} Built for wholesale buyers, boutique retailers, museum shops, and gifting programs.`,
+    `${collection.description.en} Tasbih, misbaha and prayer beads for wholesale buyers, boutiques, museum shops, and gifting programs.`,
     155,
   );
+}
+
+function getCollectionSeoKeywords(collection: Collection, locale: Locale) {
+  return [
+    collection.name[locale],
+    collection.name.en,
+    ...coreSeoKeywords,
+    "bulk prayer beads",
+    "private label tasbih",
+    "certified amber tasbih",
+    "Aqeeq Aqiq tasbih",
+  ];
 }
 
 export function buildProductMetadata(
@@ -113,6 +161,7 @@ export function buildProductMetadata(
   return {
     title,
     description,
+    keywords: getProductSeoKeywords(product, locale),
     alternates: {
       canonical: `${SITE_URL}${withLocale(locale, path)}`,
       languages: {
@@ -149,6 +198,7 @@ export function buildCollectionMetadata(
   return {
     title,
     description,
+    keywords: getCollectionSeoKeywords(collection, locale),
     alternates: {
       canonical: `${SITE_URL}${withLocale(locale, path)}`,
       languages: {
@@ -274,6 +324,14 @@ export function buildBlogArticleMetadata(
   return {
     title,
     description,
+    keywords: [
+      getBlogArticleTitle(article, locale),
+      ...coreSeoKeywords,
+      "tasbih authentication guide",
+      "amber tasbih certificate",
+      "Aqeeq Aqiq agate",
+      "Kuka Kokka Kaukah",
+    ],
     alternates: {
       canonical: `${SITE_URL}${withLocale(locale, path)}`,
       languages: {

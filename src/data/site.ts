@@ -351,16 +351,16 @@ export const products: Product[] = [
     image: "/images/imported/terahertz-road-safety-pendant/1774767451596-0722-18.jpg",
     material: { en: "Terahertz stone look", ar: "Terahertz stone look" },
     tags: {
-      en: ["Car charm", "Travel blessing", "Impulse gift", "cultural-accents"],
-      ar: ["إكسسوار سيارة", "دعاء سفر", "هدية سريعة", "cultural-accents"],
+      en: ["Car charm", "Travel gift", "Impulse gift", "cultural-accents"],
+      ar: ["إكسسوار سيارة", "هدية سفر", "هدية سريعة", "cultural-accents"],
     },
     detailIntro: {
       en: "This is a useful supporting product for the website because it shows your assortment can expand beyond hand-held tasbih into Islamic lifestyle accessories.",
       ar: "هذه قطعة داعمة مهمة للموقع لأنها تُظهر أن تشكيلتك تتجاوز التسابيح اليدوية إلى إكسسوارات أسلوب حياة إسلامي.",
     },
     detailBody: {
-      en: "Chosen from the spreadsheet because it has a strong ecommerce hook, this pendant can work well for add-on counters, souvenir edits, and car-related gifting moments such as new drivers or travel blessings.",
-      ar: "تم اختيارها من الجدول لأنها تحمل فكرة بيع واضحة، ويمكن أن تعمل جيدًا في نقاط الإضافة، وتشكيلات التذكارات، وهدايا السائقين الجدد أو دعوات السفر.",
+      en: "Chosen from the spreadsheet because it has a strong ecommerce hook, this pendant can work well for add-on counters, souvenir edits, and car-related gifting moments such as new drivers or travel gifts.",
+      ar: "تم اختيارها من الجدول لأنها تحمل فكرة بيع واضحة، ويمكن أن تعمل جيدًا في نقاط الإضافة، وتشكيلات التذكارات، وهدايا السائقين الجدد أو هدايا السفر.",
     },
     idealFor: { en: "Best for souvenir counters, car accessory edits, and entry-price gifting.", ar: "أنسب لرفوف التذكارات، وتشكيلات إكسسوارات السيارة، والهدايا ضمن المدخل السعري." },
     heroAlt: { en: "Terahertz Road Safety Pendant hero", ar: "الصورة الرئيسية لمعلقة تيراهيرتز للسيارة والسلامة" },
@@ -1274,16 +1274,16 @@ export const contactFormCopy: ContactFormCopy = {
 
 const pageDescriptions = {
   home: {
-    en: "Wholesale tasbih and prayer beads supplier — kuka wood tasbih, amber tasbih, stone tasbih and gift sets. MOQ 100 pcs, private label supported. Trusted by 12+ export markets.",
-    ar: "مورد تسابيح وسبح بالجملة — سبحان خشب الكوكا وسبحان الكهرمان وسبحان الحجر ومجموعات هدايا. موك 100 قطعة مع دعم التغليف الخاص. موثوق في أكثر من 12 سوق تصدير.",
+    en: "Wholesale tasbih, misbaha and prayer beads supplier — Kuka wood, Aqeeq agate, amber-style and gift box tasbih. MOQ 100 pcs, private label supported.",
+    ar: "مورد تسابيح ومسابح وخرز صلاة بالجملة — خشب الكوكا والعقيق والكهرمان ومجموعات الهدايا. موك 100 قطعة مع دعم التغليف الخاص.",
   },
   collections: {
-    en: "Browse wholesale tasbih collections: kuka wood tasbih, hematite tasbih, amber tasbih, 33-bead tasbih and resin tasbih for retailers, boutiques, and museum shops.",
-    ar: "تصفح مجموعات التسابيح بالجملة: سبحان خشب الكوكا وسبحان الهيماتيت وسبحان الكهرمان وسبحان 33 حبة وسبحان الراتنج للمتاجر والبوتيكات ومتاجر المتاحف.",
+    en: "Browse wholesale tasbih collections: Misbaha prayer beads, Kuka wood, Aqeeq agate, amber-look, 33-bead and 99-bead gift box tasbih for retailers.",
+    ar: "تصفح مجموعات التسابيح بالجملة: مسابح وخرز صلاة وخشب الكوكا والعقيق والكهرمان وصيغ 33 و99 حبة للمتاجر.",
   },
   wholesale: {
-    en: "Wholesale tasbih sourcing: MOQ 100 pcs, private label packaging, jewelry certificates, 21-day lead time. Bulk prayer beads and tasbih for retail and gifting programs.",
-    ar: "مصادر التسابيح بالجملة: موك 100 قطعة، تغليف خاص، شهادات مجوهرات، زمن توريد 21 يومًا. تسابيح وسبح بالجملة لبرامج التجزئة والهدايا.",
+    en: "Wholesale tasbih and misbaha sourcing: MOQ 100 pcs, private label gift boxes, jewelry certificates, 21-day lead time, and market-ready prayer beads.",
+    ar: "توريد تسابيح ومسابح بالجملة: موك 100 قطعة، علب هدايا بعلامتك، شهادات مجوهرات، زمن توريد 21 يومًا، وخرز صلاة جاهز للسوق.",
   },
   noon: {
     en: "Buy selected TranquilBeads tasbih products on Noon UAE and Noon Saudi, with deduped product cards and direct regional buy links.",
@@ -1294,8 +1294,8 @@ const pageDescriptions = {
     ar: "اشتر منتجات مختارة من TranquilBeads على أمازون الإمارات والسعودية وألمانيا مع بطاقات مدمجة حسب الصورة الأولى.",
   },
   contact: {
-    en: "Source tasbih wholesale — kuka tasbih, amber tasbih, stone tasbih in bulk. Request catalog, sample, or custom order via WhatsApp or email.",
-    ar: "مصادر تسابيح بالجملة — سبحان كوكا وسبحان كهرماني وسبحان حجري بالجملة. اطلب الكتالوج أو العينة أو الطلب المخصص عبر واتساب أو البريد.",
+    en: "Source tasbih wholesale — Misbaha, Kuka, Aqeeq agate, amber and stone prayer beads in bulk. Request catalog, samples, or custom packaging.",
+    ar: "اطلب تسابيح بالجملة — مسابح وخشب كوكا وعقيق وكهرمان وخرز صلاة حجري بكميات. اطلب الكتالوج أو العينات أو التغليف الخاص.",
   },
 } as const;
 
@@ -1340,28 +1340,28 @@ export function getPageCopy(locale: Locale) {
       label: item.label[locale],
     })),
     hero: {
-      eyebrow: locale === "en" ? "B2B Tasbih & Cultural Gifts" : "تسابيح وهدايا ثقافية للجملة",
+      eyebrow: locale === "en" ? "B2B Tasbih, Misbaha & Prayer Beads" : "تسابيح ومسابح وخرز صلاة للجملة",
       title:
         locale === "en"
           ? "Tasbih crafted for modern wholesale partners"
           : "تسابيح مصممة لشركاء الجملة العصريين",
       description:
         locale === "en"
-          ? "TranquilBeads pairs elevated design, dependable production, and culturally aligned storytelling for distributors, museum shops, gifting programs, and premium retailers."
+          ? "TranquilBeads pairs elevated design, dependable production, and culturally aligned naming for tasbih, misbaha, tasbeeh and prayer beads across Gulf, Turkish diaspora, and gifting channels."
           : "يجمع ترانكويل بيدز بين التصميم الراقي والإنتاج الموثوق والسرد الثقافي المتوازن لخدمة الموزعين ومتاجر المتاحف وبرامج الهدايا وتجار التجزئة المتميزين.",
       primaryCta: locale === "en" ? "Request Catalog" : "اطلب الكتالوج",
       secondaryCta: contactFormCopy.whatsappLabel[locale],
       featuredLabel: locale === "en" ? "Featured collections" : "مجموعات مميزة",
       metricsIntro:
         locale === "en"
-          ? "Built for distribution teams that need shelf-ready stories and reliable replenishment."
+          ? "Built for distributors that need shelf-ready stories, accurate material naming, gift box options, and reliable replenishment."
           : "مصمم لفرق التوزيع التي تحتاج إلى قصة عرض قوية وتوريد موثوق.",
     },
     collectionsPage: {
       title: locale === "en" ? "Signature Tasbih Collections" : "مجموعات تسابيح مميزة",
       description:
         locale === "en"
-          ? "A compact first-edition catalog led by tasbih, supported by gift sets and complementary cultural pieces."
+          ? "A compact first-edition catalog led by tasbih, misbaha and prayer beads, supported by gift-ready sets and complementary cultural pieces."
           : "كتالوج أولي مركز تقوده التسابيح وتدعمه مجموعات هدايا وقطع ثقافية مكملة.",
       filtersLabel: locale === "en" ? "Tasbih-led catalog" : "كتالوج تقوده التسابيح",
       inquiryLabel: locale === "en" ? "Inquire now" : "اطلب الآن",
@@ -1371,19 +1371,21 @@ export function getPageCopy(locale: Locale) {
       title: locale === "en" ? "Built for retail and wholesale rollout" : "مصمم للتوزيع والجملة",
       description:
         locale === "en"
-          ? "Everything on the first release is shaped around fast distributor onboarding: MOQ clarity, packaging, customization, and dependable lead times."
+          ? "Everything on the first release is shaped around fast distributor onboarding: MOQ clarity, gift box packaging, market-local naming, customization, and dependable lead times."
           : "تم تصميم الإصدار الأول لتسهيل انطلاق الشركاء بسرعة: وضوح الحد الأدنى، التغليف، التخصيص، ومواعيد التوريد الموثوقة.",
       bullets:
         locale === "en"
           ? [
-              "MOQ starts from 100 pieces across tasbih-focused assortments.",
-              "Private label sleeves, insert cards, and bilingual packaging available.",
+              "MOQ starts from 100 pieces across tasbih, misbaha, and prayer beads assortments.",
+              "Private label sleeves, insert cards, bilingual packaging, and gift boxes available.",
               "Average lead time from approval to dispatch is 21 days.",
+              "Market-local naming can cover Tasbih, Misbaha, Tasbeeh, Tesbih, Tespih, Gebetskette, Kehribar, and Bernstein without unsupported material claims.",
             ]
           : [
               "موك يبدأ من 100 قطعة ضمن تشكيلات تركز على التسابيح.",
               "التغليف الخاص وبطاقات الإدراج والتغليف الثنائي اللغة متاح.",
               "متوسط زمن التوريد من الاعتماد إلى الشحن هو 21 يومًا.",
+              "يمكن مواءمة أسماء السوق مثل تسبيح ومسبحة وخرز صلاة وتسبیح/تسبيه وتيسبيح دون ادعاءات غير مثبتة عن الخامات.",
             ],
       flowTitle: locale === "en" ? "How cooperation works" : "كيف تتم الشراكة",
       flow:
