@@ -986,7 +986,7 @@ export const products: Product[] = [
       en: "Color Change Cube Tasbih — premium quality for wholesale.",
       ar: "سبحة مكعب متغير اللون — جودة عالية للجملة.",
     },
-    image: "/images/imported/colorchangecube/main.jpg",
+    image: "/images/imported/colorchangecube/C0020T01.jpg",
     material: { en: "Glass", ar: "Glass" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -1003,7 +1003,7 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Color Change Cube Tasbih hero", ar: "الصورة الرئيسية لسبحة مكعب متغير اللون" },
     gallery: [
-      { image: "/images/imported/colorchangecube/main.jpg", alt: { en: "Color Change Cube Tasbih detail 1", ar: "سبحة مكعب متغير اللون تفصيل 1" } },
+      { image: "/images/imported/colorchangecube/C0020T01.jpg", alt: { en: "Color Change Cube Tasbih detail 1", ar: "سبحة مكعب متغير اللون تفصيل 1" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "Glass" } },
@@ -1018,7 +1018,7 @@ export const products: Product[] = [
       en: "White Agate 33-Bead Tasbih — premium quality for wholesale.",
       ar: "سبحة عقيق أبيض 33 حبة — جودة عالية للجملة.",
     },
-    image: "/images/imported/whiteagate33-s/main.jpg",
+    image: "/images/imported/whiteagate33-s/ram-23.jpg",
     material: { en: "Agate", ar: "Agate" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -1035,7 +1035,7 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "White Agate 33-Bead Tasbih hero", ar: "الصورة الرئيسية لسبحة عقيق أبيض 33 حبة" },
     gallery: [
-      { image: "/images/imported/whiteagate33-s/main.jpg", alt: { en: "White Agate 33-Bead Tasbih detail 1", ar: "سبحة عقيق أبيض 33 حبة تفصيل 1" } },
+      { image: "/images/imported/whiteagate33-s/ram-23.jpg", alt: { en: "White Agate 33-Bead Tasbih detail 1", ar: "سبحة عقيق أبيض 33 حبة تفصيل 1" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "Agate" } },
@@ -1050,7 +1050,7 @@ export const products: Product[] = [
       en: "Green Agate 99-Bead Tasbih — premium quality for wholesale.",
       ar: "سبحة عقيق أخضر 99 حبة — جودة عالية للجملة.",
     },
-    image: "/images/imported/greenagate99/main.jpg",
+    image: "/images/imported/greenagate99/ram-01.jpg",
     material: { en: "Agate", ar: "Agate" },
     tags: {
       en: ["Wholesale", "signature-tasbih"],
@@ -1067,7 +1067,7 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Green Agate 99-Bead Tasbih hero", ar: "الصورة الرئيسية لسبحة عقيق أخضر 99 حبة" },
     gallery: [
-      { image: "/images/imported/greenagate99/main.jpg", alt: { en: "Green Agate 99-Bead Tasbih detail 1", ar: "سبحة عقيق أخضر 99 حبة تفصيل 1" } },
+      { image: "/images/imported/greenagate99/ram-01.jpg", alt: { en: "Green Agate 99-Bead Tasbih detail 1", ar: "سبحة عقيق أخضر 99 حبة تفصيل 1" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Agate", ar: "Agate" } },
@@ -1163,7 +1163,7 @@ export const products: Product[] = [
     idealFor: { en: "Boutiques, museum shops, and premium gifting.", ar: "البوتيكات ومتاجر المتاحف والهدايا الفاخرة." },
     heroAlt: { en: "Luminous Glass 99-Bead Tasbih hero", ar: "الصورة الرئيسية لسبحة زجاج متوهج 99 حبة" },
     gallery: [
-      { image: "/images/imported/lumnousglass99/main.jpg", alt: { en: "Luminous Glass 99-Bead Tasbih detail 1", ar: "سبحة زجاج متوهج 99 حبة تفصيل 1" } },
+      { image: "/images/imported/lumnousglass99/new-02.jpg", alt: { en: "Luminous Glass 99-Bead Tasbih detail 1", ar: "سبحة زجاج متوهج 99 حبة تفصيل 1" } },
     ],
     specs: [
       { label: { en: "Material", ar: "الخامة" }, value: { en: "Glass", ar: "Glass" } },
