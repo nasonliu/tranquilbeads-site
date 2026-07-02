@@ -1,6 +1,86 @@
 import type { Metadata } from "next";
+import { GoogleTagManager } from "@next/third-parties/google";
+import Script from "next/script";
 
 import "./globals.css";
+
+const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-M9JCZKFC";
+const googleAdsId = "AW-18288748181";
+
+const outboundRetailConversionScript = `
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${googleAdsId}');
+
+(function () {
+  var conversionLabels = {
+    amazon: '${googleAdsId}/XzgJCIKpiMkcEJXN4JBE',
+    noon: '${googleAdsId}/U4LbCIWpiMkcEJXN4JBE'
+  };
+
+  function detectRetailPlatform(url) {
+    var hostname = url.hostname.toLowerCase();
+    if (hostname === 'amzn.to' || /(^|\\.)amazon\\./.test(hostname)) {
+      return 'amazon';
+    }
+    if (hostname === 'noon.com' || hostname.endsWith('.noon.com')) {
+      return 'noon';
+    }
+    return null;
+  }
+
+  document.addEventListener('click', function (event) {
+    var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+    if (!link) return;
+
+    var url;
+    try {
+      url = new URL(link.href, window.location.href);
+    } catch (error) {
+      return;
+    }
+
+    var platform = detectRetailPlatform(url);
+    if (!platform || typeof gtag !== 'function') return;
+
+    window.dataLayer.push({
+      event: 'retail_outbound_click',
+      retail_platform: platform,
+      retail_url: url.href
+    });
+
+    var sendTo = conversionLabels[platform];
+    var opensElsewhere = link.target && link.target.toLowerCase() !== '_self';
+
+    if (opensElsewhere || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      gtag('event', 'conversion', {
+        send_to: sendTo,
+        value: 1.0,
+        currency: 'USD'
+      });
+      return;
+    }
+
+    event.preventDefault();
+    var didNavigate = false;
+    var navigate = function () {
+      if (didNavigate) return;
+      didNavigate = true;
+      window.location.href = link.href;
+    };
+
+    gtag('event', 'conversion', {
+      send_to: sendTo,
+      value: 1.0,
+      currency: 'USD',
+      event_callback: navigate,
+      event_timeout: 1000
+    });
+    window.setTimeout(navigate, 1200);
+  }, true);
+})();
+`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -69,7 +149,19 @@ export default function RootLayout({
         } as React.CSSProperties
       }
     >
-      <body>{children}</body>
+      <GoogleTagManager gtmId={gtmId} />
+      <body>
+        {children}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-ads-retail-outbound-conversions"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: outboundRetailConversionScript }}
+        />
+      </body>
     </html>
   );
 }

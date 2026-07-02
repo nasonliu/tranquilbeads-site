@@ -13,13 +13,21 @@
     "outreach:queue": "tsx scripts/queue-outreach-tasks.ts",
     "outreach:send": "tsx scripts/run-outreach-first-touch.ts",
     "outreach:sync-replies": "tsx scripts/sync-outreach-replies.ts",
-    "outreach:sync-openclaw-whatsapp": "tsx scripts/sync-openclaw-whatsapp-replies.ts"
+    "outreach:sync-openclaw-whatsapp": "tsx scripts/sync-openclaw-whatsapp-replies.ts",
+    "google-ads:api": "tsx scripts/google-ads-api.ts",
+    "google-ads:cold-start": "tsx scripts/create-google-ads-cold-start.ts",
+    "mcp:stdio": "tsx scripts/tranquilbeads-ops-mcp.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@next/third-parties": "^16.2.10",
+    "@vercel/blob": "^2.3.2",
+    "dotenv": "^17.4.2",
     "next": "16.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "svix": "^1.89.0"
+    "svix": "^1.89.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

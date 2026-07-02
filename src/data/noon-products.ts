@@ -18,7 +18,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
     material: { en: "Terahertz stone", ar: "حجر تيراهيرتز" },
     heroImage: "/images/noon/terahertz-car-hanging-tasbih.jpg",
     firstImageFingerprint: "noon-z49dd5269cbc746c64183z",
-    noonUrl: `${uae}/1pc-terahertz-stone-car-hanging-33-beads-tasbih-with-gift-box-dual-sided-pendant-with-ayat-al-kursi-travel-dua-triple-protection-prayer-plaque-for-rearview-mirror-modern-muslim-gift-for-eid-ramadan-hajj-umrah-birthday-car-blessing/Z49DD5269CBC746C64183Z/p/?o=z49dd5269cbc746c64183z-1`,
+    noonUrl: `${uae}/1pc-terahertz-stone-car-hanging-33-beads-tasbih-with-gift-box-dual-sided-pendant-with-ayat-al-kursi-travel-dua-triple-protection-prayer-plaque-for-rearview-mirror-modern-muslim-gift-for-eid-ramadan-hajj-umrah-birthday-car-blessing/Z49DD5269CBC746C64183Z/p/?o=z49dd5269cbc746c64183z-1&utm_campaign=VN_EXC5CD1E1A`,
     tags: [
       { en: "Car accessory", ar: "إكسسوار سيارة" },
       { en: "33 beads", ar: "33 حبة" },
@@ -55,7 +55,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
     material: { en: "Amber resin", ar: "راتنج كهرمان" },
     heroImage: "/images/noon/premium-amber-gift-box-tasbih.jpg",
     firstImageFingerprint: "noon-z63c4ca10050ce546e620z",
-    noonUrl: `${uae}/1pc-premium-genuine-amber-tasbih-33-beads-with-gift-box-natural-resin-islamic-prayer-beads-for-meditation-car-hanging-eid-ramadan-hajj-gift-for-men-women/Z63C4CA10050CE546E620Z/p/?o=aaab6ee4ac27ec4b`,
+    noonUrl: `${uae}/1pc-premium-genuine-amber-tasbih-33-beads-with-gift-box-natural-resin-islamic-prayer-beads-for-meditation-car-hanging-eid-ramadan-hajj-gift-for-men-women/Z63C4CA10050CE546E620Z/p/?o=aaab6ee4ac27ec4b&utm_campaign=VN_EXCB3D859A`,
     tags: [
       { en: "Amber", ar: "كهرمان" },
       { en: "Gift box", ar: "علبة هدية" },
@@ -129,7 +129,7 @@ export const noonRetailSeeds: NoonRetailSeed[] = [
     material: { en: "Kuka wood", ar: "خشب كوكا" },
     heroImage: "/images/noon/kuka-wood-tasbih.jpg",
     firstImageFingerprint: "noon-ze51e31fc236c3a673edcz",
-    noonUrl: `${uae}/authentic-kuka-wood-tasbih-33-beads-natural-wooden-prayer-beads-traditional-islamic-tasbih-ramadan-eid-gift-for-men/ZE51E31FC236C3A673EDCZ/p/?o=a65c3c91edaae6bd`,
+    noonUrl: `${uae}/authentic-kuka-wood-tasbih-33-beads-natural-wooden-prayer-beads-traditional-islamic-tasbih-ramadan-eid-gift-for-men/ZE51E31FC236C3A673EDCZ/p/?o=a65c3c91edaae6bd&utm_campaign=VN_EXC816897A`,
     tags: [
       { en: "Kuka wood", ar: "خشب كوكا" },
       { en: "33 beads", ar: "33 حبة" },
