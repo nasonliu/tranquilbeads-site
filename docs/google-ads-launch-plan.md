@@ -47,6 +47,11 @@
   - `Outbound click - Amazon`：`OUTBOUND_CLICK`，secondary conversion
   - `Outbound click - Noon`：`OUTBOUND_CLICK`，secondary conversion
 - 网站会监听 `amazon.*`、`amzn.to`、`noon.com` 外链点击，发送对应 Google Ads conversion event，同时推送 `retail_outbound_click` 到 `dataLayer`
+- 已创建并部署表单提交转化：
+  - `Lead - Website inquiry form submit`：ID `7670722448`，`SUBMIT_LEAD_FORM`，primary conversion
+  - send_to：`AW-18288748181/1fQ3CJDf18kcEJXN4JBE`
+  - 联系表单在服务器保存成功后触发 Google Ads conversion，并通过 `gtag('set', 'user_data', ...)` 传递 email（如客户填写）用于 Enhanced conversions for web。
+  - Google Ads 账号内仍需确认 Enhanced conversions 已开启并接受 Customer Data Terms；诊断通常需要后续流量和时间刷新。
 
 冷启动 Search 创建/启用状态（2026-07-02）：
 
@@ -63,7 +68,7 @@
 
 - 没有明显的隐私政策页，Lead Form 和 Enhanced Conversions 会需要。
 - 没有明显的退换货、配送、公司主体信息页，Merchant Center 审核会需要。
-- 联系表单如果没有 `NEXT_PUBLIC_FORM_ENDPOINT`，前端会显示成功，但不一定真正入库或发信，需要上线前确认。
+- 联系表单已接入 `/api/inquiries` 并写入 Vercel Blob-backed outreach store；后台查看入口为 `/admin/inquiries`。
 - 部分产品涉及天然材质、amber、certified 等表述，广告和商品 feed 里要谨慎，最好有证书或改成更保守表达。
 
 ## 投放阶段

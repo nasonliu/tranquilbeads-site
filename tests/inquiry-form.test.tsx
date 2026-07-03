@@ -22,9 +22,13 @@ describe("InquiryForm", () => {
         }),
       ),
     );
+    window.dataLayer = [];
+    window.gtag = vi.fn();
   });
 
   afterEach(() => {
+    delete window.dataLayer;
+    delete window.gtag;
     vi.unstubAllGlobals();
   });
 
@@ -76,6 +80,21 @@ describe("InquiryForm", () => {
         body: expect.stringContaining("\"company\":\"Noor Retail Group\""),
       }),
     );
+    expect(window.dataLayer).toContainEqual(
+      expect.objectContaining({
+        event: "website_inquiry_submit",
+        inquiry_interest: "Tasbih",
+        inquiry_country: "UAE",
+      }),
+    );
+    expect(window.gtag).toHaveBeenCalledWith("set", "user_data", {
+      email: "amina@example.com",
+    });
+    expect(window.gtag).toHaveBeenCalledWith("event", "conversion", {
+      send_to: "AW-18288748181/1fQ3CJDf18kcEJXN4JBE",
+      value: 1.0,
+      currency: "USD",
+    });
   });
 
   it("keeps the WhatsApp shortcut visible", () => {

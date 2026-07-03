@@ -1,6 +1,6 @@
 # Google Ads Ops Handoff
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
 This branch contains the Google Ads API helper code, Google Ads/GTM tracking integration, Noon tracking links, campaign launch notes, and tests needed to continue TranquilBeads ad operations from another machine.
 
@@ -11,6 +11,9 @@ This branch contains the Google Ads API helper code, Google Ads/GTM tracking int
 - `scripts/create-google-ads-cold-start.ts` - Creates the paused cold-start Search campaign structure. The current campaigns have already been created and enabled.
 - `scripts/tranquilbeads-ops-mcp.ts` - MCP tools for Google Ads auth URL, customer listing, conversion listing, and dry-run conversion action planning.
 - `app/layout.tsx` - GTM and Google Ads outbound retail conversion tracking.
+- `src/components/inquiry-form.tsx` - Contact form submission, Google Ads inquiry conversion, and enhanced conversion user data handoff.
+- `app/api/inquiries/route.ts` - Server endpoint that stores website inquiry leads.
+- `app/admin/inquiries/page.tsx` - Password-protected inquiry dashboard.
 - `src/data/noon-products.ts` - Noon UAE tracking links for the first three tracked products.
 - `.env.local.example` - Environment variable template only. It intentionally contains no secrets.
 - `docs/google-ads-api-setup.md` - API setup and token-generation notes.
@@ -23,6 +26,7 @@ Real secrets are not committed:
 - `GOOGLE_ADS_DEVELOPER_TOKEN`
 - `GOOGLE_ADS_CLIENT_SECRET`
 - `GOOGLE_ADS_REFRESH_TOKEN`
+- `ADMIN_INQUIRIES_PASSWORD`
 - any real `.env.local` file
 
 On this machine, a local transfer bundle was created in:

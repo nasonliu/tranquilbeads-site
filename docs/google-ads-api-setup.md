@@ -115,7 +115,8 @@ npm run google-ads:api -- list-conversions 7091121019
 当前实测结果：
 
 - `list-customers` 返回 `customers/7091121019` 和 `customers/8010459176`
-- `list-conversions 7091121019` 返回 3 个转化动作：`whatsapp`、`Outbound click - Amazon`、`Outbound click - Noon`
+- `list-conversions 7091121019` 返回 4 个转化动作：`whatsapp`、`Outbound click - Amazon`、`Outbound click - Noon`、`Lead - Website inquiry form submit`
+- `Lead - Website inquiry form submit`：ID `7670722448`，`SUBMIT_LEAD_FORM`，primary conversion，send_to `AW-18288748181/1fQ3CJDf18kcEJXN4JBE`
 
 ## 下一步 MCP 化
 
