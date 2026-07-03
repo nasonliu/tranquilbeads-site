@@ -1,7 +1,7 @@
 "use client";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { InquiryForm } from "@/src/components/inquiry-form";
 
@@ -12,6 +12,22 @@ const baseProps = {
 };
 
 describe("InquiryForm", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ ok: true, leadId: "lead-1" }), {
+          status: 201,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("shows validation feedback when submitted empty", async () => {
     render(<InquiryForm {...baseProps} />);
 
@@ -22,7 +38,7 @@ describe("InquiryForm", () => {
     expect(screen.getByText(/choose an interest category/i)).toBeInTheDocument();
   });
 
-  it("submits successfully without a backend endpoint by using the fallback workflow", async () => {
+  it("submits inquiries to the hosted backend endpoint", async () => {
     render(<InquiryForm {...baseProps} />);
 
     fireEvent.change(screen.getByLabelText(/full name/i), {
@@ -52,6 +68,14 @@ describe("InquiryForm", () => {
     await waitFor(() => {
       expect(screen.getByText(/thank you — we will review your inquiry/i)).toBeInTheDocument();
     });
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/inquiries",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: expect.stringContaining("\"company\":\"Noor Retail Group\""),
+      }),
+    );
   });
 
   it("keeps the WhatsApp shortcut visible", () => {

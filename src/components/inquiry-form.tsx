@@ -156,17 +156,17 @@ export function InquiryForm({
 
     setStatus("submitting");
 
-    if (!submissionEndpoint) {
-      setStatus("success");
-      setValues(emptyState);
-      return;
-    }
+    const endpoint = submissionEndpoint || "/api/inquiries";
 
     try {
-      const response = await fetch(submissionEndpoint, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          locale,
+          sourcePath: window.location.pathname,
+        }),
       });
 
       if (!response.ok) {
