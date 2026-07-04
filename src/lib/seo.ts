@@ -426,3 +426,74 @@ export function buildBlogFaqJsonLd(locale: Locale, article: BlogArticle) {
     })),
   };
 }
+
+type RetailListItem = {
+  slug: string;
+  title: string;
+  asin?: string;
+  heroImage: string;
+  markets: string[];
+};
+
+export function buildRetailBreadcrumbJsonLd(
+  locale: Locale,
+  path: string,
+  name: string,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: locale === "ar" ? "الرئيسية" : "Home",
+        item: `${SITE_URL}${withLocale(locale)}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name,
+        item: `${SITE_URL}${withLocale(locale, path)}`,
+      },
+    ],
+  };
+}
+
+export function buildRetailItemListJsonLd(
+  locale: Locale,
+  path: string,
+  name: string,
+  products: RetailListItem[],
+) {
+  const pageUrl = `${SITE_URL}${withLocale(locale, path)}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": `${pageUrl}#retail-products`,
+    name,
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: products.length,
+    itemListElement: products.map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${pageUrl}#${product.slug}`,
+      item: {
+        "@type": "Product",
+        name: product.title,
+        image: absoluteUrl(product.heroImage),
+        sku: product.asin,
+        brand: {
+          "@type": "Brand",
+          name: brand,
+        },
+        offers: {
+          "@type": "AggregateOffer",
+          availability: "https://schema.org/InStock",
+          offerCount: product.markets.length,
+        },
+      },
+    })),
+  };
+}

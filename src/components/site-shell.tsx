@@ -33,14 +33,16 @@ export function SiteShell({
   return (
     <div className="noor-shell">
       <header className="sticky top-0 z-20 border-b border-border/70 bg-panel/90 backdrop-blur-xl">
-        <div className="noor-container flex items-center justify-between gap-6 py-4">
-          <Link href={withLocale(locale)} className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full border border-accent/40 bg-[radial-gradient(circle_at_top,_rgba(173,132,86,0.35),_rgba(107,122,81,0.08))] text-sm font-semibold text-accent-deep">
+        <div className="noor-container flex items-center justify-between gap-3 py-4 sm:gap-6">
+          <Link href={withLocale(locale)} className="flex min-w-0 items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-[radial-gradient(circle_at_top,_rgba(173,132,86,0.35),_rgba(107,122,81,0.08))] text-sm font-semibold text-accent-deep">
               PN
             </div>
-            <div>
-              <p className="noor-title text-2xl">{siteSettings.brandName}</p>
-              <p className="text-xs uppercase tracking-[0.28em] text-muted">
+            <div className="min-w-0">
+              <p className="noor-title truncate text-xl sm:text-2xl">
+                {siteSettings.brandName}
+              </p>
+              <p className="hidden text-xs uppercase tracking-[0.28em] text-muted sm:block">
                 {isArabic ? "تجارة راقية" : "Premium Trade"}
               </p>
             </div>
@@ -58,7 +60,7 @@ export function SiteShell({
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               href={switchLocaleHref}
               className="rounded-full border border-border/80 bg-white/55 px-3 py-2 text-xs font-semibold text-muted transition hover:border-accent/40 hover:text-foreground"
@@ -69,7 +71,7 @@ export function SiteShell({
               href={siteSettings.whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent-deep transition hover:border-accent hover:bg-accent/10"
+              className="hidden rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent-deep transition hover:border-accent hover:bg-accent/10 sm:inline-flex"
             >
               WhatsApp
             </a>

@@ -123,6 +123,16 @@ describe("localized site rendering", () => {
         .getAllByRole("link", { name: /buy on noon saudi/i })
         .some((link) => link.getAttribute("href")?.includes("noon.com/saudi-en")),
     ).toBe(true);
+    expect(screen.getByRole("navigation", { name: /noon catalog sections/i })).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("heading", { level: 2, name: /browse by material and bead count/i })
+        .length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("heading", { level: 3, name: /quick paths by count/i }).length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /amber/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /33 beads/i }).length).toBeGreaterThan(0);
   });
 
   it("renders an Amazon retail page with Gulf and Europe buying options", async () => {
@@ -141,6 +151,17 @@ describe("localized site rendering", () => {
     expect(screen.getAllByRole("link", { name: /buy on amazon pl/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("link", { name: /buy on amazon se/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("link", { name: /buy on amazon be/i }).length).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("navigation", { name: /amazon catalog sections/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 2, name: /browse by material and bead count/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 3, name: /quick paths by count/i }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /amber/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /33 beads/i }).length).toBeGreaterThan(0);
   });
 
   it("renders a collection detail page with products from that series only", async () => {
