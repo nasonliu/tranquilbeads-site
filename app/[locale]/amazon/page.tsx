@@ -5,6 +5,7 @@ import { amazonRetailProducts } from "@/src/data/amazon-products";
 import { getPageMetadata } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import {
+  amazonMarkets,
   getAmazonMarketLabel,
   getAmazonSearchLinks,
   type AmazonMarket,
@@ -15,6 +16,10 @@ const marketBadgeClass: Record<AmazonMarket, string> = {
   AE: "border-[#d8b57a]/50 bg-[#fff6e6] text-[#7a5525]",
   SA: "border-[#7b8a63]/45 bg-[#eef4e7] text-[#526238]",
   DE: "border-[#8d94a3]/45 bg-[#f0f2f6] text-[#4e5665]",
+  NL: "border-[#6c9a7a]/45 bg-[#edf7ef] text-[#3f6b4d]",
+  PL: "border-[#c87979]/45 bg-[#fff1f1] text-[#7a3f3f]",
+  SE: "border-[#6c8eb8]/45 bg-[#edf4fb] text-[#395d88]",
+  BE: "border-[#c4a15b]/45 bg-[#fff8df] text-[#765b22]",
 };
 
 export function generateStaticParams() {
@@ -32,8 +37,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/amazon">
     locale,
     "amazon",
     locale === "en"
-      ? "Buy TranquilBeads on Amazon AE, SA, and DE"
-      : "تسوق TranquilBeads على أمازون الإمارات والسعودية وألمانيا",
+      ? "Buy TranquilBeads on Amazon Gulf and Europe"
+      : "تسوق TranquilBeads على أمازون الخليج وأوروبا",
   );
 }
 
@@ -52,7 +57,7 @@ export default async function AmazonRetailPage({
   return (
     <div className="space-y-12 pt-8 md:space-y-16">
       <PageHero
-        eyebrow={locale === "en" ? "Amazon AE, SA & DE" : "أمازون الإمارات والسعودية وألمانيا"}
+        eyebrow={locale === "en" ? "Amazon Gulf & Europe" : "أمازون الخليج وأوروبا"}
         title={
           locale === "en"
             ? "Buy TranquilBeads on Amazon"
@@ -60,35 +65,26 @@ export default async function AmazonRetailPage({
         }
         description={
           locale === "en"
-            ? "Selected TranquilBeads Amazon products are grouped by their first image so shoppers see one clean product card with regional buy options for AE, SA, and DE."
-            : "تجمع منتجات TranquilBeads المختارة على أمازون حسب الصورة الأولى حتى يرى المتسوق بطاقة واضحة واحدة مع خيارات شراء إقليمية للإمارات والسعودية وألمانيا."
+            ? "Selected TranquilBeads Amazon products are grouped by their first image so shoppers see one clean product card with Gulf options and Germany-synced European buy links."
+            : "تجمع منتجات TranquilBeads المختارة على أمازون حسب الصورة الأولى حتى يرى المتسوق بطاقة واضحة واحدة مع خيارات الخليج وروابط أوروبا المتزامنة من ألمانيا."
         }
         actions={
           <>
-            <a
-              href={searchLinks.AE}
-              target="_blank"
-              rel="noreferrer"
-              className="latin-ui rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-deep"
-            >
-              Buy on Amazon AE
-            </a>
-            <a
-              href={searchLinks.SA}
-              target="_blank"
-              rel="noreferrer"
-              className="latin-ui rounded-full border border-accent/35 px-6 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
-            >
-              Buy on Amazon SA
-            </a>
-            <a
-              href={searchLinks.DE}
-              target="_blank"
-              rel="noreferrer"
-              className="latin-ui rounded-full border border-accent/35 px-6 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
-            >
-              Buy on Amazon DE
-            </a>
+            {amazonMarkets.map((market, index) => (
+              <a
+                key={market}
+                href={searchLinks[market]}
+                target="_blank"
+                rel="noreferrer"
+                className={`latin-ui rounded-full px-6 py-3 text-sm font-semibold transition ${
+                  index === 0
+                    ? "bg-accent text-white hover:bg-accent-deep"
+                    : "border border-accent/35 text-accent-deep hover:bg-accent/10"
+                }`}
+              >
+                Buy on Amazon {market}
+              </a>
+            ))}
           </>
         }
       />

@@ -553,8 +553,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </h2>
               <p className="mt-4 text-sm leading-7 text-[#dcccb5]">
                 {locale === "en"
-                  ? "For shoppers who want familiar retail checkout, selected TranquilBeads products link directly to Amazon AE, SA, DE, and Noon GCC options. Wholesale buyers can stay here for catalog pricing, OEM, and replenishment support."
-                  : "للمتسوقين الذين يفضلون تجربة دفع مألوفة، ترتبط منتجات مختارة مباشرة بخيارات أمازون الإمارات والسعودية وألمانيا ونون الخليج. أما مشترو الجملة فيمكنهم البقاء هنا لطلب الكتالوج وأسعار الجملة ودعم التوريد."}
+                  ? "For shoppers who want familiar retail checkout, selected TranquilBeads products link directly to Amazon Gulf and Germany-synced European options, plus Noon GCC. Wholesale buyers can stay here for catalog pricing, OEM, and replenishment support."
+                  : "للمتسوقين الذين يفضلون تجربة دفع مألوفة، ترتبط منتجات مختارة مباشرة بخيارات أمازون الخليج وأوروبا المتزامنة من ألمانيا، إضافة إلى نون الخليج. أما مشترو الجملة فيمكنهم البقاء هنا لطلب الكتالوج وأسعار الجملة ودعم التوريد."}
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

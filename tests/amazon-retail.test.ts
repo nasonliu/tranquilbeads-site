@@ -44,11 +44,15 @@ describe("Amazon retail catalog", () => {
     const catalog = buildAmazonRetailCatalog(seeds);
 
     expect(catalog).toHaveLength(1);
-    expect(catalog[0].markets).toEqual(["AE", "SA", "DE"]);
+    expect(catalog[0].markets).toEqual(["AE", "SA", "DE", "NL", "PL", "SE", "BE"]);
     expect(catalog[0].retailLinks).toEqual({
       AE: "https://www.amazon.ae/dp/B0AE111111",
       SA: "https://www.amazon.sa/dp/B0SA111111",
       DE: "https://www.amazon.de/dp/B0DE111111",
+      NL: "https://www.amazon.nl/dp/B0DE111111",
+      PL: "https://www.amazon.pl/dp/B0DE111111",
+      SE: "https://www.amazon.se/dp/B0DE111111",
+      BE: "https://www.amazon.com.be/dp/B0DE111111",
     });
   });
 
@@ -104,7 +108,7 @@ describe("Amazon retail catalog", () => {
     ]);
 
     expect(catalog).toHaveLength(1);
-    expect(catalog[0].markets).toEqual(["AE", "DE"]);
+    expect(catalog[0].markets).toEqual(["AE", "DE", "NL", "PL", "SE", "BE"]);
   });
 
   it("exposes Amazon search links and generated product buy links", () => {
@@ -112,8 +116,13 @@ describe("Amazon retail catalog", () => {
       AE: "https://www.amazon.ae/s?k=TranquilBeads",
       SA: "https://www.amazon.sa/s?k=TranquilBeads",
       DE: "https://www.amazon.de/s?k=TranquilBeads",
+      NL: "https://www.amazon.nl/s?k=TranquilBeads",
+      PL: "https://www.amazon.pl/s?k=TranquilBeads",
+      SE: "https://www.amazon.se/s?k=TranquilBeads",
+      BE: "https://www.amazon.com.be/s?k=TranquilBeads",
     });
     expect(getAmazonBuyUrl("DE", "B0TEST")).toBe("https://www.amazon.de/dp/B0TEST");
+    expect(getAmazonBuyUrl("BE", "B0TEST")).toBe("https://www.amazon.com.be/dp/B0TEST");
   });
 
   it("uses Amazon media images and direct marketplace buy links", () => {
@@ -123,13 +132,17 @@ describe("Amazon retail catalog", () => {
       expect(product.heroImage).toContain("m.media-amazon.com/images/");
 
       for (const market of product.markets) {
-        expect(product.retailLinks[market]).toContain(
-          market === "AE"
-            ? "amazon.ae/dp/"
-            : market === "SA"
-              ? "amazon.sa/dp/"
-              : "amazon.de/dp/",
-        );
+        const expectedDomain = {
+          AE: "amazon.ae/dp/",
+          SA: "amazon.sa/dp/",
+          DE: "amazon.de/dp/",
+          NL: "amazon.nl/dp/",
+          PL: "amazon.pl/dp/",
+          SE: "amazon.se/dp/",
+          BE: "amazon.com.be/dp/",
+        }[market];
+
+        expect(product.retailLinks[market]).toContain(expectedDomain);
       }
     }
   });
