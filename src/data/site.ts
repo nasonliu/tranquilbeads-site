@@ -1290,8 +1290,8 @@ const pageDescriptions = {
     ar: "اشتر منتجات مختارة من TranquilBeads على نون الإمارات ونون السعودية مع روابط شراء إقليمية مباشرة.",
   },
   amazon: {
-    en: "Buy selected TranquilBeads tasbih products on Amazon AE, Amazon SA, and Amazon DE, with product cards deduped by first image.",
-    ar: "اشتر منتجات مختارة من TranquilBeads على أمازون الإمارات والسعودية وألمانيا مع بطاقات مدمجة حسب الصورة الأولى.",
+    en: "Buy selected TranquilBeads tasbih products on Amazon Gulf and Germany-synced European marketplaces, with product cards deduped by first image.",
+    ar: "اشتر منتجات مختارة من TranquilBeads على أمازون الخليج وأسواق أوروبا المتزامنة من ألمانيا مع بطاقات مدمجة حسب الصورة الأولى.",
   },
   contact: {
     en: "Source tasbih wholesale — Misbaha, Kuka, Aqeeq agate, amber and stone prayer beads in bulk. Request catalog, samples, or custom packaging.",

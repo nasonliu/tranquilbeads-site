@@ -125,7 +125,7 @@ describe("localized site rendering", () => {
     ).toBe(true);
   });
 
-  it("renders an Amazon retail page with AE, SA, and DE buying options", async () => {
+  it("renders an Amazon retail page with Gulf and Europe buying options", async () => {
     render(await AmazonRetailPage({ params: Promise.resolve({ locale: "en" }) }));
 
     expect(
@@ -137,6 +137,10 @@ describe("localized site rendering", () => {
     expect(screen.getAllByRole("link", { name: /buy on amazon ae/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("link", { name: /buy on amazon sa/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("link", { name: /buy on amazon de/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /buy on amazon nl/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /buy on amazon pl/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /buy on amazon se/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: /buy on amazon be/i }).length).toBeGreaterThan(0);
   });
 
   it("renders a collection detail page with products from that series only", async () => {
