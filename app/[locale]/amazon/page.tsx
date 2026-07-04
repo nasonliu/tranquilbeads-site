@@ -6,21 +6,9 @@ import { getPageMetadata } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import {
   amazonMarkets,
-  getAmazonMarketLabel,
   getAmazonSearchLinks,
-  type AmazonMarket,
 } from "@/src/lib/amazon-retail";
-import { getDir, isLocale, withLocale } from "@/src/lib/i18n";
-
-const marketBadgeClass: Record<AmazonMarket, string> = {
-  AE: "border-[#d8b57a]/50 bg-[#fff6e6] text-[#7a5525]",
-  SA: "border-[#7b8a63]/45 bg-[#eef4e7] text-[#526238]",
-  DE: "border-[#8d94a3]/45 bg-[#f0f2f6] text-[#4e5665]",
-  NL: "border-[#6c9a7a]/45 bg-[#edf7ef] text-[#3f6b4d]",
-  PL: "border-[#c87979]/45 bg-[#fff1f1] text-[#7a3f3f]",
-  SE: "border-[#6c8eb8]/45 bg-[#edf4fb] text-[#395d88]",
-  BE: "border-[#c4a15b]/45 bg-[#fff8df] text-[#765b22]",
-};
+import { isLocale, withLocale } from "@/src/lib/i18n";
 
 export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "ar" }];
@@ -52,7 +40,6 @@ export default async function AmazonRetailPage({
   }
 
   const searchLinks = getAmazonSearchLinks();
-  const isRtl = getDir(locale) === "rtl";
 
   return (
     <div className="space-y-12 pt-8 md:space-y-16">
@@ -117,22 +104,8 @@ export default async function AmazonRetailPage({
                 <img
                   src={product.heroImage}
                   alt={product.title}
-                  className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105"
+                  className="aspect-[4/3] w-full object-cover object-[center_40%] transition duration-500 group-hover:scale-105"
                 />
-                <div
-                  className={`absolute left-4 top-4 flex flex-wrap gap-2 ${
-                    isRtl ? "right-4 left-auto justify-end" : ""
-                  }`}
-                >
-                  {product.markets.map((market) => (
-                    <span
-                      key={market}
-                      className={`rounded-full border px-3 py-1 text-xs font-semibold ${marketBadgeClass[market]}`}
-                    >
-                      {getAmazonMarketLabel(market)}
-                    </span>
-                  ))}
-                </div>
               </div>
               <div className="space-y-4 p-5">
                 <div>
