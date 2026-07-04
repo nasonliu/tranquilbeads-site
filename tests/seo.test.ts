@@ -10,6 +10,8 @@ import {
   buildBreadcrumbJsonLd,
   buildProductJsonLd,
   buildProductMetadata,
+  buildRetailBreadcrumbJsonLd,
+  buildRetailItemListJsonLd,
   getRealProductImages,
 } from "@/src/lib/seo";
 import { getProductRetailLinks } from "@/src/lib/product-retail-links";
@@ -106,5 +108,24 @@ describe("SEO helpers", () => {
         ).toBe(true);
       }
     }
+  });
+
+  it("builds retail ItemList and Breadcrumb structured data", () => {
+    const itemList = buildRetailItemListJsonLd("en", "/amazon", "Amazon retail", [
+      {
+        slug: "amber-test",
+        title: "Amber Tasbih 33 Beads",
+        asin: "B0TEST",
+        heroImage: "https://m.media-amazon.com/images/I/test.jpg",
+        markets: ["AE", "SA"],
+      },
+    ]);
+    const breadcrumb = buildRetailBreadcrumbJsonLd("en", "/amazon", "Amazon Retail");
+
+    expect(itemList["@type"]).toBe("ItemList");
+    expect(itemList.numberOfItems).toBe(1);
+    expect(itemList.itemListElement[0].item.offers.offerCount).toBe(2);
+    expect(breadcrumb["@type"]).toBe("BreadcrumbList");
+    expect(breadcrumb.itemListElement[1].item).toBe("https://www.tranquilbeads.com/en/amazon");
   });
 });
