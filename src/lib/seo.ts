@@ -223,38 +223,6 @@ export function buildCollectionMetadata(
   };
 }
 
-export function buildProductJsonLd(
-  locale: Locale,
-  collection: Collection,
-  product: Product,
-) {
-  const productUrl = `${SITE_URL}${withLocale(
-    locale,
-    `/collections/${collection.slug}/${product.slug}`,
-  )}`;
-  const images = getRealProductImages(product);
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "@id": `${productUrl}#product`,
-    name: product.title[locale],
-    description: getProductSeoDescription(product, locale),
-    image: images,
-    brand: {
-      "@type": "Brand",
-      name: brand,
-    },
-    category: collection.name[locale],
-    material: product.material[locale],
-    url: productUrl,
-    isRelatedTo: product.tags[locale].slice(0, 6).map((tag) => ({
-      "@type": "Thing",
-      name: tag,
-    })),
-  };
-}
-
 export function buildBreadcrumbJsonLd(
   locale: Locale,
   collection: Collection,
@@ -480,19 +448,12 @@ export function buildRetailItemListJsonLd(
       position: index + 1,
       url: `${pageUrl}#${product.slug}`,
       item: {
-        "@type": "Product",
+        // Prices and checkout happen on Amazon or Noon, not this page. Avoid
+        // Product rich-result markup until local offer data can stay accurate.
+        "@type": "Thing",
         name: product.title,
         image: absoluteUrl(product.heroImage),
-        sku: product.asin,
-        brand: {
-          "@type": "Brand",
-          name: brand,
-        },
-        offers: {
-          "@type": "AggregateOffer",
-          availability: "https://schema.org/InStock",
-          offerCount: product.markets.length,
-        },
+        identifier: product.asin,
       },
     })),
   };

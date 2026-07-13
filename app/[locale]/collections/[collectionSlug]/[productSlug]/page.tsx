@@ -14,7 +14,6 @@ import { PageHero } from "@/src/components/page-hero";
 import { isLocale, locales, withLocale } from "@/src/lib/i18n";
 import {
   buildBreadcrumbJsonLd,
-  buildProductJsonLd,
   buildProductMetadata,
 } from "@/src/lib/seo";
 
@@ -68,7 +67,6 @@ export default async function ProductDetailPage({
   }
 
   const copy = getPageCopy(locale);
-  const productJsonLd = buildProductJsonLd(locale, collection, product);
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(locale, collection, product);
   const heroImageAlt =
     locale === "en"
@@ -77,10 +75,6 @@ export default async function ProductDetailPage({
 
   return (
     <div className="space-y-12 pt-8 md:space-y-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
