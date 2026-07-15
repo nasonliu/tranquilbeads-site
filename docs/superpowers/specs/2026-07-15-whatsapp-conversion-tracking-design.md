@@ -69,7 +69,7 @@ No phone number, message text, email, or other customer data is included in the 
 
 ## Duplicate Protection
 
-The listener handles the click once in the capture phase. It does not add per-component WhatsApp handlers. The root layout no longer loads GTM, ensuring the direct Google tag is the only conversion sender. Modified clicks and links configured to open a new or named tab are recorded without preventing their default behavior.
+The listener handles the click once in the document bubble phase, after target and React click handlers have had a chance to cancel the event. It does not add per-component WhatsApp handlers. The root layout no longer loads GTM, ensuring the direct Google tag is the only conversion sender. Modified clicks and links configured to open a new or named tab are recorded without preventing their default behavior.
 
 ## Failure Handling
 

@@ -111,7 +111,7 @@ Expected: exit status 1 and `tests/google-ads-click-tracker.test.tsx` fails beca
 
 - [ ] **Step 3: Implement the minimal client adapter**
 
-Create a client component that installs one capture-phase document click listener in `useEffect`, ignores non-`Element` targets, resolves `event.target.closest('a[href]')`, and calls the pure handler with anchor/event properties plus adapters for `window.gtag`, diagnostics, `window.location.pathname`, `window.location.assign`, `window.setTimeout`, and `window.clearTimeout`. The diagnostic adapter must initialize `window.dataLayer = window.dataLayer || []` inside the adapter before calling `push`, so an early click cannot dereference an absent array. Call `event.preventDefault()` only when instructed and remove the listener during cleanup.
+Create a client component that installs one bubble-phase document click listener in `useEffect`, ignores non-`Element` targets, resolves `event.target.closest('a[href]')`, and calls the pure handler with anchor/event properties plus adapters for `window.gtag`, diagnostics, `window.location.pathname`, `window.location.assign`, `window.setTimeout`, and `window.clearTimeout`. Running after target handlers lets the adapter observe a normal React or native `preventDefault()` before it decides whether to intercept navigation. The diagnostic adapter must initialize `window.dataLayer = window.dataLayer || []` inside the adapter before calling `push`, so an early click cannot dereference an absent array. Call `event.preventDefault()` only when instructed and remove the listener during cleanup.
 
 - [ ] **Step 4: Run the component test and verify GREEN**
 
@@ -121,7 +121,7 @@ Expected: exit status 0 and `tests/google-ads-click-tracker.test.tsx` passes.
 
 - [ ] **Step 5: Replace the paused GTM and inline listener in the root layout**
 
-Remove the `GoogleTagManager` import, `gtmId` constant, GTM component, and `outboundRetailConversionScript`. Keep the external `gtag.js` loader. Add a dedicated inline `Script` with id `google-ads-init`, rendered after the loader in `app/layout.tsx`, that preserves:
+Remove the `GoogleTagManager` import, `gtmId` constant, GTM component, and `outboundRetailConversionScript`. Keep the external `gtag.js` loader. Add a dedicated inline `Script` with id `google-ads-init` and `beforeInteractive` strategy before the loader in `app/layout.tsx`, so the queue exists before the external Google script starts. It preserves:
 
 ```js
 window.dataLayer = window.dataLayer || [];
