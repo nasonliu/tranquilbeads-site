@@ -16,6 +16,7 @@
     "outreach:sync-openclaw-whatsapp": "tsx scripts/sync-openclaw-whatsapp-replies.ts"
   },
   "dependencies": {
+    "@next/third-parties": "^16.2.10",
     "next": "16.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
