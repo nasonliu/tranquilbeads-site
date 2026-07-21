@@ -38,7 +38,7 @@ metadata: {"openclaw":{"emoji":"🧿","requires":{"bins":["mcporter"]}}}
 ### 3. update_contact_settings
 
 \`\`\`bash
-{baseDir}/scripts/tranquilbeads-ops.sh update_contact_settings '{"confirm":false,"email":"sales@tranquilbeads.com","whatsappHref":"https://wa.me/447840890109","whatsappDisplay":"+44 7840 890109"}'
+{baseDir}/scripts/tranquilbeads-ops.sh update_contact_settings '{"confirm":false,"email":"sales@tranquilbeads.com","whatsappHref":"https://wa.me/8618929564545","whatsappDisplay":"+86 189 2956 4545"}'
 \`\`\`
 
 ### 4. run_ops_check
