@@ -21,8 +21,9 @@ describe("retail webhook result handling", () => {
   });
 
   it("uses the same-capture-id predicate for capture/webhook races", () => {
-    const source = readFileSync("src/lib/retail/db.ts", "utf8");
-    expect(source).toContain("status = 'captured' AND capture_id = ${captureId}");
+    const migration = readFileSync("migrations/20260727_retail_operations.sql", "utf8");
+    expect(migration).toContain("IF o.status='captured' AND o.capture_id=p_capture THEN");
+    expect(migration).toContain("IF o.status NOT IN ('pending','created','approved','capturing') THEN RETURN false; END IF;");
   });
 
   it("models approval, denial, reversal, and refunds with their correct PayPal identifiers", () => {

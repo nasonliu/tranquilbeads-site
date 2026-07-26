@@ -1,0 +1,8 @@
+import { z } from "zod";
+import { assertSameOrigin, requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+import { archiveAdminProduct, changeProductPrice, priceDto, productUpdateDto, updateAdminProduct } from "@/src/lib/retail/operations";
+export const runtime="nodejs"; export const dynamic="force-dynamic";
+const fail=(e:unknown,s=400)=>Response.json({ok:false,error:e instanceof Error?e.message:"invalid_request"},{status:s,headers:{"cache-control":"no-store"}});
+type ParamsContext={params:Promise<{id:string}>};
+export async function PATCH(request:Request,context:ParamsContext){try{await requireRetailAdmin();await assertSameOrigin();const {id}=await context.params;const body=await request.json();if(body.action==='price')return Response.json({ok:true,result:await changeProductPrice(id,priceDto.parse(body))},{headers:{"cache-control":"no-store"}});return Response.json({ok:true,product:await updateAdminProduct(id,productUpdateDto.parse(body))},{headers:{"cache-control":"no-store"}})}catch(e){return fail(e)}}
+export async function DELETE(_request:Request,context:ParamsContext){try{await requireRetailAdmin();await assertSameOrigin();const {id}=await context.params;return Response.json({ok:true,product:await archiveAdminProduct(z.string().uuid().parse(id))},{headers:{"cache-control":"no-store"}})}catch(e){return fail(e)}}

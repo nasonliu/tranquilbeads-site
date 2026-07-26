@@ -8,6 +8,9 @@ export type RetailProduct = {
   priceMinor: number;
   currency: "USD";
   available: boolean;
+  stock?: number;
 };
 
 export type RetailCartItem = { sku: string; quantity: number; unitAmount?: string };
+
+export type RetailCheckoutError = "checkout_expired" | "invalid_cart" | "request_conflict" | "checkout_unavailable";

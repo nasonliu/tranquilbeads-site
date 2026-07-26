@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "plugins": []
+  },
+  "include": [
+    "next-env.d.ts",
+    "next.config.ts",
+    "app/[locale]/shop/page.tsx",
+    "app/admin/retail/**/*.tsx",
+    "app/api/admin/retail/**/*.ts",
+    "app/api/cron/retail/**/*.ts",
+    "app/api/retail/orders/route.ts",
+    "app/api/retail/capture/route.ts",
+    "app/api/retail/webhook/route.ts",
+    "src/components/retail-shop.tsx",
+    "src/components/site-shell.tsx",
+    "src/data/retail/types.ts",
+    "src/lib/retail/**/*.ts",
+    "tests/retail-*.test.ts",
+    "tests/retail-*.test.tsx"
+  ],
+  "exclude": ["node_modules", ".next"]
+}

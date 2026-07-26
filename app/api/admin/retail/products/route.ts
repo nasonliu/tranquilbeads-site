@@ -1,0 +1,6 @@
+import { assertSameOrigin, requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+import { createAdminProduct, listAdminProducts, productDto } from "@/src/lib/retail/operations";
+export const runtime="nodejs"; export const dynamic="force-dynamic";
+const fail=(error:unknown,status=400)=>Response.json({ok:false,error:error instanceof Error?error.message:"invalid_request"},{status,headers:{"cache-control":"no-store"}});
+export async function GET(){try{await requireRetailAdmin();return Response.json({ok:true,products:await listAdminProducts()},{headers:{"cache-control":"no-store"}})}catch{return fail(new Error("unauthorized"),401)}}
+export async function POST(request:Request){try{await requireRetailAdmin();await assertSameOrigin();return Response.json({ok:true,product:await createAdminProduct(productDto.parse(await request.json()))},{status:201,headers:{"cache-control":"no-store"}})}catch(e){return fail(e)}}

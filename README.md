@@ -41,12 +41,15 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Direct retail checkout
 
-`/[locale]/shop` has an independent, intentionally empty direct-retail catalog in `src/data/retail/catalog.ts`. It does not reuse wholesale, Amazon, Noon, or marketplace product data. Add only approved direct-retail SKUs (including their own copy, image, currency, amount, availability, and fulfilment review) to that file. Until then the shop states that the catalog is in preparation and does not load PayPal.
+`/[locale]/shop` is an independent direct-retail shop. It reads only retail back-office tables (retail products, current retail prices, stock, and retail Blob images); it never reuses wholesale, Amazon, Noon, or marketplace product data. The shop safely stays unavailable when the database or an approved published product is absent.
 
 Production checkout is designed for Vercel Node Functions and Neon managed Postgres provisioned through the Vercel Marketplace, not a local development server or a long-running local process. Local servers are appropriate for development and back-office work only; do not expose one as a production payment backend.
 
-1. Provision Neon managed Postgres through the Vercel Marketplace and run `migrations/20260726_retail_payments.sql` using its SQL console or migration workflow.
-2. In Vercel Project Settings, set `RETAIL_SHOP_ENABLED=true`, `DATABASE_URL`, and the PayPal values listed in `.env.local.example`. Keep `PAYPAL_CLIENT_SECRET` server-only; never prefix it with `NEXT_PUBLIC_`.
+1. Provision Neon managed Postgres through the Vercel Marketplace and run both `migrations/20260726_retail_payments.sql` and `migrations/20260727_retail_operations.sql` in that order.
+2. In Vercel Project Settings, set `RETAIL_SHOP_ENABLED=true`, `DATABASE_URL`, the PayPal values listed in `.env.local.example`, `BLOB_READ_WRITE_TOKEN`, and the exact `RETAIL_BLOB_HOSTNAME`. Keep all secrets server-only; never prefix them with `NEXT_PUBLIC_`.
 3. Create a PayPal webhook pointing to `https://your-domain/api/retail/webhook`, subscribe to checkout/capture events, and set the resulting webhook ID as `PAYPAL_WEBHOOK_ID`.
 4. Begin with PayPal Sandbox. The live API endpoint is accepted only when `PAYPAL_API_BASE_URL` exactly equals `https://api-m.paypal.com`.
-5. Deploy, then test a sandbox order and confirm the database order, webhook event, and audit records. The routes fail closed when the shop gate, catalog, database URL, or PayPal configuration is missing. Before removing every sellable catalog item or disabling the gate, complete or otherwise reconcile all existing orders.
+5. Set a high-entropy `CRON_SECRET`; `vercel.json` runs the authenticated reservation cleanup every five minutes. Checkout also performs the same cleanup inside its transaction. PayPal capture accepts only active stock holds: once a hold is released or expired, it cannot consume stock and must be recreated with a new checkout.
+6. Deploy, then test a sandbox order and confirm the database order, reservation/ledger rows, webhook event, and audit records. Retail image upload is administrator-only and limited to 4 MiB because Vercel Route Handler request bodies have a lower practical limit than 5 MiB; do not replace this with a local filesystem. The routes fail closed when the shop gate, database URL, or PayPal configuration is missing. The accounting view is a signed posting ledger (payment, fee, refund, reversal); net is derived, not stored as an additional row. Before removing every sellable product or disabling the gate, complete or otherwise reconcile all existing orders.
+
+Run `npm run test:retail` and `npm run typecheck:retail` before deployment. A local server is useful for browser validation, but payment and webhook acceptance must be repeated with PayPal Sandbox against a deployed preview using its own preview database.

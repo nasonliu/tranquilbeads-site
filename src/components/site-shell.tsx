@@ -25,6 +25,7 @@ export function SiteShell({
 }: SiteShellProps) {
   const isArabic = locale === "ar";
   const pathname = usePathname();
+  const isRetailShop = /^\/(en|ar)\/shop\/?$/.test(pathname ?? "");
   const otherLocale = locale === "en" ? "ar" : "en";
   // Strip current locale prefix from pathname
   const pathWithoutLocale = (pathname ?? withLocale(locale)).replace(/^\/(en|ar)/, "") || "/";
@@ -34,7 +35,7 @@ export function SiteShell({
     <div className="noor-shell">
       <header className="sticky top-0 z-20 border-b border-border/70 bg-panel/90 backdrop-blur-xl">
         <div className="noor-container flex items-center justify-between gap-3 py-4 sm:gap-6">
-          <Link href={withLocale(locale)} className="flex min-w-0 items-center gap-3">
+          <Link href={withLocale(locale)} prefetch={isRetailShop ? false : undefined} className="flex min-w-0 items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-[radial-gradient(circle_at_top,_rgba(173,132,86,0.35),_rgba(107,122,81,0.08))] text-sm font-semibold text-accent-deep">
               PN
             </div>
@@ -53,6 +54,7 @@ export function SiteShell({
               <Link
                 key={item.href}
                 href={withLocale(locale, item.href)}
+                prefetch={isRetailShop ? false : undefined}
                 className="transition-colors hover:text-foreground"
               >
                 {item.label}
@@ -63,6 +65,7 @@ export function SiteShell({
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               href={switchLocaleHref}
+              prefetch={isRetailShop ? false : undefined}
               className="rounded-full border border-border/80 bg-white/55 px-3 py-2 text-xs font-semibold text-muted transition hover:border-accent/40 hover:text-foreground"
             >
               {locale === "en" ? "العربية" : "English"}
@@ -82,6 +85,7 @@ export function SiteShell({
             <Link
               key={item.href}
               href={withLocale(locale, item.href)}
+              prefetch={isRetailShop ? false : undefined}
               className="shrink-0 rounded-full border border-border/80 bg-white/55 px-4 py-2 text-sm font-medium text-muted transition hover:border-accent/40 hover:text-foreground"
             >
               {item.label}
@@ -108,6 +112,7 @@ export function SiteShell({
               <Link
                 key={item.href}
                 href={withLocale(locale, item.href)}
+                prefetch={isRetailShop ? false : undefined}
                 className="block transition-colors hover:text-white"
               >
                 {item.label}

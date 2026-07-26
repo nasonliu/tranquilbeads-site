@@ -15,7 +15,7 @@ export type RetailOrder = {
   client_request_id: string;
   currency: string;
   amount_minor: number;
-  status: "pending" | "created" | "approved" | "capturing" | "captured" | "failed" | "refunded" | "reversed" | "denied";
+  status: "pending" | "created" | "approved" | "capturing" | "captured" | "failed" | "refunded" | "reversed" | "denied" | "expired";
   capture_id: string | null;
   items_snapshot: unknown;
 };
@@ -26,15 +26,15 @@ function sameQuote(order: RetailOrder, quote: RetailOrderQuote) {
     && JSON.stringify(order.items_snapshot) === JSON.stringify(quote.items);
 }
 
-export async function reserveRetailOrder(requestId: string, quote: RetailOrderQuote) {
+export async function reserveRetailOrder(requestId: string, items: Array<{ sku: string; quantity: number }>) {
+  // Legacy callers may still pass a quote, but the database is the sole price
+  // and availability authority.  Only SKU/quantity reaches the SQL function.
   const sql = getSql();
-  await sql`INSERT INTO retail_orders (client_request_id, currency, amount_minor, status, items_snapshot)
-    VALUES (${requestId}, ${quote.currency}, ${quote.totalMinor}, 'pending', ${JSON.stringify(quote.items)}::jsonb)
-    ON CONFLICT (client_request_id) DO NOTHING`;
-  const result = await sql`SELECT paypal_order_id, client_request_id, currency, amount_minor, status, capture_id, items_snapshot
-    FROM retail_orders WHERE client_request_id = ${requestId} LIMIT 1`;
+  const result = await sql`SELECT o.paypal_order_id,o.client_request_id,o.currency,o.amount_minor,o.status,o.capture_id,o.items_snapshot
+    FROM retail_create_checkout(${requestId}::uuid, ${JSON.stringify(items)}::jsonb) c
+    JOIN retail_orders o ON o.id=c.order_id`;
   const order = result[0] as RetailOrder | undefined;
-  if (!order || !sameQuote(order, quote)) throw new Error("idempotency_conflict");
+  if (!order) throw new Error("checkout_unavailable");
   return order;
 }
 
@@ -64,20 +64,15 @@ export async function claimRetailCapture(paypalOrderId: string) {
   const sql = getSql();
   const result = await sql`UPDATE retail_orders SET status = 'capturing', capturing_started_at = NOW(), updated_at = NOW()
     WHERE paypal_order_id = ${paypalOrderId} AND (status IN ('created', 'approved') OR (status = 'capturing' AND capturing_started_at < NOW() - INTERVAL '5 minutes'))
+      AND (SELECT count(*) FROM retail_inventory_reservations r WHERE r.order_id=retail_orders.id AND r.status='active') = jsonb_array_length(retail_orders.items_snapshot)
     RETURNING paypal_order_id, client_request_id, currency, amount_minor, status, capture_id, items_snapshot`;
   return result[0] as RetailOrder | undefined;
 }
 
-export async function markRetailOrderCaptured(paypalOrderId: string, captureId: string) {
+export async function markRetailOrderCaptured(paypalOrderId: string, captureId: string, customer: unknown = {}, shipping: unknown = {}, feeMinor: number | null = null, netMinor: number | null = null) {
   const sql = getSql();
-  const result = await sql`UPDATE retail_orders SET status = CASE WHEN status = 'capturing' THEN 'captured' ELSE status END,
-    capture_id = CASE WHEN status = 'capturing' THEN ${captureId} ELSE capture_id END,
-    captured_at = CASE WHEN status = 'capturing' THEN NOW() ELSE captured_at END,
-    capturing_started_at = CASE WHEN status = 'capturing' THEN NULL ELSE capturing_started_at END,
-    updated_at = CASE WHEN status = 'capturing' THEN NOW() ELSE updated_at END
-    WHERE paypal_order_id = ${paypalOrderId} AND (status = 'capturing' OR (status = 'captured' AND capture_id = ${captureId}))
-    RETURNING paypal_order_id`;
-  return result.length === 1;
+  const result = await sql`SELECT retail_apply_paypal_capture(${paypalOrderId}, ${captureId}, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}, ${netMinor}) AS applied`;
+  return result[0]?.applied === true;
 }
 
 export async function restoreRetailOrderAfterCaptureFailure(paypalOrderId: string) {
@@ -93,6 +88,7 @@ export async function processVerifiedWebhook(
   eventType: string,
   rawPayload: string,
   payload: { resource?: { supplementary_data?: { related_ids?: { order_id?: string; capture_id?: string } }; id?: string; amount?: { currency_code?: string; value?: string } } },
+  customer: unknown = {}, shipping: unknown = {}, feeMinor: number | null = null, netMinor: number | null = null,
 ): Promise<WebhookProcessResult> {
   const sql = getSql();
   const relatedIds = payload.resource?.supplementary_data?.related_ids;
@@ -112,13 +108,11 @@ export async function processVerifiedWebhook(
       ON CONFLICT (paypal_event_id) DO UPDATE SET status = retail_webhook_events.status
       RETURNING id, status
     ), capture_update AS (
-      UPDATE retail_orders SET status = 'captured', capture_id = COALESCE(capture_id, ${captureId}), captured_at = COALESCE(captured_at, NOW()), updated_at = NOW()
+      SELECT retail_apply_paypal_capture(${orderId}, ${captureId}, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}, ${netMinor}) AS applied
       WHERE ${eventType} = 'PAYMENT.CAPTURE.COMPLETED' AND (SELECT status FROM event_row) = 'received'
         AND ${orderId} IS NOT NULL AND ${captureId} IS NOT NULL AND ${currency} = 'USD'
-        AND ${amountMinor} IS NOT NULL AND paypal_order_id = ${orderId}
-        AND (status IN ('created', 'approved', 'capturing') OR (status = 'captured' AND capture_id = ${captureId}))
-        AND currency = ${currency} AND amount_minor = ${amountMinor}
-      RETURNING paypal_order_id
+        AND ${amountMinor} IS NOT NULL
+        AND EXISTS(SELECT 1 FROM retail_orders WHERE paypal_order_id=${orderId} AND currency=${currency} AND amount_minor=${amountMinor})
     ), approval_update AS (
       UPDATE retail_orders SET status = CASE WHEN status = 'created' THEN 'approved' ELSE status END, updated_at = NOW()
       WHERE ${eventType} = 'CHECKOUT.ORDER.APPROVED' AND (SELECT status FROM event_row) = 'received'
@@ -130,22 +124,23 @@ export async function processVerifiedWebhook(
         ${captureId}, ${relatedCaptureId}, ${currency}, ${amountMinor}
       )
     ), reverse_update AS (
-      UPDATE retail_orders SET status = 'reversed', updated_at = NOW()
+      SELECT retail_apply_paypal_reversal(${relatedCaptureId}, ${eventId}, ${currency}, ${amountMinor}) AS applied
       WHERE ${eventType} = 'PAYMENT.CAPTURE.REVERSED' AND ${relatedCaptureId} IS NOT NULL
-        AND capture_id = ${relatedCaptureId} AND currency = ${currency} AND amount_minor = ${amountMinor}
-        AND status IN ('captured', 'refunded', 'reversed')
-      RETURNING paypal_order_id
+    ), denied_release AS (
+      SELECT retail_release_order_reservations(${orderId}, 'payment_denied') AS released
+      WHERE ${eventType} = 'PAYMENT.CAPTURE.DENIED' AND ${orderId} IS NOT NULL
     ), denied_update AS (
       UPDATE retail_orders SET status = 'denied', capturing_started_at = NULL, updated_at = NOW()
       WHERE ${eventType} = 'PAYMENT.CAPTURE.DENIED' AND ${orderId} IS NOT NULL
         AND paypal_order_id = ${orderId} AND currency = ${currency} AND amount_minor = ${amountMinor}
         AND status IN ('created', 'approved', 'capturing', 'denied')
+        AND EXISTS(SELECT 1 FROM denied_release WHERE released)
       RETURNING paypal_order_id
     ), processed_event AS (
       UPDATE retail_webhook_events SET status = CASE WHEN ${eventType} IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
     WHERE id IN (SELECT id FROM event_row)
       AND (SELECT status FROM event_row) = 'received'
-      AND (${eventType} NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update) OR EXISTS (SELECT 1 FROM denied_update))
+      AND (${eventType} NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update))
       RETURNING 'ready' AS status
     ), rejected_event AS (
       UPDATE retail_webhook_events SET status = 'rejected', reason = 'business_validation_failed', processed_at = NOW()

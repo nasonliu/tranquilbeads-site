@@ -1,6 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: { bodySizeLimit: "4mb" },
+  },
+  images: {
+    // Only the configured Vercel Blob origin can be optimized by next/image.
+    remotePatterns: process.env.RETAIL_BLOB_HOSTNAME ? [{ protocol: "https", hostname: process.env.RETAIL_BLOB_HOSTNAME, pathname: "/**" }] : [],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

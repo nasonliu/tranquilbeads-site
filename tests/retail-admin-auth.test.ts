@@ -1,0 +1,4 @@
+import { describe, expect, it } from "vitest";
+import { consumeRetailAdminLoginFailure, verifyRetailAdminSession } from "@/src/lib/retail/admin-auth";
+import { detectRetailImage } from "@/src/lib/retail/upload-validation";
+describe("retail admin security helpers",()=>{it("rejects missing sessions",()=>expect(verifyRetailAdminSession(undefined)).toBe(false));it("fails closed when login failure storage is unavailable",async()=>{const prior=process.env.DATABASE_URL;delete process.env.DATABASE_URL;await expect(consumeRetailAdminLoginFailure(new Request("http://localhost",{headers:{"user-agent":"test"}}))).resolves.toBe(false);if(prior)process.env.DATABASE_URL=prior});it("identifies only supported image magic",()=>{expect(detectRetailImage(new Uint8Array([137,80,78,71,0,0,0,0,0,0,0,0]))).toBe('image/png');expect(detectRetailImage(new Uint8Array([1,2,3]))).toBeNull()})});

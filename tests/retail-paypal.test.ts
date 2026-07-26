@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { capturePaypalOrder, createPaypalOrder, parsePaypalMinorAmount } from "@/src/lib/retail/paypal";
+import { capturePaypalOrder, createPaypalOrder, parsePaypalCaptureBreakdown, parsePaypalMinorAmount } from "@/src/lib/retail/paypal";
 
 const quote = { currency: "USD", totalMinor: 1250, items: [] };
 
@@ -15,6 +15,12 @@ describe("retail PayPal amounts", () => {
     expect(parsePaypalMinorAmount("12.50")).toBe(1250);
     expect(parsePaypalMinorAmount("0.00")).toBeNull();
     expect(parsePaypalMinorAmount("1.2")).toBeNull();
+  });
+
+  it("accepts only internally consistent USD seller receivable breakdowns", () => {
+    expect(parsePaypalCaptureBreakdown({ gross_amount: { currency_code: "USD", value: "12.50" }, paypal_fee: { currency_code: "USD", value: "0.75" }, net_amount: { currency_code: "USD", value: "11.75" } })).toEqual({ grossMinor: 1250, feeMinor: 75, netMinor: 1175 });
+    expect(parsePaypalCaptureBreakdown({ gross_amount: { currency_code: "USD", value: "12.50" }, paypal_fee: { currency_code: "EUR", value: "0.75" }, net_amount: { currency_code: "USD", value: "11.75" } })).toBeNull();
+    expect(parsePaypalCaptureBreakdown({ gross_amount: { currency_code: "USD", value: "12.50" }, paypal_fee: { currency_code: "USD", value: "0.75" }, net_amount: { currency_code: "USD", value: "12.00" } })).toBeNull();
   });
 
   it("rejects a create response whose amount differs from the server quote", async () => {

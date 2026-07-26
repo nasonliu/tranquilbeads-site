@@ -1,9 +1,11 @@
 import { getRetailPaymentGate } from "@/src/lib/retail/gate";
-import { getPaypalAccessToken, verifyPaypalWebhook } from "@/src/lib/retail/paypal";
+import { getPaypalAccessToken, getPaypalOrderDetails, verifyPaypalWebhook } from "@/src/lib/retail/paypal";
 import { webhookResponseStatus } from "@/src/lib/retail/webhook-result";
 
 export const runtime = "nodejs";
 type PaypalEvent = { id?: string; event_type?: string; resource?: { supplementary_data?: { related_ids?: { order_id?: string } }; id?: string } };
+type PaypalOrderDetails = Awaited<ReturnType<typeof getPaypalOrderDetails>>;
+const emptyPaypalOrderDetails: PaypalOrderDetails = { customer: { email: "", name: "" }, shipping: { recipient: "", line1: "", line2: "", region: "", city: "", postalCode: "", country: "" }, breakdown: null };
 
 export async function POST(request: Request) {
   const gate = getRetailPaymentGate();
@@ -17,6 +19,13 @@ export async function POST(request: Request) {
     const token = await getPaypalAccessToken({ clientId: config.paypalClientId, clientSecret: config.paypalClientSecret, baseUrl: config.paypalBaseUrl });
     if (!await verifyPaypalWebhook(request.headers, event, { webhookId: config.paypalWebhookId, accessToken: token, baseUrl: config.paypalBaseUrl })) return new Response(null, { status: 400 });
     const { processVerifiedWebhook } = await import("@/src/lib/retail/db");
-    return new Response(null, { status: webhookResponseStatus(await processVerifiedWebhook(event.id, event.event_type, rawPayload, event)) });
+    const orderId = event.resource?.supplementary_data?.related_ids?.order_id;
+    let details: PaypalOrderDetails = emptyPaypalOrderDetails;
+    if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") {
+      if (!orderId) return new Response(null, { status: 503 });
+      try { details = await getPaypalOrderDetails(orderId, token, config.paypalBaseUrl); }
+      catch { return new Response(null, { status: 503 }); }
+    }
+    return new Response(null, { status: webhookResponseStatus(await processVerifiedWebhook(event.id, event.event_type, rawPayload, event, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null)) });
   } catch { return new Response(null, { status: 503 }); }
 }
