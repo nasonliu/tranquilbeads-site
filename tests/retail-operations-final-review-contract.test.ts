@@ -12,6 +12,19 @@ describe("retail final-review contracts", () => {
     expect(isAuthorizedRetailReservationCron("Bearer secret", "")).toBe(false);
   });
 
+  it("uses the authenticated five-minute external scheduler instead of an unsupported Vercel Hobby cron", () => {
+    const workflow = read(".github/workflows/retail-operations-cron.yml");
+    expect(workflow).toContain('cron: "*/5 * * * *"');
+    expect(workflow).toContain("secrets.RETAIL_CRON_ENDPOINT");
+    expect(workflow).toContain("secrets.CRON_SECRET");
+    expect(workflow).toContain('!= https://*');
+    expect(workflow).toContain('Authorization: Bearer ${CRON_SECRET}');
+    expect(workflow).toContain("jq -e");
+    expect(workflow).toContain(".pending // 0");
+    expect(workflow).toContain(".notifications.failed // 0");
+    expect(() => read("vercel.json")).toThrow();
+  });
+
   it("releases expired holds with a legal lock and runs cleanup in checkout", () => {
     const sql = read("migrations/20260727_retail_operations.sql");
     expect(sql).toContain("FOR UPDATE OF rv");

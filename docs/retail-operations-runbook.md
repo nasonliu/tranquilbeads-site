@@ -6,7 +6,7 @@
 - Use a managed PostgreSQL provider connected through Vercel Marketplace. Neon is the default for this project; keep the database region close to the Vercel Functions region.
 - Store product media in Vercel Blob. The local filesystem is never a production source of retail images.
 - A laptop or LAN server is suitable for development, migration rehearsals, and encrypted backup copies only. It is not the public payment backend: home power, network, TLS, webhook reachability, monitoring, and recovery are not reliable enough for order capture.
-- The five-minute reservation/reconciliation job requires a Vercel plan that supports per-minute cron schedules, or an equivalent authenticated external scheduler. Do not silently deploy it on a once-daily Hobby schedule.
+- The reservation/reconciliation job uses the authenticated GitHub Actions scheduler in `.github/workflows/retail-operations-cron.yml`, so the application can stay on Vercel Hobby. Its target frequency is every five minutes, but GitHub scheduling is best-effort and can be delayed. Scheduled workflows run only from the default branch; public-repository schedules may be disabled after prolonged repository inactivity. Set `RETAIL_CRON_ENDPOINT` and `CRON_SECRET` as GitHub repository secrets, keep the same `CRON_SECRET` in Vercel, and never point the scheduled workflow at a preview database. Do not silently weaken the schedule to Vercel Hobby's once-daily cron.
 
 ## Initial deployment
 
@@ -16,7 +16,8 @@
 4. In `/admin/retail`, create at least one active shipping country before enabling checkout. Create retail-only draft products, upload verified images, set prices and stock, then publish them. Wholesale, Amazon, and Noon data are not imported.
 5. Check `/api/retail/health`. A `200` response requires the payment gate, database schema, and at least one active shipping zone.
 6. Configure the PayPal webhook URL as `/api/retail/webhook` and subscribe to checkout approval, capture completed/denied/reversed, and refund events.
-7. Set `RETAIL_SHOP_ENABLED=true` only after the sandbox acceptance checklist passes.
+7. Merge the workflow to the default branch, add the GitHub repository secrets `RETAIL_CRON_ENDPOINT=https://your-production-domain/api/cron/retail/reservations` and `CRON_SECRET` (matching Vercel), manually dispatch `Retail operations cron`, and confirm a successful response before relying on the schedule.
+8. Set `RETAIL_SHOP_ENABLED=true` only after the sandbox acceptance checklist passes.
 
 ## PayPal sandbox acceptance
 
@@ -34,7 +35,7 @@ Use a PayPal Sandbox business account for the merchant and a separate personal a
 - Use `/admin/retail` for product, image, price, inventory, shipping-zone, order, address, fulfilment, cancellation, refund, and posting-ledger work.
 - Never reduce on-hand stock below reserved stock. Investigate old `capturing`, `pending` refund requests, failed notifications, and unreconciled postings before changing inventory manually.
 - Treat a PayPal refund that succeeded remotely but failed local reconciliation as pending. Do not create a new refund key; reconcile the recorded remote refund first.
-- Monitor Vercel Function errors for the cron, checkout, capture, webhook, admin, and health routes. Vercel does not retry a failed cron invocation, so alert on non-2xx results.
+- Monitor Vercel Function errors for the cron, checkout, capture, webhook, admin, and health routes, plus failed or unexpectedly absent `Retail operations cron` workflow runs. The workflow retries transient request failures twice and fails on a non-2xx response, invalid JSON, `pending > 0`, or `notifications.failed > 0`; any failure must alert an operator.
 
 ## Backup and restore
 
