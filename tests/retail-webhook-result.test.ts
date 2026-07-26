@@ -24,4 +24,19 @@ describe("retail webhook result handling", () => {
     const source = readFileSync("src/lib/retail/db.ts", "utf8");
     expect(source).toContain("status = 'captured' AND capture_id = ${captureId}");
   });
+
+  it("models approval, denial, reversal, and refunds with their correct PayPal identifiers", () => {
+    const source = readFileSync("src/lib/retail/db.ts", "utf8");
+    expect(source).toContain('eventType === "CHECKOUT.ORDER.APPROVED" ? resourceId : null');
+    expect(source).toContain("retail_apply_paypal_refund");
+    expect(source).toContain("denied_update AS");
+    expect(source).toContain("reverse_update AS");
+  });
+
+  it("serializes cumulative refunds in the database", () => {
+    const migration = readFileSync("migrations/20260726_retail_payments.sql", "utf8");
+    expect(migration).toContain("refunded_minor BIGINT NOT NULL DEFAULT 0");
+    expect(migration).toContain("FOR UPDATE");
+    expect(migration).toContain("refunded_minor + refund_amount_minor > target.amount_minor");
+  });
 });
