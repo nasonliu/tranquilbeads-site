@@ -108,6 +108,7 @@ export const navItems: NavItem[] = [
   { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
   { href: "/amazon", label: { en: "Amazon Retail", ar: "أمازون للتجزئة" } },
   { href: "/noon", label: { en: "Noon Retail", ar: "نون للتجزئة" } },
+  { href: "/shop", label: { en: "Retail Shop", ar: "متجر التجزئة" } },
   { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
   { href: "/blog", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
   { href: "/contact", label: { en: "Contact", ar: "التواصل" } },

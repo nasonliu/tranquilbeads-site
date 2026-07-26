@@ -38,3 +38,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Direct retail checkout
+
+`/[locale]/shop` has an independent, intentionally empty direct-retail catalog in `src/data/retail/catalog.ts`. It does not reuse wholesale, Amazon, Noon, or marketplace product data. Add only approved direct-retail SKUs (including their own copy, image, currency, amount, availability, and fulfilment review) to that file. Until then the shop states that the catalog is in preparation and does not load PayPal.
+
+Production checkout is designed for Vercel Node Functions and Neon managed Postgres provisioned through the Vercel Marketplace, not a local development server or a long-running local process. Local servers are appropriate for development and back-office work only; do not expose one as a production payment backend.
+
+1. Provision Neon managed Postgres through the Vercel Marketplace and run `migrations/20260726_retail_payments.sql` using its SQL console or migration workflow.
+2. In Vercel Project Settings, set `RETAIL_SHOP_ENABLED=true`, `DATABASE_URL`, and the PayPal values listed in `.env.local.example`. Keep `PAYPAL_CLIENT_SECRET` server-only; never prefix it with `NEXT_PUBLIC_`.
+3. Create a PayPal webhook pointing to `https://your-domain/api/retail/webhook`, subscribe to checkout/capture events, and set the resulting webhook ID as `PAYPAL_WEBHOOK_ID`.
+4. Begin with PayPal Sandbox. The live API endpoint is accepted only when `PAYPAL_API_BASE_URL` exactly equals `https://api-m.paypal.com`.
+5. Deploy, then test a sandbox order and confirm the database order, webhook event, and audit records. The routes fail closed when the shop gate, catalog, database URL, or PayPal configuration is missing. Before removing every sellable catalog item or disabling the gate, complete or otherwise reconcile all existing orders.

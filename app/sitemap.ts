@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/blog", changeFrequency: "weekly" as const, priority: 0.75 },
     { path: "/amazon", changeFrequency: "weekly" as const, priority: 0.65 },
     { path: "/noon", changeFrequency: "weekly" as const, priority: 0.65 },
+    { path: "/shop", changeFrequency: "weekly" as const, priority: 0.55 },
   ];
 
   return locales.flatMap((locale) =>
