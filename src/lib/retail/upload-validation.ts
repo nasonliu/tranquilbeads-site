@@ -22,7 +22,21 @@ export async function validateRetailImage(file: File) {
   const mime = detectRetailImage(bytes);
   const extension = file.name.split(".").pop()?.toLowerCase();
   if (!mime || mime !== file.type || extension !== extensionByMime[mime]) throw new Error("invalid_image");
-  const metadata = await sharp(bytes, { limitInputPixels: MAX_RETAIL_IMAGE_PIXELS, failOn: "error" }).metadata();
+  const image = sharp(bytes, { limitInputPixels: MAX_RETAIL_IMAGE_PIXELS, failOn: "error" });
+  const metadata = await image.metadata();
   if (!metadata.width || !metadata.height || metadata.width * metadata.height > MAX_RETAIL_IMAGE_PIXELS) throw new Error("invalid_dimensions");
-  return { mime, bytes, sha256: crypto.createHash("sha256").update(bytes).digest("hex"), extension: extensionByMime[mime] };
+  // Decode and re-encode every upload. This deliberately omits withMetadata(),
+  // so EXIF/GPS/device information and attacker-controlled image metadata are
+  // never copied to the public Blob object.
+  const normalized = await image
+    .rotate()
+    .toFormat(mime === "image/jpeg" ? "jpeg" : mime === "image/png" ? "png" : "webp")
+    .toBuffer();
+  const sanitized = new Uint8Array(normalized);
+  return {
+    mime,
+    bytes: sanitized,
+    sha256: crypto.createHash("sha256").update(sanitized).digest("hex"),
+    extension: extensionByMime[mime],
+  };
 }

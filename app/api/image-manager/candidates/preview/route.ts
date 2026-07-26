@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { mapDatabasePathToMountedPath } from "@/src/lib/image-manager-candidates";
+import { resolveCandidateImagePath } from "@/src/lib/image-manager-candidates";
+
+const IS_VERCEL = process.env.VERCEL === "1";
 
 function contentTypeFor(filePath: string) {
   const ext = path.extname(filePath).toLowerCase();
@@ -22,13 +24,17 @@ function contentTypeFor(filePath: string) {
 }
 
 export async function GET(request: Request | NextRequest) {
+  if (IS_VERCEL) {
+    return NextResponse.json({ error: "Not available on Vercel" }, { status: 403 });
+  }
+
   const rawPath = new URL(request.url).searchParams.get("path");
   if (!rawPath) {
     return NextResponse.json({ error: "Missing path" }, { status: 400 });
   }
 
-  const filePath = mapDatabasePathToMountedPath(rawPath);
-  if (!fs.existsSync(filePath)) {
+  const filePath = resolveCandidateImagePath(rawPath);
+  if (!filePath) {
     return NextResponse.json({ error: "Image not found" }, { status: 404 });
   }
 

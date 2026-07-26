@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { siteSettings } from "@/src/data/site";
+import { retailPolicyPaths } from "@/src/data/retail/policies";
 import type { Locale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
 
@@ -118,13 +119,31 @@ export function SiteShell({
                 {item.label}
               </Link>
             ))}
+            <div className="pt-3">
+              <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
+                {locale === "en" ? "Retail policies" : "سياسات التجزئة"}
+              </p>
+              <div className="mt-2 grid gap-2">
+                {[
+                  [retailPolicyPaths.privacy, locale === "en" ? "Privacy" : "الخصوصية"],
+                  [retailPolicyPaths.terms, locale === "en" ? "Terms of sale" : "شروط البيع"],
+                  [retailPolicyPaths["shipping-returns"], locale === "en" ? "Shipping & returns" : "الشحن والإرجاع"],
+                ].map(([href, label]) => (
+                  <Link key={href} href={withLocale(locale, href)} className="block transition-colors hover:text-white">
+                    {label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
           <div className="space-y-2 text-sm text-[#dcccb5]">
             <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
               {locale === "en" ? "Contact" : "التواصل"}
             </p>
             <p>{siteSettings.email}</p>
-            <p className="latin-ui">{siteSettings.whatsappDisplay}</p>
+            <a className="latin-ui block hover:text-white" href={siteSettings.whatsappHref} target="_blank" rel="noreferrer">
+              {siteSettings.whatsappDisplay}
+            </a>
             <p>{footerCopy.rights}</p>
           </div>
         </div>
@@ -134,7 +153,7 @@ export function SiteShell({
         href={siteSettings.whatsappHref}
         target="_blank"
         rel="noreferrer"
-        className="latin-ui fixed bottom-5 right-5 z-30 rounded-full bg-accent-deep px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(28,36,20,0.28)] transition hover:-translate-y-0.5"
+        className="latin-ui fixed bottom-5 right-5 z-30 hidden rounded-full bg-accent-deep px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(28,36,20,0.28)] transition hover:-translate-y-0.5 sm:block"
       >
         {locale === "en" ? "WhatsApp Us" : "واتساب"}
       </a>

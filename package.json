@@ -11,6 +11,7 @@
     "test:run": "vitest run",
     "test:retail": "vitest run tests/retail-*.test.ts tests/retail-*.test.tsx",
     "typecheck:retail": "tsc -p tsconfig.retail-check.json --pretty false",
+    "migrate:retail": "node scripts/run-retail-migrations.mjs",
     "outreach:import": "tsx scripts/import-obsidian-leads.ts",
     "outreach:queue": "tsx scripts/queue-outreach-tasks.ts",
     "outreach:send": "tsx scripts/run-outreach-first-touch.ts",
@@ -21,18 +22,28 @@
     "mcp:stdio": "tsx scripts/tranquilbeads-ops-mcp.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
     "@neondatabase/serverless": "^1.1.0",
-    "@next/third-parties": "^16.2.10",
-    "@vercel/blob": "^2.3.2",
+    "@next/third-parties": "16.2.12",
+    "@vercel/blob": "2.6.1",
     "dotenv": "^17.4.2",
-    "next": "16.2.0",
+    "next": "16.2.12",
+    "postcss": "8.5.23",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "svix": "^1.89.0",
+    "server-only": "0.0.1",
+    "sharp": "0.35.3",
+    "svix": "1.99.1",
     "zod": "^4.4.3"
   },
+  "overrides": {
+    "postcss": "8.5.23",
+    "sharp": "0.35.3",
+    "@vercel/blob": {
+      "undici": "6.28.0"
+    }
+  },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -42,7 +53,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^9",
-    "eslint-config-next": "16.2.0",
+    "eslint-config-next": "16.2.12",
     "jsdom": "^29.0.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",

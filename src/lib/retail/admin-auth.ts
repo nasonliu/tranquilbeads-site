@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { cookies, headers } from "next/headers";
-import { neon } from "@neondatabase/serverless";
+import { consumeRetailRateLimit } from "./rate-limit";
 
 const COOKIE = "retail_admin";
 const MAX_AGE = 60 * 60 * 8;
@@ -14,25 +14,5 @@ export async function setRetailAdminSession() { (await cookies()).set(COOKIE, cr
 export async function clearRetailAdminSession() { (await cookies()).delete(COOKIE); }
 export function verifyRetailAdminPassword(value: string) { const { password } = config(); return value.length === password.length && crypto.timingSafeEqual(Buffer.from(value), Buffer.from(password)); }
 export async function consumeRetailAdminLoginFailure(request: Request) {
-  const fingerprint = crypto.createHash("sha256").update(`${request.headers.get("x-forwarded-for")?.split(",")[0] ?? ""}|${request.headers.get("user-agent") ?? ""}`).digest("hex");
-  const url = process.env.DATABASE_URL;
-  if (!url) return false;
-  const sql = neon(url);
-  const consumed = await sql`
-    INSERT INTO retail_admin_login_limits(fingerprint,window_started_at,attempts)
-    VALUES(${fingerprint},now(),1)
-    ON CONFLICT(fingerprint) DO UPDATE SET
-      window_started_at=CASE
-        WHEN retail_admin_login_limits.window_started_at <= now()-interval '15 minutes' THEN now()
-        ELSE retail_admin_login_limits.window_started_at
-      END,
-      attempts=CASE
-        WHEN retail_admin_login_limits.window_started_at <= now()-interval '15 minutes' THEN 1
-        ELSE retail_admin_login_limits.attempts+1
-      END
-    WHERE retail_admin_login_limits.window_started_at <= now()-interval '15 minutes'
-       OR retail_admin_login_limits.attempts < 8
-    RETURNING attempts
-  `;
-  return consumed.length > 0;
+  return consumeRetailRateLimit(request,"admin_login",8,200);
 }

@@ -4,6 +4,10 @@ type Fetcher = typeof fetch;
 type PaypalContext = { clientId: string; clientSecret: string; baseUrl: string; fetcher?: Fetcher };
 type WebhookContext = { webhookId: string; accessToken: string; baseUrl: string; fetcher?: Fetcher };
 
+export class PaypalRefundRejectedError extends Error {
+  constructor() { super("paypal_refund_rejected"); this.name = "PaypalRefundRejectedError"; }
+}
+
 export function parsePaypalMinorAmount(value: string | undefined) {
   if (!value || !/^\d+\.\d{2}$/.test(value)) return null;
   const [whole, fraction] = value.split(".");
@@ -38,11 +42,39 @@ export async function getPaypalAccessToken({ clientId, clientSecret, baseUrl, fe
 }
 
 export async function createPaypalOrder(quote: RetailOrderQuote, token: string, baseUrl: string, requestId: string, fetcher: Fetcher = fetch) {
-  const response = await fetcher(`${baseUrl}/v2/checkout/orders`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "paypal-request-id": requestId, prefer: "return=representation" }, body: JSON.stringify({ intent: "CAPTURE", purchase_units: [{ amount: { currency_code: quote.currency, value: formatMinorAmount(quote.totalMinor) } }] }), cache: "no-store" });
+  const hasBreakdown = [quote.subtotalMinor, quote.shippingMinor, quote.taxMinor, quote.discountMinor].every((value) => Number.isSafeInteger(value));
+  const amount = hasBreakdown ? {
+    currency_code: quote.currency,
+    value: formatMinorAmount(quote.totalMinor),
+    breakdown: {
+      item_total: { currency_code: quote.currency, value: formatMinorAmount(quote.subtotalMinor!) },
+      shipping: { currency_code: quote.currency, value: formatMinorAmount(quote.shippingMinor!) },
+      tax_total: { currency_code: quote.currency, value: formatMinorAmount(quote.taxMinor!) },
+      discount: { currency_code: quote.currency, value: formatMinorAmount(quote.discountMinor!) },
+    },
+  } : { currency_code: quote.currency, value: formatMinorAmount(quote.totalMinor) };
+  const purchaseUnit: Record<string, unknown> = { amount };
+  if (hasBreakdown) purchaseUnit.items = quote.items.map((line) => ({ name: line.sku, sku: line.sku, quantity: String(line.quantity), unit_amount: { currency_code: quote.currency, value: formatMinorAmount(line.unitAmountMinor) } }));
+  if (quote.shipping) purchaseUnit.shipping = { name: { full_name: quote.shipping.recipient }, address: { address_line_1: quote.shipping.line1, address_line_2: quote.shipping.line2 || undefined, admin_area_2: quote.shipping.city, admin_area_1: quote.shipping.region || undefined, postal_code: quote.shipping.postalCode || undefined, country_code: quote.shipping.country } };
+  const response = await fetcher(`${baseUrl}/v2/checkout/orders`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "paypal-request-id": requestId, prefer: "return=representation" }, body: JSON.stringify({ intent: "CAPTURE", purchase_units: [purchaseUnit], application_context: quote.shipping ? { shipping_preference: "SET_PROVIDED_ADDRESS", user_action: "PAY_NOW" } : undefined }), cache: "no-store" });
   if (!response.ok) throw new Error("paypal_order_failed");
   const body = await response.json() as { id?: string; status?: string; purchase_units?: Array<{ amount?: { currency_code?: string; value?: string } }> };
-  const amount = body.purchase_units?.[0]?.amount;
-  if (!body.id || body.status !== "CREATED" || amount?.currency_code !== quote.currency || amount.value !== formatMinorAmount(quote.totalMinor)) throw new Error("paypal_order_failed");
+  const responseAmount = body.purchase_units?.[0]?.amount;
+  if (!body.id || body.status !== "CREATED" || responseAmount?.currency_code !== quote.currency || responseAmount.value !== formatMinorAmount(quote.totalMinor)) throw new Error("paypal_order_failed");
+  return body.id;
+}
+
+export async function refundPaypalCapture(captureId: string, amountMinor: number, currency: string, reason: string, token: string, baseUrl: string, requestId: string, fetcher: Fetcher = fetch) {
+  const response = await fetcher(`${baseUrl}/v2/payments/captures/${encodeURIComponent(captureId)}/refund`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "paypal-request-id": requestId, prefer: "return=representation" }, body: JSON.stringify({ amount: { currency_code: currency, value: formatMinorAmount(amountMinor) }, note_to_payer: reason.slice(0, 255) }), cache: "no-store" });
+  if (!response.ok) {
+    // Only a permanent client rejection proves PayPal did not accept the
+    // refund. Timeouts, rate limits, conflicts, and 5xx responses are unknown
+    // outcomes and must retain the local pending/idempotency guard.
+    if (response.status >= 400 && response.status < 500 && ![408, 409, 425, 429].includes(response.status)) throw new PaypalRefundRejectedError();
+    throw new Error("paypal_refund_unknown");
+  }
+  const body = await response.json() as { id?: string; status?: string; amount?: { currency_code?: string; value?: string } };
+  if (!body.id || body.status !== "COMPLETED" || body.amount?.currency_code !== currency || body.amount.value !== formatMinorAmount(amountMinor)) throw new Error("paypal_refund_invalid");
   return body.id;
 }
 
@@ -66,6 +98,14 @@ export async function getPaypalOrderDetails(orderId: string, token: string, base
     shipping: { recipient: shipping?.name?.full_name ?? "", line1: shipping?.address?.address_line_1 ?? "", line2: shipping?.address?.address_line_2 ?? "", region: shipping?.address?.admin_area_1 ?? "", city: shipping?.address?.admin_area_2 ?? "", postalCode: shipping?.address?.postal_code ?? "", country: shipping?.address?.country_code ?? "" },
     breakdown: parsePaypalCaptureBreakdown(body.purchase_units?.[0]?.payments?.captures?.[0]?.seller_receivable_breakdown),
   };
+}
+
+export async function getPaypalOrderState(orderId: string, token: string, baseUrl: string, fetcher: Fetcher = fetch) {
+  const response = await fetcher(`${baseUrl}/v2/checkout/orders/${encodeURIComponent(orderId)}`, { headers: { authorization: `Bearer ${token}` }, cache: "no-store" });
+  if (!response.ok) throw new Error("paypal_order_state_failed");
+  const body = await response.json() as { status?: string; purchase_units?: Array<{ payments?: { captures?: Array<{ id?: string; status?: string; amount?: { currency_code?: string; value?: string } }> } }> };
+  const capture = body.purchase_units?.[0]?.payments?.captures?.find((entry) => entry.status === "COMPLETED");
+  return { status: body.status ?? "UNKNOWN", captureId: capture?.id ?? null, captureCurrency: capture?.amount?.currency_code ?? null, captureAmountMinor: parsePaypalMinorAmount(capture?.amount?.value) };
 }
 
 export async function verifyPaypalWebhook(headers: Headers, event: unknown, { webhookId, accessToken, baseUrl, fetcher = fetch }: WebhookContext) {

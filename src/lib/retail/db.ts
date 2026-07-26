@@ -15,7 +15,14 @@ export type RetailOrder = {
   client_request_id: string;
   currency: string;
   amount_minor: number;
-  status: "pending" | "created" | "approved" | "capturing" | "captured" | "failed" | "refunded" | "reversed" | "denied" | "expired";
+  subtotal_minor?: number;
+  shipping_minor?: number;
+  tax_minor?: number;
+  discount_minor?: number;
+  shipping_method?: string | null;
+  checkout_email?: string | null;
+  checkout_shipping?: unknown;
+  status: "pending" | "created" | "approved" | "capturing" | "captured" | "failed" | "refunded" | "reversed" | "denied" | "expired" | "cancelled";
   capture_id: string | null;
   items_snapshot: unknown;
 };
@@ -38,6 +45,14 @@ export async function reserveRetailOrder(requestId: string, items: Array<{ sku: 
   return order;
 }
 
+export async function reserveRetailOrderV2(requestId:string,items:Array<{sku:string;quantity:number}>,checkout:unknown,expectedTotalMinor:number){
+  const sql=getSql();
+  const result=await sql`SELECT o.paypal_order_id,o.client_request_id,o.currency,o.subtotal_minor,o.shipping_minor,o.tax_minor,o.discount_minor,o.amount_minor,o.shipping_method,o.checkout_email,o.checkout_shipping,o.status,o.capture_id,o.items_snapshot FROM retail_create_checkout_v2(${requestId}::uuid,${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb,${expectedTotalMinor}) c JOIN retail_orders o ON o.id=c.order_id`;
+  const order=result[0] as RetailOrder|undefined;
+  if(!order)throw new Error("checkout_unavailable");
+  return order;
+}
+
 export async function attachPaypalOrder(requestId: string, paypalOrderId: string) {
   const sql = getSql();
   const result = await sql`UPDATE retail_orders SET paypal_order_id = ${paypalOrderId}, status = 'created', updated_at = NOW()
@@ -48,14 +63,14 @@ export async function attachPaypalOrder(requestId: string, paypalOrderId: string
 
 export async function getRetailOrderByRequestId(requestId: string) {
   const sql = getSql();
-  const result = await sql`SELECT paypal_order_id, client_request_id, currency, amount_minor, status, capture_id, items_snapshot
+  const result = await sql`SELECT paypal_order_id, client_request_id, currency, subtotal_minor, shipping_minor, tax_minor, discount_minor, amount_minor, shipping_method, checkout_email, checkout_shipping, status, capture_id, items_snapshot
     FROM retail_orders WHERE client_request_id = ${requestId} LIMIT 1`;
   return result[0] as RetailOrder | undefined;
 }
 
 export async function getRetailOrder(paypalOrderId: string) {
   const sql = getSql();
-  const result = await sql`SELECT paypal_order_id, client_request_id, currency, amount_minor, status, capture_id, items_snapshot
+  const result = await sql`SELECT paypal_order_id, client_request_id, currency, subtotal_minor, shipping_minor, tax_minor, discount_minor, amount_minor, shipping_method, checkout_email, checkout_shipping, status, capture_id, items_snapshot
     FROM retail_orders WHERE paypal_order_id = ${paypalOrderId} LIMIT 1`;
   return result[0] as RetailOrder | undefined;
 }
@@ -68,6 +83,8 @@ export async function claimRetailCapture(paypalOrderId: string) {
     RETURNING paypal_order_id, client_request_id, currency, amount_minor, status, capture_id, items_snapshot`;
   return result[0] as RetailOrder | undefined;
 }
+
+export async function listRetailCapturesNeedingReconciliation(){const sql=getSql();return sql`SELECT paypal_order_id,client_request_id,currency,amount_minor,status,capturing_started_at FROM retail_orders WHERE status='capturing' AND paypal_order_id IS NOT NULL AND capturing_started_at<now()-interval '2 minutes' ORDER BY capturing_started_at LIMIT 25` as unknown as Array<{paypal_order_id:string;client_request_id:string;currency:string;amount_minor:number;status:string;capturing_started_at:string}>;}
 
 export async function markRetailOrderCaptured(paypalOrderId: string, captureId: string, customer: unknown = {}, shipping: unknown = {}, feeMinor: number | null = null, netMinor: number | null = null) {
   const sql = getSql();

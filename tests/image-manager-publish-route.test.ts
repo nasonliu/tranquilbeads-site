@@ -32,6 +32,7 @@ describe("image-manager publish route", () => {
       default: { execFileSync },
       execFileSync,
     }));
+    vi.doMock("@/src/lib/retail/admin-auth", () => ({ requireRetailAdmin: vi.fn(), assertSameOrigin: vi.fn() }));
 
     const route = await import("@/app/api/image-manager/publish/route");
     const response = await route.GET();
@@ -82,6 +83,7 @@ describe("image-manager publish route", () => {
       default: { execFileSync },
       execFileSync,
     }));
+    vi.doMock("@/src/lib/retail/admin-auth", () => ({ requireRetailAdmin: vi.fn(), assertSameOrigin: vi.fn() }));
 
     const route = await import("@/app/api/image-manager/publish/route");
     const response = await route.POST(

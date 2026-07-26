@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { execFileSync } from "child_process";
 
+import { assertSameOrigin, requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+
 const IS_VERCEL = process.env.VERCEL === "1";
 const SYNC_SCRIPT = "scripts/sync-products.py";
 const PUBLISH_PATHS = [
@@ -80,6 +82,7 @@ export async function GET() {
   }
 
   try {
+    await requireRetailAdmin();
     const files = getPublishFiles();
     return NextResponse.json({
       hasChanges: files.length > 0,
@@ -88,6 +91,9 @@ export async function GET() {
       commitMessage: getDefaultCommitMessage(),
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.json(
       { error: "Failed to inspect publish status", detail: String(error) },
       { status: 500 },
@@ -101,6 +107,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    await requireRetailAdmin();
+    await assertSameOrigin();
     const syncResult = syncSiteData();
     const files = getPublishFiles();
     if (files.length === 0) {
@@ -125,6 +133,12 @@ export async function POST(request: NextRequest) {
       sync: syncResult,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (error instanceof Error && error.message === "csrf_rejected") {
+      return NextResponse.json({ error: "Cross-origin request rejected" }, { status: 403 });
+    }
     return NextResponse.json(
       { error: "Failed to publish changes", detail: String(error) },
       { status: 500 },

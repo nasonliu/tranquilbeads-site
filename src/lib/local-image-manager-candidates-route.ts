@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   buildBroadCandidateQuerySql,
   buildCandidateQuerySql,
-  mapDatabasePathToMountedPath,
   rankCandidateImages,
+  resolveCandidateImagePath,
   type CandidateImageRecord,
 } from "@/src/lib/image-manager-candidates";
 
@@ -53,8 +53,8 @@ export async function handleCandidatesPost(request: NextRequest) {
     return NextResponse.json({ error: "Missing slug or originalPath" }, { status: 400 });
   }
 
-  const sourcePath = mapDatabasePathToMountedPath(originalPath);
-  if (!fs.existsSync(sourcePath)) {
+  const sourcePath = resolveCandidateImagePath(originalPath);
+  if (!sourcePath) {
     return NextResponse.json({ error: "Source image not found" }, { status: 404 });
   }
 
