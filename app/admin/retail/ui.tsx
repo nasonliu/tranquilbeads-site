@@ -1482,14 +1482,14 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                 </div>
               </header>
 
-              <div className="mt-7 grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-                <div className="space-y-6">
+              <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+                <div className="space-y-4">
                   <section className="overflow-hidden rounded-xl border border-[#dfd2c0] bg-[#fbf7f1]">
-                    <div className="border-b border-[#e4d9ca] px-5 py-4">
+                    <div className="border-b border-[#e4d9ca] px-5 py-3">
                       <h2 className="text-lg font-semibold">{copy.orderSummary}</h2>
                       <p className="mt-1 text-sm text-muted">{copy.itemSnapshot}</p>
                     </div>
-                    <div className="overflow-x-auto p-5">
+                    <div className="overflow-x-auto px-5 py-3">
                       <table className="w-full text-left text-sm">
                         <thead>
                           <tr>
@@ -1504,7 +1504,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                             const image = productImages.get(String(item.sku));
                             return (
                               <tr className="border-t border-[#e8ded1]" key={String(item.sku ?? index)}>
-                                <td className="py-4 pr-4">
+                                <td className="py-2 pr-4">
                                   <div className="flex items-center gap-3">
                                     {image ? (
                                       <div className="w-20 shrink-0">
@@ -1516,7 +1516,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                                           width={64}
                                           height={64}
                                         />
-                                        <p className="mt-1 text-[10px] leading-tight text-muted">{copy.currentCatalogImage}</p>
+                                        <p className="sr-only">{copy.currentCatalogImage}</p>
                                       </div>
                                     ) : (
                                       <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-[#e1d5c6] bg-[#f3ece2]" aria-label={copy.currentCatalogImage}>
@@ -1529,9 +1529,9 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                                     </div>
                                   </div>
                                 </td>
-                                <td className="py-4 pr-4 text-muted">{String(item.sku ?? "—")}</td>
-                                <td className="py-4 pr-4">{String(item.quantity ?? 0)}</td>
-                                <td className="py-4 text-right font-medium">{money(item.unitAmountMinor, order.currency, locale)}</td>
+                                <td className="py-2 pr-4 text-muted">{String(item.sku ?? "—")}</td>
+                                <td className="py-2 pr-4">{String(item.quantity ?? 0)}</td>
+                                <td className="py-2 text-right font-medium">{money(item.unitAmountMinor, order.currency, locale)}</td>
                               </tr>
                             );
                           }) : (
@@ -1539,7 +1539,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                           )}
                         </tbody>
                       </table>
-                      <dl className="ml-auto mt-4 max-w-xs space-y-2 border-t border-[#e8ded1] pt-4 text-sm">
+                      <dl className="ml-auto mt-2 max-w-xs space-y-1 border-t border-[#e8ded1] pt-2 text-sm">
                         {[
                           [copy.subtotal, order.subtotal_minor],
                           [copy.shipping, order.shipping_minor],
@@ -1559,12 +1559,12 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                     </div>
                   </section>
 
-                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
+                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4">
                     <div className="flex items-center gap-2">
                       <CreditCard aria-hidden="true" size={19} />
                       <h2 className="text-lg font-semibold">{copy.payment}</h2>
                     </div>
-                    <dl className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                    <dl className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                       <div>
                         <dt className="text-xs text-muted">{copy.paymentProvider}</dt>
                         <dd className="mt-1 font-medium">PayPal</dd>
@@ -1586,28 +1586,28 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                         <dd className="mt-1 font-medium">{ledger.length ? money(netTotal, order.currency, locale) : "—"}</dd>
                       </div>
                     </dl>
-                    <p className="mt-4 break-all text-xs text-muted">{copy.paypalOrder}: {String(order.paypal_order_id ?? "—")}</p>
+                    <p className="mt-2 break-all text-xs text-muted">{copy.paypalOrder}: {String(order.paypal_order_id ?? "—")}</p>
                   </section>
 
-                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
+                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4">
                     <div className="flex items-center gap-2">
                       <Truck aria-hidden="true" size={19} />
                       <h2 className="text-lg font-semibold">{copy.fulfillment}</h2>
                     </div>
-                    <div className="mt-4 flex flex-wrap items-center gap-3"><StatusBadge value={order.fulfilment_status ?? "unfulfilled"} /></div>
-                    <dl className="mt-5 grid gap-4 sm:grid-cols-2">
+                    <div className="mt-2 flex flex-wrap items-center gap-3"><StatusBadge value={order.fulfilment_status ?? "unfulfilled"} /></div>
+                    <dl className="mt-3 grid gap-3 sm:grid-cols-2">
                       <div><dt className="text-xs text-muted">{copy.carrier}</dt><dd className="mt-1">{String(order.carrier ?? "—")}</dd></div>
                       <div><dt className="text-xs text-muted">{copy.tracking}</dt><dd className="mt-1 break-all">{String(order.tracking_number ?? "—")}</dd></div>
                       <div className="sm:col-span-2"><dt className="text-xs text-muted">{copy.note}</dt><dd className="mt-1">{String(order.admin_note ?? "—")}</dd></div>
                     </dl>
                   </section>
 
-                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
+                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4">
                     <div className="flex items-center gap-2">
                       <Clock3 aria-hidden="true" size={19} />
                       <h2 className="text-lg font-semibold">{copy.activity}</h2>
                     </div>
-                    <ol className="mt-5 space-y-4">
+                    <ol className="mt-3 space-y-2">
                       {activity.length ? activity.map((event, index) => {
                         const Icon = event.icon;
                         return (
@@ -1633,14 +1633,14 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                   </section>
                 </div>
 
-                <aside className="space-y-6">
-                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
+                <aside className="space-y-4">
+                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4">
                     <div className="flex items-center gap-2"><Users aria-hidden="true" size={18} /><h2 className="text-lg font-semibold">{copy.customer}</h2></div>
                     <p className="mt-3 text-sm text-muted">{copy.checkoutSnapshotMasked}</p>
                     <p className="mt-4 font-medium">{maskedName(customer?.name ?? shipping?.recipient)}</p>
                     <p className="mt-1 text-sm text-muted">{maskedEmail(order.checkout_email ?? customer?.email)}</p>
                   </section>
-                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
+                  <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4">
                     <div className="flex items-center gap-2"><MapPin aria-hidden="true" size={18} /><h2 className="text-lg font-semibold">{copy.delivery}</h2></div>
                     <p className="mt-4 text-sm">{maskedAddress(shipping)}</p>
                     <p className="mt-2 text-xs text-muted">{copy.maskedDefault}</p>
