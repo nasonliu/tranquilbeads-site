@@ -65,7 +65,7 @@ describe("retail PayPal webhook route", () => {
     const response = await POST(new Request("https://example.com/api/retail/webhook", { method: "POST", body: JSON.stringify(captureEvent) }));
 
     expect(response.status).toBe(503);
-    expect(error).toHaveBeenCalledExactlyOnceWith("retail_webhook_failed", "db_process");
+    expect(error).toHaveBeenCalledExactlyOnceWith("retail_webhook_failed", "db_process", "unknown");
     error.mockRestore();
   });
 });

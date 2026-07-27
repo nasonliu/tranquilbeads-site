@@ -31,8 +31,11 @@ export async function POST(request: Request) {
     }
     stage = "db_process";
     return new Response(null, { status: webhookResponseStatus(await processVerifiedWebhook(event.id, event.event_type, rawPayload, event, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null)) });
-  } catch {
-    console.error("retail_webhook_failed", stage);
+  } catch (error) {
+    const code = typeof error === "object" && error !== null && "code" in error && typeof error.code === "string" && /^[0-9A-Z]{5}$/.test(error.code)
+      ? error.code
+      : "unknown";
+    console.error("retail_webhook_failed", stage, code);
     return new Response(null, { status: 503 });
   }
 }
