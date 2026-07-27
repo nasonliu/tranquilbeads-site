@@ -42,6 +42,8 @@ import {
   columnCopy,
   fieldCopy,
   getAdminCopy,
+  paymentKindText,
+  shippingMethodText,
   statusText,
   type AdminCopyKey,
   type AdminLocale,
@@ -366,6 +368,7 @@ function DataTable({
     if (column === "email") return maskedEmail(row[column]);
     if (column === "addresses") return redactedAddresses(row[column]);
     if (column === "status" || column === "reconciliation_status") return statusText(locale, row[column]);
+    if (column === "kind") return paymentKindText(locale, row[column]);
     if (column === "active") return row[column] ? copy.active : "—";
     if (column.endsWith("_at")) return dateTime(row[column], locale);
     if (typeof row[column] === "object") return JSON.stringify(row[column], null, 2);
@@ -1440,7 +1443,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
       events.push({
         at: String(entry.created_at),
         label: copy.paymentPosting,
-        detail: `${String(entry.kind ?? "")} · ${money(entry.amount_minor, entry.currency, locale)}`,
+        detail: `${paymentKindText(locale, entry.kind)} · ${money(entry.amount_minor, entry.currency, locale)}`,
         icon: Clock3,
       });
     }
@@ -1644,7 +1647,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                   </section>
                   <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
                     <div className="flex items-center gap-2"><PackageCheck aria-hidden="true" size={18} /><h2 className="text-lg font-semibold">{copy.deliveryMethod}</h2></div>
-                    <p className="mt-4 text-sm">{String(order.shipping_method ?? "—")}</p>
+                    <p className="mt-4 text-sm">{shippingMethodText(locale, order.shipping_method)}</p>
                   </section>
                 </aside>
               </div>

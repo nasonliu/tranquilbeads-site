@@ -1,13 +1,10 @@
-import { neon } from "@neondatabase/serverless";
-
 import type { RetailOrderQuote } from "./catalog";
+import { guardedRetailSql } from "./database-identity";
 import { classifyWebhookRow } from "./webhook-result";
 import { parsePaypalMinorAmount } from "./paypal";
 
 function getSql() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("retail_database_unavailable");
-  return neon(connectionString);
+  return guardedRetailSql();
 }
 
 export type RetailOrder = {
@@ -86,6 +83,10 @@ export async function claimRetailCapture(paypalOrderId: string) {
 
 export async function listRetailCapturesNeedingReconciliation(){const sql=getSql();return sql`SELECT paypal_order_id,client_request_id,currency,amount_minor,status,capturing_started_at FROM retail_orders WHERE status='capturing' AND paypal_order_id IS NOT NULL AND capturing_started_at<now()-interval '2 minutes' ORDER BY capturing_started_at LIMIT 25` as unknown as Array<{paypal_order_id:string;client_request_id:string;currency:string;amount_minor:number;status:string;capturing_started_at:string}>;}
 
+export async function listRetailCapturedOrdersNeedingAccounting(){const sql=getSql();return sql`SELECT paypal_order_id,client_request_id,currency,amount_minor,status FROM retail_orders o WHERE status='captured' AND paypal_order_id IS NOT NULL AND capture_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM retail_payment_ledger l WHERE l.order_id=o.id AND l.kind='fee' AND l.paypal_reference='fee:'||o.capture_id) ORDER BY captured_at NULLS LAST LIMIT 25` as unknown as Array<{paypal_order_id:string;client_request_id:string;currency:string;amount_minor:number;status:string}>;}
+
+export async function listRetailRefundsNeedingReconciliation(){const sql=getSql();return sql`SELECT rr.idempotency_key,rr.amount_minor,rr.reason,o.capture_id,o.currency FROM retail_refund_requests rr JOIN retail_orders o ON o.id=rr.order_id WHERE rr.status='pending' AND o.capture_id IS NOT NULL AND o.status IN ('captured','refunded') ORDER BY rr.created_at LIMIT 25` as unknown as Array<{idempotency_key:string;amount_minor:number;reason:string;capture_id:string;currency:string}>;}
+
 export async function markRetailOrderCaptured(paypalOrderId: string, captureId: string, customer: unknown = {}, shipping: unknown = {}, feeMinor: number | null = null, netMinor: number | null = null) {
   const sql = getSql();
   const result = await sql`SELECT retail_apply_paypal_capture(${paypalOrderId}, ${captureId}, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}, ${netMinor}) AS applied`;
@@ -111,7 +112,7 @@ export async function processVerifiedWebhook(
   const relatedIds = payload.resource?.supplementary_data?.related_ids;
   const resourceId = payload.resource?.id ?? null;
   const orderId = relatedIds?.order_id
-    ?? (eventType === "CHECKOUT.ORDER.APPROVED" ? resourceId : null);
+    ?? ((eventType === "CHECKOUT.ORDER.APPROVED" || eventType === "CHECKOUT.PAYMENT-APPROVAL.REVERSED") ? resourceId : null);
   const captureId = resourceId;
   const relatedCaptureId = relatedIds?.capture_id
     ?? (eventType === "PAYMENT.CAPTURE.REFUNDED" ? null : resourceId);
@@ -162,10 +163,23 @@ export async function processVerifiedWebhook(
         AND status IN ('created', 'approved', 'capturing', 'denied')
         AND EXISTS(SELECT 1 FROM denied_release WHERE released)
       RETURNING paypal_order_id
+    ), approval_reversed_release AS (
+      SELECT retail_release_order_reservations(${orderId}::text, 'payment_approval_reversed') AS released
+      WHERE ${eventType}::text = 'CHECKOUT.PAYMENT-APPROVAL.REVERSED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId}::text AND status='received')
+        AND ${orderId}::text IS NOT NULL
+        AND EXISTS (SELECT 1 FROM retail_orders WHERE paypal_order_id=${orderId}::text AND status IN ('created','approved'))
+    ), approval_reversed_update AS (
+      UPDATE retail_orders SET status='failed',capturing_started_at=NULL,updated_at=NOW()
+      WHERE ${eventType}::text = 'CHECKOUT.PAYMENT-APPROVAL.REVERSED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId}::text AND status='received')
+        AND paypal_order_id=${orderId}::text AND status IN ('created','approved')
+        AND EXISTS(SELECT 1 FROM approval_reversed_release WHERE released)
+      RETURNING paypal_order_id
     )
-    UPDATE retail_webhook_events SET status = CASE WHEN ${eventType}::text IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
+    UPDATE retail_webhook_events SET status = CASE WHEN ${eventType}::text IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'CHECKOUT.PAYMENT-APPROVAL.REVERSED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
     WHERE paypal_event_id=${eventId}::text AND status = 'received'
-      AND (${eventType}::text NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update))
+      AND (${eventType}::text NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'CHECKOUT.PAYMENT-APPROVAL.REVERSED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update) OR EXISTS (SELECT 1 FROM approval_reversed_update))
       RETURNING status`,
     tx`UPDATE retail_webhook_events SET status = 'rejected', reason = 'business_validation_failed', processed_at = NOW()
       WHERE paypal_event_id=${eventId}::text AND status = 'received'

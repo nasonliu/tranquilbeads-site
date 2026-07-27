@@ -1,7 +1,7 @@
 import "server-only";
 
 import crypto from "node:crypto";
-import { neon } from "@neondatabase/serverless";
+import { guardedRetailSql } from "./database-identity";
 
 function trustedClientIp(request: Request) {
   const raw = request.headers.get("x-vercel-forwarded-for")
@@ -12,9 +12,7 @@ function trustedClientIp(request: Request) {
 }
 
 async function consumeKey(scope: string, fingerprint: string, limit: number, windowSeconds: number) {
-  const url = process.env.DATABASE_URL;
-  if (!url) return false;
-  const rows = await neon(url)`
+  const rows = await guardedRetailSql()`
     INSERT INTO retail_rate_limits(scope,fingerprint,window_started_at,attempts)
     VALUES(${scope},${fingerprint},now(),1)
     ON CONFLICT(scope,fingerprint) DO UPDATE SET
@@ -34,4 +32,3 @@ export async function consumeRetailRateLimit(request: Request, scope: string, pe
   ]);
   return ipAllowed && globalAllowed;
 }
-

@@ -494,3 +494,25 @@ export function statusText(locale: AdminLocale, status: unknown) {
   };
   return labels[value] ?? (value || "—");
 }
+
+export function paymentKindText(locale: AdminLocale, kind: unknown) {
+  const value = String(kind ?? "");
+  if (locale === "en") return value || "—";
+  const labels: Record<string, string> = {
+    payment: "收款",
+    fee: "手续费",
+    refund: "退款",
+    reversal: "冲正",
+    net: "净额",
+  };
+  return labels[value] ?? (value || "—");
+}
+
+export function shippingMethodText(locale: AdminLocale, method: unknown) {
+  const value = String(method ?? "");
+  if (locale === "en") return value || "—";
+  const labels: Record<string, string> = {
+    standard: "标准配送",
+  };
+  return labels[value] ?? (value || "—");
+}

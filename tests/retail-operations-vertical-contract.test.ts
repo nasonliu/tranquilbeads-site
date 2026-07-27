@@ -40,7 +40,8 @@ describe("retail operations vertical contracts", () => {
   it("leases notifications and applies each migration with an explicit transaction", () => {
     expect(read("src/lib/retail/notifications.ts")).toContain("status='processing' AND claimed_at<now()-interval '10 minutes'");
     const runner = read("scripts/run-retail-migrations.mjs");
-    expect(runner).toContain("BEGIN;");
-    expect(runner).toContain("COMMIT;");
+    expect(runner).toContain('client.query("BEGIN")');
+    expect(runner).toContain('client.query("COMMIT")');
+    expect(runner).toContain("pg_advisory_xact_lock");
   });
 });

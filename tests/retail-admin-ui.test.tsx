@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { RetailAdminConsole } from "@/app/admin/retail/ui";
+import { paymentKindText, shippingMethodText } from "@/app/admin/retail/admin-locale";
+import { RetailAdminConsole, RetailOrderDetail } from "@/app/admin/retail/ui";
 
 const productId = "d7a4c3e5-5e57-4a1f-ae7d-0f024d3ac111";
 const customerId = "ce3ca86d-c511-4899-86e4-67df350b9f39";
@@ -51,6 +52,48 @@ describe("retail admin console", () => {
     expect(screen.getAllByText("英文名称").length).toBeGreaterThan(0);
     expect(screen.getAllByRole("button", { name: "保存" }).length).toBeGreaterThan(0);
     expect(localStorage.getItem("retail_admin_locale")).toBe("zh");
+  });
+
+  it("localizes payment kinds and delivery methods in Chinese without changing English values", async () => {
+    expect(paymentKindText("en", "payment")).toBe("payment");
+    expect(paymentKindText("en", "reversal")).toBe("reversal");
+    expect(shippingMethodText("en", "standard")).toBe("standard");
+    expect(paymentKindText("zh", "net")).toBe("净额");
+    const entries = ["payment", "fee", "refund", "reversal"].map((kind, index) => ({
+      id: `${ledgerId}-${kind}`,
+      paypal_order_id: "ORDER-DETAIL",
+      kind,
+      amount_minor: 100,
+      currency: "USD",
+      reconciliation_status: "pending",
+      paypal_reference: `REF-${index}`,
+      created_at: "2026-07-27T00:00:00.000Z",
+    }));
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input);
+      if (path === "/api/admin/retail/ledger") return new Response(JSON.stringify({ ok: true, entries, summary: {} }), { status: 200 });
+      if (path === "/api/admin/retail/orders/42") return new Response(JSON.stringify({ ok: true, order: {
+        id: 42,
+        paypal_order_id: "ORDER-DETAIL",
+        currency: "USD",
+        amount_minor: 100,
+        shipping_method: "standard",
+        items_snapshot: [],
+      } }), { status: 200 });
+      return new Response(JSON.stringify(responseFor(path)), { status: 200 });
+    }));
+    render(<RetailAdminConsole section="finance" />);
+
+    await screen.findByText("payment");
+    expect(screen.getByText("fee")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Language"), { target: { value: "zh" } });
+    expect(await screen.findByText("收款")).toBeInTheDocument();
+    expect(screen.getByText("手续费")).toBeInTheDocument();
+    expect(screen.getByText("退款")).toBeInTheDocument();
+    expect(screen.getByText("冲正")).toBeInTheDocument();
+
+    render(<RetailOrderDetail orderId="42" />);
+    await screen.findByText("标准配送");
   });
 
   it("resets a successful asynchronous form and refreshes the displayed operational readback", async () => {

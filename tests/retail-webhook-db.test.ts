@@ -14,6 +14,11 @@ describe("verified webhook database transaction", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.DATABASE_URL = "postgres://test";
+    process.env.RETAIL_DATABASE_IDENTITY = crypto.randomUUID();
+    neonMocks.sql.mockImplementation((strings: TemplateStringsArray) => {
+      if (strings.join("?").includes("SELECT identity FROM retail_runtime_environment")) return [{ identity: process.env.RETAIL_DATABASE_IDENTITY }];
+      return [];
+    });
     neonMocks.sql.transaction.mockImplementation((build) => {
       const tx = vi.fn((strings: TemplateStringsArray, ...values: unknown[]) => ({ text: strings.join("?"), values }));
       neonMocks.queries = build(tx);

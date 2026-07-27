@@ -1,18 +1,16 @@
 import "server-only";
 
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import { z } from "zod";
+import { guardedRetailSql, type RetailSql } from "./database-identity";
 
 // Pin both Neon options to false. `ReturnType<typeof neon>` leaves generic
 // booleans unresolved and widens every query into an unusable union.
-type Sql = NeonQueryFunction<false, false>;
+type Sql = RetailSql;
 export type StorefrontProduct = { sku:string; title_en:string; title_ar:string; description_en:string; description_ar:string; amount_minor:number; available:number; images:Array<{url:string}> };
 export type StorefrontShippingZone = { country:string; name:{en:string;ar:string}; shippingMinor:number; freeShippingThresholdMinor:number|null; taxRateBps:number };
 
 function sql(): Sql {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("retail_database_unavailable");
-  return neon(connectionString);
+  return guardedRetailSql();
 }
 
 export const productDto = z.object({
@@ -43,8 +41,8 @@ export const shippingDisableDto = z.object({ country:z.string().trim().toUpperCa
 export const cancellationDto = z.object({ reason:z.string().trim().min(1).max(500), idempotencyKey:z.string().uuid() }).strict();
 export const refundDto = z.object({ amountMinor:z.number().int().positive(), reason:z.string().trim().min(1).max(255), idempotencyKey:z.string().uuid() }).strict();
 
-export async function listStorefrontProducts(): Promise<StorefrontProduct[]> { try { const url=process.env.DATABASE_URL; if(!url) return []; const q: Sql=neon(url); return await q`SELECT p.sku,p.title_en,p.title_ar,p.description_en,p.description_ar,h.amount_minor,(b.on_hand-b.reserved) available,COALESCE(json_agg(json_build_object('url',i.blob_url) ORDER BY i.position) FILTER(WHERE i.id IS NOT NULL),'[]') images FROM retail_products p JOIN retail_inventory_balances b ON b.product_id=p.id AND b.on_hand>b.reserved JOIN LATERAL(SELECT amount_minor FROM retail_price_history WHERE product_id=p.id AND active=true ORDER BY created_at DESC LIMIT 1) h ON true JOIN retail_product_images i ON i.product_id=p.id WHERE p.status='published' GROUP BY p.id,h.amount_minor,b.on_hand,b.reserved` as StorefrontProduct[]; } catch { return []; } }
-export async function listStorefrontShippingZones(): Promise<StorefrontShippingZone[]> { try { const url=process.env.DATABASE_URL; if(!url)return[];const q:Sql=neon(url);const rows=await q`SELECT country,name_en,name_ar,shipping_minor,free_shipping_threshold_minor,tax_rate_bps FROM retail_shipping_zones WHERE active ORDER BY country`;return rows.map((row)=>({country:String(row.country).trim(),name:{en:String(row.name_en),ar:String(row.name_ar)},shippingMinor:Number(row.shipping_minor),freeShippingThresholdMinor:row.free_shipping_threshold_minor===null?null:Number(row.free_shipping_threshold_minor),taxRateBps:Number(row.tax_rate_bps)})); } catch{return[];} }
+export async function listStorefrontProducts(): Promise<StorefrontProduct[]> { try { const q=sql(); return await q`SELECT p.sku,p.title_en,p.title_ar,p.description_en,p.description_ar,h.amount_minor,(b.on_hand-b.reserved) available,COALESCE(json_agg(json_build_object('url',i.blob_url) ORDER BY i.position) FILTER(WHERE i.id IS NOT NULL),'[]') images FROM retail_products p JOIN retail_inventory_balances b ON b.product_id=p.id AND b.on_hand>b.reserved JOIN LATERAL(SELECT amount_minor FROM retail_price_history WHERE product_id=p.id AND active=true ORDER BY created_at DESC LIMIT 1) h ON true JOIN retail_product_images i ON i.product_id=p.id WHERE p.status='published' GROUP BY p.id,h.amount_minor,b.on_hand,b.reserved` as StorefrontProduct[]; } catch { return []; } }
+export async function listStorefrontShippingZones(): Promise<StorefrontShippingZone[]> { try { const q=sql();const rows=await q`SELECT country,name_en,name_ar,shipping_minor,free_shipping_threshold_minor,tax_rate_bps FROM retail_shipping_zones WHERE active ORDER BY country`;return rows.map((row)=>({country:String(row.country).trim(),name:{en:String(row.name_en),ar:String(row.name_ar)},shippingMinor:Number(row.shipping_minor),freeShippingThresholdMinor:row.free_shipping_threshold_minor===null?null:Number(row.free_shipping_threshold_minor),taxRateBps:Number(row.tax_rate_bps)})); } catch{return[];} }
 export async function quoteRetailCheckout(items:z.infer<typeof retailCartDto>,checkout:z.infer<typeof retailCheckoutDto>){const q=sql();const rows=await q`SELECT * FROM retail_quote_checkout(${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb)`;const row=rows[0];if(!row)throw new Error("quote_unavailable");return{currency:String(row.currency).trim(),subtotalMinor:Number(row.subtotal_minor),shippingMinor:Number(row.shipping_minor),taxMinor:Number(row.tax_minor),discountMinor:Number(row.discount_minor),totalMinor:Number(row.total_minor),shippingMethod:String(row.shipping_method),items:row.items_snapshot,shipping:row.shipping_snapshot,quoteHash:String(row.quote_hash)};}
 export async function getStorefrontOrderByRequestId(requestId:string){const q=sql();const rows=await q`SELECT public_id,client_request_id,paypal_order_id,status,currency,subtotal_minor,shipping_minor,tax_minor,discount_minor,amount_minor,shipping_method,items_snapshot,checkout_shipping,checkout_email,fulfilment_status,carrier,tracking_number,created_at,captured_at FROM retail_orders WHERE client_request_id=${requestId}::uuid LIMIT 1`;const row=rows[0];if(!row)return null;return{...row,subtotal_minor:Number(row.subtotal_minor),shipping_minor:Number(row.shipping_minor),tax_minor:Number(row.tax_minor),discount_minor:Number(row.discount_minor),amount_minor:Number(row.amount_minor)};}
 

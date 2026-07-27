@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, expect, it } from "vitest";
 
 import { classifyWebhookRow, webhookResponseStatus } from "@/src/lib/retail/webhook-result";
@@ -28,10 +29,11 @@ describe("retail webhook result handling", () => {
 
   it("models approval, denial, reversal, and refunds with their correct PayPal identifiers", () => {
     const source = readFileSync("src/lib/retail/db.ts", "utf8");
-    expect(source).toContain('eventType === "CHECKOUT.ORDER.APPROVED" ? resourceId : null');
+    expect(source).toContain('eventType === "CHECKOUT.ORDER.APPROVED" || eventType === "CHECKOUT.PAYMENT-APPROVAL.REVERSED"');
     expect(source).toContain("retail_apply_paypal_refund");
     expect(source).toContain("denied_update AS");
     expect(source).toContain("reverse_update AS");
+    expect(source).toContain("approval_reversed_update AS");
   });
 
   it("serializes cumulative refunds in the database", () => {

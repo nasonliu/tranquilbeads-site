@@ -1,7 +1,7 @@
-import { neon } from "@neondatabase/serverless";
 import { isAuthorizedRetailReservationCron } from "@/src/lib/retail/cron-auth";
 import { getRetailServerConfig } from "@/src/lib/retail/config";
-import { getPaypalAccessToken,getPaypalOrderDetails,getPaypalOrderState } from "@/src/lib/retail/paypal";
+import { guardedRetailSql } from "@/src/lib/retail/database-identity";
+import { getPaypalAccessToken,getPaypalOrderDetails,getPaypalOrderState,PaypalRefundRejectedError,refundPaypalCapture } from "@/src/lib/retail/paypal";
 import { deliverRetailNotifications } from "@/src/lib/retail/notifications";
 
 export const runtime = "nodejs";
@@ -15,10 +15,11 @@ export async function GET(request: Request) {
   const url = process.env.DATABASE_URL;
   if (!url) return Response.json({ ok: false, error: "retail_database_unavailable" }, { status: 503, headers: noStore });
   try {
-    let reconciled=0,pending=0;
+    let reconciled=0,pending=0,accountingReconciled=0,refundReconciled=0;
     const config=getRetailServerConfig();
     if(config.enabled)try{
-      const {listRetailCapturesNeedingReconciliation,markRetailOrderCaptured,restoreRetailOrderAfterCaptureFailure}=await import("@/src/lib/retail/db");
+      const {listRetailCapturedOrdersNeedingAccounting,listRetailCapturesNeedingReconciliation,listRetailRefundsNeedingReconciliation,markRetailOrderCaptured,restoreRetailOrderAfterCaptureFailure}=await import("@/src/lib/retail/db");
+      const {completeAdminRefund,failAdminRefund}=await import("@/src/lib/retail/operations");
       const token=await getPaypalAccessToken({clientId:config.paypalClientId,clientSecret:config.paypalClientSecret,baseUrl:config.paypalBaseUrl});
       for(const order of await listRetailCapturesNeedingReconciliation()){
         try{
@@ -31,10 +32,23 @@ export async function GET(request: Request) {
           else pending++;
         }catch{pending++;}
       }
+      for(const order of await listRetailCapturedOrdersNeedingAccounting()){
+        try{
+          const state=await getPaypalOrderState(order.paypal_order_id,token,config.paypalBaseUrl);
+          if(state.captureId&&state.captureCurrency===String(order.currency).trim()&&state.captureAmountMinor===Number(order.amount_minor)){
+            const details=await getPaypalOrderDetails(order.paypal_order_id,token,config.paypalBaseUrl);
+            if(details.breakdown&&await markRetailOrderCaptured(order.paypal_order_id,state.captureId,details.customer,details.shipping,details.breakdown.feeMinor,details.breakdown.netMinor))accountingReconciled++;else pending++;
+          }else pending++;
+        }catch{pending++;}
+      }
+      for(const refund of await listRetailRefundsNeedingReconciliation()){
+        try{const refundId=await refundPaypalCapture(refund.capture_id,Number(refund.amount_minor),String(refund.currency).trim(),refund.reason,token,config.paypalBaseUrl,refund.idempotency_key);await completeAdminRefund(refund.idempotency_key,refundId);refundReconciled++;}
+        catch(error){if(error instanceof PaypalRefundRejectedError)await failAdminRefund(refund.idempotency_key,error.message);else pending++;}
+      }
     }catch{pending++;}
-    const rows = await neon(url)`SELECT retail_release_expired_reservations() AS released`;
+    const rows = await guardedRetailSql()`SELECT retail_release_expired_reservations() AS released`;
     const notifications=await deliverRetailNotifications();
-    return Response.json({ ok: true, released: Number(rows[0]?.released ?? 0),reconciled,pending,notifications }, { headers: noStore });
+    return Response.json({ ok: true, released: Number(rows[0]?.released ?? 0),reconciled,accountingReconciled,refundReconciled,pending,notifications }, { headers: noStore });
   } catch {
     return Response.json({ ok: false, error: "retail_reservation_cleanup_failed" }, { status: 503, headers: noStore });
   }
