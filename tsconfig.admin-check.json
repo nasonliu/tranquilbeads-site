@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "plugins": [],
+    "types": ["node", "@testing-library/jest-dom"]
+  },
+  "include": [
+    "next-env.d.ts",
+    "app/admin/retail/**/*.ts",
+    "app/admin/retail/**/*.tsx",
+    "app/api/admin/retail/media/route.ts",
+    "src/lib/retail/admin-auth.ts",
+    "src/lib/retail/operations.ts",
+    "tests/retail-admin-ui.test.tsx",
+    "tests/retail-admin-operations-contract.test.ts",
+    "tests/retail-admin-write-consistency-contract.test.ts",
+    "tests/retail-customer-update-db.test.ts"
+  ],
+  "exclude": ["node_modules", ".next"]
+}

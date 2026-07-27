@@ -35,7 +35,23 @@ function requestBody(call: [RequestInfo | URL, RequestInit?]) {
 }
 
 describe("retail admin console", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    localStorage.clear();
+    vi.unstubAllGlobals();
+  });
+
+  it("switches the complete admin shell and form labels to Chinese and persists the choice", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => new Response(JSON.stringify(responseFor(String(input))), { status: 200 })));
+    render(<RetailAdminConsole section="products" />);
+
+    await screen.findByText(productId);
+    fireEvent.change(screen.getByLabelText("Language"), { target: { value: "zh" } });
+
+    expect(screen.getAllByRole("heading", { name: "商品" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("英文名称").length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: "保存" }).length).toBeGreaterThan(0);
+    expect(localStorage.getItem("retail_admin_locale")).toBe("zh");
+  });
 
   it("resets a successful asynchronous form and refreshes the displayed operational readback", async () => {
     const fetcher = vi.fn(async (input: RequestInfo | URL) => new Response(JSON.stringify(responseFor(String(input))), { status: 200 }));
@@ -112,7 +128,7 @@ describe("retail admin console", () => {
     fireEvent.change(inputs.getByLabelText("reason"), { target: { value: "restock" } });
 
     fireEvent.click(inputs.getByRole("button", { name: "Save" }));
-    await screen.findByText("temporary_failure");
+    await screen.findByText("Save failed.");
     fireEvent.click(inputs.getByRole("button", { name: "Save" }));
     await screen.findByText("Saved.");
     fireEvent.change(inputs.getByLabelText("productId"), { target: { value: productId } });
@@ -148,7 +164,7 @@ describe("retail admin console", () => {
     fireEvent.change(inputs.getByLabelText("Refund reason"), { target: { value: "customer request" } });
 
     fireEvent.click(inputs.getByRole("button", { name: "Confirm refund" }));
-    await screen.findByText("refund_result_unknown");
+    await screen.findByText("Write may have succeeded, but refresh failed. Refresh to confirm.");
     fireEvent.click(inputs.getByRole("button", { name: "Confirm refund" }));
     await screen.findByText("Refund completed.");
     fireEvent.change(inputs.getByLabelText("Order ID"), { target: { value: "9" } });

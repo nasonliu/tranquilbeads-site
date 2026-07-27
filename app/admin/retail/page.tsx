@@ -1,10 +1,5 @@
-import { verifyRetailAdminSession } from "@/src/lib/retail/admin-auth";
-import { cookies } from "next/headers";
-import { RetailAdminConsole, RetailAdminLogin } from "./ui";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function RetailAdminPage() {
-  const authenticated = verifyRetailAdminSession((await cookies()).get("retail_admin")?.value);
-  return authenticated ? <RetailAdminConsole /> : <RetailAdminLogin />;
+export default function RetailAdminPage() {
+  redirect("/admin/retail/overview");
 }

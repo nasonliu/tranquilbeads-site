@@ -13,6 +13,7 @@ const migrationNames = [
   "20260726_retail_payments.sql",
   "20260727_retail_operations.sql",
   "20260728_retail_checkout_v2.sql",
+  "20260729_retail_admin_write_consistency.sql",
 ];
 
 const connectionString = process.env.DATABASE_URL;

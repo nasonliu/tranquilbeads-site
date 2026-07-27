@@ -14,7 +14,7 @@ const customerId = "00000000-0000-4000-8000-000000000001";
 const addressId = "00000000-0000-4000-8000-000000000002";
 const idempotencyKey = "00000000-0000-4000-8000-000000000003";
 
-describe("customer update CTE transaction", () => {
+describe("customer update idempotency transaction", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.DATABASE_URL = "postgres://test";
@@ -24,25 +24,19 @@ describe("customer update CTE transaction", () => {
     });
   });
 
-  it("forces customer, address, and audit writes through one consumed CTE chain", async () => {
+  it("delegates customer, address, and audit writes to one DB-side idempotent operation", async () => {
     await expect(updateCustomer(customerId, {
       name: "Updated customer", addressId, city: "Dubai", isDefault: true, idempotencyKey,
     })).resolves.toBeUndefined();
 
     expect(neonMocks.sql).toHaveBeenCalledOnce();
     const statement = neonMocks.query?.text.replace(/\s+/g, " ") ?? "";
-    expect(statement).toContain("WITH customer_update AS (");
-    expect(statement).toContain("RETURNING public_id");
-    expect(statement).toContain("address_update AS (");
-    expect(statement).toContain("FROM customer_update");
-    expect(statement).toContain("CASE WHEN ?::boolean THEN retail_upsert_customer_address(");
-    expect(statement).toContain("customer_update.public_id,?::uuid,?::text,?::text");
-    expect(statement).toContain("audit_row AS (");
-    expect(statement).toContain("FROM customer_update CROSS JOIN address_update");
-    expect(statement).toContain("SELECT count(*)::int AS audit_count FROM audit_row");
+    expect(statement).toContain("SELECT * FROM retail_update_admin_customer(");
+    expect(statement).toContain("?::uuid,?::text,?::uuid");
+    expect(statement).toContain("?::boolean,?::uuid)");
   });
 
-  it("treats an empty consumed CTE chain as customer_not_found", async () => {
+  it("treats an empty DB operation result as customer_not_found", async () => {
     neonMocks.sql.mockReturnValueOnce([]);
 
     await expect(updateCustomer(customerId, {

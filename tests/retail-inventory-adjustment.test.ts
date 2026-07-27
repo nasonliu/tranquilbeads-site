@@ -17,21 +17,20 @@ describe("retail inventory adjustment", () => {
     else delete process.env.DATABASE_URL;
   });
 
-  it("maps the operator-facing product public_id to the internal primary key before writing inventory", async () => {
+  it("delegates the public-id adjustment and audit to one DB-side idempotent operation", async () => {
     process.env.DATABASE_URL = "postgres://test";
-    const query = vi.fn().mockResolvedValueOnce([{ adjusted: true }]).mockResolvedValueOnce([]);
+    const query = vi.fn().mockResolvedValueOnce([{ adjusted: true }]);
     neon.mockReturnValue(query);
 
     await adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey });
 
-    expect(query).toHaveBeenCalledTimes(2);
+    expect(query).toHaveBeenCalledTimes(1);
     const [sql, ...values] = query.mock.calls[0];
-    expect(String(sql.raw.join(""))).toContain("retail_adjust_inventory(p.id");
-    expect(String(sql.raw.join(""))).toContain("WHERE p.public_id=");
-    expect(values).toEqual([3, "MVP stock", idempotencyKey, publicId]);
+    expect(String(sql.raw.join(""))).toContain("retail_adjust_inventory_with_audit(");
+    expect(values).toEqual([publicId, 3, "MVP stock", idempotencyKey]);
   });
 
-  it("fails closed without recording an audit entry when no product has that public_id", async () => {
+  it("fails closed when the DB-side operation returns no result", async () => {
     process.env.DATABASE_URL = "postgres://test";
     const query = vi.fn().mockResolvedValue([]);
     neon.mockReturnValue(query);
