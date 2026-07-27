@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") {
       if (!orderId) return new Response(null, { status: 503 });
       try { details = await getPaypalOrderDetails(orderId, token, config.paypalBaseUrl); }
-      catch { return new Response(null, { status: 503 }); }
+      catch { /* the verified capture can still be durably applied without enrichment */ }
     }
     return new Response(null, { status: webhookResponseStatus(await processVerifiedWebhook(event.id, event.event_type, rawPayload, event, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null)) });
   } catch { return new Response(null, { status: 503 }); }
