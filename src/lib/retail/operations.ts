@@ -81,7 +81,23 @@ export async function upsertShippingZone(d:z.infer<typeof shippingZoneDto>){cons
 export async function disableShippingZone(country:string){const q=sql();const rows=await q`UPDATE retail_shipping_zones SET active=false,updated_at=now() WHERE country=${country} RETURNING country`;if(!rows[0])throw new Error("shipping_zone_not_found");await audit("shipping_zone.disable","shipping_zone",country,{});}
 
 export async function listCustomers() { const q = sql(); return q`SELECT c.public_id,c.email,c.name,c.created_at,COALESCE(json_agg(json_build_object('id',a.id,'recipient',a.recipient,'line1',a.line1,'line2',a.line2,'city',a.city,'region',a.region,'postal_code',a.postal_code,'country',a.country,'phone',a.phone,'is_default',a.is_default,'archived_at',a.archived_at) ORDER BY a.created_at) FILTER(WHERE a.id IS NOT NULL),'[]') addresses FROM retail_customers c LEFT JOIN retail_addresses a ON a.customer_id=c.id GROUP BY c.id ORDER BY c.created_at DESC LIMIT 250`; }
-export async function updateCustomer(id: string, d: z.infer<typeof customerUpdateDto>) { const q = sql(); const hasAddress=Boolean(d.addressId || d.recipient || d.line1 || d.city || d.country || d.isDefault !== undefined || d.archive !== undefined); await q`WITH customer_update AS (UPDATE retail_customers SET name=COALESCE(${d.name ?? null},name) WHERE public_id=${id}::uuid RETURNING id), address_update AS (SELECT retail_upsert_customer_address(${id}::uuid,${d.addressId ?? null}::uuid,${d.recipient ?? null},${d.line1 ?? null},${d.line2 ?? null},${d.city ?? null},${d.region ?? null},${d.postalCode ?? null},${d.country ?? null},${d.phone ?? null},${d.isDefault ?? null}::boolean,${d.archive ?? null}::boolean) WHERE ${hasAddress}), audit_row AS (INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail) SELECT 'customer.update','customer',${id},${JSON.stringify(d)}::jsonb FROM customer_update RETURNING id) SELECT count(*) FROM audit_row`; }
+export async function updateCustomer(id: string, d: z.infer<typeof customerUpdateDto>) {
+  const q = sql();
+  const hasAddress = Boolean(d.addressId || d.recipient || d.line1 || d.city || d.country || d.isDefault !== undefined || d.archive !== undefined);
+  await q.transaction((tx) => [
+    tx`UPDATE retail_customers
+      SET name=COALESCE(${d.name ?? null}::text,name)
+      WHERE public_id=${id}::uuid`,
+    tx`SELECT retail_upsert_customer_address(
+      ${id}::uuid,${d.addressId ?? null}::uuid,${d.recipient ?? null}::text,${d.line1 ?? null}::text,
+      ${d.line2 ?? null}::text,${d.city ?? null}::text,${d.region ?? null}::text,${d.postalCode ?? null}::text,
+      ${d.country ?? null}::text,${d.phone ?? null}::text,${d.isDefault ?? null}::boolean,${d.archive ?? null}::boolean
+    ) WHERE ${hasAddress}::boolean`,
+    tx`INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail)
+      SELECT 'customer.update'::text,'customer'::text,${id}::text,${JSON.stringify(d)}::jsonb
+      WHERE EXISTS(SELECT 1 FROM retail_customers WHERE public_id=${id}::uuid)`,
+  ]);
+}
 
 export async function listLedgerEntries(status?: string) { const q = sql(); return status ? q`SELECT l.*,o.paypal_order_id FROM retail_payment_ledger l JOIN retail_orders o ON o.id=l.order_id WHERE l.reconciliation_status=${status} AND l.kind IN ('payment','fee','refund','reversal') ORDER BY l.created_at DESC LIMIT 500` : q`SELECT l.*,o.paypal_order_id FROM retail_payment_ledger l JOIN retail_orders o ON o.id=l.order_id WHERE l.kind IN ('payment','fee','refund','reversal') ORDER BY l.created_at DESC LIMIT 500`; }
 export async function getLedgerPostingSummary() { const q = sql(); const rows = await q`SELECT * FROM retail_payment_posting_summary()`; return rows[0] ?? { gross_minor: 0, fee_minor: 0, refund_minor: 0, reversal_minor: 0, net_minor: 0 }; }
