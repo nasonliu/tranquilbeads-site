@@ -15,6 +15,19 @@ function assertPaypalRequestId(requestId: string) {
   if (!/^[\x20-\x7e]{1,38}$/.test(requestId)) throw new Error("paypal_request_id_invalid");
 }
 
+async function throwPaypalApiError(response: Response, fallback: string): Promise<never> {
+  let name = "UNKNOWN";
+  let issues: string[] = [];
+  try {
+    const body = await response.json() as { name?: unknown; details?: Array<{ issue?: unknown }> };
+    if (typeof body.name === "string" && /^[A-Z0-9_]{1,64}$/.test(body.name)) name = body.name;
+    issues = (body.details ?? []).flatMap((detail) =>
+      typeof detail.issue === "string" && /^[A-Z0-9_]{1,64}$/.test(detail.issue) ? [detail.issue] : [],
+    ).slice(0, 4);
+  } catch { /* PayPal can return an empty or non-JSON gateway response. */ }
+  throw new Error(`${fallback}:${response.status}:${name}:${issues.join(",") || "UNKNOWN"}`);
+}
+
 export function parsePaypalMinorAmount(value: string | undefined) {
   if (!value || !/^\d+\.\d{2}$/.test(value)) return null;
   const [whole, fraction] = value.split(".");
@@ -65,7 +78,7 @@ export async function createPaypalOrder(quote: RetailOrderQuote, token: string, 
   if (hasBreakdown) purchaseUnit.items = quote.items.map((line) => ({ name: line.sku, sku: line.sku, quantity: String(line.quantity), unit_amount: { currency_code: quote.currency, value: formatMinorAmount(line.unitAmountMinor) } }));
   if (quote.shipping) purchaseUnit.shipping = { name: { full_name: quote.shipping.recipient }, address: { address_line_1: quote.shipping.line1, address_line_2: quote.shipping.line2 || undefined, admin_area_2: quote.shipping.city, admin_area_1: quote.shipping.region || undefined, postal_code: quote.shipping.postalCode || undefined, country_code: quote.shipping.country } };
   const response = await fetcher(`${baseUrl}/v2/checkout/orders`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "paypal-request-id": requestId, prefer: "return=representation" }, body: JSON.stringify({ intent: "CAPTURE", purchase_units: [purchaseUnit], application_context: quote.shipping ? { shipping_preference: "SET_PROVIDED_ADDRESS", user_action: "PAY_NOW" } : undefined }), cache: "no-store" });
-  if (!response.ok) throw new Error("paypal_order_failed");
+  if (!response.ok) await throwPaypalApiError(response, "paypal_order_failed");
   const body = await response.json() as { id?: string; status?: string; purchase_units?: Array<{ amount?: { currency_code?: string; value?: string } }> };
   const responseAmount = body.purchase_units?.[0]?.amount;
   if (!body.id || body.status !== "CREATED" || responseAmount?.currency_code !== quote.currency || responseAmount.value !== formatMinorAmount(quote.totalMinor)) throw new Error("paypal_order_failed");

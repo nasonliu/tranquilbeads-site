@@ -42,6 +42,10 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message === "quote changed") return Response.json({ok:false,error:"quote_changed"},{status:409});
     if (error instanceof Error && ["idempotency conflict"].includes(error.message)) return Response.json({ ok: false, error: "request_conflict" }, { status: 409 });
     if (error instanceof Error && ["invalid cart", "duplicate sku", "unknown sku", "unavailable sku"].includes(error.message)) return Response.json({ ok: false, error: "invalid_cart" }, { status: 422 });
+    // Only emit the sanitized internal error code. PayPal credentials, request
+    // payloads, customer details, and provider response descriptions are never
+    // written to logs.
+    console.error("retail_checkout_create_failed", error instanceof Error ? error.message : "unknown_error");
     return Response.json({ ok: false, error: "checkout_unavailable" }, { status: 503 });
   }
 }
