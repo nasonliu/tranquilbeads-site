@@ -29,7 +29,10 @@ export async function POST(request: Request) {
     // Both the local reservation and PayPal idempotency key are stable across retries.
     // A concurrent retry can therefore never create a second payable remote order.
     const token = await getPaypalAccessToken({ clientId: config.paypalClientId, clientSecret: config.paypalClientSecret, baseUrl: config.paypalBaseUrl });
-    const paypalOrderId = await createPaypalOrder(quote, token, config.paypalBaseUrl, `retail-order-${input.requestId}`);
+    // PayPal-Request-Id is limited to 38 single-byte characters. The checkout
+    // request UUID is already stable and unique, while adding a text prefix
+    // would push it beyond that limit and make Sandbox order creation fail.
+    const paypalOrderId = await createPaypalOrder(quote, token, config.paypalBaseUrl, input.requestId);
     if (await attachPaypalOrder(input.requestId, paypalOrderId)) return Response.json({ ok: true, orderId: paypalOrderId });
     const resolved = await getRetailOrderByRequestId(input.requestId);
     if (resolved?.paypal_order_id) return Response.json({ ok: true, orderId: resolved.paypal_order_id });

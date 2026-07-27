@@ -11,6 +11,12 @@ describe("retail PayPal amounts", () => {
     expect(fetcher).toHaveBeenCalledWith("https://paypal.test/v2/checkout/orders", expect.objectContaining({ headers: expect.objectContaining({ "paypal-request-id": "request-1" }), body: expect.stringContaining('"value":"12.50"') }));
   });
 
+  it("rejects PayPal request IDs above the documented 38-byte limit before sending", async () => {
+    const fetcher = vi.fn();
+    await expect(createPaypalOrder(quote, "token", "https://paypal.test", `retail-order-${crypto.randomUUID()}`, fetcher)).rejects.toThrow("paypal_request_id_invalid");
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("parses only safe positive two-decimal PayPal amounts", () => {
     expect(parsePaypalMinorAmount("12.50")).toBe(1250);
     expect(parsePaypalMinorAmount("0.00")).toBeNull();

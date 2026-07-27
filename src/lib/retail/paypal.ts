@@ -8,6 +8,13 @@ export class PaypalRefundRejectedError extends Error {
   constructor() { super("paypal_refund_rejected"); this.name = "PaypalRefundRejectedError"; }
 }
 
+function assertPaypalRequestId(requestId: string) {
+  // PayPal documents a 38 single-byte character ceiling for this header.
+  // Validate locally so a future caller cannot silently break checkout by
+  // decorating an otherwise valid UUID.
+  if (!/^[\x20-\x7e]{1,38}$/.test(requestId)) throw new Error("paypal_request_id_invalid");
+}
+
 export function parsePaypalMinorAmount(value: string | undefined) {
   if (!value || !/^\d+\.\d{2}$/.test(value)) return null;
   const [whole, fraction] = value.split(".");
@@ -42,6 +49,7 @@ export async function getPaypalAccessToken({ clientId, clientSecret, baseUrl, fe
 }
 
 export async function createPaypalOrder(quote: RetailOrderQuote, token: string, baseUrl: string, requestId: string, fetcher: Fetcher = fetch) {
+  assertPaypalRequestId(requestId);
   const hasBreakdown = [quote.subtotalMinor, quote.shippingMinor, quote.taxMinor, quote.discountMinor].every((value) => Number.isSafeInteger(value));
   const amount = hasBreakdown ? {
     currency_code: quote.currency,
@@ -65,6 +73,7 @@ export async function createPaypalOrder(quote: RetailOrderQuote, token: string, 
 }
 
 export async function refundPaypalCapture(captureId: string, amountMinor: number, currency: string, reason: string, token: string, baseUrl: string, requestId: string, fetcher: Fetcher = fetch) {
+  assertPaypalRequestId(requestId);
   const response = await fetcher(`${baseUrl}/v2/payments/captures/${encodeURIComponent(captureId)}/refund`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "paypal-request-id": requestId, prefer: "return=representation" }, body: JSON.stringify({ amount: { currency_code: currency, value: formatMinorAmount(amountMinor) }, note_to_payer: reason.slice(0, 255) }), cache: "no-store" });
   if (!response.ok) {
     // Only a permanent client rejection proves PayPal did not accept the
@@ -79,6 +88,7 @@ export async function refundPaypalCapture(captureId: string, amountMinor: number
 }
 
 export async function capturePaypalOrder(orderId: string, quote: RetailOrderQuote, token: string, baseUrl: string, requestId: string, fetcher: Fetcher = fetch) {
+  assertPaypalRequestId(requestId);
   const response = await fetcher(`${baseUrl}/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json", "paypal-request-id": requestId }, cache: "no-store" });
   if (!response.ok) throw new Error("paypal_capture_failed");
   const body = await response.json() as { status?: string; purchase_units?: Array<{ payments?: { captures?: Array<{ id?: string; status?: string; amount?: { currency_code?: string; value?: string } }> } }> };

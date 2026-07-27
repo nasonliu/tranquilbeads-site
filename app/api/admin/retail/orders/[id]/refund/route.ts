@@ -17,7 +17,9 @@ export async function POST(request:Request,context:Context){
     const config=getRetailServerConfig();if(!config.enabled)return Response.json({ok:false,error:"retail_unavailable"},{status:503,headers:noStore});
     const token=await getPaypalAccessToken({clientId:config.paypalClientId,clientSecret:config.paypalClientSecret,baseUrl:config.paypalBaseUrl});
     let refundId:string;
-    try{refundId=await refundPaypalCapture(prepared.captureId,prepared.amountMinor,prepared.currency,input.reason,token,config.paypalBaseUrl,`retail-refund-${input.idempotencyKey}`);}
+    // Keep the stable UUID unchanged: PayPal-Request-Id accepts at most 38
+    // single-byte characters, so a descriptive prefix would invalidate it.
+    try{refundId=await refundPaypalCapture(prepared.captureId,prepared.amountMinor,prepared.currency,input.reason,token,config.paypalBaseUrl,input.idempotencyKey);}
     catch(error){
       // Only an explicit PayPal HTTP rejection proves no refund was accepted.
       // Network/parse ambiguity stays pending and blocks a new idempotency key.
