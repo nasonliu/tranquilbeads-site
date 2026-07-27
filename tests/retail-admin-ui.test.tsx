@@ -30,6 +30,10 @@ function fillProductDraft() {
   return { form, inputs };
 }
 
+function requestBody(call: [RequestInfo | URL, RequestInit?]) {
+  return JSON.parse(String(call[1]?.body));
+}
+
 describe("retail admin console", () => {
   afterEach(() => vi.unstubAllGlobals());
 
@@ -85,6 +89,77 @@ describe("retail admin console", () => {
     expect(save).toBeDisabled();
     releaseWrite!(new Response(JSON.stringify(responseFor("/api/admin/retail/products")), { status: 200 }));
     await screen.findByText("Saved.");
+  });
+
+  it("reuses an inventory key after a failed request and rotates it after a confirmed write", async () => {
+    let inventoryWrites = 0;
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input);
+      if (path === "/api/admin/retail/inventory" && init?.method === "POST") {
+        inventoryWrites += 1;
+        return new Response(JSON.stringify(inventoryWrites === 1 ? { ok: false, error: "temporary_failure" } : responseFor(path)), { status: inventoryWrites === 1 ? 503 : 200 });
+      }
+      return new Response(JSON.stringify(responseFor(path)), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<RetailAdminConsole />);
+
+    await screen.findByText(productId);
+    const form = screen.getByRole("heading", { name: "Adjust inventory" }).closest("form")!;
+    const inputs = within(form);
+    fireEvent.change(inputs.getByLabelText("productId"), { target: { value: productId } });
+    fireEvent.change(inputs.getByLabelText("delta"), { target: { value: "2" } });
+    fireEvent.change(inputs.getByLabelText("reason"), { target: { value: "restock" } });
+
+    fireEvent.click(inputs.getByRole("button", { name: "Save" }));
+    await screen.findByText("temporary_failure");
+    fireEvent.click(inputs.getByRole("button", { name: "Save" }));
+    await screen.findByText("Saved.");
+    fireEvent.change(inputs.getByLabelText("productId"), { target: { value: productId } });
+    fireEvent.change(inputs.getByLabelText("delta"), { target: { value: "3" } });
+    fireEvent.change(inputs.getByLabelText("reason"), { target: { value: "restock again" } });
+    fireEvent.click(inputs.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(inventoryWrites).toBe(3));
+
+    const writes = fetcher.mock.calls.filter(([path, init]) => path === "/api/admin/retail/inventory" && init?.method === "POST");
+    expect(requestBody(writes[0]).idempotencyKey).toBe(requestBody(writes[1]).idempotencyKey);
+    expect(requestBody(writes[2]).idempotencyKey).not.toBe(requestBody(writes[1]).idempotencyKey);
+  });
+
+  it("keeps a refund key for retries and rotates it only after successful readback", async () => {
+    let refundWrites = 0;
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input);
+      if (path === "/api/admin/retail/orders/9/refund" && init?.method === "POST") {
+        refundWrites += 1;
+        return new Response(JSON.stringify(refundWrites === 1 ? { ok: false, error: "refund_result_unknown" } : { ok: true }), { status: refundWrites === 1 ? 503 : 200 });
+      }
+      return new Response(JSON.stringify(responseFor(path)), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    vi.stubGlobal("confirm", vi.fn(() => true));
+    render(<RetailAdminConsole />);
+
+    await screen.findByText(productId);
+    const form = screen.getByRole("heading", { name: "Refund captured order" }).closest("form")!;
+    const inputs = within(form);
+    fireEvent.change(inputs.getByLabelText("Order ID"), { target: { value: "9" } });
+    fireEvent.change(inputs.getByLabelText("Refund amount (amountMinor)"), { target: { value: "100" } });
+    fireEvent.change(inputs.getByLabelText("Refund reason"), { target: { value: "customer request" } });
+
+    fireEvent.click(inputs.getByRole("button", { name: "Confirm refund" }));
+    await screen.findByText("refund_result_unknown");
+    fireEvent.click(inputs.getByRole("button", { name: "Confirm refund" }));
+    await screen.findByText("Refund completed.");
+    fireEvent.change(inputs.getByLabelText("Order ID"), { target: { value: "9" } });
+    fireEvent.change(inputs.getByLabelText("Refund amount (amountMinor)"), { target: { value: "100" } });
+    fireEvent.change(inputs.getByLabelText("Refund reason"), { target: { value: "second refund" } });
+    fireEvent.click(inputs.getByRole("button", { name: "Confirm refund" }));
+    await waitFor(() => expect(refundWrites).toBe(3));
+
+    const writes = fetcher.mock.calls.filter(([path, init]) => path === "/api/admin/retail/orders/9/refund" && init?.method === "POST");
+    expect(requestBody(writes[0]).idempotencyKey).toBe(requestBody(writes[1]).idempotencyKey);
+    expect(requestBody(writes[2]).idempotencyKey).not.toBe(requestBody(writes[1]).idempotencyKey);
   });
 
   it("displays the public and ledger identifiers required by follow-up forms", async () => {
