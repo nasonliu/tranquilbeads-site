@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const neonMocks = vi.hoisted(() => {
@@ -10,11 +11,29 @@ vi.mock("@neondatabase/serverless", () => ({ neon: neonMocks.neon }));
 
 import { guardedRetailSql } from "@/src/lib/retail/database-identity";
 
+const read = (path: string) => readFileSync(path, "utf8");
+
 describe("retail database identity sentinel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.DATABASE_URL = "postgres://test";
+    delete process.env.RETAIL_DATABASE_URL;
     process.env.RETAIL_DATABASE_IDENTITY = crypto.randomUUID();
+  });
+
+  it("prefers the retail-only database URL over the marketplace default", async () => {
+    process.env.RETAIL_DATABASE_URL = "postgres://preview-retail";
+    neonMocks.sql
+      .mockResolvedValueOnce([{ identity: process.env.RETAIL_DATABASE_IDENTITY }])
+      .mockResolvedValueOnce([{ ok: true }]);
+
+    await expect(guardedRetailSql()`SELECT true AS ok`).resolves.toEqual([{ ok: true }]);
+    expect(neonMocks.neon).toHaveBeenCalledWith("postgres://preview-retail");
+  });
+
+  it("uses the same retail-first URL precheck in cron and notifications", () => {
+    expect(read("app/api/cron/retail/reservations/route.ts")).toContain("process.env.RETAIL_DATABASE_URL || process.env.DATABASE_URL");
+    expect(read("src/lib/retail/notifications.ts")).toContain("process.env.RETAIL_DATABASE_URL||process.env.DATABASE_URL");
   });
 
   it("allows a query only after the connected database returns the configured identity", async () => {

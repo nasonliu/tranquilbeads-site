@@ -7,7 +7,7 @@ type NotificationRow={id:string;kind:string;recipient:string;payload:Record<stri
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,(char)=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]!));
 
 export async function deliverRetailNotifications(fetcher:Fetcher=fetch){
-  const databaseUrl=process.env.DATABASE_URL,apiKey=process.env.RETAIL_RESEND_API_KEY,from=process.env.RETAIL_EMAIL_FROM;
+  const databaseUrl=process.env.RETAIL_DATABASE_URL||process.env.DATABASE_URL,apiKey=process.env.RETAIL_RESEND_API_KEY,from=process.env.RETAIL_EMAIL_FROM;
   if(!databaseUrl||!apiKey||!from)return{processed:0,sent:0,failed:0,configured:false};
   const q=guardedRetailSql();
   await q`UPDATE retail_notification_outbox SET status='failed',claimed_at=NULL,last_error=COALESCE(last_error,'delivery_lease_expired') WHERE status='processing' AND claimed_at<now()-interval '10 minutes'`;

@@ -7,7 +7,7 @@ export type RetailSql = NeonQueryFunction<false, false>;
 const verified = new Map<string, Promise<void>>();
 
 function configuredDatabase() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = process.env.RETAIL_DATABASE_URL || process.env.DATABASE_URL;
   const identity = process.env.RETAIL_DATABASE_IDENTITY;
   if (!connectionString || !identity) throw new Error("retail_database_identity_unavailable");
   return { connectionString, identity };

@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   if (!isAuthorizedRetailReservationCron(request.headers.get("authorization"))) {
     return Response.json({ ok: false }, { status: 401, headers: noStore });
   }
-  const url = process.env.DATABASE_URL;
+  const url = process.env.RETAIL_DATABASE_URL || process.env.DATABASE_URL;
   if (!url) return Response.json({ ok: false, error: "retail_database_unavailable" }, { status: 503, headers: noStore });
   try {
     let reconciled=0,pending=0,accountingReconciled=0,refundReconciled=0;

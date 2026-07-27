@@ -18,8 +18,8 @@ const migrationNames = [
   "20260730_retail_payment_reconciliation.sql",
 ];
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) throw new Error("DATABASE_URL is required");
+const connectionString = process.env.RETAIL_DATABASE_URL || process.env.DATABASE_URL;
+if (!connectionString) throw new Error("RETAIL_DATABASE_URL or DATABASE_URL is required");
 const databaseIdentity = process.env.RETAIL_DATABASE_IDENTITY;
 if (!databaseIdentity || databaseIdentity.length < 16 || databaseIdentity.length > 128) throw new Error("RETAIL_DATABASE_IDENTITY is required");
 

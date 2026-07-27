@@ -4,7 +4,7 @@ import { guardedRetailSql } from "@/src/lib/retail/database-identity";
 export const runtime="nodejs";export const dynamic="force-dynamic";
 const noStore={"cache-control":"no-store"};
 export async function GET(){
-  const config=getRetailServerConfig(),databaseUrl=process.env.DATABASE_URL;
+  const config=getRetailServerConfig(),databaseUrl=process.env.RETAIL_DATABASE_URL||process.env.DATABASE_URL;
   if(!config.enabled||!databaseUrl)return Response.json({ok:false,status:"not_ready",paymentConfigured:config.enabled},{status:503,headers:noStore});
   try{
     const rows=await guardedRetailSql()`SELECT to_regprocedure('retail_create_checkout_v2(uuid,jsonb,jsonb,bigint)') IS NOT NULL AS checkout_ready,to_regclass('retail_shipping_zones') IS NOT NULL AS shipping_ready,(SELECT count(*)::int FROM retail_shipping_zones WHERE active) AS active_shipping_zones`;

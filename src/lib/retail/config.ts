@@ -16,8 +16,8 @@ function expectedDatabaseEnvironment(vercelEnvironment: string | undefined) {
 
 export function getRetailRuntimeConfig(env: Env = process.env): RetailRuntimeConfig {
   if (env.RETAIL_SHOP_ENABLED !== "true") return { enabled: false, reason: "disabled" };
-  const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_WEBHOOK_ID, DATABASE_URL, RETAIL_DATABASE_IDENTITY } = env;
-  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET || !PAYPAL_WEBHOOK_ID || !DATABASE_URL || !RETAIL_DATABASE_IDENTITY) return { enabled: false, reason: "missing_configuration" };
+  const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_WEBHOOK_ID, DATABASE_URL, RETAIL_DATABASE_URL, RETAIL_DATABASE_IDENTITY } = env;
+  if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET || !PAYPAL_WEBHOOK_ID || !(RETAIL_DATABASE_URL || DATABASE_URL) || !RETAIL_DATABASE_IDENTITY) return { enabled: false, reason: "missing_configuration" };
   const paymentMode = env.RETAIL_PAYMENT_MODE;
   if (paymentMode !== "sandbox" && paymentMode !== "live") return { enabled: false, reason: "invalid_payment_mode" };
 

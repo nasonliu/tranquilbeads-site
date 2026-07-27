@@ -26,6 +26,11 @@ describe("retail payment configuration", () => {
     expect(config).not.toHaveProperty("paypalClientSecret");
   });
 
+  it("accepts a retail-only database URL without the marketplace default", () => {
+    const { DATABASE_URL: _databaseUrl, ...withoutMarketplaceUrl } = sandboxConfiguration;
+    expect(getRetailRuntimeConfig({ ...withoutMarketplaceUrl, RETAIL_DATABASE_URL: "postgres://preview-retail" })).toMatchObject({ enabled: true, paymentMode: "sandbox" });
+  });
+
   it("requires an explicit payment mode and rejects a live endpoint in sandbox mode", () => {
     expect(getRetailRuntimeConfig({ ...sandboxConfiguration, RETAIL_PAYMENT_MODE: undefined })).toEqual({ enabled: false, reason: "invalid_payment_mode" });
     expect(getRetailRuntimeConfig({ ...sandboxConfiguration, PAYPAL_API_BASE_URL: "https://api-m.paypal.com" })).toEqual({ enabled: false, reason: "payment_environment_not_allowed" });
