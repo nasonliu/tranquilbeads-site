@@ -4,6 +4,7 @@ import { del, put } from "@vercel/blob";
 import { z } from "zod";
 
 import { assertSameOrigin, requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+import { assertRetailBlobUrl, getRetailBlobConfig } from "@/src/lib/retail/blob";
 import { attachRetailProductImage, detachRetailProductImage, listRetailBlobDeleteOutbox, markRetailBlobDeleteOutbox, queueRetailBlobDelete } from "@/src/lib/retail/operations";
 import { validateRetailImage } from "@/src/lib/retail/upload-validation";
 
@@ -22,8 +23,11 @@ export async function POST(request: Request) {
     const file = form.get("file");
     if (!(file instanceof File)) throw new Error("invalid_image");
     const validated = await validateRetailImage(file);
+    const blobConfig = getRetailBlobConfig();
     const key = `retail/products/${input.productId}/${crypto.randomUUID()}.${validated.extension}`;
-    const blob = await put(key, Buffer.from(validated.bytes), { access: "public", contentType: validated.mime, addRandomSuffix: false, cacheControlMaxAge: 60 * 60 * 24 * 365 });
+    const blob = await put(key, Buffer.from(validated.bytes), { access: "public", contentType: validated.mime, addRandomSuffix: false, cacheControlMaxAge: 60 * 60 * 24 * 365, ...blobConfig.auth });
+    try { assertRetailBlobUrl(blob.url, blobConfig.hostname); }
+    catch (error) { await del(blob.url, blobConfig.auth); throw error; }
     try {
       const image = await attachRetailProductImage(input.productId, { url: blob.url, key, mime: validated.mime, bytes: validated.bytes.length, sha256: validated.sha256, altEn: input.altEn, altAr: input.altAr });
       return Response.json({ ok: true, image: { id: image?.id, url: blob.url } }, { status: 201, headers: { "cache-control": "no-store" } });
@@ -32,7 +36,7 @@ export async function POST(request: Request) {
       // unreferenced public object behind. A later retry cannot reuse this key.
       await queueRetailBlobDelete(blob.url);
       const outbox = (await listRetailBlobDeleteOutbox()).find((row) => row.blob_url === blob.url);
-      try { await del(blob.url); if (outbox) await markRetailBlobDeleteOutbox(String(outbox.id), true); }
+      try { assertRetailBlobUrl(blob.url, blobConfig.hostname); await del(blob.url, blobConfig.auth); if (outbox) await markRetailBlobDeleteOutbox(String(outbox.id), true); }
       catch { if (outbox) await markRetailBlobDeleteOutbox(String(outbox.id), false); }
       throw error;
     }
@@ -46,8 +50,9 @@ export async function DELETE(request: Request) {
     const { imageId } = z.object({ imageId: z.string().uuid() }).parse(await request.json());
     const removed = await detachRetailProductImage(imageId);
     if (!removed) return Response.json({ ok: true, deleted: false }, { headers: { "cache-control": "no-store" } });
+    const blobConfig = getRetailBlobConfig();
     const outbox = (await listRetailBlobDeleteOutbox()).find((row) => row.blob_url === removed.blob_url);
-    try { await del(removed.blob_url); if (outbox) await markRetailBlobDeleteOutbox(String(outbox.id), true); } catch {
+    try { assertRetailBlobUrl(removed.blob_url, blobConfig.hostname); await del(removed.blob_url, blobConfig.auth); if (outbox) await markRetailBlobDeleteOutbox(String(outbox.id), true); } catch {
       // The DB detach and outbox insert are already atomic. A worker/retry may
       // safely delete this immutable URL later.
       const row = (await listRetailBlobDeleteOutbox()).find((item) => item.blob_url === removed.blob_url);

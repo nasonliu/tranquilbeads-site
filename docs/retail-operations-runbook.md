@@ -11,7 +11,7 @@
 ## Initial deployment
 
 1. Create separate Neon branches/databases for preview and production. Never point a preview deployment at production order data.
-2. Configure the server-only values documented in `.env.local.example` in the matching Vercel environment. Do not put credentials in source, issue text, or agent prompts.
+2. Configure the server-only values documented in `.env.local.example` in the matching Vercel environment. Retail media requires `RETAIL_BLOB_STORE_ID`, the exact public `RETAIL_BLOB_HOSTNAME`, and either the dedicated `RETAIL_BLOB_READ_WRITE_TOKEN` or Vercel runtime OIDC. The code checks the store embedded in a legacy token and rejects delete URLs from another hostname; never reuse the private outreach `BLOB_READ_WRITE_TOKEN`. Vercel's automatically injected Blob webhook public key is not a runtime requirement until the application has a webhook receiver. Do not put credentials in source, issue text, or agent prompts.
 3. Run `npm run migrate:retail` against the target database. The runner records a SHA-256 receipt in `retail_schema_migrations`, skips an already-applied identical migration, and stops on a checksum mismatch.
 4. In `/admin/retail`, create at least one active shipping country before enabling checkout. Create retail-only draft products, upload verified images, set prices and stock, then publish them. Wholesale, Amazon, and Noon data are not imported.
 5. Check `/api/retail/health`. A `200` response requires the payment gate, database schema, and at least one active shipping zone.

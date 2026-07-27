@@ -1,6 +1,7 @@
 import { del } from "@vercel/blob";
 
 import { assertSameOrigin, requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+import { assertRetailBlobUrl, getRetailBlobConfig } from "@/src/lib/retail/blob";
 import { listRetailBlobDeleteOutbox, markRetailBlobDeleteOutbox } from "@/src/lib/retail/operations";
 
 export const runtime = "nodejs";
@@ -11,10 +12,11 @@ export async function POST() {
   try {
     await requireRetailAdmin();
     await assertSameOrigin();
+    const blobConfig = getRetailBlobConfig();
     const rows = await listRetailBlobDeleteOutbox();
     let processed = 0;
     for (const row of rows) {
-      try { await del(String(row.blob_url)); await markRetailBlobDeleteOutbox(String(row.id), true); processed += 1; }
+      try { const url = String(row.blob_url); assertRetailBlobUrl(url, blobConfig.hostname); await del(url, blobConfig.auth); await markRetailBlobDeleteOutbox(String(row.id), true); processed += 1; }
       catch { await markRetailBlobDeleteOutbox(String(row.id), false); }
     }
     return Response.json({ ok: true, processed }, { headers: { "cache-control": "no-store" } });
