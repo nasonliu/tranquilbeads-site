@@ -44,7 +44,12 @@ export async function reserveRetailOrder(requestId: string, items: Array<{ sku: 
 
 export async function reserveRetailOrderV2(requestId:string,items:Array<{sku:string;quantity:number}>,checkout:unknown,expectedTotalMinor:number){
   const sql=getSql();
-  const result=await sql`SELECT o.paypal_order_id,o.client_request_id,o.currency,o.subtotal_minor,o.shipping_minor,o.tax_minor,o.discount_minor,o.amount_minor,o.shipping_method,o.checkout_email,o.checkout_shipping,o.status,o.capture_id,o.items_snapshot FROM retail_create_checkout_v2(${requestId}::uuid,${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb,${expectedTotalMinor}) c JOIN retail_orders o ON o.id=c.order_id`;
+  // Execute the idempotent reservation first, then read by its stable request
+  // id. Some managed Postgres/function combinations can commit the function's
+  // writes yet expose an empty set-returning result through a join. A retry is
+  // safe because retail_create_checkout_v2 validates the immutable request.
+  await sql`SELECT * FROM retail_create_checkout_v2(${requestId}::uuid,${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb,${expectedTotalMinor})`;
+  const result=await sql`SELECT paypal_order_id,client_request_id,currency,subtotal_minor,shipping_minor,tax_minor,discount_minor,amount_minor,shipping_method,checkout_email,checkout_shipping,status,capture_id,items_snapshot FROM retail_orders WHERE client_request_id=${requestId}::uuid LIMIT 1`;
   const order=result[0] as RetailOrder|undefined;
   if(!order)throw new Error("checkout_unavailable");
   return order;
