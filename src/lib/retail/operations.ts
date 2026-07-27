@@ -84,19 +84,25 @@ export async function listCustomers() { const q = sql(); return q`SELECT c.publi
 export async function updateCustomer(id: string, d: z.infer<typeof customerUpdateDto>) {
   const q = sql();
   const hasAddress = Boolean(d.addressId || d.recipient || d.line1 || d.city || d.country || d.isDefault !== undefined || d.archive !== undefined);
-  await q.transaction((tx) => [
-    tx`UPDATE retail_customers
-      SET name=COALESCE(${d.name ?? null}::text,name)
-      WHERE public_id=${id}::uuid`,
-    tx`SELECT retail_upsert_customer_address(
-      ${id}::uuid,${d.addressId ?? null}::uuid,${d.recipient ?? null}::text,${d.line1 ?? null}::text,
+  const rows = await q`WITH customer_update AS (
+    UPDATE retail_customers
+    SET name=COALESCE(${d.name ?? null}::text,name)
+    WHERE public_id=${id}::uuid
+    RETURNING public_id
+  ), address_update AS (
+    SELECT CASE WHEN ${hasAddress}::boolean THEN retail_upsert_customer_address(
+      customer_update.public_id,${d.addressId ?? null}::uuid,${d.recipient ?? null}::text,${d.line1 ?? null}::text,
       ${d.line2 ?? null}::text,${d.city ?? null}::text,${d.region ?? null}::text,${d.postalCode ?? null}::text,
       ${d.country ?? null}::text,${d.phone ?? null}::text,${d.isDefault ?? null}::boolean,${d.archive ?? null}::boolean
-    ) WHERE ${hasAddress}::boolean`,
-    tx`INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail)
-      SELECT 'customer.update'::text,'customer'::text,${id}::text,${JSON.stringify(d)}::jsonb
-      WHERE EXISTS(SELECT 1 FROM retail_customers WHERE public_id=${id}::uuid)`,
-  ]);
+    ) ELSE NULL::uuid END AS address_id
+    FROM customer_update
+  ), audit_row AS (
+    INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail)
+    SELECT 'customer.update'::text,'customer'::text,customer_update.public_id::text,${JSON.stringify(d)}::jsonb
+    FROM customer_update CROSS JOIN address_update
+    RETURNING id
+  ) SELECT count(*)::int AS audit_count FROM audit_row`;
+  if (Number(rows[0]?.audit_count ?? 0) === 0) throw new Error("customer_not_found");
 }
 
 export async function listLedgerEntries(status?: string) { const q = sql(); return status ? q`SELECT l.*,o.paypal_order_id FROM retail_payment_ledger l JOIN retail_orders o ON o.id=l.order_id WHERE l.reconciliation_status=${status} AND l.kind IN ('payment','fee','refund','reversal') ORDER BY l.created_at DESC LIMIT 500` : q`SELECT l.*,o.paypal_order_id FROM retail_payment_ledger l JOIN retail_orders o ON o.id=l.order_id WHERE l.kind IN ('payment','fee','refund','reversal') ORDER BY l.created_at DESC LIMIT 500`; }
