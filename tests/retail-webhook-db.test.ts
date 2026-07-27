@@ -32,13 +32,17 @@ describe("verified webhook database transaction", () => {
     const statements = neonMocks.queries.map(({ text }) => text.replace(/\s+/g, " "));
     expect(statements[0]).toContain("INSERT INTO retail_webhook_events");
     expect(statements[0]).toContain("ON CONFLICT (paypal_event_id) DO NOTHING");
+    expect(statements[0]).toContain("?::text, ?::text, ?::text, ?::jsonb");
     expect(statements[0]).not.toContain("UPDATE");
     expect(statements[1]).toContain("WITH capture_update AS");
     expect(statements[1]).toContain("UPDATE retail_webhook_events SET status = CASE");
+    expect(statements[1]).toContain("retail_apply_paypal_capture(?::text, ?::text, ?::jsonb, ?::jsonb, ?::bigint, ?::bigint)");
+    expect(statements[1]).toContain("paypal_event_id=?::text");
     expect(statements[1]).not.toContain("INSERT INTO retail_webhook_events");
     expect(statements[1]).not.toContain("processed_event AS");
     expect(statements[2]).toContain("UPDATE retail_webhook_events SET status = 'rejected'");
     expect(statements[3]).toContain("SELECT status FROM retail_webhook_events");
+    expect(statements[3]).toContain("paypal_event_id=?::text");
   });
 
   it("acknowledges an already-completed event as a duplicate without reprocessing it", async () => {
