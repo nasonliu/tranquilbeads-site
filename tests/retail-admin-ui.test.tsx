@@ -17,6 +17,19 @@ function responseFor(path: string) {
   return { ok: true, product: { public_id: productId } };
 }
 
+function fillProductDraft() {
+  const form = screen.getByRole("heading", { name: "Create product draft" }).closest("form")!;
+  const inputs = within(form);
+  fireEvent.change(inputs.getByLabelText("sku"), { target: { value: "MVP-NEW" } });
+  fireEvent.change(inputs.getByLabelText("slug"), { target: { value: "mvp-new" } });
+  fireEvent.change(inputs.getByLabelText("titleEn"), { target: { value: "MVP new" } });
+  fireEvent.change(inputs.getByLabelText("titleAr"), { target: { value: "اختبار" } });
+  fireEvent.change(inputs.getByLabelText("descriptionEn"), { target: { value: "Test product" } });
+  fireEvent.change(inputs.getByLabelText("descriptionAr"), { target: { value: "منتج اختبار" } });
+  fireEvent.change(inputs.getByLabelText("amountMinor"), { target: { value: "100" } });
+  return { form, inputs };
+}
+
 describe("retail admin console", () => {
   afterEach(() => vi.unstubAllGlobals());
 
@@ -26,21 +39,52 @@ describe("retail admin console", () => {
     render(<RetailAdminConsole />);
 
     await screen.findByText(productId);
-    const form = screen.getByRole("heading", { name: "Create product draft" }).closest("form")!;
-    const inputs = within(form);
-    fireEvent.change(inputs.getByLabelText("sku"), { target: { value: "MVP-NEW" } });
-    fireEvent.change(inputs.getByLabelText("slug"), { target: { value: "mvp-new" } });
-    fireEvent.change(inputs.getByLabelText("titleEn"), { target: { value: "MVP new" } });
-    fireEvent.change(inputs.getByLabelText("titleAr"), { target: { value: "اختبار" } });
-    fireEvent.change(inputs.getByLabelText("descriptionEn"), { target: { value: "Test product" } });
-    fireEvent.change(inputs.getByLabelText("descriptionAr"), { target: { value: "منتج اختبار" } });
-    fireEvent.change(inputs.getByLabelText("amountMinor"), { target: { value: "100" } });
+    const { inputs } = fillProductDraft();
     fireEvent.click(inputs.getByRole("button", { name: "Save" }));
 
     await screen.findByText("Saved.");
     expect(inputs.getByLabelText("sku")).toHaveValue("");
     expect(fetcher).toHaveBeenCalledWith("/api/admin/retail/products", expect.objectContaining({ method: "POST" }));
     await waitFor(() => expect(fetcher.mock.calls.filter(([path]) => path === "/api/admin/retail/products")).toHaveLength(3));
+  });
+
+  it("does not report a write as saved when its required readback fails", async () => {
+    let wrote = false;
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const path = String(input);
+      if (init?.method === "POST") { wrote = true; return new Response(JSON.stringify(responseFor(path)), { status: 200 }); }
+      if (wrote && path === "/api/admin/retail/inventory") return new Response(JSON.stringify({ ok: false, error: "readback_unavailable" }), { status: 503 });
+      return new Response(JSON.stringify(responseFor(path)), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<RetailAdminConsole />);
+
+    await screen.findByText(productId);
+    const { inputs } = fillProductDraft();
+    fireEvent.click(inputs.getByRole("button", { name: "Save" }));
+
+    await screen.findByText("Write may have succeeded, but refresh failed. Refresh to confirm.");
+    expect(screen.queryByText("Saved.")).not.toBeInTheDocument();
+  });
+
+  it("uses a synchronous submission lock so a double click sends only one write", async () => {
+    let releaseWrite: ((response: Response) => void) | undefined;
+    const fetcher = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      if (init?.method === "POST") return new Promise<Response>(resolve => { releaseWrite = resolve; });
+      return Promise.resolve(new Response(JSON.stringify(responseFor(String(input))), { status: 200 }));
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<RetailAdminConsole />);
+
+    await screen.findByText(productId);
+    const { inputs } = fillProductDraft();
+    const save = inputs.getByRole("button", { name: "Save" });
+    fireEvent.click(save);
+    fireEvent.click(save);
+    expect(fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
+    expect(save).toBeDisabled();
+    releaseWrite!(new Response(JSON.stringify(responseFor("/api/admin/retail/products")), { status: 200 }));
+    await screen.findByText("Saved.");
   });
 
   it("displays the public and ledger identifiers required by follow-up forms", async () => {
