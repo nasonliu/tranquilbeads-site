@@ -15,9 +15,12 @@ export async function POST(request: Request) {
   let event: PaypalEvent;
   try { rawPayload = await request.text(); event = JSON.parse(rawPayload) as PaypalEvent; } catch { return new Response(null, { status: 400 }); }
   if (!event.id || !event.event_type) return new Response(null, { status: 400 });
+  let stage = "access_token";
   try {
     const token = await getPaypalAccessToken({ clientId: config.paypalClientId, clientSecret: config.paypalClientSecret, baseUrl: config.paypalBaseUrl });
+    stage = "verify_signature";
     if (!await verifyPaypalWebhook(request.headers, event, { webhookId: config.paypalWebhookId, accessToken: token, baseUrl: config.paypalBaseUrl })) return new Response(null, { status: 400 });
+    stage = "db_load";
     const { processVerifiedWebhook } = await import("@/src/lib/retail/db");
     const orderId = event.resource?.supplementary_data?.related_ids?.order_id;
     let details: PaypalOrderDetails = emptyPaypalOrderDetails;
@@ -26,6 +29,10 @@ export async function POST(request: Request) {
       try { details = await getPaypalOrderDetails(orderId, token, config.paypalBaseUrl); }
       catch { /* the verified capture can still be durably applied without enrichment */ }
     }
+    stage = "db_process";
     return new Response(null, { status: webhookResponseStatus(await processVerifiedWebhook(event.id, event.event_type, rawPayload, event, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null)) });
-  } catch { return new Response(null, { status: 503 }); }
+  } catch {
+    console.error("retail_webhook_failed", stage);
+    return new Response(null, { status: 503 });
+  }
 }

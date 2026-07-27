@@ -117,55 +117,64 @@ export async function processVerifiedWebhook(
     ?? (eventType === "PAYMENT.CAPTURE.REFUNDED" ? null : resourceId);
   const currency = payload.resource?.amount?.currency_code ?? null;
   const amountMinor = parsePaypalMinorAmount(payload.resource?.amount?.value);
-  // A single CTE keeps event recording and order-state changes atomic. A transient
-  // database failure commits neither, so PayPal may safely retry the delivery.
-  const result = await sql`WITH event_row AS (
-      INSERT INTO retail_webhook_events (paypal_event_id, event_type, raw_payload, payload, status)
+  // Neon submits this non-interactive batch as one transaction. Keeping the
+  // insert separate avoids modifying an event row twice in one CTE, which
+  // PostgreSQL may silently skip under MVCC. A pre-existing `received` row is
+  // deliberately eligible again so interrupted deliveries can recover.
+  const [, processedRows, rejectedRows, finalRows] = await sql.transaction((tx) => [
+    tx`INSERT INTO retail_webhook_events (paypal_event_id, event_type, raw_payload, payload, status)
       VALUES (${eventId}, ${eventType}, ${rawPayload}, ${JSON.stringify(payload)}::jsonb, 'received')
-      ON CONFLICT (paypal_event_id) DO UPDATE SET status = retail_webhook_events.status
-      RETURNING id, status
-    ), capture_update AS (
+      ON CONFLICT (paypal_event_id) DO NOTHING`,
+    tx`WITH capture_update AS (
       SELECT retail_apply_paypal_capture(${orderId}, ${captureId}, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}, ${netMinor}) AS applied
-      WHERE ${eventType} = 'PAYMENT.CAPTURE.COMPLETED' AND (SELECT status FROM event_row) = 'received'
+      WHERE ${eventType} = 'PAYMENT.CAPTURE.COMPLETED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId} AND status='received')
         AND ${orderId} IS NOT NULL AND ${captureId} IS NOT NULL AND ${currency} = 'USD'
         AND ${amountMinor} IS NOT NULL
         AND EXISTS(SELECT 1 FROM retail_orders WHERE paypal_order_id=${orderId} AND currency=${currency} AND amount_minor=${amountMinor})
     ), approval_update AS (
       UPDATE retail_orders SET status = CASE WHEN status = 'created' THEN 'approved' ELSE status END, updated_at = NOW()
-      WHERE ${eventType} = 'CHECKOUT.ORDER.APPROVED' AND (SELECT status FROM event_row) = 'received'
+      WHERE ${eventType} = 'CHECKOUT.ORDER.APPROVED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId} AND status='received')
         AND ${orderId} IS NOT NULL AND paypal_order_id = ${orderId} AND status IN ('created', 'approved', 'capturing', 'captured')
       RETURNING paypal_order_id
     ), refund_result AS (
       SELECT * FROM retail_apply_paypal_refund(
-        ${eventType} = 'PAYMENT.CAPTURE.REFUNDED' AND (SELECT status FROM event_row) = 'received',
+        ${eventType} = 'PAYMENT.CAPTURE.REFUNDED' AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId} AND status='received'),
         ${captureId}, ${relatedCaptureId}, ${currency}, ${amountMinor}
       )
     ), reverse_update AS (
       SELECT retail_apply_paypal_reversal(${relatedCaptureId}, ${eventId}, ${currency}, ${amountMinor}) AS applied
-      WHERE ${eventType} = 'PAYMENT.CAPTURE.REVERSED' AND ${relatedCaptureId} IS NOT NULL
+      WHERE ${eventType} = 'PAYMENT.CAPTURE.REVERSED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId} AND status='received')
+        AND ${relatedCaptureId} IS NOT NULL
     ), denied_release AS (
       SELECT retail_release_order_reservations(${orderId}, 'payment_denied') AS released
-      WHERE ${eventType} = 'PAYMENT.CAPTURE.DENIED' AND ${orderId} IS NOT NULL
+      WHERE ${eventType} = 'PAYMENT.CAPTURE.DENIED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId} AND status='received')
+        AND ${orderId} IS NOT NULL
     ), denied_update AS (
       UPDATE retail_orders SET status = 'denied', capturing_started_at = NULL, updated_at = NOW()
-      WHERE ${eventType} = 'PAYMENT.CAPTURE.DENIED' AND ${orderId} IS NOT NULL
+      WHERE ${eventType} = 'PAYMENT.CAPTURE.DENIED'
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId} AND status='received')
+        AND ${orderId} IS NOT NULL
         AND paypal_order_id = ${orderId} AND currency = ${currency} AND amount_minor = ${amountMinor}
         AND status IN ('created', 'approved', 'capturing', 'denied')
         AND EXISTS(SELECT 1 FROM denied_release WHERE released)
       RETURNING paypal_order_id
-    ), processed_event AS (
-      UPDATE retail_webhook_events SET status = CASE WHEN ${eventType} IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
-    WHERE id IN (SELECT id FROM event_row)
-      AND (SELECT status FROM event_row) = 'received'
-      AND (${eventType} NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update))
-      RETURNING 'ready' AS status
-    ), rejected_event AS (
-      UPDATE retail_webhook_events SET status = 'rejected', reason = 'business_validation_failed', processed_at = NOW()
-      WHERE id IN (SELECT id FROM event_row) AND (SELECT status FROM event_row) = 'received' AND NOT EXISTS (SELECT 1 FROM processed_event)
-      RETURNING 'rejected' AS status
     )
-    SELECT COALESCE((SELECT status FROM processed_event), (SELECT status FROM rejected_event), (SELECT status FROM event_row)) AS status` as { status?: string }[];
-  return classifyWebhookRow(result[0]?.status);
+    UPDATE retail_webhook_events SET status = CASE WHEN ${eventType} IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
+    WHERE paypal_event_id=${eventId} AND status = 'received'
+      AND (${eventType} NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update))
+      RETURNING status`,
+    tx`UPDATE retail_webhook_events SET status = 'rejected', reason = 'business_validation_failed', processed_at = NOW()
+      WHERE paypal_event_id=${eventId} AND status = 'received'
+      RETURNING status`,
+    tx`SELECT status FROM retail_webhook_events WHERE paypal_event_id=${eventId}`,
+  ]);
+  if (processedRows[0]) return "processed";
+  if (rejectedRows[0]) return "duplicate";
+  return classifyWebhookRow(finalRows[0]?.status);
 }
 
 export async function auditRetailEvent(orderId: string | null, action: string, detail: unknown) {

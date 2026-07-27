@@ -57,4 +57,15 @@ describe("retail PayPal webhook route", () => {
     expect(mocks.getPaypalOrderDetails).not.toHaveBeenCalled();
     expect(mocks.processVerifiedWebhook).not.toHaveBeenCalled();
   });
+
+  it("logs only a fixed diagnostic identifier and stage when database processing fails", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    mocks.processVerifiedWebhook.mockRejectedValue(new Error("do not expose this failure"));
+
+    const response = await POST(new Request("https://example.com/api/retail/webhook", { method: "POST", body: JSON.stringify(captureEvent) }));
+
+    expect(response.status).toBe(503);
+    expect(error).toHaveBeenCalledExactlyOnceWith("retail_webhook_failed", "db_process");
+    error.mockRestore();
+  });
 });
