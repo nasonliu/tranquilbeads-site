@@ -8,11 +8,11 @@ const headers = { "cache-control": "no-store" };
 
 export async function POST(request: Request, context: Context) {
   try {
-    await requireRetailPermission("returns:manage");
+    const actor = await requireRetailPermission("returns:manage");
     await requireRetailPermission("orders:refund");
     await assertSameOrigin();
     const { id } = await context.params;
-    await linkAdminReturnRefund(id, adminReturnRefundLinkDto.parse(await request.json()));
+    await linkAdminReturnRefund(id, adminReturnRefundLinkDto.parse(await request.json()), actor);
     return Response.json({ ok: true }, { headers });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";

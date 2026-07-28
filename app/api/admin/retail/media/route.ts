@@ -19,7 +19,7 @@ const isKnownAttachRejection = (error: unknown) => error instanceof Error && ["p
 
 export async function POST(request: Request) {
   try {
-    await requireRetailPermission("products:write");
+    const actor = await requireRetailPermission("products:write");
     await assertSameOrigin();
     const form = await request.formData();
     const input = fields.parse({ productId: form.get("productId"), idempotencyKey: form.get("idempotencyKey"), altEn: form.get("altEn") ?? "", altAr: form.get("altAr") ?? "" });
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     try { assertRetailBlobUrl(blob.url, blobConfig.hostname); }
     catch (error) { await del(blob.url, blobConfig.auth); throw error; }
     try {
-      const image = await attachRetailProductImage(input.productId, { url: blob.url, ...requestIdentity });
+      const image = await attachRetailProductImage(input.productId, { url: blob.url, ...requestIdentity }, actor);
       return Response.json({ ok: true, image: { id: image?.id, url: image?.blob_url ?? blob.url }, replayed: image?.replayed === true }, { status: image?.replayed ? 200 : 201, headers: { "cache-control": "no-store" } });
     } catch (error) {
       // A database call can commit then lose its HTTP response. Read the same
@@ -74,10 +74,10 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    await requireRetailPermission("products:write");
+    const actor = await requireRetailPermission("products:write");
     await assertSameOrigin();
     const { imageId } = z.object({ imageId: z.string().uuid() }).parse(await request.json());
-    const removed = await detachRetailProductImage(imageId);
+    const removed = await detachRetailProductImage(imageId, actor);
     if (!removed) return Response.json({ ok: true, deleted: false }, { headers: { "cache-control": "no-store" } });
     const blobConfig = getRetailBlobConfig();
     const outbox = (await listRetailBlobDeleteOutbox()).find((row) => row.blob_url === removed.blob_url);
@@ -93,10 +93,10 @@ export async function DELETE(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    await requireRetailPermission("products:write");
+    const actor = await requireRetailPermission("products:write");
     await assertSameOrigin();
     const input = mediaReorderDto.parse(await request.json());
-    const result = await reorderRetailProductMedia(input);
+    const result = await reorderRetailProductMedia(input, actor);
     return Response.json({ ok: true, mediaVersion: Number(result.media_version), imageIds: result.image_ids, replayed: result.replayed === true }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";

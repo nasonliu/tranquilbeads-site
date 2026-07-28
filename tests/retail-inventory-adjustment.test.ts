@@ -1,14 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 const { neon } = vi.hoisted(() => ({ neon: vi.fn() }));
-const actorMocks = vi.hoisted(() => ({ current: { id: "warehouse-a", name: "Warehouse A", role: "warehouse" as const, legacy: false } as { id: string; name: string; role: "warehouse"; legacy: boolean } | null }));
 vi.mock("@neondatabase/serverless", () => ({ neon }));
-vi.mock("@/src/lib/retail/admin-auth", () => ({ currentRetailAdminActor: () => actorMocks.current }));
 
 import { adjustInventory } from "@/src/lib/retail/operations";
 
 const publicId = "d7a4c3e5-5e57-4a1f-ae7d-0f024d3ac111";
 const idempotencyKey = "e4d39eb5-7d3b-414a-a3cf-890efe02c4fc";
+const actor = { id: "warehouse-a", name: "Warehouse A", role: "warehouse" as const, legacy: false };
 
 describe("retail inventory adjustment", () => {
   const priorDatabaseUrl = process.env.DATABASE_URL;
@@ -16,7 +15,6 @@ describe("retail inventory adjustment", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
-    actorMocks.current = { id: "warehouse-a", name: "Warehouse A", role: "warehouse", legacy: false };
     if (priorDatabaseUrl) process.env.DATABASE_URL = priorDatabaseUrl;
     else delete process.env.DATABASE_URL;
     if (priorIdentity) process.env.RETAIL_DATABASE_IDENTITY = priorIdentity;
@@ -31,7 +29,8 @@ describe("retail inventory adjustment", () => {
       .mockResolvedValueOnce([{ adjusted: true }]);
     neon.mockReturnValue(query);
 
-    await adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey });
+    await Promise.resolve();
+    await adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey }, actor);
 
     expect(query).toHaveBeenCalledTimes(2);
     const [sql, ...values] = query.mock.calls[1];
@@ -47,18 +46,20 @@ describe("retail inventory adjustment", () => {
       .mockResolvedValueOnce([]);
     neon.mockReturnValue(query);
 
-    await expect(adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey })).rejects.toThrow("product_not_found");
+    await expect(adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey }, actor)).rejects.toThrow("product_not_found");
     expect(query).toHaveBeenCalledTimes(2);
   });
 
-  it("fails closed without an actor and does not attempt the guarded DB query", async () => {
+  it("does not depend on a request AsyncLocalStorage context", async () => {
     process.env.DATABASE_URL = "postgres://inventory-adjustment-no-actor";
     process.env.RETAIL_DATABASE_IDENTITY = "inventory-adjustment-no-actor";
-    actorMocks.current = null;
-    const query = vi.fn();
+    const query = vi.fn()
+      .mockResolvedValueOnce([{ identity: "inventory-adjustment-no-actor" }])
+      .mockResolvedValueOnce([{ adjusted: true }]);
     neon.mockReturnValue(query);
 
-    await expect(adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey })).rejects.toThrow("admin_actor_missing");
-    expect(query).not.toHaveBeenCalled();
+    await Promise.resolve();
+    await expect(adjustInventory({ productId: publicId, delta: 3, reason: "MVP stock", idempotencyKey }, actor)).resolves.toBeUndefined();
+    expect(query).toHaveBeenCalledTimes(2);
   });
 });

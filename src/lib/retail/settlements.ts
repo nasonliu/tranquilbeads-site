@@ -3,7 +3,7 @@ import "server-only";
 import crypto from "node:crypto";
 import { z } from "zod";
 
-import { currentRetailAdminActor } from "./admin-auth";
+import type { RetailAdminActor } from "./admin-auth";
 import { guardedRetailSql, type RetailSql } from "./database-identity";
 
 type SettlementRow = {
@@ -17,12 +17,6 @@ const noControl = /^[^\u0000-\u001f\u007f]*$/;
 const cleanText = (value: unknown, max: number) => typeof value === "string" && noControl.test(value.trim()) ? value.trim().slice(0, max) : "";
 
 function sql(): Sql { return guardedRetailSql(); }
-function actor() {
-  const value = currentRetailAdminActor();
-  if (!value) throw new Error("admin_actor_missing");
-  return value;
-}
-
 function field(record: Record<string, unknown>, ...names: string[]) {
   const wanted = new Set(names.map((name) => name.toLowerCase().replace(/[^a-z0-9]/g, "")));
   for (const [key, value] of Object.entries(record)) if (wanted.has(key.toLowerCase().replace(/[^a-z0-9]/g, ""))) return value;
@@ -99,9 +93,9 @@ export const settlementImportDto = z.object({
 }).strict();
 export const settlementCloseDto = z.object({ idempotencyKey: z.string().uuid(), note: z.string().trim().min(1).max(500) }).strict();
 
-export async function importPayPalSettlement(input: z.infer<typeof settlementImportDto>) {
+export async function importPayPalSettlement(input: z.infer<typeof settlementImportDto>, principal: RetailAdminActor) {
   const rows = input.format === "csv" ? parseSettlementCsv(input.content) : parseSettlementJson(input.content);
-  const hash = crypto.createHash("sha256").update(input.content).digest("hex"); const q = sql(); const principal = actor();
+  const hash = crypto.createHash("sha256").update(input.content).digest("hex"); const q = sql();
   const result = await q`SELECT * FROM retail_import_paypal_settlement_as_actor(${hash},${input.format},${input.filename},${JSON.stringify(rows)}::jsonb,${input.idempotencyKey}::uuid,${principal.id},${principal.name},${principal.role},${principal.legacy})`;
   return result[0] ?? null;
 }
@@ -117,4 +111,4 @@ export async function listPayPalSettlementDetails(input: { limit: number; offset
   ]);
   return { transactions, matches, payouts, payoutItems, page: { limit, offset } };
 }
-export async function closePayPalSettlementException(id: string, input: z.infer<typeof settlementCloseDto>) { const q = sql(); const principal = actor(); const rows = await q`SELECT retail_close_paypal_settlement_exception_as_actor(${id}::uuid,${input.note},${input.idempotencyKey}::uuid,${principal.id},${principal.name},${principal.role},${principal.legacy}) AS closed`; if (!rows[0]?.closed) throw new Error("settlement_exception_not_found"); }
+export async function closePayPalSettlementException(id: string, input: z.infer<typeof settlementCloseDto>, principal: RetailAdminActor) { const q = sql(); const rows = await q`SELECT retail_close_paypal_settlement_exception_as_actor(${id}::uuid,${input.note},${input.idempotencyKey}::uuid,${principal.id},${principal.name},${principal.role},${principal.legacy}) AS closed`; if (!rows[0]?.closed) throw new Error("settlement_exception_not_found"); }

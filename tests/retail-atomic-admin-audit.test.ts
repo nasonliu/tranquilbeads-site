@@ -6,6 +6,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 describe("retail atomic admin audit contract", () => {
   it("moves every idempotent production mutation onto an actor-aware SQL entry point", () => {
     const operations = read("src/lib/retail/operations.ts");
+    const adminAuth = read("src/lib/retail/admin-auth.ts");
     for (const entryPoint of [
       "retail_create_admin_product_variant_authority_as_actor", "retail_update_admin_product_as_actor",
       "retail_change_product_price_as_actor", "retail_adjust_inventory_as_actor",
@@ -17,7 +18,12 @@ describe("retail atomic admin audit contract", () => {
     ]) expect(operations).toContain(entryPoint);
     expect(operations).not.toContain("attributeAdminMutation");
     expect(operations).not.toContain("recordActorAudit");
-    expect(operations).toContain('throw new Error("admin_actor_missing")');
+    expect(operations).toContain("actor: RetailAdminActor");
+    expect(operations).not.toContain("currentRetailAdminActor");
+    expect(operations).not.toContain("mutationActor");
+    expect(operations).not.toContain("admin_actor_missing");
+    expect(adminAuth).not.toContain("AsyncLocalStorage");
+    expect(adminAuth).not.toContain("currentRetailAdminActor");
   });
 
   it("seals first-write actor attribution inside the PostgreSQL mutation", () => {

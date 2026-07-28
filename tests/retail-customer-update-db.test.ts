@@ -5,10 +5,7 @@ const neonMocks = vi.hoisted(() => {
   const sql = vi.fn();
   return { neon: vi.fn(() => sql), query: null as { text: string; values: unknown[] } | null, sql };
 });
-const actorMocks = vi.hoisted(() => ({ current: { id: "owner-a", name: "Owner A", role: "owner" as const, legacy: false } as { id: string; name: string; role: "owner"; legacy: boolean } | null }));
-
 vi.mock("@neondatabase/serverless", () => ({ neon: neonMocks.neon }));
-vi.mock("@/src/lib/retail/admin-auth", () => ({ currentRetailAdminActor: () => actorMocks.current }));
 
 import { updateCustomer } from "@/src/lib/retail/operations";
 
@@ -18,13 +15,13 @@ const idempotencyKey = "00000000-0000-4000-8000-000000000003";
 let operationRows: unknown[] = [{ address_id: addressId, replayed: false }];
 let readbackRows: unknown[] = [{ public_id: customerId, addresses: [] }];
 let mutationQuery: { text: string; values: unknown[] } | null = null;
+const actor = { id: "owner-a", name: "Owner A", role: "owner" as const, legacy: false };
 
 describe("customer update idempotency transaction", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.DATABASE_URL = "postgres://test";
     process.env.RETAIL_DATABASE_IDENTITY = crypto.randomUUID();
-    actorMocks.current = { id: "owner-a", name: "Owner A", role: "owner", legacy: false };
     operationRows = [{ address_id: addressId, replayed: false }];
     readbackRows = [{ public_id: customerId, addresses: [] }];
     mutationQuery = null;
@@ -39,9 +36,10 @@ describe("customer update idempotency transaction", () => {
   });
 
   it("delegates customer, address, and audit writes to one DB-side idempotent operation", async () => {
+    await Promise.resolve();
     await expect(updateCustomer(customerId, {
       name: "Updated customer", addressId, city: "Dubai", isDefault: true, idempotencyKey,
-    })).resolves.toEqual({ customer: { public_id: customerId, addresses: [] }, addressId, replayed: false });
+    }, actor)).resolves.toEqual({ customer: { public_id: customerId, addresses: [] }, addressId, replayed: false });
 
     expect(neonMocks.sql).toHaveBeenCalledTimes(3);
     const statement = mutationQuery?.text.replace(/\s+/g, " ") ?? "";
@@ -56,15 +54,14 @@ describe("customer update idempotency transaction", () => {
 
     await expect(updateCustomer(customerId, {
       addressId, archive: true, idempotencyKey,
-    })).rejects.toThrow("customer_not_found");
+    }, actor)).rejects.toThrow("customer_not_found");
 
     expect(neonMocks.sql).toHaveBeenCalledTimes(2);
   });
 
-  it("fails closed before any database call when the actor context is absent", async () => {
-    actorMocks.current = null;
-
-    await expect(updateCustomer(customerId, { name: "No actor", idempotencyKey })).rejects.toThrow("admin_actor_missing");
-    expect(neonMocks.sql).not.toHaveBeenCalled();
+  it("uses the explicit actor after an awaited boundary", async () => {
+    await Promise.resolve();
+    await expect(updateCustomer(customerId, { name: "No actor", idempotencyKey }, actor)).resolves.toMatchObject({ addressId });
+    expect(mutationQuery?.values.slice(-4)).toEqual(["owner-a", "Owner A", "owner", false]);
   });
 });

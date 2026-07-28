@@ -10,9 +10,9 @@ type Context={params:Promise<{id:string}>};
 const noStore={"cache-control":"no-store"};
 export async function POST(request:Request,context:Context){
   try{
-    await requireRetailPermission("orders:refund");await assertSameOrigin();
+    const actor=await requireRetailPermission("orders:refund");await assertSameOrigin();
     const {id}=await context.params,orderId=z.coerce.number().int().positive().parse(id),input=refundDto.parse(await request.json());
-    const prepared=await prepareAdminRefund(orderId,input);
+    const prepared=await prepareAdminRefund(orderId,input,actor);
     if(prepared.status==="completed"&&prepared.paypalRefundId)return Response.json({ok:true,refundId:prepared.paypalRefundId,duplicate:true},{headers:noStore});
     const config=getRetailServerConfig();if(!config.enabled)return Response.json({ok:false,error:"retail_unavailable"},{status:503,headers:noStore});
     const token=await getPaypalAccessToken({clientId:config.paypalClientId,clientSecret:config.paypalClientSecret,baseUrl:config.paypalBaseUrl});

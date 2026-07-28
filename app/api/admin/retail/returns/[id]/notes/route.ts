@@ -8,10 +8,10 @@ const headers = { "cache-control": "no-store" };
 
 export async function GET(_request: Request, context: Context) {
   try {
-    await requireRetailPermission("returns:manage");
+    const actor = await requireRetailPermission("returns:manage");
     await requireRetailPermission("orders:pii");
     const { id } = await context.params;
-    return Response.json({ ok: true, notes: await getAdminReturnNotes(id) }, { headers });
+    return Response.json({ ok: true, notes: await getAdminReturnNotes(id, actor) }, { headers });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";
     const status = message === "unauthorized" ? 401 : message === "forbidden" ? 403 : 400;

@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import { AsyncLocalStorage } from "node:async_hooks";
 import { cookies, headers } from "next/headers";
 
 import { guardedRetailSql } from "./database-identity";
@@ -27,7 +26,6 @@ const rolePermissions: Record<RetailRole, ReadonlySet<RetailPermission>> = {
 type ConfiguredOperator = RetailAdminActor & { password: string };
 type SessionPayload = RetailAdminActor & { exp: number; v: 3; jti: string; cv: string };
 type ParsedSession = { actor: RetailAdminActor; exp: number; jti: string; cv: string };
-const actorContext = new AsyncLocalStorage<RetailAdminActor>();
 
 function config() {
   const password = process.env.ADMIN_RETAIL_PASSWORD;
@@ -131,10 +129,8 @@ export function authenticateRetailAdmin(password: string, actorId?: string): Ret
 export async function requireRetailAdmin() {
   const actor = await validateRetailAdminSession((await cookies()).get(COOKIE)?.value);
   if (!actor) throw new Error("unauthorized");
-  actorContext.enterWith(actor);
   return actor;
 }
-export function currentRetailAdminActor() { return actorContext.getStore(); }
 export async function getRetailAdminActorForAudit(): Promise<RetailAdminActor> {
   try { return await requireRetailAdmin(); } catch { return legacyActor(); }
 }

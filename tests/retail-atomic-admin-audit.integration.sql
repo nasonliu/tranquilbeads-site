@@ -31,6 +31,22 @@ BEGIN
   SELECT actor_id INTO observed FROM retail_admin_audit WHERE idempotency_key='20000000-0000-4000-8000-000000000001'::uuid;
   IF observed <> 'owner-a' THEN RAISE EXCEPTION 'replay overwrote first actor'; END IF;
 
+  SELECT * INTO replay FROM retail_attach_product_image_as_actor(
+    created.public_id,'https://example.test/atomic-audit.webp','retail/atomic-audit.webp','image/webp',10,'abc','','',
+    '20000000-0000-4000-8000-000000000003'::uuid,'owner-a','Owner A','owner',false
+  );
+  IF replay.replayed OR replay.id IS NULL THEN RAISE EXCEPTION 'actor-aware media attach did not create image'; END IF;
+  SELECT * INTO replay FROM retail_attach_product_image_as_actor(
+    created.public_id,'https://example.test/atomic-audit.webp','retail/atomic-audit.webp','image/webp',10,'abc','','',
+    '20000000-0000-4000-8000-000000000003'::uuid,'owner-a','Owner A','owner',false
+  );
+  IF NOT replay.replayed THEN RAISE EXCEPTION 'actor-aware media replay was not recognized'; END IF;
+  SELECT actor_id INTO observed FROM retail_admin_audit WHERE idempotency_key='20000000-0000-4000-8000-000000000003'::uuid;
+  IF observed <> 'owner-a' THEN RAISE EXCEPTION 'media actor attribution was not persisted'; END IF;
+  SELECT count(*) INTO observed_count FROM retail_product_images
+    WHERE product_id=(SELECT id FROM retail_products WHERE public_id=created.public_id);
+  IF observed_count <> 1 THEN RAISE EXCEPTION 'media replay created % images', observed_count; END IF;
+
   BEGIN
     PERFORM * FROM retail_create_admin_product_as_actor(
       'ATOMIC-AUDIT-ROLLBACK','atomic-audit-rollback','Rollback','تراجع','回滚','English','عربي','中文','draft',100,

@@ -11,9 +11,9 @@ export async function PATCH(request: Request, context: Context) {
     await assertSameOrigin();
     const { id } = await context.params;
     const input = adminReturnTransitionDto.parse(await request.json());
-    await requireRetailPermission("returns:manage");
+    const actor = await requireRetailPermission("returns:manage");
     if (input.sellableRestock) await requireRetailPermission("inventory:write");
-    const result = await transitionAdminReturn(id, input);
+    const result = await transitionAdminReturn(id, input, actor);
     return Response.json({ ok: true, return: result }, { headers });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";

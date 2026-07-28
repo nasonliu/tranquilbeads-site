@@ -37,15 +37,15 @@ export async function PATCH(request: Request, context: ParamsContext) {
     const orderId = z.coerce.number().int().positive().parse(id);
     const raw = await request.json();
     if (raw.action === "cancel") {
-      await requireRetailPermission("orders:cancel");
+      const actor = await requireRetailPermission("orders:cancel");
       const order = await getAdminOrder(orderId);
       if (!order) throw new Error("order_not_found");
       if (order.paypal_order_id) throw new Error("order_requires_payment_reconciliation");
-      await cancelAdminOrder(orderId, cancellationDto.parse(raw));
+      await cancelAdminOrder(orderId, cancellationDto.parse(raw), actor);
       return Response.json({ ok: true }, { headers: noStore });
     }
-    await requireRetailPermission("orders:fulfil");
-    await fulfilAdminOrder(fulfilmentDto.parse({ ...raw, orderId }));
+    const actor = await requireRetailPermission("orders:fulfil");
+    await fulfilAdminOrder(fulfilmentDto.parse({ ...raw, orderId }), actor);
     return Response.json({ ok: true }, { headers: noStore });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";

@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 
 async function reorder(request: Request) {
   try {
-    await requireRetailPermission("products:write");
+    const actor = await requireRetailPermission("products:write");
     await assertSameOrigin();
     const input = mediaReorderDto.parse(await request.json());
-    const result = await reorderRetailProductMedia(input);
+    const result = await reorderRetailProductMedia(input, actor);
     return Response.json({ ok: true, mediaVersion: Number(result.media_version), imageIds: result.image_ids, replayed: result.replayed === true }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";

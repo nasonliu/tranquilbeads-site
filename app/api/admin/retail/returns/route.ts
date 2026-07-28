@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   try {
     const actor = await requireRetailPermission("returns:manage");
     const status = new URL(request.url).searchParams.get("status") || undefined;
-    return Response.json({ ok: true, returns: await listAdminReturns(status), canViewNotes: hasRetailPermission(actor, "orders:pii") }, { headers });
+    return Response.json({ ok: true, returns: await listAdminReturns(status, actor), canViewNotes: hasRetailPermission(actor, "orders:pii") }, { headers });
   } catch (error) {
     const message = error instanceof Error ? error.message : "invalid_request";
     const status = message === "unauthorized" ? 401 : message === "forbidden" ? 403 : 400;
