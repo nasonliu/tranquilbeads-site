@@ -61,6 +61,21 @@ describe("retail admin console", () => {
     expect(screen.getByRole("button", { name: "Hide full delivery address" })).toBeInTheDocument();
   });
 
+  it("renders immutable order-line options in the selected admin locale", async () => {
+    const fetcher = vi.fn(async (input: RequestInfo | URL) => {
+      const path = String(input);
+      if (path === "/api/admin/retail/orders/78") return new Response(JSON.stringify({ ok: true, order: { id: 78, paypal_order_id: "ORDER-78", currency: "USD", amount_minor: 1200, order_lines: [{ productSku: "BEAD", variantSku: "BEAD-GOLD", titleEn: "Gold bead", titleZh: "金色珠子", options: { en: { Color: "Gold" }, zh: { "颜色": "金色" } }, quantity: 1, unitAmountMinor: 1250, discountMinor: 50, lineTotalMinor: 1200 }] } }), { status: 200 });
+      if (path === "/api/admin/retail/ledger") return new Response(JSON.stringify({ ok: true, entries: [], summary: {} }), { status: 200 });
+      if (path === "/api/admin/retail/products") return new Response(JSON.stringify({ ok: true, products: [] }), { status: 200 });
+      return new Response(JSON.stringify(responseFor(path)), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<RetailOrderDetail orderId="78" />);
+    expect(await screen.findByText("Color: Gold")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Language"), { target: { value: "zh" } });
+    expect(await screen.findByText("颜色: 金色")).toBeInTheDocument();
+  });
+
   it("uses customer and address selectors instead of hand-entered UUIDs, with an explicit audited PII read", async () => {
     const addressId = "ce3ca86d-c511-4899-86e4-67df350b9f40";
     const fetcher = vi.fn(async (input: RequestInfo | URL) => {

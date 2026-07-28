@@ -35,6 +35,10 @@ const migrationNames = [
   "20260810_retail_rma_refund_status.sql",
   "20260811_retail_order_locale_notifications.sql",
   "20260812_retail_order_locale_notification_contract.sql",
+  "20260813_retail_promotion_line_allocation.sql",
+  "20260814_retail_order_line_projection.sql",
+  "20260815_retail_rma_refund_integrity.sql",
+  "20260816_retail_rma_line_discount_cap.sql",
 ];
 
 const migrationTarget = process.env.RETAIL_MIGRATION_TARGET;

@@ -92,6 +92,7 @@ jobs:
           psql "$DATABASE_URL" -f tests/retail-atomic-admin-audit.integration.sql
           psql "$DATABASE_URL" -f tests/retail-disputes.integration.sql
           psql "$DATABASE_URL" -f tests/retail-variants-promotions.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-promotion-line-allocation.integration.sql
           psql "$DATABASE_URL" -f tests/retail-customer-portal.integration.sql
           psql "$DATABASE_URL" -f tests/retail-paypal-settlement.integration.sql
           psql "$DATABASE_URL" -f tests/retail-rma.integration.sql

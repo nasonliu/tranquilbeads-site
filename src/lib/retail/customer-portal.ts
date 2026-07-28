@@ -21,7 +21,18 @@ export type CustomerPortalOrder = {
   orderedAt: string;
   carrier: string | null;
   trackingNumber: string | null;
-  items: Array<{ titleEn?: string | null; titleAr?: string | null; titleZh?: string | null; quantity?: number }>;
+  items: Array<{
+    productSku?: string | null;
+    variantSku?: string | null;
+    titleEn?: string | null;
+    titleAr?: string | null;
+    titleZh?: string | null;
+    options?: Record<string, unknown> | null;
+    quantity?: number;
+    unitAmountMinor?: number;
+    discountMinor?: number;
+    lineTotalMinor?: number;
+  }>;
 };
 
 function hashToken(token: string) {

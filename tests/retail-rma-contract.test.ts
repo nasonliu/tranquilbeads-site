@@ -5,6 +5,21 @@ import { describe, expect, it } from "vitest";
 const read = (file: string) => fs.readFileSync(path.join(process.cwd(), file), "utf8");
 
 describe("retail RMA contract", () => {
+  it("makes refund lifecycle states provider-backed rather than generic transitions", () => {
+    const integrity = read("migrations/20260815_retail_rma_refund_integrity.sql");
+    const returns = read("src/lib/retail/returns.ts");
+    const refundRoute = read("app/api/admin/retail/returns/[id]/refund/route.ts");
+    expect(integrity).toContain("refund lifecycle is driven by refund requests");
+    expect(integrity).toContain("retail_prepare_return_refund_as_actor");
+    expect(integrity).toContain("refund amount exceeds return cap");
+    expect(integrity).toContain("CREATE TRIGGER retail_return_refund_completion");
+    expect(returns).not.toContain('"refund_pending", "refunded"');
+    expect(refundRoute).toContain("prepareAdminReturnRefund");
+    expect(refundRoute).toContain("refundRequestId: prepared.refundRequestId");
+    expect(returns).not.toContain("returnId: uuid.optional");
+    expect(read("app/admin/retail/returns/returns-client.tsx")).toContain("/api/admin/retail/returns/${refundReturnId}/refund");
+  });
+
   it("persists immutable order-line return quantities and a constrained lifecycle", () => {
     const migration = read("migrations/20260803_retail_rma.sql");
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS retail_returns");

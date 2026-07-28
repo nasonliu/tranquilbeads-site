@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { RetailShop } from "@/src/components/retail-shop";
 import { PageHero } from "@/src/components/page-hero";
 import { getRetailCopy } from "@/src/data/retail/copy";
+import { localizeRetailVariantOptions } from "@/src/data/retail/types";
 import { getRetailRuntimeConfig } from "@/src/lib/retail/config";
 import { isLocale, withLocale } from "@/src/lib/i18n";
 import { SITE_URL } from "@/src/lib/seo";
@@ -39,7 +40,7 @@ export default async function ShopPage({ params }: PageProps<"/[locale]/shop">) 
     variants:p.variants.map((variant) => ({
       sku:variant.sku,
       name:{en:variant.title_en || p.title_en,ar:variant.title_ar || p.title_ar,zh:variant.title_zh || variant.title_en || p.title_zh || p.title_en},
-      options:variant.option_values ?? {},
+      options:localizeRetailVariantOptions(variant.option_values, locale),
       priceMinor:Number(variant.amount_minor),
       available:Number(variant.available)>0,
       stock:Number(variant.available),

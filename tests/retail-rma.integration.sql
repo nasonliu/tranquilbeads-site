@@ -1,13 +1,14 @@
 \set ON_ERROR_STOP on
 BEGIN;
 DO $$
-DECLARE product_id UUID; v_id UUID; order_id BIGINT; line_id UUID; rma RECORD; quantity_after BIGINT; token_hash TEXT := repeat('b',64); payload JSONB; note RECORD; over_refund UUID := '40000000-0000-4000-8000-0000000000d7'; exact_refund UUID := '40000000-0000-4000-8000-0000000000f7'; cross_order_refund UUID := '40000000-0000-4000-8000-000000000114'; free_order BIGINT; free_line UUID; free_rma RECORD; free_promotion UUID;
+DECLARE product_id UUID; v_id UUID; noneligible_v_id UUID; order_id BIGINT; line_id UUID; rma RECORD; quantity_after BIGINT; token_hash TEXT := repeat('b',64); payload JSONB; note RECORD; over_refund UUID := '40000000-0000-4000-8000-0000000000d7'; exact_refund UUID := '40000000-0000-4000-8000-0000000000f7'; cross_order_refund UUID := '40000000-0000-4000-8000-000000000114'; free_order BIGINT; free_line UUID; free_rma RECORD; free_promotion UUID; line_discount_order BIGINT; eligible_line UUID; noneligible_line UUID; noneligible_rma RECORD; eligible_one_rma RECORD; eligible_two_rma RECORD;
 BEGIN
   INSERT INTO retail_products(sku,slug,title_en,title_ar,title_zh,description_en,description_ar,description_zh,status)
     VALUES('RMA-P','rma-product','Return product','منتج إرجاع','退货商品','','','','published') RETURNING id INTO product_id;
   INSERT INTO retail_inventory_balances(product_id,on_hand,reserved) VALUES(product_id,4,0);
   INSERT INTO retail_product_variants(product_id,sku,title_en,title_ar,title_zh,option_values) VALUES(product_id,'RMA-V','Return variant','نسخة إرجاع','退货规格','{}') RETURNING id INTO v_id;
   INSERT INTO retail_variant_inventory_balances(variant_id,on_hand,reserved) VALUES(v_id,4,0);
+  INSERT INTO retail_product_variants(product_id,sku,title_en,title_ar,title_zh,option_values) VALUES(product_id,'RMA-V-OTHER','Other variant','نسخة أخرى','非优惠规格','{"kind":"other"}') RETURNING id INTO noneligible_v_id;
   INSERT INTO retail_orders(paypal_order_id,client_request_id,currency,amount_minor,subtotal_minor,shipping_minor,tax_minor,discount_minor,status,capture_id,captured_at,items_snapshot)
     VALUES('RMA-ORDER','40000000-0000-4000-8000-000000000001','USD',90,100,0,10,20,'captured','RMA-CAPTURE',now(),'[]') RETURNING id INTO order_id;
   INSERT INTO retail_order_lines(order_id,product_id,variant_id,product_sku,variant_sku,title_en,title_ar,title_zh,quantity,unit_amount_minor)
@@ -83,7 +84,7 @@ BEGIN
   BEGIN
     PERFORM * FROM retail_admin_transition_return(rma.public_id,'refund_pending','',true,'40000000-0000-4000-8000-000000000009','worker','Worker','warehouse',false);
     RAISE EXCEPTION 'restock outside inspection approval unexpectedly worked';
-  EXCEPTION WHEN OTHERS THEN IF SQLERRM NOT LIKE '%sellable restock requires%' AND SQLERRM NOT LIKE '%invalid return transition%' THEN RAISE; END IF; END;
+  EXCEPTION WHEN OTHERS THEN IF SQLERRM NOT LIKE '%sellable restock requires%' AND SQLERRM NOT LIKE '%invalid return transition%' AND SQLERRM NOT LIKE '%refund lifecycle is driven by refund requests%' THEN RAISE; END IF; END;
   INSERT INTO retail_orders(paypal_order_id,client_request_id,currency,amount_minor,subtotal_minor,shipping_minor,tax_minor,discount_minor,status,capture_id,captured_at,items_snapshot)
     VALUES('RMA-FREE','40000000-0000-4000-8000-000000000111','USD',100,100,20,0,20,'captured','RMA-FREE-CAPTURE',now(),'[]') RETURNING id INTO free_order;
   INSERT INTO retail_order_lines(order_id,product_id,variant_id,product_sku,variant_sku,title_en,title_ar,title_zh,quantity,unit_amount_minor)
@@ -106,6 +107,14 @@ BEGIN
   PERFORM * FROM retail_admin_transition_return(free_rma.public_id,'received','',false,'40000000-0000-4000-8000-000000000119','ops','Ops','operations',false);
   PERFORM * FROM retail_admin_transition_return(free_rma.public_id,'inspected','',false,'40000000-0000-4000-8000-000000000120','ops','Ops','operations',false);
   PERFORM * FROM retail_admin_transition_return(free_rma.public_id,'approved','',false,'40000000-0000-4000-8000-000000000121','ops','Ops','operations',false);
+  BEGIN
+    PERFORM * FROM retail_admin_transition_return(free_rma.public_id,'refund_pending','',false,'40000000-0000-4000-8000-000000000131','ops','Ops','operations',false);
+    RAISE EXCEPTION 'generic transition unexpectedly entered refund_pending';
+  EXCEPTION WHEN OTHERS THEN IF SQLERRM NOT LIKE '%refund lifecycle is driven by refund requests%' THEN RAISE; END IF; END;
+  BEGIN
+    PERFORM * FROM retail_admin_transition_return(free_rma.public_id,'refunded','',false,'40000000-0000-4000-8000-000000000132','ops','Ops','operations',false);
+    RAISE EXCEPTION 'generic transition unexpectedly entered refunded';
+  EXCEPTION WHEN OTHERS THEN IF SQLERRM NOT LIKE '%refund lifecycle is driven by refund requests%' THEN RAISE; END IF; END;
   INSERT INTO retail_refund_requests(id,idempotency_key,order_id,amount_minor,reason,status)
     VALUES('40000000-0000-4000-8000-000000000122','40000000-0000-4000-8000-000000000123',free_order,50,'failed RMA refund','failed');
   BEGIN
@@ -120,11 +129,36 @@ BEGIN
     RAISE EXCEPTION 'cancelled refund unexpectedly linked';
   EXCEPTION WHEN OTHERS THEN IF SQLERRM NOT LIKE '%refund request status is not linkable: cancelled%' THEN RAISE; END IF; END;
   IF (SELECT refund_request_id FROM retail_returns WHERE public_id=free_rma.public_id) IS NOT NULL THEN RAISE EXCEPTION 'cancelled refund consumed unique RMA link'; END IF;
-  INSERT INTO retail_refund_requests(id,idempotency_key,order_id,amount_minor,reason,status,paypal_refund_id,completed_at)
-    VALUES('40000000-0000-4000-8000-000000000128','40000000-0000-4000-8000-000000000129',free_order,50,'completed RMA refund','completed','RMA-DIRECT-COMPLETED',now());
-  PERFORM retail_admin_link_return_refund(free_rma.public_id,'40000000-0000-4000-8000-000000000128','40000000-0000-4000-8000-000000000130','ops','Ops','operations',false);
-  PERFORM retail_admin_link_return_refund(free_rma.public_id,'40000000-0000-4000-8000-000000000128','40000000-0000-4000-8000-000000000130','ops','Ops','operations',false);
+  PERFORM * FROM retail_prepare_return_refund_as_actor(free_rma.public_id,50,'retryable RMA refund','40000000-0000-4000-8000-000000000134','ops','Ops','operations',false);
+  IF (SELECT status FROM retail_returns WHERE public_id=free_rma.public_id)<>'refund_pending' THEN RAISE EXCEPTION 'pending linked refund did not enter refund_pending'; END IF;
+  UPDATE retail_refund_requests SET status='failed',last_error='PayPal rejected refund' WHERE idempotency_key='40000000-0000-4000-8000-000000000134';
+  IF (SELECT status FROM retail_returns WHERE public_id=free_rma.public_id)<>'approved' OR (SELECT refund_request_id FROM retail_returns WHERE public_id=free_rma.public_id) IS NOT NULL THEN RAISE EXCEPTION 'failed refund did not restore retryable approved RMA'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM retail_return_events WHERE return_id=(SELECT id FROM retail_returns WHERE public_id=free_rma.public_id) AND from_status='refund_pending' AND to_status='approved' AND detail->>'refundStatus'='failed') THEN RAISE EXCEPTION 'failed refund did not record RMA payment-fact event'; END IF;
+  PERFORM * FROM retail_prepare_return_refund_as_actor(free_rma.public_id,50,'completed RMA refund','40000000-0000-4000-8000-000000000129','ops','Ops','operations',false);
+  UPDATE retail_refund_requests SET status='completed',paypal_refund_id='RMA-DIRECT-COMPLETED',completed_at=now() WHERE idempotency_key='40000000-0000-4000-8000-000000000129';
   IF (SELECT status FROM retail_returns WHERE public_id=free_rma.public_id)<>'refunded' THEN RAISE EXCEPTION 'completed refund did not directly map RMA to refunded'; END IF;
   IF (SELECT count(*) FROM retail_return_events WHERE return_id=(SELECT id FROM retail_returns WHERE public_id=free_rma.public_id) AND to_status='refunded')<>1 THEN RAISE EXCEPTION 'completed refund replay generated contradictory RMA events'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM retail_admin_audit WHERE idempotency_key='40000000-0000-4000-8000-000000000129' AND detail->>'refundStatus'='completed' AND detail->>'paypalRefundId'='RMA-DIRECT-COMPLETED') THEN RAISE EXCEPTION 'completed refund did not finalize the RMA audit fact'; END IF;
+
+  -- A scoped product promotion must follow the persisted order-line discount,
+  -- never the old whole-order ratio.  The 100 discount across three units also
+  -- exercises deterministic conservative partial-return rounding.
+  INSERT INTO retail_orders(paypal_order_id,client_request_id,currency,amount_minor,subtotal_minor,shipping_minor,tax_minor,discount_minor,status,capture_id,captured_at,items_snapshot)
+    VALUES('RMA-LINE-DISCOUNT','40000000-0000-4000-8000-000000000201','USD',344,403,0,41,100,'captured','RMA-LINE-DISCOUNT-CAPTURE',now(),'[]') RETURNING id INTO line_discount_order;
+  INSERT INTO retail_order_lines(order_id,product_id,variant_id,product_sku,variant_sku,title_en,title_ar,title_zh,quantity,unit_amount_minor,discount_minor)
+    VALUES(line_discount_order,product_id,v_id,'RMA-P','RMA-ELIGIBLE','Eligible variant','نسخة مؤهلة','优惠规格',3,101,100) RETURNING id INTO eligible_line;
+  INSERT INTO retail_order_lines(order_id,product_id,variant_id,product_sku,variant_sku,title_en,title_ar,title_zh,quantity,unit_amount_minor,discount_minor)
+    VALUES(line_discount_order,product_id,noneligible_v_id,'RMA-P','RMA-NONELIGIBLE','Other variant','نسخة أخرى','非优惠规格',1,100,0) RETURNING id INTO noneligible_line;
+  PERFORM retail_issue_customer_portal_token(line_discount_order,repeat('d',64),now()+interval '1 day');
+  SELECT * INTO noneligible_rma FROM retail_customer_create_return(repeat('d',64),jsonb_build_array(jsonb_build_object('lineId',noneligible_line,'quantity',1)),'Not discounted','', '40000000-0000-4000-8000-000000000202');
+  IF (SELECT refund_cap_minor FROM retail_returns WHERE public_id=noneligible_rma.public_id)<>113
+    OR (SELECT refund_cap_calculation->>'allocationSource' FROM retail_returns WHERE public_id=noneligible_rma.public_id)<>'order_lines' THEN RAISE EXCEPTION 'noneligible line used whole-order discount'; END IF;
+  SELECT * INTO eligible_one_rma FROM retail_customer_create_return(repeat('d',64),jsonb_build_array(jsonb_build_object('lineId',eligible_line,'quantity',1)),'One discounted unit','', '40000000-0000-4000-8000-000000000203');
+  IF (SELECT refund_cap_minor FROM retail_returns WHERE public_id=eligible_one_rma.public_id)<>76
+    OR (SELECT (refund_cap_calculation->>'allocatedDiscountMinor')::BIGINT FROM retail_returns WHERE public_id=eligible_one_rma.public_id)<>34
+    OR (SELECT (refund_cap_calculation->>'allocatedTaxMinor')::BIGINT FROM retail_returns WHERE public_id=eligible_one_rma.public_id)<>9 THEN RAISE EXCEPTION 'indivisible line discount partial cap was not conservative'; END IF;
+  SELECT * INTO eligible_two_rma FROM retail_customer_create_return(repeat('d',64),jsonb_build_array(jsonb_build_object('lineId',eligible_line,'quantity',2)),'Remaining discounted units','', '40000000-0000-4000-8000-000000000204');
+  IF (SELECT refund_cap_minor FROM retail_returns WHERE public_id=eligible_two_rma.public_id)<>153
+    OR (SELECT sum((refund_cap_calculation->>'returnedSubtotalMinor')::BIGINT-(refund_cap_calculation->>'allocatedDiscountMinor')::BIGINT) FROM retail_returns WHERE public_id IN (eligible_one_rma.public_id,eligible_two_rma.public_id))>203 THEN RAISE EXCEPTION 'partial discounted returns exceeded line net'; END IF;
 END $$;
 ROLLBACK;

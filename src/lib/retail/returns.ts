@@ -17,13 +17,14 @@ export const customerReturnDto = z.object({
 }).strict();
 
 export const adminReturnTransitionDto = z.object({
-  status: z.enum(["authorized", "in_transit", "received", "inspected", "approved", "rejected", "refund_pending", "refunded", "closed", "cancelled"]),
+  status: z.enum(["authorized", "in_transit", "received", "inspected", "approved", "rejected", "closed", "cancelled"]),
   adminNote: z.string().max(2000).default(""),
   sellableRestock: z.boolean().default(false),
   idempotencyKey: uuid,
 }).strict();
 
 export const adminReturnRefundLinkDto = z.object({ refundRequestId: uuid, idempotencyKey: uuid }).strict();
+export const adminReturnRefundRequestDto = z.object({ amountMinor: z.number().int().positive(), reason: z.string().trim().min(1).max(255), idempotencyKey: uuid }).strict();
 
 function tokenHash(token: string) {
   if (!tokenPattern.test(token) || Buffer.from(token, "base64url").length !== 32) throw new Error("portal_unavailable");
@@ -84,4 +85,12 @@ export async function linkAdminReturnRefund(publicId: string, input: z.infer<typ
   const a = returnsManager(actor, { refundLink: true });
   const rows = await guardedRetailSql()`SELECT retail_admin_link_return_refund(${publicId}::uuid,${input.refundRequestId}::uuid,${input.idempotencyKey}::uuid,${a.id},${a.name},${a.role},${a.legacy}) AS linked`;
   if (!rows[0]?.linked) throw new Error("return_refund_link_unavailable");
+}
+
+export async function prepareAdminReturnRefund(publicId: string, input: z.infer<typeof adminReturnRefundRequestDto>, actor: RetailAdminActor) {
+  const a = returnsManager(actor, { refundLink: true });
+  const rows = await guardedRetailSql()`SELECT * FROM retail_prepare_return_refund_as_actor(${publicId}::uuid,${input.amountMinor},${input.reason},${input.idempotencyKey}::uuid,${a.id},${a.name},${a.role},${a.legacy})`;
+  if (!rows[0]) throw new Error("refund_unavailable");
+  const row = rows[0];
+  return { captureId: String(row.capture_id), currency: String(row.currency).trim(), amountMinor: Number(row.amount_minor), status: String(row.status), paypalRefundId: row.paypal_refund_id ? String(row.paypal_refund_id) : null, refundRequestId: String(row.refund_request_id) };
 }

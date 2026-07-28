@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 vi.mock("next/image", () => ({ default: () => <span /> }));
 import { loadRetailPaypalSdk, RetailShop } from "@/src/components/retail-shop";
 import { getRetailCopy } from "@/src/data/retail/copy";
+import { localizeRetailVariantOptions } from "@/src/data/retail/types";
 
 const product = { sku: "sku-new", name: { en: "New", ar: "جديد" }, description: { en: "d", ar: "و" }, image: "/retail.jpg", priceMinor: 100, currency: "USD" as const, available: true, stock: 2 };
 const variantProduct = { sku: "bracelet", name: { en: "Bracelet", ar: "سوار", zh: "手链" }, description: { en: "d", ar: "و", zh: "描述" }, image: "/retail.jpg", priceMinor: 100, currency: "USD" as const, available: true, stock: 3, variants: [
@@ -13,6 +14,11 @@ const variantProduct = { sku: "bracelet", name: { en: "Bracelet", ar: "سوار"
 const zones = [{ country: "US", name: { en: "United States", ar: "الولايات المتحدة" }, shippingMinor: 250, freeShippingThresholdMinor: null, taxRateBps: 500 }];
 const quote = { currency: "USD" as const, subtotalMinor: 100, shippingMinor: 250, taxMinor: 18, totalMinor: 368, shippingMethod: "standard" as const };
 const copy = getRetailCopy("en");
+const localizedOptions = {
+  en: { Colour: "Red", Size: "Small" },
+  ar: { "اللون": "أحمر", "المقاس": "صغير" },
+  zh: { "颜色": "红色", "尺寸": "小号" },
+};
 
 afterEach(() => { document.body.replaceChildren(); window.localStorage.clear(); delete window.paypal; vi.unstubAllGlobals(); });
 
@@ -23,6 +29,29 @@ function fillCheckout() {
 }
 
 describe("retail storefront checkout", () => {
+  it.each([
+    ["en", "Colour", "Red", "Size", "Small"],
+    ["ar", "اللون", "أحمر", "المقاس", "صغير"],
+    ["zh", "颜色", "红色", "尺寸", "小号"],
+  ] as const)("flattens %s option labels and selects the matching variant", (locale, colourKey, colourValue, sizeKey, sizeValue) => {
+    const matching = { sku: `localized-${locale}`, name: { en: "Red small", ar: "أحمر صغير", zh: "红色小号" }, options: localizeRetailVariantOptions(localizedOptions, locale), priceMinor: 100, available: true, stock: 3 };
+    const other = { sku: `other-${locale}`, name: { en: "Blue small", ar: "أزرق صغير", zh: "蓝色小号" }, options: { [colourKey]: locale === "ar" ? "أزرق" : locale === "zh" ? "蓝色" : "Blue", [sizeKey]: sizeValue }, priceMinor: 120, available: true, stock: 3 };
+    const localizedProduct = { ...variantProduct, variants: [matching, other] };
+    render(<RetailShop locale={locale} products={[localizedProduct]} zones={zones} enabled paypalClientId={`client-${locale}`} currency="USD" copy={getRetailCopy(locale)} />);
+    expect(screen.getByText(colourKey)).toBeInTheDocument();
+    expect(screen.getByText(sizeKey)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: colourValue }));
+    fireEvent.click(screen.getByRole("button", { name: sizeValue }));
+    expect(screen.getByRole("button", { name: new RegExp(getRetailCopy(locale).add) })).toBeEnabled();
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(getRetailCopy(locale).add) }));
+    expect(window.localStorage.getItem("noor-retail-cart-v1")).toContain(`\"localized-${locale}\":1`);
+  });
+
+  it("falls back to English option labels for missing localized entries", () => {
+    expect(localizeRetailVariantOptions({ en: { Colour: "Red", Size: "Small" }, zh: {} }, "zh")).toEqual({ Colour: "Red", Size: "Small" });
+    expect(localizeRetailVariantOptions({ colour: "Red" }, "ar")).toEqual({ colour: "Red" });
+  });
+
   it("uses Chinese storefront copy and English catalog fallback", () => {
     render(<RetailShop locale="zh" products={[product]} zones={zones} enabled paypalClientId="client-zh" currency="USD" copy={getRetailCopy("zh")} />);
     expect(screen.getByRole("button", { name: "加入购物车 New" })).toBeInTheDocument();
@@ -81,7 +110,11 @@ describe("retail storefront checkout", () => {
     const discountedQuote = { ...quote, subtotalMinor: 100, discountMinor: 10, totalMinor: 358, promotionCode: "SAVE10" };
     const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, quote: discountedQuote }), { status: 200 }));
     vi.stubGlobal("fetch", fetcher);
-    render(<RetailShop locale="zh" products={[variantProduct]} zones={zones} enabled paypalClientId="client-variant" currency="USD" copy={getRetailCopy("zh")} />);
+    const chineseVariantProduct = { ...variantProduct, variants: [
+      { ...variantProduct.variants[0], options: { "颜色": "红色" } },
+      { ...variantProduct.variants[1], options: { "颜色": "蓝色" } },
+    ] };
+    render(<RetailShop locale="zh" products={[chineseVariantProduct]} zones={zones} enabled paypalClientId="client-variant" currency="USD" copy={getRetailCopy("zh")} />);
     expect(screen.getByRole("button", { name: "加入购物车 手链" })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "红色" }));
     fireEvent.click(screen.getByRole("button", { name: "加入购物车 手链 红色" }));

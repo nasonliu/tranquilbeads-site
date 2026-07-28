@@ -11,7 +11,7 @@ const neonMocks = vi.hoisted(() => {
     calls.push({ text, values });
     if (text.includes("retail_runtime_environment")) return [{ identity: process.env.RETAIL_DATABASE_IDENTITY }];
     if (text.includes("retail_issue_customer_portal_token")) return [{ id: "e88cf331-2f3e-4e92-9e6d-c2f8a4454f1c" }];
-    if (text.includes("retail_redeem_customer_portal_token")) return [{ order_public_id: "04d8ba1f-5df1-4000-9f35-8bf95fc94e10", payment_status: "captured", fulfilment_status: "fulfilled", currency: "USD", amount_minor: 1234, ordered_at: "2026-08-02T00:00:00.000Z", carrier: "DHL", tracking_number: "TRACK-1", items: [{ titleEn: "Retail-only bead", quantity: 1 }] }];
+    if (text.includes("retail_redeem_customer_portal_token")) return [{ order_public_id: "04d8ba1f-5df1-4000-9f35-8bf95fc94e10", payment_status: "captured", fulfilment_status: "fulfilled", currency: "USD", amount_minor: 1234, ordered_at: "2026-08-02T00:00:00.000Z", carrier: "DHL", tracking_number: "TRACK-1", items: [{ productSku: "BEAD", variantSku: "BEAD-GOLD", titleEn: "Retail-only bead", titleAr: "خرزة", titleZh: "零售珠子", options: { en: { color: "gold" }, ar: { "اللون": "ذهبي" }, zh: { "颜色": "金色" } }, quantity: 1, unitAmountMinor: 1250, discountMinor: 50, lineTotalMinor: 1200 }] }];
     return [];
   });
   return { calls, sql, neon: vi.fn(() => sql) };
@@ -60,11 +60,13 @@ describe("customer portal bearer credentials", () => {
   });
 
   it("keeps token lifecycle and the customer projection in SQL, without payment IDs or address fields", () => {
-    const migration = read("migrations/20260802_retail_customer_portal.sql");
-    expect(migration).toContain("token_sha256 CHAR(64)");
-    expect(migration).toContain("SET revoked_at=now()");
+    const migration = read("migrations/20260814_retail_order_line_projection.sql");
     expect(migration).toContain("SET last_used_at=now()");
     expect(migration).toContain("t.expires_at>now()");
+    expect(migration).toContain("retail_order_lines l");
+    expect(migration).toContain("'variantSku', l.variant_sku");
+    expect(migration).toContain("'lineTotalMinor', l.quantity * l.unit_amount_minor - l.discount_minor");
+    expect(migration).toContain("COALESCE(o.items_snapshot, '[]'::jsonb)");
     expect(migration).toContain("o.tracking_number");
     expect(migration).not.toContain("paypal_order_id");
     expect(migration).not.toContain("checkout_shipping");

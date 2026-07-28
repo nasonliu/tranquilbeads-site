@@ -53,6 +53,7 @@ import {
   type AdminCopyKey,
   type AdminLocale,
 } from "./admin-locale";
+import { localizeRetailVariantOptions } from "@/src/data/retail/types";
 
 type Row = Record<string, unknown>;
 type RetailAdminSection =
@@ -1631,7 +1632,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
     void refresh();
   }, [refresh]);
 
-  const items = Array.isArray(order?.items_snapshot) ? order.items_snapshot as Row[] : [];
+  const items = Array.isArray(order?.order_lines) ? order.order_lines as Row[] : Array.isArray(order?.items_snapshot) ? order.items_snapshot as Row[] : [];
   const shipping = (order?.shipping_snapshot ?? order?.checkout_shipping) as Row | undefined;
   const customer = order?.customer_snapshot as Row | undefined;
 
@@ -1756,9 +1757,9 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                         </thead>
                         <tbody>
                           {items.length ? items.map((item, index) => {
-                            const image = productImages.get(String(item.sku));
+                            const image = productImages.get(String(item.productSku ?? item.sku));
                             return (
-                              <tr className="border-t border-[#e8ded1]" key={String(item.sku ?? index)}>
+                              <tr className="border-t border-[#e8ded1]" key={String(item.variantSku ?? item.sku ?? index)}>
                                 <td className="py-2 pr-4">
                                   <div className="flex items-center gap-3">
                                     {image ? (
@@ -1767,7 +1768,7 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                                           unoptimized
                                           className="h-16 w-16 rounded-lg border border-[#e1d5c6] object-cover"
                                           src={String(image.url)}
-                                          alt={String(image.alt_en ?? item.titleEn ?? copy.currentCatalogImage)}
+                                          alt={String(image.alt_en ?? item.titleZh ?? item.titleEn ?? copy.currentCatalogImage)}
                                           width={64}
                                           height={64}
                                         />
@@ -1779,14 +1780,15 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                                       </div>
                                     )}
                                     <div>
-                                      <p className="font-medium">{String(item.titleEn ?? "—")}</p>
+                                      <p className="font-medium">{String((locale === "zh" ? item.titleZh : item.titleEn) ?? item.titleEn ?? item.titleAr ?? "—")}</p>
                                       {item.titleAr ? <p className="mt-1 text-xs text-muted" dir="rtl">{String(item.titleAr)}</p> : null}
+                                      {item.options && typeof item.options === "object" ? <p className="mt-1 text-xs text-muted">{Object.entries(localizeRetailVariantOptions(item.options, locale)).map(([name, value]) => `${name}: ${value}`).join(" · ")}</p> : null}
                                     </div>
                                   </div>
                                 </td>
-                                <td className="py-2 pr-4 text-muted">{String(item.sku ?? "—")}</td>
+                                <td className="py-2 pr-4 text-muted">{String(item.productSku ?? item.sku ?? "—")}<br />{String(item.variantSku ?? "—")}</td>
                                 <td className="py-2 pr-4">{String(item.quantity ?? 0)}</td>
-                                <td className="py-2 text-right font-medium">{money(item.unitAmountMinor, order.currency, locale)}</td>
+                                <td className="py-2 text-right font-medium">{money(item.unitAmountMinor, order.currency, locale)}{Number(item.discountMinor ?? 0) > 0 ? <span className="block text-xs text-muted">−{money(item.discountMinor, order.currency, locale)}</span> : null}<span className="block">{money(item.lineTotalMinor ?? Number(item.quantity ?? 0) * Number(item.unitAmountMinor ?? 0) - Number(item.discountMinor ?? 0), order.currency, locale)}</span></td>
                               </tr>
                             );
                           }) : (

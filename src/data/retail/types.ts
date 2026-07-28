@@ -1,5 +1,29 @@
 /** Chinese storefront fields are optional until existing catalog rows are translated. */
 export type RetailLocaleText = { en: string; ar: string; zh?: string };
+export type RetailLocale = "en" | "ar" | "zh";
+export type RetailVariantOptions = Record<string, string>;
+export type RetailLocalizedVariantOptions = Partial<Record<RetailLocale, RetailVariantOptions>>;
+
+function stringValues(value: unknown): RetailVariantOptions {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return Object.fromEntries(Object.entries(value).flatMap(([key, item]) => typeof item === "string" ? [[key, item]] : []));
+}
+
+/**
+ * Storefront selection must use the localized option labels that a customer
+ * sees. A missing locale map falls back as a whole to English; maps are never
+ * merged because translated option keys are different strings. Pre-V3 flat
+ * option maps remain readable while old rows are backfilled.
+ */
+export function localizeRetailVariantOptions(optionValues: unknown, locale: RetailLocale): RetailVariantOptions {
+  const values = stringValues(optionValues);
+  const localized = Object.values(optionValues ?? {}).some((value) => value && typeof value === "object" && !Array.isArray(value));
+  if (!localized) return values;
+  const source = optionValues as RetailLocalizedVariantOptions;
+  const english = stringValues(source.en);
+  const requested = stringValues(source[locale]);
+  return Object.keys(requested).length ? requested : english;
+}
 
 export type RetailProduct = {
   sku: string;
@@ -16,7 +40,7 @@ export type RetailProduct = {
 export type RetailProductVariant = {
   sku: string;
   name: RetailLocaleText;
-  options: Record<string, string>;
+  options: RetailVariantOptions;
   priceMinor: number;
   available: boolean;
   stock: number;
