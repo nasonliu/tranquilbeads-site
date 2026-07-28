@@ -43,6 +43,9 @@ describe("customer portal bearer credentials", () => {
     expect(call?.values?.[1]).toBe(crypto.createHash("sha256").update(issued.token).digest("hex"));
     expect(new Date(String(call?.values?.[2])).getTime() - Date.now()).toBeLessThanOrEqual(31 * 24 * 60 * 60 * 1000);
     expect(customerPortalUrl(issued.token)).toBe(`https://preview.example.test/en/shop/account/${issued.token}`);
+    expect(customerPortalUrl(issued.token, "ar")).toBe(`https://preview.example.test/ar/shop/account/${issued.token}`);
+    expect(customerPortalUrl(issued.token, "zh")).toBe(`https://preview.example.test/zh/shop/account/${issued.token}`);
+    expect(() => customerPortalUrl(issued.token, "fr" as never)).toThrow("customer_portal_unavailable");
   });
 
   it("redeems only an exact bearer credential and returns the allowlisted order projection", async () => {
@@ -78,8 +81,27 @@ describe("customer portal bearer credentials", () => {
     expect(page).toContain("index: false, follow: false");
     expect(page).toContain("locale === \"zh\"");
     expect(page).toContain("locale === \"ar\"");
-    expect(notifications).toContain("issueCustomerPortalToken");
-    expect(notifications).not.toContain("portalToken");
+    expect(notifications).toContain("issueNotificationCustomerPortalToken");
     expect(notifications).not.toContain("token: portal");
+  });
+
+  it("persists an allowlisted checkout locale and uses it for notification links", () => {
+    const expandMigration = read("migrations/20260811_retail_order_locale_notifications.sql");
+    const contractMigration = read("migrations/20260812_retail_order_locale_notification_contract.sql");
+    const runner = read("scripts/run-retail-migrations.mjs");
+    const notifications = read("src/lib/retail/notifications.ts");
+    expect(expandMigration).toContain("checkout_locale TEXT NOT NULL DEFAULT 'en'");
+    expect(expandMigration).toContain("checkout_locale NOT IN ('en','ar','zh')");
+    expect(expandMigration).not.toContain("existing.checkout_locale<>checkout_locale");
+    expect(expandMigration).not.toContain("CREATE OR REPLACE FUNCTION retail_order_notification_trigger");
+    expect(contractMigration).toContain("existing.checkout_locale<>checkout_locale");
+    expect(contractMigration).toContain("CREATE OR REPLACE FUNCTION retail_order_notification_trigger");
+    expect(runner).toContain('"20260811_retail_order_locale_notifications.sql"');
+    expect(runner).toContain('"20260812_retail_order_locale_notification_contract.sql"');
+    expect(notifications).toContain("issueNotificationCustomerPortalToken(Number(row.order_id),row.id)");
+    expect(notifications).toContain("isLocale(candidateLocale)");
+    expect(notifications).toContain('throw new Error("unsupported_notification_kind")');
+    expect(contractMigration).toContain("'order_cancelled'");
+    expect(contractMigration).toContain("'payment_failed'");
   });
 });

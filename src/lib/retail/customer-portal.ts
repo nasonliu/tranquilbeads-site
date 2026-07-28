@@ -3,6 +3,7 @@ import "server-only";
 import crypto from "node:crypto";
 
 import { guardedRetailSql } from "./database-identity";
+import { isLocale, type Locale } from "@/src/lib/i18n";
 
 const TOKEN_BYTES = 32;
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
@@ -40,6 +41,20 @@ export async function issueCustomerPortalToken(orderId: number) {
   return { token, expiresAt };
 }
 
+// A notification retry must not rotate a bearer credential that may already
+// have reached the buyer.  The bearer itself is deterministically derived
+// from an outbox id and a deployment secret; PostgreSQL receives only its
+// hash and records the one-to-one notification mapping.
+export async function issueNotificationCustomerPortalToken(orderId: number, notificationId: string) {
+  if (!Number.isSafeInteger(orderId) || orderId < 1 || !/^[0-9a-f-]{36}$/i.test(notificationId)) throw new Error("customer_portal_unavailable");
+  const secret = process.env.RETAIL_PORTAL_TOKEN_SECRET;
+  if (!secret || secret.length < 32) throw new Error("customer_portal_unavailable");
+  const token = crypto.createHmac("sha256", secret).update(`retail-notification-portal:${notificationId}`, "utf8").digest().subarray(0, TOKEN_BYTES).toString("base64url");
+  const rows = await guardedRetailSql()`SELECT retail_issue_notification_portal_token(${orderId},${notificationId}::uuid,${hashToken(token)}) AS usable`;
+  if (rows[0]?.usable !== true) throw new Error("customer_portal_rotated");
+  return { token };
+}
+
 export async function redeemCustomerPortalToken(token: string): Promise<CustomerPortalOrder | null> {
   if (!validToken(token)) return null;
   const rows = await guardedRetailSql()`SELECT * FROM retail_redeem_customer_portal_token(${hashToken(token)})`;
@@ -64,8 +79,9 @@ export async function revokeCustomerPortalTokens(orderId: number) {
   return Number(rows[0]?.revoked ?? 0);
 }
 
-export function customerPortalUrl(token: string, locale = "en") {
+export function customerPortalUrl(token: string, locale: Locale = "en") {
   if (!validToken(token)) throw new Error("customer_portal_unavailable");
+  if (!isLocale(locale)) throw new Error("customer_portal_unavailable");
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com";
   return new URL(`/${locale}/shop/account/${token}`, siteUrl).toString();
 }

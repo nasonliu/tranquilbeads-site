@@ -162,7 +162,7 @@ export function RetailShop({ locale, products, zones, paypalClientId, currency, 
   };
   const requestQuote = async () => {
     if (!validCheckout || !items.length) { setMessage(copy.required); return; }
-    const completeCheckout: RetailCheckout = { ...checkout, termsVersion: "2026-07-28", termsAccepted: true };
+    const completeCheckout: RetailCheckout = { ...checkout, termsVersion: "2026-07-28", termsAccepted: true, locale };
     checkoutRef.current = completeCheckout; setMessage(undefined);
     const response = await fetch("/api/retail/quote", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ items, checkout: completeCheckout, ...(promotionCode.trim() ? { promotionCode: promotionCode.trim() } : {}) }) });
     const body = await response.json().catch(() => ({})) as { ok?: boolean; quote?: RetailQuote; error?: string };

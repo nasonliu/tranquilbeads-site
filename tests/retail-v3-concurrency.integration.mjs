@@ -9,7 +9,7 @@ const { Client } = pg;
 const tag = `lock-${crypto.randomUUID().replaceAll("-", "")}`;
 const sku = `${tag}-v`;
 const email = (suffix) => `${tag}-${suffix}@example.test`;
-const checkout = (buyer) => JSON.stringify({ email: buyer, recipient: "Lock Test", line1: "1 Lock Way", city: "Test", country: "LC", termsAccepted: true, termsVersion: "lock-v1" });
+const checkout = (buyer, locale = "en") => JSON.stringify({ email: buyer, recipient: "Lock Test", line1: "1 Lock Way", city: "Test", country: "LC", termsAccepted: true, termsVersion: "lock-v1", locale });
 const items = JSON.stringify([{ variantSku: sku, quantity: 1 }]);
 
 async function client() { const value = new Client({ connectionString }); await value.connect(); return value; }

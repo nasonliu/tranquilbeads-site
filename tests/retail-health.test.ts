@@ -14,7 +14,7 @@ vi.mock("@/src/lib/retail/blob", () => ({ isRetailBlobConfigured: healthMocks.bl
 
 import { GET } from "@/app/api/retail/health/route";
 
-const readyRows = [{ checkout_ready: true, variant_catalog_ready: true, shipping_ready: true, active_shipping_zones: 1 }];
+const readyRows = [{ checkout_ready: true, variant_catalog_ready: true, shipping_ready: true, notification_schema_ready: true, active_shipping_zones: 1 }];
 const enabledConfig = { enabled: true, paymentMode: "sandbox", databaseEnvironment: "preview" };
 
 describe("retail health route", () => {
@@ -27,6 +27,7 @@ describe("retail health route", () => {
     vi.stubEnv("DATABASE_URL", "");
     vi.stubEnv("RETAIL_RESEND_API_KEY", "");
     vi.stubEnv("RETAIL_EMAIL_FROM", "");
+    vi.stubEnv("RETAIL_PORTAL_TOKEN_SECRET", "");
     vi.stubEnv("VERCEL_ENV", "preview");
   });
 
@@ -36,7 +37,7 @@ describe("retail health route", () => {
     healthMocks.config.mockReturnValue({ enabled: false, reason: "missing_configuration" });
     const response = await GET();
     expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({ ok: false, status: "not_ready", paymentConfigured: false });
+    expect(await response.json()).toMatchObject({ ok: false, status: "not_ready", paymentConfigured: false, notificationSchemaReady: false });
     expect(response.headers.get("cache-control")).toBe("no-store");
   });
 
@@ -55,12 +56,25 @@ describe("retail health route", () => {
   it("reports only safe readiness state and does not cache it", async () => {
     vi.stubEnv("RETAIL_RESEND_API_KEY", "must-not-appear-in-health-response");
     vi.stubEnv("RETAIL_EMAIL_FROM", "Retail <orders@example.com>");
+    vi.stubEnv("RETAIL_PORTAL_TOKEN_SECRET", "a-portal-token-secret-with-at-least-32-chars");
     const response = await GET();
     const body = await response.json();
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(body).toMatchObject({ ok: true, database: true, paymentConfigured: true, checkoutVersion: "v3", variantCatalogReady: true, blobConfigured: true, notificationsConfigured: true });
+    expect(body).toMatchObject({ ok: true, database: true, paymentConfigured: true, checkoutVersion: "v3", variantCatalogReady: true, notificationSchemaReady: true, blobConfigured: true, notificationsConfigured: true });
     expect(JSON.stringify(body)).not.toContain("must-not-appear-in-health-response");
     expect(JSON.stringify(body)).not.toContain("orders@example.com");
+  });
+
+  it("requires a 32-character server-only portal secret before reporting notifications configured", async () => {
+    vi.stubEnv("RETAIL_RESEND_API_KEY", "resend-key");
+    vi.stubEnv("RETAIL_EMAIL_FROM", "Retail <orders@example.com>");
+    vi.stubEnv("RETAIL_PORTAL_TOKEN_SECRET", "too-short");
+    const shortSecret = await GET();
+    expect(await shortSecret.json()).toMatchObject({ notificationsConfigured: false });
+
+    vi.stubEnv("RETAIL_PORTAL_TOKEN_SECRET", "a-portal-token-secret-with-at-least-32-chars");
+    const configured = await GET();
+    expect(await configured.json()).toMatchObject({ notificationsConfigured: true });
   });
 
   it("fails closed when the V3 variant catalog is unavailable", async () => {
@@ -68,6 +82,21 @@ describe("retail health route", () => {
     const response = await GET();
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({ ok: false, variantCatalogReady: false });
+  });
+
+  it("fails closed when the notification schema objects exist but the 20260812 contract receipt is unavailable", async () => {
+    healthMocks.sql.mockResolvedValue([{ ...readyRows[0], notification_schema_ready: false }]);
+    const response = await GET();
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ ok: false, notificationSchemaReady: false });
+  });
+
+  it("requires the checkout locale, notification-token table, exact notification-token function signature, and 20260812 contract receipt", () => {
+    const route = readFileSync("app/api/retail/health/route.ts", "utf8");
+    expect(route).toContain("attname='checkout_locale' AND NOT attisdropped");
+    expect(route).toContain("retail_customer_portal_notification_tokens");
+    expect(route).toContain("retail_issue_notification_portal_token(bigint,uuid,text)");
+    expect(route).toContain("20260812_retail_order_locale_notification_contract.sql");
   });
 
   it("checks the V3 checkout functions rather than the retired V2 path", () => {

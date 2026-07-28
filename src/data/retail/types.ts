@@ -49,6 +49,7 @@ export type RetailCheckout = {
   phone: string;
   termsVersion: "2026-07-28";
   termsAccepted: true;
+  locale: "en" | "ar" | "zh";
 };
 
 export type RetailQuote = {

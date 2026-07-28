@@ -71,7 +71,15 @@ jobs:
           VALUES (true, :'retail_identity');
           SQL
 
-      - name: Apply all retail migrations
+      - name: Apply retail expand migration
+        env:
+          RETAIL_MIGRATION_TARGET: "20260811_retail_order_locale_notifications.sql"
+        run: npm run migrate:retail
+
+      - name: Verify expand deployment contract
+        run: psql "$DATABASE_URL" -f tests/retail-expand-contract.integration.sql
+
+      - name: Apply retail contract migration
         run: npm run migrate:retail
 
       - name: Verify migration idempotency

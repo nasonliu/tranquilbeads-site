@@ -46,11 +46,16 @@ describe("retail operations vertical contracts", () => {
     expect(ui).toContain('"/api/admin/retail/media/outbox", "POST"');
     expect(ui).toContain("copy.retryOutbox");
   });
-  it("leases notifications and applies each migration with an explicit transaction", () => {
+  it("leases notifications and serializes the complete migration run", () => {
     expect(read("src/lib/retail/notifications.ts")).toContain("status='processing' AND claimed_at<now()-interval '10 minutes'");
     const runner = read("scripts/run-retail-migrations.mjs");
     expect(runner).toContain('client.query("BEGIN")');
     expect(runner).toContain('client.query("COMMIT")');
-    expect(runner).toContain("pg_advisory_xact_lock");
+    expect(runner).toContain("pg_advisory_lock(hashtextextended");
+    expect(runner).toContain("migrationLockHeld = true");
+    expect(runner).toContain("pg_advisory_unlock(hashtextextended");
+    expect(runner.indexOf("pg_advisory_lock(hashtextextended")).toBeLessThan(runner.indexOf("if (migrationTarget)"));
+    expect(runner.indexOf("if (migrationTarget)")).toBeLessThan(runner.indexOf("for (const name of selectedMigrationNames)"));
+    expect(runner).not.toContain("pg_advisory_xact_lock");
   });
 });

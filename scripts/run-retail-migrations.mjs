@@ -33,7 +33,18 @@ const migrationNames = [
   "20260808_retail_concurrency_lock_order.sql",
   "20260809_retail_release_catalog_lock_order.sql",
   "20260810_retail_rma_refund_status.sql",
+  "20260811_retail_order_locale_notifications.sql",
+  "20260812_retail_order_locale_notification_contract.sql",
 ];
+
+const migrationTarget = process.env.RETAIL_MIGRATION_TARGET;
+const migrationTargetIndex = migrationTarget ? migrationNames.indexOf(migrationTarget) : -1;
+if (migrationTarget && migrationTargetIndex === -1) {
+  throw new Error(`RETAIL_MIGRATION_TARGET must be one of: ${migrationNames.join(", ")}`);
+}
+const selectedMigrationNames = migrationTarget
+  ? migrationNames.slice(0, migrationTargetIndex + 1)
+  : migrationNames;
 
 const connectionString = process.env.RETAIL_DATABASE_URL || process.env.DATABASE_URL;
 if (!connectionString) throw new Error("RETAIL_DATABASE_URL or DATABASE_URL is required");
@@ -57,6 +68,7 @@ async function verifyDatabaseIdentity(activeClient) {
   if (existing.rows.length !== 1 || existing.rows[0].identity !== databaseIdentity) throw new Error("retail database identity mismatch");
 }
 
+let migrationLockHeld = false;
 await client.connect();
 try {
   // Refuse the database before creating even the migration ledger. The
@@ -70,15 +82,41 @@ try {
     throw error;
   }
 
-  for (const name of migrationNames) {
+  // Hold this lock across preflight and every migration transaction. A target
+  // runner must not successfully pass preflight while another runner advances
+  // the schema to a receipt beyond that target.
+  await client.query("SELECT pg_advisory_lock(hashtextextended($1, 0))", [lockKey]);
+  migrationLockHeld = true;
+
+  if (migrationTarget) {
+    // A target is safe only when the database has not already advanced beyond
+    // it.  Keep this preflight read-only: a fresh database must not gain a
+    // ledger merely because a deployment checked an earlier target.
+    await client.query("BEGIN READ ONLY");
+    try {
+      const ledger = await client.query("SELECT to_regclass('public.retail_schema_migrations') AS name");
+      if (ledger.rows[0].name) {
+        const laterNames = migrationNames.slice(migrationTargetIndex + 1);
+        const surpassed = await client.query(
+          "SELECT name FROM retail_schema_migrations WHERE name = ANY($1::text[]) ORDER BY name LIMIT 1",
+          [laterNames],
+        );
+        if (surpassed.rows.length > 0) {
+          throw new Error(`migration target already surpassed: ${surpassed.rows[0].name}`);
+        }
+      }
+      await client.query("ROLLBACK");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    }
+  }
+
+  for (const name of selectedMigrationNames) {
     const source = await fs.readFile(path.join(root, "migrations", name), "utf8");
     const checksum = crypto.createHash("sha256").update(source).digest("hex");
     await client.query("BEGIN");
     try {
-      // Every runner takes the same transaction-scoped lock before it reads a
-      // receipt. This closes the check-then-run race while keeping a failed
-      // migration and its receipt in the same rollback boundary.
-      await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", [lockKey]);
       await client.query(ensureLedger);
       const existing = await client.query("SELECT sha256 FROM retail_schema_migrations WHERE name = $1", [name]);
       if (existing.rows.length > 0) {
@@ -100,5 +138,9 @@ try {
     }
   }
 } finally {
-  await client.end();
+  try {
+    if (migrationLockHeld) await client.query("SELECT pg_advisory_unlock(hashtextextended($1, 0))", [lockKey]);
+  } finally {
+    await client.end();
+  }
 }
