@@ -10,7 +10,10 @@ function normalizeStoreId(value: string): string {
 }
 
 function expectedPublicHostname(storeId: string): string {
-  return `${normalizeStoreId(storeId)}${VERCEL_PUBLIC_BLOB_SUFFIX}`;
+  // Vercel store IDs are case-sensitive credential identifiers, while their
+  // DNS hostname is always lower-case. Keep the original ID for token binding
+  // and normalize only the hostname label.
+  return `${normalizeStoreId(storeId).toLowerCase()}${VERCEL_PUBLIC_BLOB_SUFFIX}`;
 }
 
 function configuredPublicHostname(value: string | undefined): string | null {

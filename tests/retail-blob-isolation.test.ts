@@ -32,6 +32,18 @@ describe("retail Blob isolation", () => {
     expect(() => assertRetailBlobUrl("https://outreach.public.blob.vercel-storage.com/file.jpg", config.hostname)).toThrow("retail_blob_url_mismatch");
   });
 
+  it("maps mixed-case Vercel store ids to lower-case DNS hostnames without weakening token binding", () => {
+    vi.stubEnv("RETAIL_BLOB_READ_WRITE_TOKEN", "vercel_blob_rw_d9xXrHN8Mf6uXkhp_secret");
+    vi.stubEnv("RETAIL_BLOB_STORE_ID", "store_d9xXrHN8Mf6uXkhp");
+    vi.stubEnv("RETAIL_BLOB_HOSTNAME", "d9xxrhn8mf6uxkhp.public.blob.vercel-storage.com");
+
+    expect(getRetailBlobConfig()).toEqual({
+      auth: { token: "vercel_blob_rw_d9xXrHN8Mf6uXkhp_secret", storeId: "d9xXrHN8Mf6uXkhp" },
+      hostname: "d9xxrhn8mf6uxkhp.public.blob.vercel-storage.com",
+    });
+    expect(isRetailBlobConfigured()).toBe(true);
+  });
+
   it("requires the configured public hostname to be the exact hostname generated for the retail store", () => {
     vi.stubEnv("RETAIL_BLOB_READ_WRITE_TOKEN", "vercel_blob_rw_retail_secret");
     vi.stubEnv("RETAIL_BLOB_STORE_ID", "store_retail");
