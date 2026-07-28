@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { isLocale, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 import { blogArticles } from "@/src/data/blog-articles";
 import { getProductBySlug } from "@/src/data/site";
 import { getProductRetailLinks } from "@/src/lib/product-retail-links";
@@ -25,7 +25,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Record<string, string> }) {
   const { locale, slug } = await params;
-  if (!isLocale(locale)) return {};
+  if (!isWholesaleLocale(locale)) return {};
   const article = blogArticles.find((a) => a.slug === slug);
   if (!article) return {};
 
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Record<string, stri
 type BlogParams = { params: Record<string, string> };
 export default async function BlogArticlePage({ params }: BlogParams) {
   const { locale, slug } = await params;
-  if (!isLocale(locale)) notFound();
+  if (!isWholesaleLocale(locale)) notFound();
 
   const article = blogArticles.find((a) => a.slug === slug);
   if (!article) notFound();

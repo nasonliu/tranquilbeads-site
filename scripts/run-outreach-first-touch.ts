@@ -7,9 +7,12 @@ import {
   defaultOutreachDir,
   readOutreachStore,
   writeOutreachStore,
-  type OutreachStore,
 } from "../src/lib/outreach-store";
-import { createConfiguredWhatsAppOutreachSender } from "../src/lib/whatsapp-outreach";
+import type { OutreachStore } from "../src/lib/outreach-types";
+import {
+  createConfiguredWhatsAppOutreachSender,
+  type ConfiguredWhatsAppSenderOptions,
+} from "../src/lib/whatsapp-outreach";
 
 export type RunOutreachFirstTouchOptions = {
   outreachDir?: string;
@@ -17,7 +20,7 @@ export type RunOutreachFirstTouchOptions = {
   store?: OutreachStore;
   senders?: OutreachSenderRegistry;
   fetchImpl?: typeof fetch;
-  execFileImpl?: Parameters<typeof createConfiguredWhatsAppOutreachSender>[0]["execFileImpl"];
+  execFileImpl?: ConfiguredWhatsAppSenderOptions["execFileImpl"];
   readStore?: (outreachDir: string) => Promise<OutreachStore>;
   writeStore?: (store: OutreachStore, outreachDir: string) => Promise<void>;
 };

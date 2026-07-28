@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import type { Collection, Product } from "@/src/lib/catalog-types";
-import type { Locale } from "@/src/lib/i18n";
+import type { Locale, WholesaleLocale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
 
 export const SITE_URL =
@@ -71,7 +71,7 @@ export function getRealProductImages(product: Product) {
     .map(absoluteUrl);
 }
 
-export function getProductSeoTitle(product: Product, locale: Locale) {
+export function getProductSeoTitle(product: Product, locale: WholesaleLocale) {
   if (locale === "ar") {
     return `${product.title.ar} بالجملة`;
   }
@@ -79,7 +79,7 @@ export function getProductSeoTitle(product: Product, locale: Locale) {
   return `${product.title.en} Wholesale`;
 }
 
-export function getProductSeoDescription(product: Product, locale: Locale) {
+export function getProductSeoDescription(product: Product, locale: WholesaleLocale) {
   if (locale === "ar") {
     return compactText(
       `${product.summary.ar} متاح لمشتري الجملة والتجزئة الثقافية مع حد أدنى 100 قطعة ودعم تغليف خاص.`,
@@ -93,7 +93,7 @@ export function getProductSeoDescription(product: Product, locale: Locale) {
   );
 }
 
-function getProductSeoKeywords(product: Product, locale: Locale) {
+function getProductSeoKeywords(product: Product, locale: WholesaleLocale) {
   const material = product.material.en.toLowerCase();
   const materialKeywords = [
     material.includes("agate") ? ["aqeeq agate tasbih", "Aqiq prayer beads", "Hakik tasbeeh"] : [],
@@ -114,7 +114,7 @@ function getProductSeoKeywords(product: Product, locale: Locale) {
   ];
 }
 
-export function getCollectionSeoTitle(collection: Collection, locale: Locale) {
+export function getCollectionSeoTitle(collection: Collection, locale: WholesaleLocale) {
   if (locale === "ar") {
     return `${collection.name.ar} بالجملة`;
   }
@@ -122,7 +122,7 @@ export function getCollectionSeoTitle(collection: Collection, locale: Locale) {
   return `${collection.name.en} Wholesale Tasbih Collection`;
 }
 
-export function getCollectionSeoDescription(collection: Collection, locale: Locale) {
+export function getCollectionSeoDescription(collection: Collection, locale: WholesaleLocale) {
   if (locale === "ar") {
     return compactText(
       `${collection.description.ar} تشكيلة مناسبة لمشتري الجملة وبرامج الهدايا والتجزئة الثقافية.`,
@@ -136,7 +136,7 @@ export function getCollectionSeoDescription(collection: Collection, locale: Loca
   );
 }
 
-function getCollectionSeoKeywords(collection: Collection, locale: Locale) {
+function getCollectionSeoKeywords(collection: Collection, locale: WholesaleLocale) {
   return [
     collection.name[locale],
     collection.name.en,
@@ -149,7 +149,7 @@ function getCollectionSeoKeywords(collection: Collection, locale: Locale) {
 }
 
 export function buildProductMetadata(
-  locale: Locale,
+  locale: WholesaleLocale,
   collection: Collection,
   product: Product,
 ): Metadata {
@@ -187,7 +187,7 @@ export function buildProductMetadata(
 }
 
 export function buildCollectionMetadata(
-  locale: Locale,
+  locale: WholesaleLocale,
   collection: Collection,
 ): Metadata {
   const title = getCollectionSeoTitle(collection, locale);
@@ -223,40 +223,8 @@ export function buildCollectionMetadata(
   };
 }
 
-export function buildProductJsonLd(
-  locale: Locale,
-  collection: Collection,
-  product: Product,
-) {
-  const productUrl = `${SITE_URL}${withLocale(
-    locale,
-    `/collections/${collection.slug}/${product.slug}`,
-  )}`;
-  const images = getRealProductImages(product);
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "@id": `${productUrl}#product`,
-    name: product.title[locale],
-    description: getProductSeoDescription(product, locale),
-    image: images,
-    brand: {
-      "@type": "Brand",
-      name: brand,
-    },
-    category: collection.name[locale],
-    material: product.material[locale],
-    url: productUrl,
-    isRelatedTo: product.tags[locale].slice(0, 6).map((tag) => ({
-      "@type": "Thing",
-      name: tag,
-    })),
-  };
-}
-
 export function buildBreadcrumbJsonLd(
-  locale: Locale,
+  locale: WholesaleLocale,
   collection: Collection,
   product?: Product,
 ) {
@@ -300,11 +268,11 @@ export function buildBreadcrumbJsonLd(
   };
 }
 
-export function getBlogArticleTitle(article: BlogArticle, locale: Locale) {
+export function getBlogArticleTitle(article: BlogArticle, locale: WholesaleLocale) {
   return locale === "ar" ? article.title_ar : article.title_en;
 }
 
-export function getBlogArticleDescription(article: BlogArticle, locale: Locale) {
+export function getBlogArticleDescription(article: BlogArticle, locale: WholesaleLocale) {
   const description = locale === "ar"
     ? article.seoDescription_ar || article.intro_ar
     : article.seoDescription_en || article.intro_en;
@@ -313,7 +281,7 @@ export function getBlogArticleDescription(article: BlogArticle, locale: Locale) 
 }
 
 export function buildBlogArticleMetadata(
-  locale: Locale,
+  locale: WholesaleLocale,
   article: BlogArticle,
 ): Metadata {
   const title = getBlogArticleTitle(article, locale);
@@ -356,7 +324,7 @@ export function buildBlogArticleMetadata(
   };
 }
 
-export function buildBlogArticleJsonLd(locale: Locale, article: BlogArticle) {
+export function buildBlogArticleJsonLd(locale: WholesaleLocale, article: BlogArticle) {
   const articleUrl = `${SITE_URL}${withLocale(locale, `/blog/${article.slug}`)}`;
 
   return {
@@ -382,7 +350,7 @@ export function buildBlogArticleJsonLd(locale: Locale, article: BlogArticle) {
   };
 }
 
-export function buildBlogBreadcrumbJsonLd(locale: Locale, article: BlogArticle) {
+export function buildBlogBreadcrumbJsonLd(locale: WholesaleLocale, article: BlogArticle) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -409,7 +377,7 @@ export function buildBlogBreadcrumbJsonLd(locale: Locale, article: BlogArticle) 
   };
 }
 
-export function buildBlogFaqJsonLd(locale: Locale, article: BlogArticle) {
+export function buildBlogFaqJsonLd(locale: WholesaleLocale, article: BlogArticle) {
   const faq = locale === "ar" ? article.faq_ar : article.faq_en;
   if (!faq?.length) return null;
 
@@ -480,19 +448,12 @@ export function buildRetailItemListJsonLd(
       position: index + 1,
       url: `${pageUrl}#${product.slug}`,
       item: {
-        "@type": "Product",
+        // Prices and checkout happen on Amazon or Noon, not this page. Avoid
+        // Product rich-result markup until local offer data can stay accurate.
+        "@type": "Thing",
         name: product.title,
         image: absoluteUrl(product.heroImage),
-        sku: product.asin,
-        brand: {
-          "@type": "Brand",
-          name: brand,
-        },
-        offers: {
-          "@type": "AggregateOffer",
-          availability: "https://schema.org/InStock",
-          offerCount: product.markets.length,
-        },
+        identifier: product.asin,
       },
     })),
   };

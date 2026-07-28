@@ -39,7 +39,7 @@ describe("retail admin write consistency contract", () => {
     expect(media).toContain("idempotencyKey: z.string().uuid()");
     expect(media).toContain("${input.idempotencyKey}-${validated.sha256}");
     expect(media).toContain("findRetailProductImageByIdempotency");
-    expect(operations).toContain("retail_attach_product_image_idempotent");
+    expect(operations).toContain("retail_attach_product_image_as_actor");
     expect(media).toContain("media_result_unknown");
     expect(media).toContain("if (!isKnownAttachRejection(error))");
   });
@@ -58,9 +58,9 @@ describe("retail admin write consistency contract", () => {
       "retail_update_admin_product",
       "retail_upsert_admin_shipping_zone",
       "retail_disable_admin_shipping_zone",
-      "retail_change_product_price_with_audit",
-      "retail_adjust_inventory_with_audit",
-      "retail_reconcile_with_audit",
+      "retail_change_product_price_as_actor",
+      "retail_adjust_inventory_as_actor",
+      "retail_reconcile_with_actor",
     ]) expect(operations).toContain(value);
   });
 });

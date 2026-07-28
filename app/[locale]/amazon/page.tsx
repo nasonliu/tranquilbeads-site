@@ -150,7 +150,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[locale]/amazon">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isLocale(locale) || locale === "zh") {
     return {};
   }
 
@@ -168,7 +168,7 @@ export default async function AmazonRetailPage({
 }: PageProps<"/[locale]/amazon">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isLocale(locale) || locale === "zh") {
     notFound();
   }
 

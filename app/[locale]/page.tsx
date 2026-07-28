@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import {
   collections,
@@ -15,7 +15,8 @@ import { HomeCoverflow } from "@/src/components/home-coverflow";
 import { PageHero } from "@/src/components/page-hero";
 import { getAmazonMarketLabel } from "@/src/lib/amazon-retail";
 import { getNoonStoreLinks } from "@/src/lib/noon-retail";
-import { getDir, isLocale, withLocale } from "@/src/lib/i18n";
+import { getDir, isLocale, isWholesaleLocale, withLocale } from "@/src/lib/i18n";
+import type { WholesaleLocale } from "@/src/lib/i18n";
 
 // Top 5 products data from sales analysis (1688 data, March 2026)
 const topProducts = [
@@ -27,7 +28,7 @@ const topProducts = [
     totalSales: 783,
     rating: 4.8,
     moq: "100 pcs",
-    tag: locale => locale === "en" ? "🔥 Top Seller" : "🔥 الأكثر مبيعًا",
+    tag: (locale: WholesaleLocale) => locale === "en" ? "🔥 Top Seller" : "🔥 الأكثر مبيعًا",
     category: { en: "Men's Beads", ar: "خرز رجالي" },
   },
   {
@@ -38,7 +39,7 @@ const topProducts = [
     totalSales: 357,
     rating: 4.69,
     moq: "100 pcs",
-    tag: locale => locale === "en" ? "🔥 Top Seller" : "🔥 الأكثر مبيعًا",
+    tag: (locale: WholesaleLocale) => locale === "en" ? "🔥 Top Seller" : "🔥 الأكثر مبيعًا",
     category: { en: "Premium Tasbih", ar: "مسبحة فاخرة" },
   },
   {
@@ -49,7 +50,7 @@ const topProducts = [
     totalSales: 235,
     rating: 4.4,
     moq: "100 pcs",
-    tag: locale => locale === "en" ? "Bestseller" : "الأكثر مبيعًا",
+    tag: (locale: WholesaleLocale) => locale === "en" ? "Bestseller" : "الأكثر مبيعًا",
     category: { en: "Giftable Tasbih", ar: "مسبحة مناسبة للهدايا" },
   },
   {
@@ -60,7 +61,7 @@ const topProducts = [
     totalSales: 105,
     rating: 4.69,
     moq: "100 pcs",
-    tag: locale => locale === "en" ? "Hot" : "ساخن",
+    tag: (locale: WholesaleLocale) => locale === "en" ? "Hot" : "ساخن",
     category: { en: "Car Accessories", ar: "إكسسوارات السيارة" },
   },
   {
@@ -71,7 +72,7 @@ const topProducts = [
     totalSales: 107,
     rating: 5.0,
     moq: "100 pcs",
-    tag: locale => locale === "en" ? "New" : "جديد",
+    tag: (locale: WholesaleLocale) => locale === "en" ? "New" : "جديد",
     category: { en: "Gift Sets", ar: "مجموعات هدايا" },
   },
 ];
@@ -142,7 +143,7 @@ const factoryPhotos = [
 export async function generateMetadata({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -161,6 +162,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (!isLocale(locale)) {
     notFound();
   }
+  if (locale === "zh") redirect("/zh/shop");
 
   const copy = getPageCopy(locale);
   const featuredCollections = collections.filter((item) => item.featured);

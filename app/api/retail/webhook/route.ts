@@ -3,7 +3,7 @@ import { getPaypalAccessToken, getPaypalOrderDetails, verifyPaypalWebhook } from
 import { webhookResponseStatus } from "@/src/lib/retail/webhook-result";
 
 export const runtime = "nodejs";
-type PaypalEvent = { id?: string; event_type?: string; resource?: { supplementary_data?: { related_ids?: { order_id?: string } }; id?: string } };
+type PaypalEvent = { id?: string; event_type?: string; resource?: { supplementary_data?: { related_ids?: { order_id?: string; capture_id?: string } }; id?: string; dispute_id?: string; disputed_transactions?: Array<{ seller_transaction_id?: string; transaction_info?: { seller_transaction_id?: string } }> } };
 type PaypalOrderDetails = Awaited<ReturnType<typeof getPaypalOrderDetails>>;
 const emptyPaypalOrderDetails: PaypalOrderDetails = { customer: { email: "", name: "" }, shipping: { recipient: "", line1: "", line2: "", region: "", city: "", postalCode: "", country: "" }, breakdown: null };
 

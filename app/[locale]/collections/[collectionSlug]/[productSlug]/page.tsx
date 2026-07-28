@@ -11,15 +11,14 @@ import {
   products,
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
-import { isLocale, locales, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, wholesaleLocales, withLocale } from "@/src/lib/i18n";
 import {
   buildBreadcrumbJsonLd,
-  buildProductJsonLd,
   buildProductMetadata,
 } from "@/src/lib/seo";
 
 export function generateStaticParams() {
-  return locales.flatMap((locale) =>
+  return wholesaleLocales.flatMap((locale) =>
     collections.flatMap((collection) =>
       products
         .filter((product) => product.collection === collection.slug)
@@ -37,7 +36,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/collections/[collectionSlug]/[productSlug]">) {
   const { locale, collectionSlug, productSlug } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -56,7 +55,7 @@ export default async function ProductDetailPage({
 }: PageProps<"/[locale]/collections/[collectionSlug]/[productSlug]">) {
   const { locale, collectionSlug, productSlug } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 
@@ -68,7 +67,6 @@ export default async function ProductDetailPage({
   }
 
   const copy = getPageCopy(locale);
-  const productJsonLd = buildProductJsonLd(locale, collection, product);
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(locale, collection, product);
   const heroImageAlt =
     locale === "en"
@@ -77,10 +75,6 @@ export default async function ProductDetailPage({
 
   return (
     <div className="space-y-12 pt-8 md:space-y-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

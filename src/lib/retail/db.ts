@@ -106,30 +106,77 @@ export async function restoreRetailOrderAfterCaptureFailure(paypalOrderId: strin
 
 export type WebhookProcessResult = "processed" | "duplicate" | "retry";
 
+type VerifiedPaypalWebhookPayload = {
+  resource?: {
+    supplementary_data?: { related_ids?: { order_id?: string; capture_id?: string } };
+    id?: string;
+    dispute_id?: string;
+    disputed_transactions?: Array<{
+      seller_transaction_id?: string;
+      transaction_info?: { seller_transaction_id?: string };
+    }>;
+    amount?: { currency_code?: string; value?: string };
+  };
+};
+
+/**
+ * Webhooks are signature-verified before reaching this module, but their
+ * bodies can contain buyer PII. Persist only the minimum correlation and
+ * accounting fields needed to reconcile a delivery, never the full body.
+ */
+export function summarizeVerifiedPaypalWebhook(eventId: string, eventType: string, payload: VerifiedPaypalWebhookPayload) {
+  const relatedIds = payload.resource?.supplementary_data?.related_ids;
+  const amountMinor = parsePaypalMinorAmount(payload.resource?.amount?.value);
+  const sellerTransactionIds = [...new Set((payload.resource?.disputed_transactions ?? [])
+    .map((transaction) => transaction.seller_transaction_id ?? transaction.transaction_info?.seller_transaction_id)
+    .filter((id): id is string => typeof id === "string" && id.length > 0))];
+  return {
+    paypalEventId: eventId,
+    eventType,
+    resourceId: payload.resource?.id ?? null,
+    disputeId: payload.resource?.dispute_id ?? null,
+    relatedOrderId: relatedIds?.order_id ?? null,
+    relatedCaptureId: relatedIds?.capture_id ?? null,
+    sellerTransactionIds,
+    currency: payload.resource?.amount?.currency_code ?? null,
+    amountMinor,
+  };
+}
+
 export async function processVerifiedWebhook(
   eventId: string,
   eventType: string,
-  rawPayload: string,
-  payload: { resource?: { supplementary_data?: { related_ids?: { order_id?: string; capture_id?: string } }; id?: string; amount?: { currency_code?: string; value?: string } } },
+  _rawPayload: string,
+  payload: VerifiedPaypalWebhookPayload,
   customer: unknown = {}, shipping: unknown = {}, feeMinor: number | null = null, netMinor: number | null = null,
 ): Promise<WebhookProcessResult> {
   const sql = getSql();
   const relatedIds = payload.resource?.supplementary_data?.related_ids;
   const resourceId = payload.resource?.id ?? null;
+  const disputeId = payload.resource?.dispute_id ?? null;
+  const sellerTransactionIds = [...new Set((payload.resource?.disputed_transactions ?? [])
+    .map((transaction) => transaction.seller_transaction_id ?? transaction.transaction_info?.seller_transaction_id)
+    .filter((id): id is string => typeof id === "string" && id.length > 0))];
   const orderId = relatedIds?.order_id
     ?? ((eventType === "CHECKOUT.ORDER.APPROVED" || eventType === "CHECKOUT.PAYMENT-APPROVAL.REVERSED") ? resourceId : null);
   const captureId = resourceId;
   const relatedCaptureId = relatedIds?.capture_id
-    ?? (eventType === "PAYMENT.CAPTURE.REFUNDED" ? null : resourceId);
+    ?? ((eventType === "PAYMENT.CAPTURE.COMPLETED" || eventType === "PAYMENT.CAPTURE.REVERSED" || eventType === "PAYMENT.CAPTURE.DENIED") ? resourceId : null)
+    ?? (sellerTransactionIds.length === 1 ? sellerTransactionIds[0] : null);
   const currency = payload.resource?.amount?.currency_code ?? null;
   const amountMinor = parsePaypalMinorAmount(payload.resource?.amount?.value);
+  const safePayload = summarizeVerifiedPaypalWebhook(eventId, eventType, payload);
+  const safePayloadJson = JSON.stringify(safePayload);
+  const isDisputeEvent = eventType === "CUSTOMER.DISPUTE.CREATED"
+    || eventType === "CUSTOMER.DISPUTE.UPDATED"
+    || eventType === "CUSTOMER.DISPUTE.RESOLVED";
   // Neon submits this non-interactive batch as one transaction. Keeping the
   // insert separate avoids modifying an event row twice in one CTE, which
   // PostgreSQL may silently skip under MVCC. A pre-existing `received` row is
   // deliberately eligible again so interrupted deliveries can recover.
   const [, processedRows, rejectedRows, finalRows] = await sql.transaction((tx) => [
     tx`INSERT INTO retail_webhook_events (paypal_event_id, event_type, raw_payload, payload, status)
-      VALUES (${eventId}::text, ${eventType}::text, ${rawPayload}::text, ${JSON.stringify(payload)}::jsonb, 'received')
+      VALUES (${eventId}::text, ${eventType}::text, ${safePayloadJson}::text, ${safePayloadJson}::jsonb, 'received')
       ON CONFLICT (paypal_event_id) DO NOTHING`,
     tx`WITH capture_update AS (
       SELECT retail_apply_paypal_capture(${orderId}::text, ${captureId}::text, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}::bigint, ${netMinor}::bigint) AS applied
@@ -181,13 +228,19 @@ export async function processVerifiedWebhook(
         AND paypal_order_id=${orderId}::text AND status IN ('created','approved')
         AND EXISTS(SELECT 1 FROM approval_reversed_release WHERE released)
       RETURNING paypal_order_id
+    ), dispute_result AS (
+      SELECT retail_apply_paypal_dispute(${eventId}::text, ${eventType}::text, ${disputeId}::text, ${orderId}::text, ${relatedCaptureId}::text, ${safePayloadJson}::jsonb) AS applied
+      WHERE ${isDisputeEvent}
+        AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId}::text AND status='received')
+        AND ${disputeId}::text IS NOT NULL
     )
-    UPDATE retail_webhook_events SET status = CASE WHEN ${eventType}::text IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'CHECKOUT.PAYMENT-APPROVAL.REVERSED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
+    UPDATE retail_webhook_events SET status = CASE WHEN ${eventType}::text IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'CHECKOUT.PAYMENT-APPROVAL.REVERSED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED', 'CUSTOMER.DISPUTE.CREATED', 'CUSTOMER.DISPUTE.UPDATED', 'CUSTOMER.DISPUTE.RESOLVED') THEN 'processed' ELSE 'ignored' END, processed_at = NOW()
     WHERE paypal_event_id=${eventId}::text AND status = 'received'
-      AND (${eventType}::text NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'CHECKOUT.PAYMENT-APPROVAL.REVERSED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update) OR EXISTS (SELECT 1 FROM approval_reversed_update))
+      AND (${eventType}::text NOT IN ('PAYMENT.CAPTURE.COMPLETED', 'CHECKOUT.ORDER.APPROVED', 'CHECKOUT.PAYMENT-APPROVAL.REVERSED', 'PAYMENT.CAPTURE.REFUNDED', 'PAYMENT.CAPTURE.REVERSED', 'PAYMENT.CAPTURE.DENIED', 'CUSTOMER.DISPUTE.CREATED', 'CUSTOMER.DISPUTE.UPDATED', 'CUSTOMER.DISPUTE.RESOLVED') OR EXISTS (SELECT 1 FROM capture_update WHERE applied) OR EXISTS (SELECT 1 FROM approval_update) OR EXISTS (SELECT 1 FROM refund_result) OR EXISTS (SELECT 1 FROM reverse_update WHERE applied) OR EXISTS (SELECT 1 FROM denied_update) OR EXISTS (SELECT 1 FROM approval_reversed_update) OR EXISTS (SELECT 1 FROM dispute_result WHERE applied))
       RETURNING status`,
     tx`UPDATE retail_webhook_events SET status = 'rejected', reason = 'business_validation_failed', processed_at = NOW()
       WHERE paypal_event_id=${eventId}::text AND status = 'received'
+        AND NOT ${isDisputeEvent}
       RETURNING status`,
     tx`SELECT status FROM retail_webhook_events WHERE paypal_event_id=${eventId}::text`,
   ]);

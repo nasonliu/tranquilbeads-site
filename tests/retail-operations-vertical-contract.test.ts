@@ -18,8 +18,15 @@ describe("retail operations vertical contracts", () => {
   });
   it("enforces quantity bounds and releases denial holds", () => {
     expect(read("src/lib/retail/operations.ts")).toContain("quantity:z.number().int().min(1).max(10)");
-    expect(read("app/api/retail/orders/route.ts")).toContain("retailCartDto");
+    const orders = read("app/api/retail/orders/route.ts");
+    expect(orders).toContain("const variantItemDto");
+    expect(orders).toContain("quantity: z.number().int().min(1).max(10)");
+    expect(orders).toContain("items: z.array(variantItemDto).min(1).max(10)");
     expect(read("src/lib/retail/db.ts")).toContain("retail_release_order_reservations");
+    const v3 = read("migrations/20260802_retail_variants_promotions.sql");
+    expect(v3).toContain("UPDATE retail_variant_inventory_balances SET reserved=reserved-r.quantity");
+    expect(v3).toContain("CASE WHEN NEW.status='expired' THEN 'expired' ELSE 'released' END");
+    expect(v3).toContain("UPDATE retail_promotion_redemptions SET status='released'");
   });
   it("keeps capture reconciliation after a remote success and hydrates webhook snapshots", () => {
     const capture = read("app/api/retail/capture/route.ts");
@@ -33,9 +40,11 @@ describe("retail operations vertical contracts", () => {
   });
   it("protects admin Blob media and exposes the operator controls", () => {
     const media = read("app/api/admin/retail/media/route.ts");
-    expect(media).toContain("requireRetailAdmin"); expect(media).toContain("assertSameOrigin");
-    expect(read("app/admin/retail/ui.tsx")).toContain("Product images");
-    expect(read("app/admin/retail/ui.tsx")).toContain("Retry blob deletion outbox");
+    expect(media).toContain('requireRetailPermission("products:write")'); expect(media).toContain("assertSameOrigin");
+    const ui = read("app/admin/retail/ui.tsx");
+    expect(ui).toContain("copy.productImages");
+    expect(ui).toContain('"/api/admin/retail/media/outbox", "POST"');
+    expect(ui).toContain("copy.retryOutbox");
   });
   it("leases notifications and applies each migration with an explicit transaction", () => {
     expect(read("src/lib/retail/notifications.ts")).toContain("status='processing' AND claimed_at<now()-interval '10 minutes'");

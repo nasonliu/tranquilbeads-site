@@ -9,14 +9,14 @@ import {
 } from "@/src/data/site";
 import { InquiryForm } from "@/src/components/inquiry-form";
 import { PageHero } from "@/src/components/page-hero";
-import { isLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale } from "@/src/lib/i18n";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/contact">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -32,7 +32,7 @@ export default async function ContactPage({
 }: PageProps<"/[locale]/contact">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 

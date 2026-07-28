@@ -8,7 +8,7 @@ const neonMocks = vi.hoisted(() => {
 
 vi.mock("@neondatabase/serverless", () => ({ neon: neonMocks.neon }));
 
-import { processVerifiedWebhook } from "@/src/lib/retail/db";
+import { processVerifiedWebhook, summarizeVerifiedPaypalWebhook } from "@/src/lib/retail/db";
 
 describe("verified webhook database transaction", () => {
   beforeEach(() => {
@@ -54,5 +54,37 @@ describe("verified webhook database transaction", () => {
     neonMocks.sql.transaction.mockResolvedValueOnce([[], [], [], [{ status: "processed" }]]);
 
     await expect(processVerifiedWebhook("webhook-event", "PAYMENT.CAPTURE.COMPLETED", "{}", {})).resolves.toBe("duplicate");
+  });
+
+  it("persists only an allowlisted summary and keeps an unlinked dispute retryable", async () => {
+    neonMocks.sql.transaction.mockResolvedValueOnce([[], [], [], [{ status: "received" }]]);
+    const raw = JSON.stringify({ resource: { id: "DISPUTE-1", payer: { email_address: "buyer@example.test" } } });
+
+    await expect(processVerifiedWebhook(
+      "dispute-event", "CUSTOMER.DISPUTE.CREATED", raw,
+      { resource: { dispute_id: "DISPUTE-1", disputed_transactions: [{ seller_transaction_id: "CAPTURE-1" }] } },
+    )).resolves.toBe("retry");
+
+    const statements = neonMocks.queries.map(({ text }) => text.replace(/\s+/g, " "));
+    expect(statements[0]).toContain("INSERT INTO retail_webhook_events");
+    expect(statements[1]).toContain("dispute_result AS");
+    expect(statements[1]).toContain("retail_apply_paypal_dispute");
+    expect(statements[2]).toContain("AND NOT ?");
+  });
+
+  it("redacts arbitrary PayPal payload fields from persisted event summaries", () => {
+    expect(summarizeVerifiedPaypalWebhook("event", "CUSTOMER.DISPUTE.CREATED", {
+      resource: {
+        dispute_id: "DISPUTE-1",
+        amount: { currency_code: "USD", value: "12.00" },
+        supplementary_data: { related_ids: { order_id: "ORDER-1", capture_id: "CAPTURE-1" } },
+        disputed_transactions: [{ seller_transaction_id: "CAPTURE-1" }],
+        // The webhook can carry more fields, but none are copied into storage.
+        ...({ payer: { email_address: "buyer@example.test" } } as object),
+      },
+    })).toEqual({
+      paypalEventId: "event", eventType: "CUSTOMER.DISPUTE.CREATED", resourceId: null, disputeId: "DISPUTE-1",
+      relatedOrderId: "ORDER-1", relatedCaptureId: "CAPTURE-1", sellerTransactionIds: ["CAPTURE-1"], currency: "USD", amountMinor: 1200,
+    });
   });
 });

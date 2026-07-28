@@ -2,7 +2,7 @@ import { amazonRetailProducts } from "@/src/data/amazon-products";
 import { noonRetailProducts } from "@/src/data/noon-products";
 import { getAmazonMarketLabel, type AmazonMarket } from "@/src/lib/amazon-retail";
 import { getNoonMarketLabel } from "@/src/lib/noon-retail";
-import type { Locale } from "@/src/lib/i18n";
+import type { WholesaleLocale } from "@/src/lib/i18n";
 
 type RetailLink = {
   href: string;
@@ -73,7 +73,7 @@ function findAmazonProduct(asin: string) {
   ));
 }
 
-function getAmazonLinks(asin: string, locale: Locale) {
+function getAmazonLinks(asin: string, locale: WholesaleLocale) {
   const product = findAmazonProduct(asin);
   if (!product) return [];
 
@@ -93,7 +93,7 @@ function getAmazonLinks(asin: string, locale: Locale) {
     .filter((link) => link !== null);
 }
 
-function getNoonLinks(slug: string, locale: Locale) {
+function getNoonLinks(slug: string, locale: WholesaleLocale) {
   const product = noonRetailProducts.find((item) => item.slug === slug);
   if (!product) return [];
 
@@ -119,7 +119,7 @@ function getNoonLinks(slug: string, locale: Locale) {
   ].filter((link) => link !== null);
 }
 
-export function getProductRetailLinks(productSlug: string, locale: Locale): RetailLink[] {
+export function getProductRetailLinks(productSlug: string, locale: WholesaleLocale): RetailLink[] {
   const mapping = productRetailMappings[productSlug];
   if (!mapping) return [];
 

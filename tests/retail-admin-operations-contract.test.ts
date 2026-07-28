@@ -5,19 +5,23 @@ const read = (path: string) => readFileSync(path, "utf8");
 
 describe("retail operations administration contract", () => {
   it("exposes authenticated operations endpoints for each back-office domain", () => {
-    for (const path of [
-      "app/api/admin/retail/products/[id]/route.ts",
-      "app/api/admin/retail/inventory/route.ts",
-      "app/api/admin/retail/orders/route.ts",
-      "app/api/admin/retail/orders/[id]/route.ts",
-      "app/api/admin/retail/orders/[id]/refund/route.ts",
-      "app/api/admin/retail/shipping/route.ts",
-      "app/api/admin/retail/customers/route.ts",
-      "app/api/admin/retail/customers/[id]/route.ts",
-      "app/api/admin/retail/ledger/route.ts",
-      "app/api/admin/retail/ledger/export/route.ts",
-      "app/api/admin/retail/logout/route.ts",
-    ]) expect(read(path)).toContain("requireRetailAdmin");
+    const routes = {
+      "app/api/admin/retail/products/[id]/route.ts": ["products:write"],
+      "app/api/admin/retail/inventory/route.ts": ["inventory:write"],
+      "app/api/admin/retail/orders/route.ts": ["orders:read"],
+      "app/api/admin/retail/orders/[id]/route.ts": ["orders:read", "orders:pii", "orders:cancel", "orders:fulfil"],
+      "app/api/admin/retail/orders/[id]/refund/route.ts": ["orders:refund"],
+      "app/api/admin/retail/shipping/route.ts": ["shipping:write"],
+      "app/api/admin/retail/customers/route.ts": ["customers:write"],
+      "app/api/admin/retail/customers/[id]/route.ts": ["customers:write"],
+      "app/api/admin/retail/ledger/route.ts": ["finance:read"],
+      "app/api/admin/retail/ledger/export/route.ts": ["finance:read"],
+    };
+    for (const [path, permissions] of Object.entries(routes)) {
+      const route = read(path);
+      for (const permission of permissions) expect(route).toContain(`requireRetailPermission("${permission}")`);
+    }
+    expect(read("app/api/admin/retail/logout/route.ts")).toContain("requireRetailAdmin()");
   });
 
   it("splits the operator console into authenticated domain routes", () => {
@@ -34,7 +38,7 @@ describe("retail operations administration contract", () => {
       "app/admin/retail/system/page.tsx",
     ]) expect(existsSync(path)).toBe(true);
 
-    expect(read("app/admin/retail/layout.tsx")).toContain("verifyRetailAdminSession");
+    expect(read("app/admin/retail/layout.tsx")).toContain("validateRetailAdminSession");
     expect(read("app/admin/retail/page.tsx")).toContain('redirect("/admin/retail/overview")');
   });
 
@@ -84,6 +88,21 @@ describe("retail operations administration contract", () => {
     expect(locale).toContain("后台登录已失效，请重新登录。");
   });
 
+  it("accepts optional Chinese catalog copy without weakening atomic admin writes", () => {
+    const operations = read("src/lib/retail/operations.ts");
+    const migration = read("migrations/20260731_retail_storefront_zh.sql");
+    const locale = read("app/admin/retail/admin-locale.ts");
+    const ui = read("app/admin/retail/ui.tsx");
+    for (const value of ["titleZh", "descriptionZh", "nameZh", "title_zh", "description_zh", "name_zh"]) expect(operations).toContain(value);
+    for (const value of ["titleZh", "descriptionZh", "nameZh"]) expect(ui).toContain(value);
+    for (const value of ["titleZh", "descriptionZh", "nameZh", "title_zh", "description_zh", "name_zh"]) expect(locale).toContain(value);
+    expect(migration).toContain("CREATE OR REPLACE FUNCTION retail_create_admin_product");
+    expect(migration).toContain("CREATE OR REPLACE FUNCTION retail_update_admin_product");
+    expect(migration).toContain("CREATE OR REPLACE FUNCTION retail_upsert_admin_shipping_zone");
+    expect(migration).toContain("pg_advisory_xact_lock");
+    expect(migration).toContain("p_has_name_zh");
+  });
+
   it("keeps state transitions database-atomic and audit backed", () => {
     const migration = read("migrations/20260727_retail_operations.sql");
     expect(migration).toContain("retail_change_price");
@@ -91,8 +110,8 @@ describe("retail operations administration contract", () => {
     expect(migration).toContain("retail_adjust_inventory");
     expect(migration).toContain("only captured orders may be fulfilled");
     const auth = read("src/lib/retail/admin-auth.ts");
-    expect(auth).toContain('import { consumeRetailRateLimit } from "./rate-limit"');
-    expect(auth).toContain('consumeRetailRateLimit(request,"admin_login",8,200)');
+    expect(auth).toContain('import { consumeRetailAdminLoginRateLimit } from "./rate-limit"');
+    expect(auth).toContain("consumeRetailAdminLoginRateLimit(request, actorId)");
   });
 
   it("uses server-only parameterized operations helpers", () => {

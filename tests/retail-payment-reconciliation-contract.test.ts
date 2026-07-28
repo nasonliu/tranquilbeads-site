@@ -16,7 +16,7 @@ describe("retail payment reconciliation hardening", () => {
   it("fails closed before cancelling an approved or remotely capturable order", () => {
     const route = read("app/api/admin/retail/orders/[id]/route.ts");
     const migration = read("migrations/20260730_retail_payment_reconciliation.sql");
-    expect(route).toContain("if(order.paypal_order_id)throw new Error");
+    expect(route).toMatch(/if\s*\(\s*order\.paypal_order_id\s*\)\s*throw new Error/);
     expect(migration).toContain("o.status='created' AND o.paypal_order_id IS NOT NULL");
   });
 

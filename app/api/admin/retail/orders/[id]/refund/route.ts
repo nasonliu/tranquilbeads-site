@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { assertSameOrigin,requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+import { assertSameOrigin,requireRetailPermission } from "@/src/lib/retail/admin-auth";
 import { getRetailServerConfig } from "@/src/lib/retail/config";
 import { completeAdminRefund,failAdminRefund,prepareAdminRefund,refundDto } from "@/src/lib/retail/operations";
 import { getPaypalAccessToken,PaypalRefundRejectedError,refundPaypalCapture } from "@/src/lib/retail/paypal";
@@ -10,7 +10,7 @@ type Context={params:Promise<{id:string}>};
 const noStore={"cache-control":"no-store"};
 export async function POST(request:Request,context:Context){
   try{
-    await requireRetailAdmin();await assertSameOrigin();
+    await requireRetailPermission("orders:refund");await assertSameOrigin();
     const {id}=await context.params,orderId=z.coerce.number().int().positive().parse(id),input=refundDto.parse(await request.json());
     const prepared=await prepareAdminRefund(orderId,input);
     if(prepared.status==="completed"&&prepared.paypalRefundId)return Response.json({ok:true,refundId:prepared.paypalRefundId,duplicate:true},{headers:noStore});
@@ -28,5 +28,5 @@ export async function POST(request:Request,context:Context){
     }
     try{await completeAdminRefund(input.idempotencyKey,refundId);}catch{return Response.json({ok:false,error:"refund_reconciliation_pending",refundId},{status:503,headers:noStore});}
     return Response.json({ok:true,refundId},{headers:noStore});
-  }catch(error){return Response.json({ok:false,error:error instanceof Error?error.message:"refund_unavailable"},{status:400,headers:noStore});}
+  }catch(error){const message=error instanceof Error?error.message:"refund_unavailable";const status=message==="unauthorized"?401:message==="forbidden"?403:400;return Response.json({ok:false,error:status===401?"unauthorized":status===403?"forbidden":"refund_unavailable"},{status,headers:noStore});}
 }

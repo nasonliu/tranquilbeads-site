@@ -19,7 +19,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/shop", changeFrequency: "weekly" as const, priority: 0.55 },
   ];
 
-  return locales.flatMap((locale) =>
+  const marketingLocales = locales.filter((locale) => locale !== "zh");
+  const retailPaths = ["/shop", "/privacy", "/terms", "/shipping-returns"];
+  return [
+    ...marketingLocales.flatMap((locale) =>
     [
       ...routes.map((route) => ({
         url: `${baseUrl}${withLocale(locale, route.path)}`,
@@ -50,5 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         images: [absoluteUrl(article.heroImage)],
       })),
     ],
-  );
+    ),
+    ...retailPaths.map((path) => ({ url: `${baseUrl}${withLocale("zh", path)}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: path === "/shop" ? 0.55 : 0.3 })),
+  ];
 }

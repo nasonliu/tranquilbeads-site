@@ -5,8 +5,8 @@ import {
   defaultOutreachDir,
   readOutreachStore,
   writeOutreachStore,
-  type OutreachStore,
 } from "../src/lib/outreach-store";
+import type { OutreachStore } from "../src/lib/outreach-types";
 import { syncOutreachReplies } from "./sync-outreach-replies";
 
 export type SyncOpenClawWhatsAppRepliesOptions = {

@@ -9,11 +9,11 @@ import {
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import { ProductCard } from "@/src/components/product-card";
-import { isLocale, locales, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, wholesaleLocales, withLocale } from "@/src/lib/i18n";
 import { buildBreadcrumbJsonLd, buildCollectionMetadata } from "@/src/lib/seo";
 
 export function generateStaticParams() {
-  return locales.flatMap((locale) =>
+  return wholesaleLocales.flatMap((locale) =>
     collections.map((collection) => ({
       locale,
       collectionSlug: collection.slug,
@@ -26,7 +26,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/collections/[collectionSlug]">) {
   const { locale, collectionSlug } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -43,7 +43,7 @@ export default async function CollectionDetailPage({
 }: PageProps<"/[locale]/collections/[collectionSlug]">) {
   const { locale, collectionSlug } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 

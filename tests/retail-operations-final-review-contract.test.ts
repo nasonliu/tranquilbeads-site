@@ -54,12 +54,13 @@ describe("retail final-review contracts", () => {
 
   it("keeps omitted address flags null and permits a partial product edit", () => {
     const operations = read("src/lib/retail/operations.ts");
+    const productMigration = read("migrations/20260731_retail_storefront_zh.sql");
     expect(operations).toContain("${d.isDefault ?? null}::boolean");
-    expect(operations).toContain("IS DISTINCT FROM 'published'");
+    expect(productMigration).toContain("p_status IS DISTINCT FROM 'published'");
   });
 
   it("renders operational snapshot, inventory movement, bilingual description, and address fields", () => {
     const ui = read("app/admin/retail/ui.tsx");
-    for (const value of ["items_snapshot", "customer_snapshot", "shipping_snapshot", "Inventory movement ledger", "descriptionEn", "descriptionAr", "line2", "region", "postalCode", "isDefault", "archive"]) expect(ui).toContain(value);
+    for (const value of ["items_snapshot", "customer_snapshot", "shipping_snapshot", 'titleKey="inventoryLedger"', "descriptionEn", "descriptionAr", "line2", "region", "postalCode", "isDefault", "archive"]) expect(ui).toContain(value);
   });
 });

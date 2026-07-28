@@ -123,10 +123,10 @@ export function resolveCandidateImagePath(rawPath: string): string | null {
   try {
     // Reject the symlink itself, even when its target currently happens to be
     // inside the root. This also closes time-of-check path swapping.
-    if (!fs.lstatSync(mountedPath).isFile()) return null;
-    const realRoot = fs.realpathSync(CANDIDATE_IMAGE_ROOT);
-    const realPath = fs.realpathSync(mountedPath);
-    if (!isWithinRoot(realPath, realRoot) || !fs.statSync(realPath).isFile()) return null;
+    if (!fs.lstatSync(/* turbopackIgnore: true */ mountedPath).isFile()) return null;
+    const realRoot = fs.realpathSync(/* turbopackIgnore: true */ CANDIDATE_IMAGE_ROOT);
+    const realPath = fs.realpathSync(/* turbopackIgnore: true */ mountedPath);
+    if (!isWithinRoot(realPath, realRoot) || !fs.statSync(/* turbopackIgnore: true */ realPath).isFile()) return null;
     return realPath;
   } catch {
     return null;

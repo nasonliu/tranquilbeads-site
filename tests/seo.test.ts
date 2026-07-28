@@ -8,7 +8,6 @@ import {
   buildBlogArticleMetadata,
   buildBlogFaqJsonLd,
   buildBreadcrumbJsonLd,
-  buildProductJsonLd,
   buildProductMetadata,
   buildRetailBreadcrumbJsonLd,
   buildRetailItemListJsonLd,
@@ -35,20 +34,17 @@ describe("SEO helpers", () => {
     expect(getRealProductImages(product!)[0]).toContain("/images/imported/natural-kuka-wood-tasbih/");
   });
 
-  it("emits Product and Breadcrumb structured data for product pages", () => {
+  it("emits Breadcrumb structured data for wholesale catalogue pages", () => {
     const collection = getCollectionBySlug("gift-sets");
     const product = getProductBySlug("baltic-amber-gift-set");
 
     expect(collection).toBeDefined();
     expect(product).toBeDefined();
 
-    const productJsonLd = buildProductJsonLd("en", collection!, product!);
     const breadcrumbJsonLd = buildBreadcrumbJsonLd("en", collection!, product!);
 
-    expect(productJsonLd["@type"]).toBe("Product");
-    expect(productJsonLd.name).toBe("Baltic Amber Gift Set");
-    expect(productJsonLd.image.every((image) => image.startsWith("https://www.tranquilbeads.com/images/"))).toBe(true);
     expect(breadcrumbJsonLd.itemListElement).toHaveLength(4);
+    expect(breadcrumbJsonLd.itemListElement[3]?.name).toBe("Baltic Amber Gift Set");
   });
 
   it("adds priorities, change frequency, and image sitemap entries", () => {
@@ -124,7 +120,9 @@ describe("SEO helpers", () => {
 
     expect(itemList["@type"]).toBe("ItemList");
     expect(itemList.numberOfItems).toBe(1);
-    expect(itemList.itemListElement[0].item.offers.offerCount).toBe(2);
+    expect(itemList.itemListElement[0].item["@type"]).toBe("Thing");
+    expect(itemList.itemListElement[0].item.identifier).toBe("B0TEST");
+    expect(itemList.itemListElement[0].item.offers).toBeUndefined();
     expect(breadcrumb["@type"]).toBe("BreadcrumbList");
     expect(breadcrumb.itemListElement[1].item).toBe("https://www.tranquilbeads.com/en/amazon");
   });

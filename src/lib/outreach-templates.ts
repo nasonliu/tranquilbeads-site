@@ -1,6 +1,6 @@
 import { applyComplianceFooter } from "@/src/lib/outreach-guardrails";
 import templatesData from "@/src/data/outreach/templates.json";
-import { defaultLocale, isLocale } from "@/src/lib/i18n";
+import { defaultLocale, isWholesaleLocale } from "@/src/lib/i18n";
 import type {
   OutreachChannel,
   OutreachTemplateVariant,
@@ -97,6 +97,9 @@ export function resolveOutreachLocale(input: {
   return isArabicMarketCountry(input.country) ? "ar" : fallbackLocale;
 }
 
+function renderTemplateText(value: string, options: RenderOutreachTemplateOptions): string;
+function renderTemplateText(value: null, options: RenderOutreachTemplateOptions): null;
+function renderTemplateText(value: string | null, options: RenderOutreachTemplateOptions): string | null;
 function renderTemplateText(
   value: string | null,
   options: RenderOutreachTemplateOptions,
@@ -110,7 +113,7 @@ function renderTemplateText(
 
 function normalizeLocale(locale?: string): OutreachLocale | null {
   if (!locale) return null;
-  return isLocale(locale) ? locale : null;
+  return isWholesaleLocale(locale) ? locale : null;
 }
 
 function firstAvailableContent(template: OutreachTemplate) {

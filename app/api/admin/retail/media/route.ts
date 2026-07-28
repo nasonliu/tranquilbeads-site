@@ -1,21 +1,25 @@
 import { del, put } from "@vercel/blob";
 import { z } from "zod";
 
-import { assertSameOrigin, requireRetailAdmin } from "@/src/lib/retail/admin-auth";
+import { assertSameOrigin, requireRetailPermission } from "@/src/lib/retail/admin-auth";
 import { assertRetailBlobUrl, getRetailBlobConfig } from "@/src/lib/retail/blob";
-import { attachRetailProductImage, detachRetailProductImage, findRetailProductImageByIdempotency, listRetailBlobDeleteOutbox, markRetailBlobDeleteOutbox, queueRetailBlobDelete } from "@/src/lib/retail/operations";
+import { attachRetailProductImage, detachRetailProductImage, findRetailProductImageByIdempotency, listRetailBlobDeleteOutbox, markRetailBlobDeleteOutbox, queueRetailBlobDelete, mediaReorderDto, reorderRetailProductMedia } from "@/src/lib/retail/operations";
 import { validateRetailImage } from "@/src/lib/retail/upload-validation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const fields = z.object({ productId: z.string().uuid(), idempotencyKey: z.string().uuid(), altEn: z.string().trim().max(300).default(""), altAr: z.string().trim().max(300).default("") });
-const fail = (error: unknown, status = 400) => Response.json({ ok: false, error: error instanceof Error ? error.message : "invalid_request" }, { status, headers: { "cache-control": "no-store" } });
+const publicErrors = new Set(["unauthorized", "forbidden", "invalid_request", "invalid_image", "media_result_unknown", "media_version_conflict", "image_set_mismatch", "duplicate_image", "product not found", "product image limit reached"]);
+const fail = (error: unknown, status = 400) => {
+  const message = error instanceof Error ? error.message : "invalid_request";
+  return Response.json({ ok: false, error: publicErrors.has(message) ? message : "invalid_request" }, { status, headers: { "cache-control": "no-store" } });
+};
 const isKnownAttachRejection = (error: unknown) => error instanceof Error && ["product not found", "product image limit reached"].includes(error.message);
 
 export async function POST(request: Request) {
   try {
-    await requireRetailAdmin();
+    await requireRetailPermission("products:write");
     await assertSameOrigin();
     const form = await request.formData();
     const input = fields.parse({ productId: form.get("productId"), idempotencyKey: form.get("idempotencyKey"), altEn: form.get("altEn") ?? "", altAr: form.get("altAr") ?? "" });
@@ -65,12 +69,12 @@ export async function POST(request: Request) {
       catch { if (outbox) await markRetailBlobDeleteOutbox(String(outbox.id), false); }
       throw error;
     }
-  } catch (error) { return fail(error, error instanceof Error && error.message === "unauthorized" ? 401 : 400); }
+  } catch (error) { return fail(error, error instanceof Error && error.message === "unauthorized" ? 401 : error instanceof Error && error.message === "forbidden" ? 403 : 400); }
 }
 
 export async function DELETE(request: Request) {
   try {
-    await requireRetailAdmin();
+    await requireRetailPermission("products:write");
     await assertSameOrigin();
     const { imageId } = z.object({ imageId: z.string().uuid() }).parse(await request.json());
     const removed = await detachRetailProductImage(imageId);
@@ -84,5 +88,19 @@ export async function DELETE(request: Request) {
       if (row) await markRetailBlobDeleteOutbox(String(row.id), false);
     }
     return Response.json({ ok: true, deleted: true }, { headers: { "cache-control": "no-store" } });
-  } catch (error) { return fail(error, error instanceof Error && error.message === "unauthorized" ? 401 : 400); }
+  } catch (error) { return fail(error, error instanceof Error && error.message === "unauthorized" ? 401 : error instanceof Error && error.message === "forbidden" ? 403 : 400); }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    await requireRetailPermission("products:write");
+    await assertSameOrigin();
+    const input = mediaReorderDto.parse(await request.json());
+    const result = await reorderRetailProductMedia(input);
+    return Response.json({ ok: true, mediaVersion: Number(result.media_version), imageIds: result.image_ids, replayed: result.replayed === true }, { headers: { "cache-control": "no-store" } });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "invalid_request";
+    const status = message === "unauthorized" ? 401 : message === "forbidden" ? 403 : message === "media_version_conflict" ? 409 : message === "image_set_mismatch" || message === "duplicate_image" ? 422 : 400;
+    return fail(new Error(message), status);
+  }
 }

@@ -25,6 +25,13 @@ describe("retail policy pages", () => {
     expect(screen.getByText(/معلومات التتبع/i)).toBeInTheDocument();
   });
 
+  it("renders Chinese retail policies without Arabic fallback", async () => {
+    render(await ShippingReturnsPage({ params: Promise.resolve({ locale: "zh" }) }));
+
+    expect(screen.getByRole("heading", { level: 1, name: "配送、退货与退款" })).toBeInTheDocument();
+    expect(screen.getByText(/任何退货或退款均须先经审核批准/)).toBeInTheDocument();
+  });
+
   it("keeps return and refund requests subject to review without invented guarantees", async () => {
     render(await ShippingReturnsPage({ params: Promise.resolve({ locale: "en" }) }));
 

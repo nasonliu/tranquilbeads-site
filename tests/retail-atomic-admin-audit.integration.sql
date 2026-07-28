@@ -1,0 +1,47 @@
+\set ON_ERROR_STOP on
+
+BEGIN;
+
+DO $$
+DECLARE created RECORD; replay RECORD; observed TEXT; observed_count BIGINT;
+BEGIN
+  SELECT * INTO created FROM retail_create_admin_product_as_actor(
+    'ATOMIC-AUDIT-001','atomic-audit-001','Atomic audit','تدقيق ذري','原子审计','English','عربي','中文','draft',100,
+    '20000000-0000-4000-8000-000000000001'::uuid,'owner-a','Owner A','owner',false
+  );
+  IF created.replayed OR created.public_id IS NULL THEN RAISE EXCEPTION 'actor-aware creation did not create product'; END IF;
+  SELECT actor_id INTO observed FROM retail_admin_audit WHERE idempotency_key='20000000-0000-4000-8000-000000000001'::uuid;
+  IF observed <> 'owner-a' THEN RAISE EXCEPTION 'atomic attribution was not persisted'; END IF;
+
+  SELECT * INTO replay FROM retail_create_admin_product_as_actor(
+    'ATOMIC-AUDIT-001','atomic-audit-001','Atomic audit','تدقيق ذري','原子审计','English','عربي','中文','draft',100,
+    '20000000-0000-4000-8000-000000000001'::uuid,'owner-a','Owner A','owner',false
+  );
+  IF NOT replay.replayed THEN RAISE EXCEPTION 'same actor replay did not return replay'; END IF;
+
+  BEGIN
+    PERFORM * FROM retail_create_admin_product_as_actor(
+      'ATOMIC-AUDIT-001','atomic-audit-001','Atomic audit','تدقيق ذري','原子审计','English','عربي','中文','draft',100,
+      '20000000-0000-4000-8000-000000000001'::uuid,'owner-b','Owner B','owner',false
+    );
+    RAISE EXCEPTION 'different actor replay unexpectedly succeeded';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM NOT LIKE '%idempotency actor conflict%' THEN RAISE; END IF;
+  END;
+  SELECT actor_id INTO observed FROM retail_admin_audit WHERE idempotency_key='20000000-0000-4000-8000-000000000001'::uuid;
+  IF observed <> 'owner-a' THEN RAISE EXCEPTION 'replay overwrote first actor'; END IF;
+
+  BEGIN
+    PERFORM * FROM retail_create_admin_product_as_actor(
+      'ATOMIC-AUDIT-ROLLBACK','atomic-audit-rollback','Rollback','تراجع','回滚','English','عربي','中文','draft',100,
+      '20000000-0000-4000-8000-000000000002'::uuid,'','','owner',false
+    );
+    RAISE EXCEPTION 'invalid actor unexpectedly succeeded';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM NOT LIKE '%invalid admin actor%' THEN RAISE; END IF;
+  END;
+  SELECT count(*) INTO observed_count FROM retail_products WHERE sku='ATOMIC-AUDIT-ROLLBACK';
+  IF observed_count <> 0 THEN RAISE EXCEPTION 'invalid actor did not roll back business mutation'; END IF;
+END $$;
+
+ROLLBACK;

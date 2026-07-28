@@ -26,7 +26,7 @@ describe("storefront order confirmation page", () => {
 
     render(await StorefrontOrderPage({ params: Promise.resolve({ locale: "en", requestId }) }));
 
-    expect(screen.getByText("captured")).toBeInTheDocument();
+    expect(screen.getByText("Paid")).toBeInTheDocument();
     expect(screen.getByText("USD 12.34")).toBeInTheDocument();
     expect(screen.queryByText(requestId)).not.toBeInTheDocument();
     expect(screen.queryByText("Ada Customer")).not.toBeInTheDocument();

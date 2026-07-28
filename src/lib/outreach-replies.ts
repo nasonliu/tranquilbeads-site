@@ -1,12 +1,12 @@
 import {
   applyOutreachTaskChanges,
-  type OutreachStore,
 } from "@/src/lib/outreach-store";
 import { normalizeRecipientAddressByChannel } from "@/src/lib/outreach-addresses";
 import { assertCanTransitionTaskStatus } from "@/src/lib/outreach-state";
 import type {
   OutreachChannel,
   OutreachEvent,
+  OutreachStore,
   OutreachTask,
 } from "@/src/lib/outreach-types";
 

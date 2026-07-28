@@ -8,14 +8,14 @@ import {
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import { CollectionCard } from "@/src/components/collection-card";
-import { isLocale, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/collections">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -31,7 +31,7 @@ export default async function CollectionsPage({
 }: PageProps<"/[locale]/collections">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 

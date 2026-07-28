@@ -70,6 +70,14 @@ const policies: Record<RetailPolicyKey, Record<Locale, RetailPolicy>> = {
         },
       ],
     },
+    zh: {
+      eyebrow: "零售隐私声明", title: "隐私政策", introduction: "本声明说明 TranquilBeads 如何处理您通过直接零售商店提交的信息。",
+      sections: [
+        { heading: "我们使用的信息", paragraphs: ["当您下单或准备下单时，我们会使用您提供的联系信息、订单信息和配送地址，为订单报价、处理订单、安排配送、发送订单更新并提供客户支持。", "我们也可能使用订单信息来防范滥用、保护商店并履行适用的记录保存义务。"] },
+        { heading: "通过 PayPal 付款", paragraphs: ["银行卡和 PayPal 付款由第三方支付服务 PayPal 处理。PayPal 按其自身隐私条款处理支付详情；TranquilBeads 无需取得您的完整银行卡信息即可履行订单。"] },
+        { heading: "共享与联系", paragraphs: ["我们仅与参与付款、配送或商店运营的服务提供商共享必要信息，不会出售个人信息。", "如对隐私或零售订单信息有疑问或请求，请联系 sales@tranquilbeads.com。"] },
+      ],
+    },
   },
   terms: {
     en: {
@@ -126,6 +134,14 @@ const policies: Record<RetailPolicyKey, Record<Locale, RetailPolicy>> = {
         },
       ],
     },
+    zh: {
+      eyebrow: "零售条款", title: "销售条款", introduction: "本直接零售条款适用于通过 TranquilBeads 零售商店提交的订单。版本：2026-07-28。",
+      sections: [
+        { heading: "订单与付款", paragraphs: ["提交订单即表示您确认所提供的订单和配送信息准确无误。付款由第三方支付服务商 PayPal 处理。付款获批不会改变订单所示的商品供应情况或配送要求。", "在提交付款前，结账页会显示订单总额，包括适用的运费和税费。"] },
+        { heading: "配送范围", paragraphs: ["直接零售商店仅配送至结账页当前配置的国家/地区。若结账页未提供某个国家/地区，则该订单无法配送至该地。", "订单发出后，如配送服务可提供追踪信息，我们会予以发送。"] },
+        { heading: "订单咨询", paragraphs: ["如对订单、配送或政策有疑问，请联系 sales@tranquilbeads.com，并在可用时提供您的订单参考号。"] },
+      ],
+    },
   },
   "shipping-returns": {
     en: {
@@ -168,6 +184,13 @@ const policies: Record<RetailPolicyKey, Record<Locale, RetailPolicy>> = {
             "لا تعد هذه السياسة بمدة إرجاع ثابتة أو موافقة تلقائية أو استرداد مضمون. وتعتمد النتيجة على تفاصيل الطلب والمراجعة.",
           ],
         },
+      ],
+    },
+    zh: {
+      eyebrow: "零售配送支持", title: "配送、退货与退款", introduction: "本页面说明直接零售订单的配送与售后流程。",
+      sections: [
+        { heading: "配送与交付", paragraphs: ["我们仅配送至您下单时结账页中已配置的国家/地区。付款前，订单总额会显示运费和适用税费。", "订单发出后，如承运商提供追踪信息，我们会予以发送。"] },
+        { heading: "退货与退款申请", paragraphs: ["如需申请退货或退款审核，请将订单参考号和问题的清晰说明发送至 sales@tranquilbeads.com。任何退货或退款均须先经审核批准。", "本政策不承诺固定退货期限、自动批准或保证退款。处理结果取决于订单详情和审核结果。"] },
       ],
     },
   },

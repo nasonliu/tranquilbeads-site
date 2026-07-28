@@ -5,9 +5,14 @@ import {
   ArrowLeft,
   BadgeCheck,
   Boxes,
+  ChevronDown,
+  ChevronUp,
+  ClipboardList,
   CircleAlert,
   Clock3,
   CreditCard,
+  Eye,
+  EyeOff,
   FileImage,
   LayoutDashboard,
   LogOut,
@@ -54,11 +59,16 @@ type RetailAdminSection =
   | "overview"
   | "orders"
   | "products"
+  | "catalog"
+  | "promotions"
   | "inventory"
+  | "returns"
   | "customers"
   | "finance"
+  | "settlements"
   | "settings"
   | "media"
+  | "audit"
   | "system"
   | "legacy";
 
@@ -74,8 +84,10 @@ const optionalFields = new Set([
   "slug",
   "titleEn",
   "titleAr",
+  "titleZh",
   "descriptionEn",
   "descriptionAr",
+  "descriptionZh",
   "isDefault",
   "archive",
 ]);
@@ -84,11 +96,16 @@ const sectionIcons: Record<Exclude<RetailAdminSection, "legacy">, LucideIcon> = 
   overview: LayoutDashboard,
   orders: ShoppingBag,
   products: Package,
+  catalog: Package,
+  promotions: ReceiptText,
   inventory: Boxes,
+  returns: PackageCheck,
   customers: Users,
   finance: CreditCard,
+  settlements: CreditCard,
   settings: Settings,
   media: FileImage,
+  audit: ClipboardList,
   system: Wrench,
 };
 
@@ -113,10 +130,6 @@ function useStoredLocale() {
   };
 
   return [locale, setLocale] as const;
-}
-
-function optionalBoolean(value: string) {
-  return value === "true" ? true : value === "false" ? false : undefined;
 }
 
 function currencyCode(value: unknown) {
@@ -202,6 +215,10 @@ function resultError(error: unknown, fallback: string, locale: AdminLocale) {
 export function RetailAdminLogin() {
   const [locale, setLocale] = useStoredLocale();
   const copy = getAdminCopy(locale);
+  const actorIdCopy = locale === "zh"
+    ? { label: "操作员 ID（可选）", hint: "留空则使用兼容旧版的零售管理员登录。" }
+    : { label: "Operator ID (optional)", hint: "Leave blank to use the legacy retail-admin login." };
+  const [actorId, setActorId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -215,7 +232,7 @@ export function RetailAdminLogin() {
             const response = await fetch("/api/admin/retail/login", {
               method: "POST",
               headers: { "content-type": "application/json" },
-              body: JSON.stringify({ password }),
+              body: JSON.stringify({ actorId: actorId.trim() || undefined, password }),
             });
             if (response.ok) location.reload();
             else setError(copy.loginUnavailable);
@@ -245,6 +262,22 @@ export function RetailAdminLogin() {
             className="sr-only"
             tabIndex={-1}
           />
+          <label className="mt-6 block text-sm" htmlFor="retail-admin-operator-id">
+            {actorIdCopy.label}
+          </label>
+          <div className="mt-2">
+            <input
+              id="retail-admin-operator-id"
+              aria-describedby="retail-admin-operator-id-hint"
+              className="w-full rounded-lg border border-[#cdbda9] bg-white p-3"
+              type="text"
+              autoComplete="username"
+              maxLength={100}
+              value={actorId}
+              onChange={(event) => setActorId(event.target.value)}
+            />
+            <span id="retail-admin-operator-id-hint" className="mt-1 block text-xs text-muted">{actorIdCopy.hint}</span>
+          </div>
           <label className="mt-6 block text-sm">
             {copy.password}
             <input
@@ -351,6 +384,118 @@ function AdminForm({
   );
 }
 
+function CustomerAddressManager({ customers, refresh }: { customers: Row[]; refresh: () => Promise<boolean> }) {
+  const locale = useAdminLocale();
+  const copy = getAdminCopy(locale);
+  const [customerId, setCustomerId] = useState("");
+  const [addressChoice, setAddressChoice] = useState("new");
+  const [customer, setCustomer] = useState<Row | null>(null);
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [isDefault, setIsDefault] = useState(false);
+  const [archive, setArchive] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [result, setResult] = useState("");
+  const submitting = useRef(false);
+  const idempotencyKey = useRef<string | null>(null);
+  const addresses = Array.isArray(customer?.addresses) ? customer.addresses as Row[] : [];
+
+  const loadAddressBook = useCallback(async (id = customerId) => {
+    if (!id) { setResult(copy.noCustomerSelected); return false; }
+    setPending(true);
+    try {
+      const response = await api(`/api/admin/retail/customers/${id}`);
+      const next = response.customer as Row;
+      setCustomer(next);
+      const nextAddresses = Array.isArray(next.addresses) ? next.addresses as Row[] : [];
+      const selected = nextAddresses.find((address) => String(address.id) === addressChoice) ?? nextAddresses.find((address) => address.is_default) ?? nextAddresses[0];
+      if (selected) {
+        setAddressChoice(String(selected.id));
+        setDraft({ name: String(next.name ?? ""), recipient: String(selected.recipient ?? ""), line1: String(selected.line1 ?? ""), line2: String(selected.line2 ?? ""), city: String(selected.city ?? ""), region: String(selected.region ?? ""), postalCode: String(selected.postal_code ?? ""), country: String(selected.country ?? ""), phone: String(selected.phone ?? "") });
+        setIsDefault(selected.is_default === true);
+        setArchive(Boolean(selected.archived_at));
+      } else {
+        setAddressChoice("new");
+        setDraft({ name: String(next.name ?? ""), recipient: "", line1: "", line2: "", city: "", region: "", postalCode: "", country: "", phone: "" });
+        setIsDefault(true);
+        setArchive(false);
+      }
+      setResult(copy.addressBookLoaded);
+      return true;
+    } catch (error) {
+      const code = error instanceof Error ? error.message.toLowerCase() : "";
+      setResult(code.includes("forbidden") || code.includes("pii") ? copy.addressReadDenied : resultError(error, copy.loadFailed, locale));
+      return false;
+    } finally { setPending(false); }
+  }, [addressChoice, copy.addressBookLoaded, copy.addressReadDenied, copy.loadFailed, copy.noCustomerSelected, customerId, locale]);
+
+  const chooseAddress = (nextId: string) => {
+    setAddressChoice(nextId);
+    idempotencyKey.current = null;
+    if (nextId === "new") {
+      setDraft((current) => ({ ...current, recipient: "", line1: "", line2: "", city: "", region: "", postalCode: "", country: "", phone: "" }));
+      setIsDefault(!addresses.some((address) => address.is_default && !address.archived_at));
+      setArchive(false);
+      return;
+    }
+    const selected = addresses.find((address) => String(address.id) === nextId);
+    if (!selected) return;
+    setDraft((current) => ({ ...current, recipient: String(selected.recipient ?? ""), line1: String(selected.line1 ?? ""), line2: String(selected.line2 ?? ""), city: String(selected.city ?? ""), region: String(selected.region ?? ""), postalCode: String(selected.postal_code ?? ""), country: String(selected.country ?? ""), phone: String(selected.phone ?? "") }));
+    setIsDefault(selected.is_default === true);
+    setArchive(Boolean(selected.archived_at));
+  };
+
+  const customerLabel = (entry: Row) => `${String(entry.name ?? "—")} · ${String(entry.email ?? "—")}`;
+  const fieldNames = ["name", "recipient", "line1", "line2", "city", "region", "postalCode", "country", "phone"];
+  const canEdit = Boolean(customer);
+  return (
+    <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
+      <h2 className="text-lg font-semibold">{copy.customerAddressManager}</h2>
+      <p className="mt-2 max-w-3xl text-sm text-muted">{copy.customerAddressHelp}</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <label className="text-sm"><span>{copy.selectCustomer}</span><select aria-label={copy.selectCustomer} className="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5" value={customerId} onChange={(event) => { setCustomerId(event.target.value); setCustomer(null); setAddressChoice("new"); setDraft({}); setResult(""); idempotencyKey.current = null; }}><option value="">—</option>{customers.map((entry) => <option key={String(entry.public_id)} value={String(entry.public_id)}>{customerLabel(entry)}</option>)}</select></label>
+        <button className="self-end rounded-lg border border-[#cdbda9] px-4 py-2.5 text-sm" disabled={!customerId || pending} onClick={() => void loadAddressBook()}>{pending ? copy.working : copy.loadAddressBook}</button>
+      </div>
+      {customer && <form className="mt-5" onSubmit={async (event) => {
+        event.preventDefault();
+        if (submitting.current) return;
+        submitting.current = true; setPending(true);
+        try {
+          const response = await api(`/api/admin/retail/customers/${customerId}`, "PATCH", {
+            name: draft.name?.trim() || undefined,
+            addressId: addressChoice === "new" ? undefined : addressChoice,
+            recipient: draft.recipient?.trim() || undefined,
+            line1: draft.line1?.trim() || undefined,
+            line2: draft.line2?.trim() ?? "",
+            city: draft.city?.trim() || undefined,
+            region: draft.region?.trim() ?? "",
+            postalCode: draft.postalCode?.trim() ?? "",
+            country: draft.country?.trim().toUpperCase() || undefined,
+            phone: draft.phone?.trim() ?? "",
+            isDefault: isDefault || undefined,
+            archive: archive || undefined,
+            idempotencyKey: (idempotencyKey.current ??= uuid()),
+          });
+          // PATCH has already completed a redacted DB readback. Refresh the
+          // masked directory, then re-run the explicit PII read for the form.
+          if (!response.customer || !(await refresh()) || !(await loadAddressBook(customerId))) {
+            setResult(copy.writeReadback);
+          } else {
+            idempotencyKey.current = null;
+            setResult(archive ? copy.addressArchived : copy.addressSaved);
+          }
+        } catch (error) { setResult(resultError(error, copy.saveFailed, locale)); }
+        finally { submitting.current = false; setPending(false); }
+      }}>
+        <label className="text-sm"><span>{copy.selectAddress}</span><select aria-label={copy.selectAddress} className="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5" value={addressChoice} onChange={(event) => chooseAddress(event.target.value)}><option value="new">{copy.newAddress}</option>{addresses.map((address) => <option key={String(address.id)} value={String(address.id)}>{[String(address.city ?? ""), String(address.country ?? ""), address.is_default ? copy.makeDefault : "", address.archived_at ? copy.archiveAddress : ""].filter(Boolean).join(" · ")}</option>)}</select></label>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">{fieldNames.map((name) => <label className="text-sm" key={name}><span>{fieldCopy[locale][name]}</span><input aria-label={fieldCopy[locale][name]} className="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5" disabled={!canEdit || pending} name={name} required={["recipient", "line1", "city", "country"].includes(name) && addressChoice === "new"} maxLength={name === "country" ? 2 : undefined} value={draft[name] ?? ""} onChange={(event) => { setDraft((current) => ({ ...current, [name]: event.target.value })); idempotencyKey.current = null; }} /></label>)}</div>
+        <div className="mt-4 flex flex-wrap gap-5 text-sm"><label className="flex items-center gap-2"><input aria-label={copy.makeDefault} type="checkbox" checked={isDefault} disabled={archive || pending} onChange={(event) => { setIsDefault(event.target.checked); idempotencyKey.current = null; }} />{copy.makeDefault}</label>{addressChoice !== "new" && <label className="flex items-center gap-2"><input aria-label={copy.archiveAddress} type="checkbox" checked={archive} disabled={pending} onChange={(event) => { setArchive(event.target.checked); if (event.target.checked) setIsDefault(false); idempotencyKey.current = null; }} />{copy.archiveAddress}</label>}</div>
+        <button className="mt-4 rounded-lg bg-accent px-4 py-2.5 text-white" disabled={pending}>{pending ? copy.saving : copy.save}</button>
+      </form>}
+      {result && <p className="mt-3 text-sm" role="status">{result}</p>}
+    </section>
+  );
+}
+
 function DataTable({
   titleKey,
   rows,
@@ -434,6 +579,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
               country: String(data.get("country")).toUpperCase(),
               nameEn: String(data.get("nameEn")),
               nameAr: String(data.get("nameAr")),
+              nameZh: String(data.get("nameZh")),
               shippingMinor: Number(data.get("shippingMinor")),
               freeShippingThresholdMinor:
                 data.get("freeShippingThresholdMinor") === ""
@@ -464,6 +610,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
           ["country", "text"],
           ["nameEn", "text"],
           ["nameAr", "text"],
+          ["nameZh", "text"],
           ["shippingMinor", "number"],
           ["freeShippingThresholdMinor", "number"],
           ["taxRateBps", "number"],
@@ -496,7 +643,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
         <table className="w-full text-left text-sm">
           <thead>
             <tr>
-              {["country", "name_en", "name_ar", "shipping_minor", "free_shipping_threshold_minor", "tax_rate_bps", "active", "action"].map((column) => (
+              {["country", "name_en", "name_ar", "name_zh", "shipping_minor", "free_shipping_threshold_minor", "tax_rate_bps", "active", "action"].map((column) => (
                 <th className="px-3 py-2" key={column}>{columnCopy[locale][column] ?? column}</th>
               ))}
             </tr>
@@ -508,6 +655,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
                   "country",
                   "name_en",
                   "name_ar",
+                  "name_zh",
                   "shipping_minor",
                   "free_shipping_threshold_minor",
                   "tax_rate_bps",
@@ -545,7 +693,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
                 </td>
               </tr>
             )) : (
-              <tr><td className="px-3 py-8 text-center text-muted" colSpan={8}>{copy.noRecords}</td></tr>
+              <tr><td className="px-3 py-8 text-center text-muted" colSpan={9}>{copy.noRecords}</td></tr>
             )}
           </tbody>
         </table>
@@ -732,6 +880,31 @@ function ProductMedia({ products, refresh }: { products: Row[]; refresh: () => P
   const [pending, setPending] = useState(false);
   const submitting = useRef(false);
   const uploadIdempotencyKey = useRef<string | null>(null);
+  const reorderKeys = useRef(new Map<string, string>());
+
+  const saveOrder = async (product: Row, imageIds: string[]) => {
+    if (submitting.current) return;
+    submitting.current = true;
+    setPending(true);
+    const productId = String(product.public_id ?? product.id ?? "");
+    const idempotencyKey = reorderKeys.current.get(productId) ?? uuid();
+    reorderKeys.current.set(productId, idempotencyKey);
+    try {
+      await api("/api/admin/retail/media/reorder", "PATCH", {
+        productId,
+        imageIds,
+        idempotencyKey,
+        expectedVersion: Number(product.image_version ?? product.images_version ?? product.version ?? 0),
+      });
+      reorderKeys.current.delete(productId);
+      setResult(await refresh() ? copy.imageOrderSaved : copy.writeReadback);
+    } catch (error) {
+      setResult(resultError(error, copy.imageOrderFailed, locale));
+    } finally {
+      submitting.current = false;
+      setPending(false);
+    }
+  };
 
   return (
     <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
@@ -791,10 +964,13 @@ function ProductMedia({ products, refresh }: { products: Row[]; refresh: () => P
         </button>
       </form>
       {result && <p className="mt-3 text-sm" role="status">{result}</p>}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {products.flatMap((product) =>
-          Array.isArray(product.images)
-            ? (product.images as Row[]).map((image) => (
+      <div className="mt-6 space-y-6">
+        {products.map((product) => {
+          const images = Array.isArray(product.images) ? [...product.images as Row[]].sort((a, b) => Number(a.position ?? 0) - Number(b.position ?? 0)) : [];
+          return images.length ? <section key={String(product.public_id ?? product.id ?? product.sku)}>
+            <div className="mb-3 flex items-center justify-between gap-3"><h3 className="font-medium">{String(product.sku ?? product.title_en ?? "—")}</h3><span className="text-sm text-muted">{copy.imageOrder}</span></div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {images.map((image, index) => (
                 <article className="overflow-hidden rounded-lg border border-[#dfd2c0] bg-white" key={String(image.id)}>
                   <Image
                     unoptimized
@@ -805,7 +981,13 @@ function ProductMedia({ products, refresh }: { products: Row[]; refresh: () => P
                     height={480}
                   />
                   <div className="p-3">
-                    <p className="text-xs text-muted">{String(product.sku)} · {String(image.id)}</p>
+                    <p className="text-xs text-muted">{String(image.id)}</p>
+                    {index === 0 && <p className="mt-2 text-xs font-medium text-[#496038]">{copy.primaryImage}</p>}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button aria-label={copy.moveImageUp} className="rounded-md border border-[#cdbda9] p-1.5 disabled:opacity-50" disabled={pending || index === 0} onClick={() => void saveOrder(product, images.map((entry) => String(entry.id)).map((id, itemIndex, all) => itemIndex === index ? all[index - 1] : itemIndex === index - 1 ? all[index] : id))}><ChevronUp aria-hidden="true" size={15} /></button>
+                      <button aria-label={copy.moveImageDown} className="rounded-md border border-[#cdbda9] p-1.5 disabled:opacity-50" disabled={pending || index === images.length - 1} onClick={() => void saveOrder(product, images.map((entry) => String(entry.id)).map((id, itemIndex, all) => itemIndex === index ? all[index + 1] : itemIndex === index + 1 ? all[index] : id))}><ChevronDown aria-hidden="true" size={15} /></button>
+                      <button className="rounded-md border border-[#cdbda9] px-2 py-1 text-sm disabled:opacity-50" disabled={pending || index === 0} onClick={() => void saveOrder(product, [String(image.id), ...images.filter((entry) => entry.id !== image.id).map((entry) => String(entry.id))])}>{copy.setPrimaryImage}</button>
+                    </div>
                     <button
                       className="mt-3 flex items-center gap-2 rounded-md border border-[#cdbda9] px-3 py-1.5 text-sm"
                       disabled={pending}
@@ -829,9 +1011,10 @@ function ProductMedia({ products, refresh }: { products: Row[]; refresh: () => P
                     </button>
                   </div>
                 </article>
-              ))
-            : [],
-        )}
+              ))}
+            </div>
+          </section> : null;
+        })}
       </div>
       <button
         className="mt-5 rounded-md border border-[#cdbda9] px-3 py-2 text-sm"
@@ -857,6 +1040,58 @@ function ProductMedia({ products, refresh }: { products: Row[]; refresh: () => P
   );
 }
 
+export function RetailAuditLog() {
+  const [locale, setLocale] = useStoredLocale();
+  const copy = getAdminCopy(locale);
+  const [action, setAction] = useState("");
+  const [actor, setActor] = useState("");
+  const [date, setDate] = useState("");
+  const [page, setPage] = useState(1);
+  const [entries, setEntries] = useState<Row[]>([]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [hasNext, setHasNext] = useState(false);
+
+  const load = useCallback(async (nextPage: number, filters: { action: string; actor: string; date: string }) => {
+    setLoading(true);
+    try {
+      const query = new URLSearchParams({ page: String(nextPage) });
+      if (filters.action) query.set("action", filters.action);
+      if (filters.actor) query.set("actor", filters.actor);
+      if (filters.date) query.set("date", filters.date);
+      const response = await api(`/api/admin/retail/audit?${query.toString()}`);
+      setEntries((response.entries ?? response.records ?? response.audit ?? []) as Row[]);
+      setHasNext(Boolean(response.hasNext ?? response.has_next ?? (Number(response.page ?? nextPage) < Number(response.totalPages ?? response.total_pages ?? nextPage))));
+      setPage(Number(response.page ?? nextPage));
+      setMessage("");
+    } catch (error) {
+      setEntries([]);
+      setMessage(resultError(error, copy.loadFailed, locale));
+    } finally {
+      setLoading(false);
+    }
+  }, [copy.loadFailed, locale]);
+
+  useEffect(() => { void load(1, { action: "", actor: "", date: "" }); }, [load]);
+
+  return <AdminLocaleContext.Provider value={locale}>
+    <AdminShell section="audit" locale={locale} onLocale={setLocale} refresh={() => void load(page, { action, actor, date })}>
+      <main className="mx-auto max-w-7xl px-5 py-7 sm:px-8">
+        <header className="mb-7"><h1 className="noor-title text-3xl">{copy.auditLog}</h1><p className="mt-2 text-sm text-muted">{copy.auditDescription}</p></header>
+        <form className="grid gap-3 rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4 sm:grid-cols-2 xl:grid-cols-5" onSubmit={(event) => { event.preventDefault(); void load(1, { action, actor, date }); }}>
+          <label className="text-sm">{copy.filterAction}<input aria-label={copy.filterAction} className="mt-1 w-full rounded-md border border-[#cdbda9] bg-white p-2" value={action} onChange={(event) => setAction(event.target.value)} /></label>
+          <label className="text-sm">{copy.filterActor}<input aria-label={copy.filterActor} className="mt-1 w-full rounded-md border border-[#cdbda9] bg-white p-2" value={actor} onChange={(event) => setActor(event.target.value)} /></label>
+          <label className="text-sm">{copy.filterDate}<input aria-label={copy.filterDate} className="mt-1 w-full rounded-md border border-[#cdbda9] bg-white p-2" type="date" value={date} onChange={(event) => setDate(event.target.value)} /></label>
+          <div className="flex items-end gap-2"><button className="rounded-md bg-accent px-3 py-2 text-sm text-white" disabled={loading}>{copy.applyFilters}</button><button type="button" className="rounded-md border border-[#cdbda9] px-3 py-2 text-sm" onClick={() => { setAction(""); setActor(""); setDate(""); void load(1, { action: "", actor: "", date: "" }); }}>{copy.clearFilters}</button></div>
+        </form>
+        {message && <p className="mt-4 text-sm" role="status">{message}</p>}
+        <section className="mt-5 overflow-x-auto rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4"><table className="w-full text-left text-sm"><thead><tr><th className="p-2">{copy.created}</th><th className="p-2">{copy.auditAction}</th><th className="p-2">{copy.actor}</th><th className="p-2">{copy.auditDetail}</th></tr></thead><tbody>{entries.length ? entries.map((entry, index) => <tr className="border-t border-[#e8ded1]" key={String(entry.id ?? index)}><td className="p-2 whitespace-nowrap">{dateTime(entry.created_at ?? entry.at, locale)}</td><td className="p-2">{String(entry.action ?? "—")}</td><td className="p-2">{String(entry.actor_name ?? entry.actor ?? entry.actor_id ?? "—")}</td><td className="max-w-md break-words p-2">{entry.entity_type ? `${String(entry.entity_type)} · ${String(entry.entity_id ?? "—")}` : String(entry.resource_id ?? "—")}</td></tr>) : <tr><td className="p-5 text-muted" colSpan={4}>{loading ? copy.loading : copy.noRecords}</td></tr>}</tbody></table></section>
+        <nav className="mt-4 flex items-center justify-between" aria-label={copy.auditLog}><button className="rounded-md border border-[#cdbda9] px-3 py-2 text-sm disabled:opacity-50" disabled={loading || page <= 1} onClick={() => void load(page - 1, { action, actor, date })}>{copy.previousPage}</button><span className="text-sm text-muted">{copy.page} {page}</span><button className="rounded-md border border-[#cdbda9] px-3 py-2 text-sm disabled:opacity-50" disabled={loading || !hasNext} onClick={() => void load(page + 1, { action, actor, date })}>{copy.nextPage}</button></nav>
+      </main>
+    </AdminShell>
+  </AdminLocaleContext.Provider>;
+}
+
 function AdminShell({
   section,
   locale,
@@ -872,6 +1107,16 @@ function AdminShell({
 }) {
   const copy = getAdminCopy(locale);
   const isLegacy = section === "legacy";
+  const [actorLabel, setActorLabel] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    void api("/api/admin/retail/auth/session").then((response) => {
+      const actor = response.actor as Row | undefined;
+      if (active && actor?.name) setActorLabel(`${String(actor.name)} · ${String(actor.role ?? "")}`);
+    }).catch(() => { if (active) setActorLabel(""); });
+    return () => { active = false; };
+  }, []);
 
   const nav = (mobile = false) => (
     <nav
@@ -880,10 +1125,11 @@ function AdminShell({
     >
       {sections.map((item) => {
         const Icon = sectionIcons[item];
+        const href = item === "settlements" ? "/admin/retail/settlements/imports" : `/admin/retail/${item}`;
         return (
           <a
             key={item}
-            href={`/admin/retail/${item}`}
+            href={href}
             aria-current={section === item ? "page" : undefined}
             className={`flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${
               section === item
@@ -922,6 +1168,7 @@ function AdminShell({
               <p className="hidden text-xs uppercase tracking-[.15em] text-[#7a6b5a] lg:block">{copy.retailOperations}</p>
             </div>
             <div className="flex items-center gap-2">
+              {actorLabel ? <span className="hidden max-w-48 truncate text-xs text-muted sm:inline" title={actorLabel}>{actorLabel}</span> : null}
               <button
                 aria-label={copy.refresh}
                 className="flex items-center rounded-md border border-[#cdbda9] px-3 py-2 text-sm hover:bg-[#f1e7da]"
@@ -1121,10 +1368,11 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
     <>
       <AdminForm
         titleKey="createProduct"
-        fields={["sku", "slug", "titleEn", "titleAr", "descriptionEn", "descriptionAr", "amountMinor"]}
+        fields={["sku", "slug", "titleEn", "titleAr", "titleZh", "descriptionEn", "descriptionAr", "descriptionZh", "amountMinor", "onHand"]}
         submit={(data, idempotencyKey) => api("/api/admin/retail/products", "POST", {
           ...data,
           amountMinor: Number(data.amountMinor),
+          onHand: Number(data.onHand),
           status: "draft",
           idempotencyKey,
         })}
@@ -1132,13 +1380,15 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
       />
       <AdminForm
         titleKey="editProduct"
-        fields={["productId", "slug", "titleEn", "titleAr", "descriptionEn", "descriptionAr", "status"]}
+        fields={["productId", "slug", "titleEn", "titleAr", "titleZh", "descriptionEn", "descriptionAr", "descriptionZh", "status"]}
         submit={(data, idempotencyKey) => api(`/api/admin/retail/products/${data.productId}`, "PATCH", {
           slug: data.slug || undefined,
           titleEn: data.titleEn || undefined,
           titleAr: data.titleAr || undefined,
+          titleZh: data.titleZh,
           descriptionEn: data.descriptionEn || undefined,
           descriptionAr: data.descriptionAr || undefined,
+          descriptionZh: data.descriptionZh,
           status: data.status || undefined,
           idempotencyKey,
         })}
@@ -1177,26 +1427,7 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
 
   const customerView = (
     <>
-      <AdminForm
-        titleKey="updateAddress"
-        fields={["customerId", "addressId", "name", "recipient", "line1", "line2", "city", "region", "postalCode", "country", "phone", "isDefault", "archive"]}
-        submit={(data, idempotencyKey) => api(`/api/admin/retail/customers/${data.customerId}`, "PATCH", {
-          name: data.name || undefined,
-          addressId: data.addressId || undefined,
-          recipient: data.recipient || undefined,
-          line1: data.line1 || undefined,
-          line2: data.line2 || undefined,
-          city: data.city || undefined,
-          region: data.region || undefined,
-          postalCode: data.postalCode || undefined,
-          country: data.country ? data.country.toUpperCase() : undefined,
-          phone: data.phone || undefined,
-          isDefault: optionalBoolean(data.isDefault),
-          archive: optionalBoolean(data.archive),
-          idempotencyKey,
-        })}
-        refresh={refresh}
-      />
+      <CustomerAddressManager customers={customers} refresh={refresh} />
       <DataTable titleKey="customerDirectory" rows={customers} cols={["public_id", "email", "name", "addresses"]} />
     </>
   );
@@ -1370,6 +1601,8 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
   const [ledger, setLedger] = useState<Row[]>([]);
   const [products, setProducts] = useState<Row[]>([]);
   const [message, setMessage] = useState("");
+  const [fullShipping, setFullShipping] = useState<Row | null>(null);
+  const [piiPending, setPiiPending] = useState(false);
 
   const refresh = useCallback(async () => {
     try {
@@ -1449,6 +1682,28 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
     }
     return events.sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
   }, [copy.orderCreated, copy.paymentCaptured, copy.paymentPosting, ledger, locale, order]);
+
+  const toggleFullShipping = async () => {
+    if (fullShipping) {
+      setFullShipping(null);
+      return;
+    }
+    setPiiPending(true);
+    try {
+      const response = await api(`/api/admin/retail/orders/${orderId}?include=pii`);
+      const piiOrder = response.order as Row | undefined;
+      const pii = piiOrder?.pii as Row | undefined;
+      const address = (pii?.shipping ?? response.shipping ?? piiOrder?.shipping_snapshot ?? piiOrder?.checkout_shipping) as Row | undefined;
+      if (!address) throw new Error("pii_unavailable");
+      setFullShipping(address);
+      setMessage("");
+    } catch (error) {
+      const code = error instanceof Error ? error.message.toLowerCase() : "";
+      setMessage(code.includes("unauthorized") || code.includes("forbidden") || code.includes("pii") ? copy.piiUnavailable : resultError(error, copy.piiUnavailable, locale));
+    } finally {
+      setPiiPending(false);
+    }
+  };
 
   return (
     <AdminLocaleContext.Provider value={locale}>
@@ -1642,8 +1897,15 @@ export function RetailOrderDetail({ orderId }: { orderId: string }) {
                   </section>
                   <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4">
                     <div className="flex items-center gap-2"><MapPin aria-hidden="true" size={18} /><h2 className="text-lg font-semibold">{copy.delivery}</h2></div>
-                    <p className="mt-4 text-sm">{maskedAddress(shipping)}</p>
-                    <p className="mt-2 text-xs text-muted">{copy.maskedDefault}</p>
+                    {fullShipping ? (
+                      <address className="mt-4 not-italic text-sm">
+                        {[fullShipping.recipient, fullShipping.line1 ?? fullShipping.line_1, fullShipping.line2 ?? fullShipping.line_2, fullShipping.city, fullShipping.region, fullShipping.postal_code ?? fullShipping.postalCode, fullShipping.country, fullShipping.phone]
+                          .filter(Boolean)
+                          .map((line, index) => <span className="block" key={`${String(line)}-${index}`}>{String(line)}</span>)}
+                      </address>
+                    ) : <p className="mt-4 whitespace-pre-line text-sm">{maskedAddress(shipping)}</p>}
+                    <p className="mt-2 text-xs text-muted">{fullShipping ? "" : copy.maskedDefault}</p>
+                    <button aria-label={fullShipping ? copy.hideFullAddress : copy.showFullAddress} className="mt-3 flex items-center gap-2 rounded-md border border-[#cdbda9] px-3 py-1.5 text-sm" disabled={piiPending} onClick={() => void toggleFullShipping()}>{fullShipping ? <EyeOff aria-hidden="true" size={15} /> : <Eye aria-hidden="true" size={15} />}{piiPending ? copy.working : fullShipping ? copy.hideFullAddress : copy.showFullAddress}</button>
                   </section>
                   <section className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5">
                     <div className="flex items-center gap-2"><PackageCheck aria-hidden="true" size={18} /><h2 className="text-lg font-semibold">{copy.deliveryMethod}</h2></div>

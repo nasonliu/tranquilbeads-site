@@ -16,6 +16,23 @@ const migrationNames = [
   "20260729_retail_admin_write_consistency.sql",
   "20260730_retail_checkout_return.sql",
   "20260730_retail_payment_reconciliation.sql",
+  "20260731_retail_admin_roles_pii.sql",
+  "20260731_retail_media_order.sql",
+  "20260731_retail_storefront_zh.sql",
+  "20260801_retail_admin_sessions.sql",
+  "20260801_retail_atomic_admin_audit.sql",
+  "20260801_retail_disputes.sql",
+  "20260802_retail_variants_promotions.sql",
+  "20260802_retail_customer_portal.sql",
+  "20260802_retail_paypal_settlement.sql",
+  "20260803_retail_rma.sql",
+  "20260804_retail_variant_authority.sql",
+  "20260805_retail_rma_permissions.sql",
+  "20260806_retail_customer_address_admin.sql",
+  "20260807_retail_rma_privacy_refund_cap.sql",
+  "20260808_retail_concurrency_lock_order.sql",
+  "20260809_retail_release_catalog_lock_order.sql",
+  "20260810_retail_rma_refund_status.sql",
 ];
 
 const connectionString = process.env.RETAIL_DATABASE_URL || process.env.DATABASE_URL;

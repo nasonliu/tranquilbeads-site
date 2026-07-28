@@ -25,11 +25,12 @@ export function SiteShell({
   children,
 }: SiteShellProps) {
   const isArabic = locale === "ar";
+  const isChinese = locale === "zh";
   const pathname = usePathname();
-  const isRetailShop = /^\/(en|ar)\/shop\/?$/.test(pathname ?? "");
-  const otherLocale = locale === "en" ? "ar" : "en";
+  const isRetailShop = /^\/(en|ar|zh)\/shop\/?$/.test(pathname ?? "");
+  const otherLocale = locale === "en" ? "ar" : locale === "ar" ? "zh" : "en";
   // Strip current locale prefix from pathname
-  const pathWithoutLocale = (pathname ?? withLocale(locale)).replace(/^\/(en|ar)/, "") || "/";
+  const pathWithoutLocale = (pathname ?? withLocale(locale)).replace(/^\/(en|ar|zh)/, "") || "/";
   const switchLocaleHref = `/${otherLocale}${pathWithoutLocale}`;
 
   return (
@@ -45,7 +46,7 @@ export function SiteShell({
                 {siteSettings.brandName}
               </p>
               <p className="hidden text-xs uppercase tracking-[0.28em] text-muted sm:block">
-                {isArabic ? "تجارة راقية" : "Premium Trade"}
+                {isArabic ? "تجارة راقية" : isChinese ? "优质贸易" : "Premium Trade"}
               </p>
             </div>
           </Link>
@@ -69,7 +70,7 @@ export function SiteShell({
               prefetch={isRetailShop ? false : undefined}
               className="rounded-full border border-border/80 bg-white/55 px-3 py-2 text-xs font-semibold text-muted transition hover:border-accent/40 hover:text-foreground"
             >
-              {locale === "en" ? "العربية" : "English"}
+              {otherLocale === "ar" ? "العربية" : otherLocale === "zh" ? "中文" : "English"}
             </Link>
             <a
               href={siteSettings.whatsappHref}
@@ -107,7 +108,7 @@ export function SiteShell({
           </div>
           <div className="space-y-2 text-sm text-[#dcccb5]">
             <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
-              {locale === "en" ? "Quick links" : "روابط سريعة"}
+              {locale === "en" ? "Quick links" : isChinese ? "快速链接" : "روابط سريعة"}
             </p>
             {nav.map((item) => (
               <Link
@@ -121,13 +122,13 @@ export function SiteShell({
             ))}
             <div className="pt-3">
               <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
-                {locale === "en" ? "Retail policies" : "سياسات التجزئة"}
+                {locale === "en" ? "Retail policies" : isChinese ? "零售政策" : "سياسات التجزئة"}
               </p>
               <div className="mt-2 grid gap-2">
                 {[
-                  [retailPolicyPaths.privacy, locale === "en" ? "Privacy" : "الخصوصية"],
-                  [retailPolicyPaths.terms, locale === "en" ? "Terms of sale" : "شروط البيع"],
-                  [retailPolicyPaths["shipping-returns"], locale === "en" ? "Shipping & returns" : "الشحن والإرجاع"],
+                  [retailPolicyPaths.privacy, locale === "en" ? "Privacy" : isChinese ? "隐私政策" : "الخصوصية"],
+                  [retailPolicyPaths.terms, locale === "en" ? "Terms of sale" : isChinese ? "销售条款" : "شروط البيع"],
+                  [retailPolicyPaths["shipping-returns"], locale === "en" ? "Shipping & returns" : isChinese ? "配送与退货" : "الشحن والإرجاع"],
                 ].map(([href, label]) => (
                   <Link key={href} href={withLocale(locale, href)} className="block transition-colors hover:text-white">
                     {label}
@@ -138,7 +139,7 @@ export function SiteShell({
           </div>
           <div className="space-y-2 text-sm text-[#dcccb5]">
             <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
-              {locale === "en" ? "Contact" : "التواصل"}
+              {locale === "en" ? "Contact" : isChinese ? "联系我们" : "التواصل"}
             </p>
             <p>{siteSettings.email}</p>
             <a className="latin-ui block hover:text-white" href={siteSettings.whatsappHref} target="_blank" rel="noreferrer">
@@ -155,7 +156,7 @@ export function SiteShell({
         rel="noreferrer"
         className="latin-ui fixed bottom-5 right-5 z-30 hidden rounded-full bg-accent-deep px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(28,36,20,0.28)] transition hover:-translate-y-0.5 sm:block"
       >
-        {locale === "en" ? "WhatsApp Us" : "واتساب"}
+        {locale === "en" ? "WhatsApp Us" : isChinese ? "WhatsApp 联系我们" : "واتساب"}
       </a>
     </div>
   );

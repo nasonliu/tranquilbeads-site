@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { assertRetailBlobUrl, getRetailBlobConfig } from "@/src/lib/retail/blob";
+import { assertRetailBlobUrl, getRetailBlobConfig, isRetailBlobConfigured } from "@/src/lib/retail/blob";
 
 const read = (path: string) => readFileSync(path, "utf8");
 
@@ -28,8 +28,23 @@ describe("retail Blob isolation", () => {
     vi.stubEnv("RETAIL_BLOB_STORE_ID", "store_retail");
     vi.stubEnv("RETAIL_BLOB_HOSTNAME", "retail.public.blob.vercel-storage.com");
     const config = getRetailBlobConfig();
-    expect(config.auth).toMatchObject({ storeId: "store_retail" });
+    expect(config.auth).toMatchObject({ storeId: "retail" });
     expect(() => assertRetailBlobUrl("https://outreach.public.blob.vercel-storage.com/file.jpg", config.hostname)).toThrow("retail_blob_url_mismatch");
+  });
+
+  it("requires the configured public hostname to be the exact hostname generated for the retail store", () => {
+    vi.stubEnv("RETAIL_BLOB_READ_WRITE_TOKEN", "vercel_blob_rw_retail_secret");
+    vi.stubEnv("RETAIL_BLOB_STORE_ID", "store_retail");
+    vi.stubEnv("RETAIL_BLOB_HOSTNAME", "outreach.public.blob.vercel-storage.com");
+    expect(() => getRetailBlobConfig()).toThrow("retail_blob_hostname_store_mismatch");
+    expect(isRetailBlobConfigured()).toBe(false);
+  });
+
+  it("rejects a hostname that is not a bare Vercel public Blob hostname", () => {
+    vi.stubEnv("RETAIL_BLOB_READ_WRITE_TOKEN", "vercel_blob_rw_retail_secret");
+    vi.stubEnv("RETAIL_BLOB_STORE_ID", "store_retail");
+    vi.stubEnv("RETAIL_BLOB_HOSTNAME", "https://retail.public.blob.vercel-storage.com");
+    expect(() => getRetailBlobConfig()).toThrow("retail_blob_not_configured");
   });
 
   it("supports Vercel OIDC without falling back to the outreach token", () => {
@@ -37,7 +52,7 @@ describe("retail Blob isolation", () => {
     vi.stubEnv("VERCEL_OIDC_TOKEN", "oidc-token");
     vi.stubEnv("RETAIL_BLOB_STORE_ID", "store_retail");
     vi.stubEnv("RETAIL_BLOB_HOSTNAME", "retail.public.blob.vercel-storage.com");
-    expect(getRetailBlobConfig().auth).toEqual({ oidcToken: "oidc-token", storeId: "store_retail" });
+    expect(getRetailBlobConfig().auth).toEqual({ oidcToken: "oidc-token", storeId: "retail" });
   });
 
   it("uses only the dedicated retail Blob credentials for all media writes and deletes", () => {
