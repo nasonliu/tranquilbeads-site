@@ -7,6 +7,7 @@ import sharp from "sharp";
 export const MAX_RETAIL_IMAGE_BYTES = 4 * 1024 * 1024;
 export const MAX_RETAIL_IMAGE_PIXELS = 24_000_000;
 const extensionByMime = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" } as const;
+const acceptedExtensionsByMime = { "image/png": ["png"], "image/jpeg": ["jpg", "jpeg"], "image/webp": ["webp"] } as const;
 
 export function detectRetailImage(bytes: Uint8Array) {
   if (bytes.length < 12) return null;
@@ -21,7 +22,7 @@ export async function validateRetailImage(file: File) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const mime = detectRetailImage(bytes);
   const extension = file.name.split(".").pop()?.toLowerCase();
-  if (!mime || mime !== file.type || extension !== extensionByMime[mime]) throw new Error("invalid_image");
+  if (!mime || mime !== file.type || !extension || !(acceptedExtensionsByMime[mime] as readonly string[]).includes(extension)) throw new Error("invalid_image");
   const image = sharp(bytes, { limitInputPixels: MAX_RETAIL_IMAGE_PIXELS, failOn: "error" });
   const metadata = await image.metadata();
   if (!metadata.width || !metadata.height || metadata.width * metadata.height > MAX_RETAIL_IMAGE_PIXELS) throw new Error("invalid_dimensions");
