@@ -3,7 +3,7 @@
 BEGIN;
 
 DO $$
-DECLARE created RECORD; replay RECORD; observed TEXT; observed_count BIGINT;
+DECLARE created RECORD; replay RECORD; detached RECORD; observed TEXT; observed_count BIGINT;
 BEGIN
   SELECT * INTO created FROM retail_create_admin_product_as_actor(
     'ATOMIC-AUDIT-001','atomic-audit-001','Atomic audit','تدقيق ذري','原子审计','English','عربي','中文','draft',100,
@@ -46,6 +46,12 @@ BEGIN
   SELECT count(*) INTO observed_count FROM retail_product_images
     WHERE product_id=(SELECT id FROM retail_products WHERE public_id=created.public_id);
   IF observed_count <> 1 THEN RAISE EXCEPTION 'media replay created % images', observed_count; END IF;
+
+  SELECT * INTO detached FROM retail_detach_product_image_as_actor(replay.id,'owner-a','Owner A','owner',false);
+  IF detached.blob_url <> 'https://example.test/atomic-audit.webp' THEN RAISE EXCEPTION 'actor-aware media detach did not return the removed blob'; END IF;
+  IF EXISTS(SELECT 1 FROM retail_product_images WHERE id=replay.id) THEN RAISE EXCEPTION 'media detach left the product image attached'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM retail_blob_delete_outbox WHERE blob_url=detached.blob_url AND status='pending') THEN RAISE EXCEPTION 'media detach did not queue blob deletion'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM retail_admin_audit WHERE action='product.image.detach' AND entity_id=replay.id::text AND actor_id='owner-a') THEN RAISE EXCEPTION 'media detach actor attribution was not persisted'; END IF;
 
   BEGIN
     PERFORM * FROM retail_create_admin_product_as_actor(
