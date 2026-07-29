@@ -12,10 +12,19 @@ export type StorefrontV3Variant = {
   option_values: Record<string, string>;
   amount_minor: number;
   available: number;
+  style_public_id?: string | null;
+  style_code?: string | null;
+  style_title_en?: string | null;
+  style_title_ar?: string | null;
+  style_title_zh?: string | null;
+  style_option_values?: Record<string, string> | null;
+  style_position?: number | null;
+  style_image_url?: string | null;
 };
 
 export type StorefrontV3Product = {
   sku: string;
+  slug: string;
   title_en: string;
   title_ar: string;
   title_zh: string | null;
@@ -53,7 +62,7 @@ function sql(): Sql {
 export async function listStorefrontV3Products(): Promise<StorefrontV3Product[]> {
   try {
     const rows = await sql()`
-      SELECT p.sku,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,
+      SELECT p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,
         COALESCE((
           SELECT json_agg(json_build_object('url',image.blob_url) ORDER BY image.position)
           FROM retail_product_images image WHERE image.product_id=p.id
@@ -62,9 +71,15 @@ export async function listStorefrontV3Products(): Promise<StorefrontV3Product[]>
           SELECT json_agg(json_build_object(
             'sku',v.sku,'title_en',v.title_en,'title_ar',v.title_ar,'title_zh',v.title_zh,
             'option_values',v.option_values,'amount_minor',price.amount_minor,
-            'available',balance.on_hand-balance.reserved
+            'available',balance.on_hand-balance.reserved,
+            'style_public_id',style.public_id,'style_code',style.code,
+            'style_title_en',style.title_en,'style_title_ar',style.title_ar,'style_title_zh',style.title_zh,
+            'style_option_values',style.option_values,'style_position',style.position,
+            'style_image_url',style_image.blob_url
           ) ORDER BY v.sku)
           FROM retail_product_variants v
+          JOIN retail_product_styles style ON style.id=v.style_id AND style.status='active'
+          LEFT JOIN retail_product_images style_image ON style_image.id=style.primary_image_id
           JOIN retail_variant_inventory_balances balance ON balance.variant_id=v.id
           JOIN LATERAL (
             SELECT amount_minor FROM retail_variant_price_history
@@ -89,6 +104,52 @@ export async function listStorefrontV3Products(): Promise<StorefrontV3Product[]>
   } catch {
     // An unavailable database must not make a public shop route leak internals.
     return [];
+  }
+}
+
+/** Public PDP loader. Draft products and inactive styles are never exposed. */
+export async function getStorefrontV3ProductBySlug(slug: string): Promise<StorefrontV3Product | undefined> {
+  try {
+    const rows = await sql()`
+      SELECT p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,
+        COALESCE((
+          SELECT json_agg(json_build_object('url',image.blob_url) ORDER BY image.position)
+          FROM retail_product_images image WHERE image.product_id=p.id
+        ), '[]'::json) AS images,
+        COALESCE((
+          SELECT json_agg(json_build_object(
+            'sku',v.sku,'title_en',v.title_en,'title_ar',v.title_ar,'title_zh',v.title_zh,
+            'option_values',v.option_values,'amount_minor',price.amount_minor,
+            'available',GREATEST(balance.on_hand-balance.reserved,0),
+            'style_public_id',style.public_id,'style_code',style.code,
+            'style_title_en',style.title_en,'style_title_ar',style.title_ar,'style_title_zh',style.title_zh,
+            'style_option_values',style.option_values,'style_position',style.position,
+            'style_image_url',style_image.blob_url
+          ) ORDER BY style.position,v.sku)
+          FROM retail_product_variants v
+          JOIN retail_product_styles style ON style.id=v.style_id AND style.status='active'
+          LEFT JOIN retail_product_images style_image ON style_image.id=style.primary_image_id
+          JOIN retail_variant_inventory_balances balance ON balance.variant_id=v.id
+          JOIN LATERAL (
+            SELECT amount_minor FROM retail_variant_price_history
+            WHERE variant_id=v.id AND active=true ORDER BY created_at DESC LIMIT 1
+          ) price ON true
+          WHERE v.product_id=p.id AND v.status='active'
+        ), '[]'::json) AS variants
+      FROM retail_products p
+      WHERE p.status='published' AND p.slug=${slug}
+        AND EXISTS (SELECT 1 FROM retail_product_images image WHERE image.product_id=p.id)
+        AND EXISTS (
+          SELECT 1 FROM retail_product_variants v
+          JOIN retail_product_styles style ON style.id=v.style_id AND style.status='active'
+          JOIN retail_variant_price_history price ON price.variant_id=v.id AND price.active=true
+          WHERE v.product_id=p.id AND v.status='active'
+        )
+      LIMIT 1
+    `;
+    return rows[0] as StorefrontV3Product | undefined;
+  } catch {
+    return undefined;
   }
 }
 

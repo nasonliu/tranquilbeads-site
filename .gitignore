@@ -49,3 +49,4 @@ factory/
 .env*.local
 !.env.local.example
 handoff-private/
+.artifacts/

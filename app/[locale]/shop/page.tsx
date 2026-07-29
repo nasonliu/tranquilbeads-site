@@ -28,6 +28,7 @@ export default async function ShopPage({ params }: PageProps<"/[locale]/shop">) 
   const zones = await listStorefrontShippingZones();
   const products = (await listStorefrontV3Products()).filter((p) => Boolean(p.images[0]?.url)).map((p) => ({
     sku:p.sku,
+    slug:p.slug,
     name:{en:p.title_en,ar:p.title_ar,zh:p.title_zh || p.title_en},
     description:{en:p.description_en,ar:p.description_ar,zh:p.description_zh || p.description_en},
     image:p.images[0]!.url,

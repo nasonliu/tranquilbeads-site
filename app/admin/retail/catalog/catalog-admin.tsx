@@ -44,6 +44,7 @@ function variantStatus(value: unknown, locale: AdminLocale) {
   return String(value ?? "—");
 }
 
+/** @deprecated Variant management is now scoped to /products/[id]/variants. */
 export function CatalogAdmin() {
   const [locale, setLocaleState] = useState<AdminLocale>("en");
   const t = copy[locale];

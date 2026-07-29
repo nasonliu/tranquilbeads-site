@@ -1093,7 +1093,7 @@ export function RetailAuditLog() {
   </AdminLocaleContext.Provider>;
 }
 
-function AdminShell({
+export function AdminShell({
   section,
   locale,
   onLocale,

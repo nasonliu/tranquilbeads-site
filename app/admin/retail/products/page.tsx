@@ -1,2 +1,3 @@
-import { RetailAdminConsole } from "../ui";
-export default function Page() { return <RetailAdminConsole section="products" />; }
+import { ProductCatalogAdmin } from "./components/catalog-admin";
+
+export default function Page() { return <ProductCatalogAdmin kind="list" />; }

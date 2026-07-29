@@ -27,6 +27,7 @@ export function localizeRetailVariantOptions(optionValues: unknown, locale: Reta
 
 export type RetailProduct = {
   sku: string;
+  slug?: string;
   name: RetailLocaleText;
   description: RetailLocaleText;
   image: string;
@@ -44,6 +45,17 @@ export type RetailProductVariant = {
   priceMinor: number;
   available: boolean;
   stock: number;
+  /** A style/SKC groups several sellable SKU variants under one product. */
+  style?: RetailProductStyle;
+};
+
+export type RetailProductStyle = {
+  publicId: string;
+  code: string;
+  name: RetailLocaleText;
+  options: RetailVariantOptions;
+  position: number;
+  image?: string;
 };
 
 /** Legacy catalog helpers retain product SKU input for the V2 compatibility path. */
