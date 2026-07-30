@@ -27,8 +27,10 @@ export function SiteShell({
   const isArabic = locale === "ar";
   const isChinese = locale === "zh";
   const pathname = usePathname();
-  const isRetailShop = /^\/(en|ar|zh)\/shop\/?$/.test(pathname ?? "");
-  const otherLocale = locale === "en" ? "ar" : locale === "ar" ? "zh" : "en";
+  const isRetailShop = /^\/(en|ar|zh)\/shop(?:\/|$)/.test(pathname ?? "");
+  const otherLocale = isRetailShop
+    ? locale === "en" ? "ar" : "en"
+    : locale === "en" ? "ar" : locale === "ar" ? "zh" : "en";
   // Strip current locale prefix from pathname
   const pathWithoutLocale = (pathname ?? withLocale(locale)).replace(/^\/(en|ar|zh)/, "") || "/";
   const switchLocaleHref = `/${otherLocale}${pathWithoutLocale}`;

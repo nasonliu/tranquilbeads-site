@@ -1,6 +1,7 @@
 import "server-only";
 
 import crypto from "node:crypto";
+import type { NeonQueryFunctionInTransaction } from "@neondatabase/serverless";
 import { z } from "zod";
 
 import type { RetailAdminActor } from "./admin-auth";
@@ -95,12 +96,10 @@ export const promotionUpdateDto = promotionFields.partial().extend({ idempotency
   validatePromotion(value, ctx);
 });
 
-type IdempotentInput = { idempotencyKey: string };
 type StoredResponse = { publicId?: string; id?: string; replayed?: boolean };
 
 function payload(value: unknown) { return JSON.stringify(value); }
-function actorAudit(actor: RetailAdminActor, action: string, entityType: string, entityId: string, key: string, detail: unknown) {
-  const sql = guardedRetailSql();
+function actorAudit(sql: RetailTransactionSql, actor: RetailAdminActor, action: string, entityType: string, entityId: string, key: string, detail: unknown) {
   return sql`INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail,idempotency_key,actor_id,actor_name,actor_role,legacy_actor,actor_attributed)
     VALUES(${action},${entityType},${entityId},${payload(detail)}::jsonb,${key}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy},true)`;
 }
@@ -117,16 +116,19 @@ async function replay(operation: string, request: unknown, key: string, actor: R
   return { ...(row.response_payload as StoredResponse), replayed: true };
 }
 
-async function store(operation: string, request: unknown, key: string, response: StoredResponse, actor: RetailAdminActor, action: string, entityType: string, entityId: string, queries: ReturnType<ReturnType<typeof guardedRetailSql>>[]) {
+type RetailTransactionSql = NeonQueryFunctionInTransaction<false, false>;
+type MutationQueries = (tx: RetailTransactionSql) => ReturnType<RetailTransactionSql>[];
+
+async function store(operation: string, request: unknown, key: string, response: StoredResponse, actor: RetailAdminActor, action: string, entityType: string, entityId: string, queries: MutationQueries) {
   const existing = await replay(operation, request, key, actor);
   if (existing) return existing;
   const sql = guardedRetailSql();
   const requestJson = payload(request); const responseJson = payload(response);
   try {
-    await sql.transaction([
-      sql`INSERT INTO retail_admin_idempotency(idempotency_key,operation,request_payload,response_payload) VALUES(${key}::uuid,${operation},${requestJson}::jsonb,${responseJson}::jsonb)`,
-      ...queries,
-      actorAudit(actor, action, entityType, entityId, key, request),
+    await sql.transaction((tx) => [
+      tx`INSERT INTO retail_admin_idempotency(idempotency_key,operation,request_payload,response_payload) VALUES(${key}::uuid,${operation},${requestJson}::jsonb,${responseJson}::jsonb)`,
+      ...queries(tx),
+      actorAudit(tx, actor, action, entityType, entityId, key, request),
     ]);
   } catch (error) {
     const concurrent = await replay(operation, request, key, actor);
@@ -153,7 +155,7 @@ export async function listCatalogStyles(productId?: string) {
       WHERE p.public_id=${productId}::uuid GROUP BY s.id,image.blob_url,p.public_id,p.sku,p.title_en ORDER BY s.position,s.created_at`
     : sql`SELECT s.public_id,s.code,s.title_en,s.title_ar,s.title_zh,s.option_values,s.option_values AS style_option_values,s.primary_image_id,image.blob_url AS style_image_url,s.status,s.position,s.created_at,s.updated_at,p.public_id AS product_public_id,p.sku AS product_sku,p.title_en AS product_title_en,COUNT(v.id)::int AS variant_count
       FROM retail_product_styles s JOIN retail_products p ON p.id=s.product_id LEFT JOIN retail_product_images image ON image.id=s.primary_image_id LEFT JOIN retail_product_variants v ON v.style_id=s.id
-      GROUP BY s.id,image.blob_url,p.public_id,p.sku,p.title_en ORDER BY p.created_at DESC,s.position,s.created_at`;
+      GROUP BY s.id,image.blob_url,p.public_id,p.sku,p.title_en,p.created_at ORDER BY p.created_at DESC,s.position,s.created_at`;
 }
 
 export async function createCatalogStyle(input: z.infer<typeof styleCreateDto>, actor: RetailAdminActor) {
@@ -168,9 +170,9 @@ export async function createCatalogStyle(input: z.infer<typeof styleCreateDto>, 
     const image = await sql`SELECT id FROM retail_product_images WHERE id=${data.primaryImageId}::uuid AND product_id=${product[0].id} LIMIT 1`;
     if (!image[0]) throw new Error("style_image_not_found");
   }
-  return store("catalog.style.create", request, idempotencyKey, { publicId }, actor, "catalog.style.create", "product_style", publicId, [
-    sql`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || id::text,0)) FROM retail_products WHERE public_id=${productId}::uuid`,
-    sql`INSERT INTO retail_product_styles(public_id,product_id,code,title_en,title_ar,title_zh,option_values,primary_image_id,status,position)
+  return store("catalog.style.create", request, idempotencyKey, { publicId }, actor, "catalog.style.create", "product_style", publicId, (tx) => [
+    tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || id::text,0)) FROM retail_products WHERE public_id=${productId}::uuid`,
+    tx`INSERT INTO retail_product_styles(public_id,product_id,code,title_en,title_ar,title_zh,option_values,primary_image_id,status,position)
       SELECT ${publicId}::uuid,id,${data.code},${data.titleEn},${data.titleAr ?? data.titleEn},${data.titleZh ?? data.titleEn},${payload(data.optionValues)}::jsonb,${data.primaryImageId ?? null}::uuid,${data.status},${data.position} FROM retail_products WHERE public_id=${productId}::uuid`,
   ]);
 }
@@ -186,9 +188,9 @@ export async function updateCatalogStyle(publicId: string, input: z.infer<typeof
     const image = await sql`SELECT id FROM retail_product_images WHERE id=${data.primaryImageId}::uuid AND product_id=${existing[0].product_id} LIMIT 1`;
     if (!image[0]) throw new Error("style_image_not_found");
   }
-  return store("catalog.style.update", request, idempotencyKey, { publicId }, actor, "catalog.style.update", "product_style", publicId, [
-    sql`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || product_id::text,0)) FROM retail_product_styles WHERE public_id=${publicId}::uuid`,
-    sql`UPDATE retail_product_styles SET code=COALESCE(${data.code ?? null},code),title_en=COALESCE(${data.titleEn ?? null},title_en),title_ar=COALESCE(${data.titleAr ?? null},title_ar),title_zh=COALESCE(${data.titleZh ?? null},title_zh),option_values=COALESCE(${data.optionValues === undefined ? null : payload(data.optionValues)}::jsonb,option_values),primary_image_id=CASE WHEN ${data.primaryImageId !== undefined} THEN ${data.primaryImageId ?? null}::uuid ELSE primary_image_id END,status=COALESCE(${data.status ?? null},status),position=COALESCE(${data.position ?? null},position),updated_at=now() WHERE public_id=${publicId}::uuid`,
+  return store("catalog.style.update", request, idempotencyKey, { publicId }, actor, "catalog.style.update", "product_style", publicId, (tx) => [
+    tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || product_id::text,0)) FROM retail_product_styles WHERE public_id=${publicId}::uuid`,
+    tx`UPDATE retail_product_styles SET code=COALESCE(${data.code ?? null},code),title_en=COALESCE(${data.titleEn ?? null},title_en),title_ar=COALESCE(${data.titleAr ?? null},title_ar),title_zh=COALESCE(${data.titleZh ?? null},title_zh),option_values=COALESCE(${data.optionValues === undefined ? null : payload(data.optionValues)}::jsonb,option_values),primary_image_id=CASE WHEN ${data.primaryImageId !== undefined} THEN ${data.primaryImageId ?? null}::uuid ELSE primary_image_id END,status=COALESCE(${data.status ?? null},status),position=COALESCE(${data.position ?? null},position),updated_at=now() WHERE public_id=${publicId}::uuid`,
   ]);
 }
 
@@ -201,9 +203,9 @@ export async function deleteCatalogStyle(publicId: string, input: z.infer<typeof
   if (!existing[0]) throw new Error("style_not_found");
   const variants = await sql`SELECT 1 FROM retail_product_variants WHERE style_id=${existing[0].id} LIMIT 1`;
   if (variants[0]) throw new Error("style_has_variants");
-  return store("catalog.style.delete", request, idempotencyKey, { publicId }, actor, "catalog.style.delete", "product_style", publicId, [
-    sql`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || s.product_id::text,0)) FROM retail_product_styles s WHERE s.public_id=${publicId}::uuid`,
-    sql`DELETE FROM retail_product_styles WHERE public_id=${publicId}::uuid`,
+  return store("catalog.style.delete", request, idempotencyKey, { publicId }, actor, "catalog.style.delete", "product_style", publicId, (tx) => [
+    tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || s.product_id::text,0)) FROM retail_product_styles s WHERE s.public_id=${publicId}::uuid`,
+    tx`DELETE FROM retail_product_styles WHERE public_id=${publicId}::uuid`,
   ]);
 }
 
@@ -221,21 +223,21 @@ export async function createCatalogVariant(input: z.infer<typeof variantCreateDt
     const style = await sql`SELECT s.id FROM retail_product_styles s WHERE s.public_id=${data.styleId}::uuid AND s.product_id=${product[0].id} LIMIT 1`;
     if (!style[0]) throw new Error("style_not_found");
   }
-  return store("catalog.variant.create", request, idempotencyKey, { publicId }, actor, "catalog.variant.create", "product_variant", publicId, [
+  return store("catalog.variant.create", request, idempotencyKey, { publicId }, actor, "catalog.variant.create", "product_variant", publicId, (tx) => [
     // Serialize all catalogue mutations for one product before the first
     // variant write. The DB sync function uses the same transaction-scoped
     // gate, so two variant updates cannot each hold a different balance and
     // then wait on the other while recomputing the product mirror.
-    sql`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || id::text,0)) FROM retail_products WHERE public_id=${productId}::uuid`,
-    sql`INSERT INTO retail_product_variants(public_id,product_id,style_id,sku,title_en,title_ar,title_zh,option_values,status)
+    tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || id::text,0)) FROM retail_products WHERE public_id=${productId}::uuid`,
+    tx`INSERT INTO retail_product_variants(public_id,product_id,style_id,sku,title_en,title_ar,title_zh,option_values,status)
       SELECT ${publicId}::uuid,p.id,COALESCE((SELECT s.id FROM retail_product_styles s WHERE s.public_id=${data.styleId ?? null}::uuid AND s.product_id=p.id),(SELECT s.id FROM retail_product_styles s WHERE s.product_id=p.id ORDER BY s.position,s.created_at LIMIT 1)),${data.sku},${data.titleEn},${data.titleAr},${data.titleZh},${payload(data.optionValues)}::jsonb,'active' FROM retail_products p WHERE p.public_id=${productId}::uuid`,
-    sql`INSERT INTO retail_variant_price_history(variant_id,amount_minor,idempotency_key,changed_by)
+    tx`INSERT INTO retail_variant_price_history(variant_id,amount_minor,idempotency_key,changed_by)
       SELECT id,${data.amountMinor},${crypto.randomUUID()}::uuid,${actor.id} FROM retail_product_variants WHERE public_id=${publicId}::uuid`,
-    sql`INSERT INTO retail_variant_inventory_balances(variant_id,on_hand,reserved)
+    tx`INSERT INTO retail_variant_inventory_balances(variant_id,on_hand,reserved)
       SELECT id,${data.onHand},0 FROM retail_product_variants WHERE public_id=${publicId}::uuid`,
     // V3 checks the product balance only as a compatibility mirror.  Keep it
     // derived from every variant in this same database transaction.
-    sql`SELECT retail_sync_product_inventory_from_variants((SELECT product_id FROM retail_product_variants WHERE public_id=${publicId}::uuid))`,
+    tx`SELECT retail_sync_product_inventory_from_variants((SELECT product_id FROM retail_product_variants WHERE public_id=${publicId}::uuid))`,
   ]);
 }
 
@@ -250,21 +252,23 @@ export async function updateCatalogVariant(publicId: string, input: z.infer<type
     const style = await sql`SELECT id FROM retail_product_styles WHERE public_id=${data.styleId}::uuid AND product_id=${existing[0].product_id} LIMIT 1`;
     if (!style[0]) throw new Error("style_not_found");
   }
-  const updates = [
-    sql`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || product_id::text,0)) FROM retail_product_variants WHERE public_id=${publicId}::uuid`,
-    sql`UPDATE retail_product_variants SET style_id=COALESCE((SELECT id FROM retail_product_styles WHERE public_id=${data.styleId ?? null}::uuid),style_id),sku=COALESCE(${data.sku ?? null},sku),title_en=COALESCE(${data.titleEn ?? null},title_en),title_ar=COALESCE(${data.titleAr ?? null},title_ar),title_zh=COALESCE(${data.titleZh ?? null},title_zh),option_values=COALESCE(${data.optionValues === undefined ? null : payload(data.optionValues)}::jsonb,option_values),status=COALESCE(${data.status ?? null},status),updated_at=now() WHERE public_id=${publicId}::uuid`,
-  ];
-  if (data.amountMinor !== undefined) updates.push(sql`UPDATE retail_variant_price_history SET active=false WHERE variant_id=(SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid) AND active`);
-  if (data.amountMinor !== undefined) updates.push(sql`INSERT INTO retail_variant_price_history(variant_id,amount_minor,idempotency_key,changed_by) SELECT id,${data.amountMinor},${crypto.randomUUID()}::uuid,${actor.id} FROM retail_product_variants WHERE public_id=${publicId}::uuid`);
-  // The CHECK(reserved <= on_hand) is deliberately allowed to reject a stale
-  // absolute-stock write; a silent WHERE predicate would falsely report it as
-  // saved and could leave price and stock out of sync.
-  if (data.amountMinor !== undefined) updates.push(sql`SELECT retail_sync_product_default_variant_price((SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid),${actor.id})`);
-  if (data.onHand !== undefined) {
-    updates.push(sql`UPDATE retail_variant_inventory_balances SET on_hand=${data.onHand},updated_at=now() WHERE variant_id=(SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid)`);
-    updates.push(sql`SELECT retail_sync_product_inventory_from_variants((SELECT product_id FROM retail_product_variants WHERE public_id=${publicId}::uuid))`);
-  }
-  return store("catalog.variant.update", request, idempotencyKey, { publicId }, actor, "catalog.variant.update", "product_variant", publicId, updates);
+  return store("catalog.variant.update", request, idempotencyKey, { publicId }, actor, "catalog.variant.update", "product_variant", publicId, (tx) => {
+    const updates = [
+      tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || product_id::text,0)) FROM retail_product_variants WHERE public_id=${publicId}::uuid`,
+      tx`UPDATE retail_product_variants SET style_id=COALESCE((SELECT id FROM retail_product_styles WHERE public_id=${data.styleId ?? null}::uuid),style_id),sku=COALESCE(${data.sku ?? null},sku),title_en=COALESCE(${data.titleEn ?? null},title_en),title_ar=COALESCE(${data.titleAr ?? null},title_ar),title_zh=COALESCE(${data.titleZh ?? null},title_zh),option_values=COALESCE(${data.optionValues === undefined ? null : payload(data.optionValues)}::jsonb,option_values),status=COALESCE(${data.status ?? null},status),updated_at=now() WHERE public_id=${publicId}::uuid`,
+    ];
+    if (data.amountMinor !== undefined) updates.push(tx`UPDATE retail_variant_price_history SET active=false WHERE variant_id=(SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid) AND active`);
+    if (data.amountMinor !== undefined) updates.push(tx`INSERT INTO retail_variant_price_history(variant_id,amount_minor,idempotency_key,changed_by) SELECT id,${data.amountMinor},${crypto.randomUUID()}::uuid,${actor.id} FROM retail_product_variants WHERE public_id=${publicId}::uuid`);
+    // The CHECK(reserved <= on_hand) is deliberately allowed to reject a stale
+    // absolute-stock write; a silent WHERE predicate would falsely report it as
+    // saved and could leave price and stock out of sync.
+    if (data.amountMinor !== undefined) updates.push(tx`SELECT retail_sync_product_default_variant_price((SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid),${actor.id})`);
+    if (data.onHand !== undefined) {
+      updates.push(tx`UPDATE retail_variant_inventory_balances SET on_hand=${data.onHand},updated_at=now() WHERE variant_id=(SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid)`);
+      updates.push(tx`SELECT retail_sync_product_inventory_from_variants((SELECT product_id FROM retail_product_variants WHERE public_id=${publicId}::uuid))`);
+    }
+    return updates;
+  });
 }
 
 export async function listPromotions() {
@@ -276,9 +280,8 @@ export async function createPromotion(input: z.infer<typeof promotionCreateDto>,
   const { idempotencyKey, ...data } = input; const id = crypto.randomUUID(); const request = data;
   const prior = await replay("promotion.create", request, idempotencyKey, actor);
   if (prior) return prior;
-  const sql = guardedRetailSql();
-  return store("promotion.create", request, idempotencyKey, { id }, actor, "promotion.create", "promotion", id, [
-    sql`INSERT INTO retail_promotions(id,code,kind,amount,starts_at,ends_at,minimum_subtotal_minor,scope,max_redemptions,max_per_customer,active)
+  return store("promotion.create", request, idempotencyKey, { id }, actor, "promotion.create", "promotion", id, (tx) => [
+    tx`INSERT INTO retail_promotions(id,code,kind,amount,starts_at,ends_at,minimum_subtotal_minor,scope,max_redemptions,max_per_customer,active)
       VALUES(${id}::uuid,${data.code},${data.kind},${data.amount},${data.startsAt ?? null}::timestamptz,${data.endsAt ?? null}::timestamptz,${data.minimumSubtotalMinor},${payload(data.scope)}::jsonb,${data.maxRedemptions ?? null},${data.maxPerCustomer ?? null},${data.active})`,
   ]);
 }
@@ -290,7 +293,7 @@ export async function updatePromotion(id: string, input: z.infer<typeof promotio
   const sql = guardedRetailSql();
   const existing = await sql`SELECT id FROM retail_promotions WHERE id=${id}::uuid LIMIT 1`;
   if (!existing[0]) throw new Error("promotion_not_found");
-  return store("promotion.update", request, idempotencyKey, { id }, actor, "promotion.update", "promotion", id, [
-    sql`UPDATE retail_promotions SET code=COALESCE(${data.code ?? null},code),kind=COALESCE(${data.kind ?? null},kind),amount=COALESCE(${data.amount ?? null},amount),starts_at=CASE WHEN ${data.startsAt !== undefined} THEN ${data.startsAt ?? null}::timestamptz ELSE starts_at END,ends_at=CASE WHEN ${data.endsAt !== undefined} THEN ${data.endsAt ?? null}::timestamptz ELSE ends_at END,minimum_subtotal_minor=COALESCE(${data.minimumSubtotalMinor ?? null},minimum_subtotal_minor),scope=COALESCE(${data.scope === undefined ? null : payload(data.scope)}::jsonb,scope),max_redemptions=CASE WHEN ${data.maxRedemptions !== undefined} THEN ${data.maxRedemptions ?? null} ELSE max_redemptions END,max_per_customer=CASE WHEN ${data.maxPerCustomer !== undefined} THEN ${data.maxPerCustomer ?? null} ELSE max_per_customer END,active=COALESCE(${data.active ?? null},active),updated_at=now() WHERE id=${id}::uuid`,
+  return store("promotion.update", request, idempotencyKey, { id }, actor, "promotion.update", "promotion", id, (tx) => [
+    tx`UPDATE retail_promotions SET code=COALESCE(${data.code ?? null},code),kind=COALESCE(${data.kind ?? null},kind),amount=COALESCE(${data.amount ?? null},amount),starts_at=CASE WHEN ${data.startsAt !== undefined} THEN ${data.startsAt ?? null}::timestamptz ELSE starts_at END,ends_at=CASE WHEN ${data.endsAt !== undefined} THEN ${data.endsAt ?? null}::timestamptz ELSE ends_at END,minimum_subtotal_minor=COALESCE(${data.minimumSubtotalMinor ?? null},minimum_subtotal_minor),scope=COALESCE(${data.scope === undefined ? null : payload(data.scope)}::jsonb,scope),max_redemptions=CASE WHEN ${data.maxRedemptions !== undefined} THEN ${data.maxRedemptions ?? null} ELSE max_redemptions END,max_per_customer=CASE WHEN ${data.maxPerCustomer !== undefined} THEN ${data.maxPerCustomer ?? null} ELSE max_per_customer END,active=COALESCE(${data.active ?? null},active),updated_at=now() WHERE id=${id}::uuid`,
   ]);
 }

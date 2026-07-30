@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { RetailProductDetail } from "@/src/components/retail-product-detail";
 import { toRetailProduct } from "@/src/data/retail/product-view-model";
@@ -22,16 +22,18 @@ async function load(slug: string, locale: "en" | "ar" | "zh") {
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/[slug]">) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) return {};
+  if (locale === "zh") return { robots: { index: false, follow: true }, alternates: { canonical: `${SITE_URL}/en/shop/${encodeURIComponent(slug)}`, languages: { en: `${SITE_URL}/en/shop/${encodeURIComponent(slug)}`, ar: `${SITE_URL}/ar/shop/${encodeURIComponent(slug)}` } } };
   const found = await load(slug, locale);
   if (!found) return {};
   const title = localized(locale, { en: found.record.title_en, ar: found.record.title_ar, zh: found.record.title_zh });
   const description = localized(locale, { en: found.record.description_en, ar: found.record.description_ar, zh: found.record.description_zh });
-  return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, `/shop/${encodeURIComponent(slug)}`)}`, languages: { en: `${SITE_URL}/en/shop/${encodeURIComponent(slug)}`, ar: `${SITE_URL}/ar/shop/${encodeURIComponent(slug)}`, zh: `${SITE_URL}/zh/shop/${encodeURIComponent(slug)}` } } };
+  return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, `/shop/${encodeURIComponent(slug)}`)}`, languages: { en: `${SITE_URL}/en/shop/${encodeURIComponent(slug)}`, ar: `${SITE_URL}/ar/shop/${encodeURIComponent(slug)}` } } };
 }
 
 export default async function RetailProductPage({ params }: PageProps<"/[locale]/shop/[slug]">) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
+  if (locale === "zh") redirect(`/en/shop/${encodeURIComponent(slug)}`);
   const found = await load(slug, locale);
   if (!found) notFound();
   return <RetailProductDetail locale={locale} product={found.product} images={found.record.images.map((image) => image.url)} />;

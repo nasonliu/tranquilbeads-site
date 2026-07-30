@@ -10,6 +10,7 @@ const headers = { "cache-control": "no-store" };
 function failure(error: unknown) {
   const message = error instanceof Error ? error.message : "invalid_request";
   const status = message === "unauthorized" ? 401 : message === "forbidden" ? 403 : message.startsWith("agent_") ? 503 : 400;
+  if (status !== 401 && status !== 403) console.error("retail_agent_catalog_failure", message);
   return Response.json({ ok: false, error: status === 400 ? "invalid_request" : message }, { status, headers });
 }
 

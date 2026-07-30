@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { RetailShop } from "@/src/components/retail-shop";
 import { PageHero } from "@/src/components/page-hero";
@@ -15,14 +15,16 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop">) {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
-  const title = locale === "ar" ? "متجر التجزئة" : locale === "zh" ? "零售商店" : "Retail Shop";
-  const description = locale === "ar" ? "كتالوج التجزئة قيد الإعداد." : locale === "zh" ? "TranquilBeads 直接零售商品目录。" : "Direct-retail catalog in preparation.";
-  return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, "/shop")}`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop`, zh: `${SITE_URL}/zh/shop` } } };
+  if (locale === "zh") return { robots: { index: false, follow: true }, alternates: { canonical: `${SITE_URL}/en/shop`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
+  const title = locale === "ar" ? "متجر التجزئة" : "Retail Shop";
+  const description = locale === "ar" ? "كتالوج التجزئة قيد الإعداد." : "Direct-retail catalog in preparation.";
+  return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, "/shop")}`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
 }
 
 export default async function ShopPage({ params }: PageProps<"/[locale]/shop">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+  if (locale === "zh") redirect("/en/shop");
   const copy = getRetailCopy(locale);
   const config = getRetailRuntimeConfig();
   const zones = await listStorefrontShippingZones();

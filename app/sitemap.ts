@@ -20,7 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const marketingLocales = locales.filter((locale) => locale !== "zh");
-  const retailPaths = ["/shop", "/privacy", "/terms", "/shipping-returns"];
+  const chinesePolicyPaths = ["/privacy", "/terms", "/shipping-returns"];
   return [
     ...marketingLocales.flatMap((locale) =>
     [
@@ -54,6 +54,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
     ],
     ),
-    ...retailPaths.map((path) => ({ url: `${baseUrl}${withLocale("zh", path)}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: path === "/shop" ? 0.55 : 0.3 })),
+    ...chinesePolicyPaths.map((path) => ({ url: `${baseUrl}${withLocale("zh", path)}`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.3 })),
   ];
 }
