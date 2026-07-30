@@ -71,9 +71,12 @@ describe("retail Blob isolation", () => {
     for (const route of routes) {
       const source = read(route);
       expect(source).not.toContain("process.env.BLOB_READ_WRITE_TOKEN");
-      expect(source).toContain("getRetailBlobConfig()");
-      expect(source).toContain("assertRetailBlobUrl");
     }
+    const service = read("src/lib/retail/media-service.ts");
+    expect(service).not.toContain("process.env.BLOB_READ_WRITE_TOKEN");
+    expect(service).toContain("getRetailBlobConfig()");
+    expect(service).toContain("assertRetailBlobUrl");
+    expect(read("app/api/admin/retail/media/route.ts")).toContain("uploadRetailProductImage");
   });
 
   it("documents the dedicated retail Blob store without repurposing the outreach token", () => {

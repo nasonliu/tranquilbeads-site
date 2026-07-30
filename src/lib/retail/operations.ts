@@ -70,7 +70,7 @@ export async function listStorefrontShippingZones(): Promise<StorefrontShippingZ
 export async function quoteRetailCheckout(items:z.infer<typeof retailCartDto>,checkout:z.infer<typeof retailCheckoutDto>){const q=sql();const rows=await q`SELECT * FROM retail_quote_checkout(${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb)`;const row=rows[0];if(!row)throw new Error("quote_unavailable");return{currency:String(row.currency).trim(),subtotalMinor:Number(row.subtotal_minor),shippingMinor:Number(row.shipping_minor),taxMinor:Number(row.tax_minor),discountMinor:Number(row.discount_minor),totalMinor:Number(row.total_minor),shippingMethod:String(row.shipping_method),items:row.items_snapshot,shipping:row.shipping_snapshot,quoteHash:String(row.quote_hash)};}
 export async function getStorefrontOrderByRequestId(requestId:string){const q=sql();const rows=await q`SELECT public_id,client_request_id,paypal_order_id,status,currency,subtotal_minor,shipping_minor,tax_minor,discount_minor,amount_minor,shipping_method,items_snapshot,checkout_shipping,checkout_email,fulfilment_status,carrier,tracking_number,created_at,captured_at FROM retail_orders WHERE client_request_id=${requestId}::uuid LIMIT 1`;const row=rows[0];if(!row)return null;return{...row,subtotal_minor:Number(row.subtotal_minor),shipping_minor:Number(row.shipping_minor),tax_minor:Number(row.tax_minor),discount_minor:Number(row.discount_minor),amount_minor:Number(row.amount_minor)};}
 
-export async function listAdminProducts() { const q = sql(); return q`SELECT p.public_id,p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,p.pdp_highlights,p.pdp_details,p.pdp_a_plus,p.status,p.created_at,p.updated_at,h.amount_minor,COALESCE(i.image_count,0)::int image_count,COALESCE(i.images,'[]'::json) images FROM retail_products p LEFT JOIN LATERAL(SELECT amount_minor FROM retail_price_history WHERE product_id=p.id AND active ORDER BY created_at DESC LIMIT 1) h ON true LEFT JOIN LATERAL(SELECT count(*) image_count,json_agg(json_build_object('id',id,'url',blob_url,'alt_en',alt_en,'alt_ar',alt_ar,'position',position) ORDER BY position) images FROM retail_product_images WHERE product_id=p.id) i ON true ORDER BY p.created_at DESC`; }
+export async function listAdminProducts() { const q = sql(); return q`SELECT p.public_id,p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,p.pdp_highlights,p.pdp_details,p.pdp_a_plus,p.status,p.created_at,p.updated_at,p.media_version AS image_version,h.amount_minor,COALESCE(i.image_count,0)::int image_count,COALESCE(i.images,'[]'::json) images FROM retail_products p LEFT JOIN LATERAL(SELECT amount_minor FROM retail_price_history WHERE product_id=p.id AND active ORDER BY created_at DESC LIMIT 1) h ON true LEFT JOIN LATERAL(SELECT count(*) image_count,json_agg(json_build_object('id',id,'url',blob_url,'alt_en',alt_en,'alt_ar',alt_ar,'position',position) ORDER BY position) images FROM retail_product_images WHERE product_id=p.id) i ON true ORDER BY p.created_at DESC`; }
 export async function createAdminProduct(d: z.infer<typeof productDto>, actor: RetailAdminActor) {
   if (d.status === "published") throw new Error("product_requires_verified_image");
   const q = sql();
@@ -202,10 +202,12 @@ export async function findRetailProductImageByIdempotency(productId: string, ima
   return { id: String(id), url: String(url), replayed: true };
 }
 
-export async function detachRetailProductImage(imageId: string, actor: RetailAdminActor) {
+export const mediaDeleteDto = z.object({ imageId: z.string().uuid(), removeReferences: z.boolean().default(false), idempotencyKey: z.string().uuid() }).strict();
+
+export async function detachRetailProductImage(d: z.infer<typeof mediaDeleteDto>, actor: RetailAdminActor) {
   const q = sql();
-  const rows = await q`SELECT * FROM retail_detach_product_image_as_actor(${imageId}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy})`;
-  return rows[0] as { blob_url: string; blob_key: string } | undefined;
+  const rows = await q`SELECT * FROM retail_detach_product_image_as_actor(${d.imageId}::uuid,${d.removeReferences},${d.idempotencyKey}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy})`;
+  return rows[0] as { blob_url: string | null; blob_key: string | null; deleted: boolean; replayed: boolean; removed_references: boolean } | undefined;
 }
 
 export async function listRetailBlobDeleteOutbox() {

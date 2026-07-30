@@ -7,6 +7,7 @@ describe("retail admin write consistency contract", () => {
   const migration = read("migrations/20260729_retail_admin_write_consistency.sql");
   const operations = read("src/lib/retail/operations.ts");
   const media = read("app/api/admin/retail/media/route.ts");
+  const mediaService = read("src/lib/retail/media-service.ts");
 
   it("uses a DB-owned idempotency record for product and customer response-loss retries", () => {
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS retail_admin_idempotency");
@@ -36,12 +37,13 @@ describe("retail admin write consistency contract", () => {
   });
 
   it("requires a request id and uses a content-addressed deterministic blob path", () => {
-    expect(media).toContain("idempotencyKey: z.string().uuid()");
-    expect(media).toContain("${input.idempotencyKey}-${validated.sha256}");
-    expect(media).toContain("findRetailProductImageByIdempotency");
+    expect(media).toContain("uploadRetailProductImage");
+    expect(mediaService).toContain("idempotencyKey: z.string().uuid()");
+    expect(mediaService).toContain("${input.idempotencyKey}-${validated.sha256}");
+    expect(mediaService).toContain("findRetailProductImageByIdempotency");
     expect(operations).toContain("retail_attach_product_image_as_actor");
-    expect(media).toContain("media_result_unknown");
-    expect(media).toContain("if (!isKnownAttachRejection(error))");
+    expect(mediaService).toContain("media_result_unknown");
+    expect(mediaService).toContain("!knownAttachRejections.has(error.message)");
   });
 
   it("makes admin edits, shipping, and audit-bearing mutations idempotent in the database", () => {

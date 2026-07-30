@@ -218,6 +218,19 @@ try {
   contentRace = await blockedUpdate;
   assert(!contentRace.ok && contentRace.error?.message.includes("A+ image must belong to the product media library"), "delete-first race must reject a dangling A+ reference");
   assert(Number((await setup.query("SELECT count(*)::int AS n FROM retail_product_images WHERE id=$1", [media.rows[0].id])).rows[0].n) === 0, "delete-first race did not remove media");
+
+  // The explicit path uses the same lock order, but removes matching A+
+  // references atomically instead of leaving a dangling product page.
+  const forcedUrl = `https://example.test/${tag}-forced-delete.jpg`;
+  const forcedMedia = await setup.query(`INSERT INTO retail_product_images(product_id,blob_url,blob_key,mime_type,bytes,sha256,position,alt_en,alt_ar)
+    VALUES($1,$2,$3,'image/jpeg',1,$4,0,'Forced delete image','صورة حذف') RETURNING id`, [productId, forcedUrl, `${tag}-forced-delete.jpg`, `${tag}f`]);
+  const forcedContent = [created.rows[0].public_id, JSON.stringify([]), JSON.stringify([]), JSON.stringify([{ title: { en: "Forced story", ar: "قصة", zh: "故事" }, body: { en: "Forced delete", ar: "حذف", zh: "删除" }, image: forcedUrl }])];
+  await setup.query(updateSql, [...forcedContent, crypto.randomUUID()]);
+  const forcedDeleteSql = "SELECT * FROM retail_detach_product_image_as_actor($1::uuid,true,$2::uuid,'concurrency','Concurrency','owner',false)";
+  const forced = await setup.query(forcedDeleteSql, [forcedMedia.rows[0].id, crypto.randomUUID()]);
+  assert(forced.rows[0].deleted && forced.rows[0].removed_references, "forced delete must remove the A+ reference atomically");
+  assert(Number((await setup.query("SELECT count(*)::int AS n FROM retail_product_images WHERE id=$1", [forcedMedia.rows[0].id])).rows[0].n) === 0, "forced delete left media behind");
+  assert(Number((await setup.query("SELECT count(*)::int AS n FROM retail_products WHERE id=$1 AND pdp_a_plus @> jsonb_build_array(jsonb_build_object('image',$2::text))", [productId, forcedUrl])).rows[0].n) === 0, "forced delete left an A+ image reference");
   console.log("retail V3 concurrency integration: passed");
 } finally {
   if (productId) await setup.query("DELETE FROM retail_products WHERE id=$1", [productId]).catch(() => {});

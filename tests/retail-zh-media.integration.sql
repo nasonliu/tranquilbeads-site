@@ -115,4 +115,42 @@ BEGIN
   END IF;
 END $$;
 
+DO $$
+DECLARE
+  created RECORD;
+  product_id UUID;
+  image_id UUID;
+  detached RECORD;
+  replay RECORD;
+  a_plus JSONB;
+BEGIN
+  SELECT * INTO created FROM retail_create_admin_product(
+    'DELETE-A-PLUS-001','delete-a-plus-001','Delete test','اختبار الحذف','删除测试',
+    'Delete test','اختبار الحذف','删除测试','draft',100,
+    '30000000-0000-4000-8000-000000000001'::uuid
+  );
+  SELECT id INTO product_id FROM retail_products WHERE public_id=created.public_id;
+  INSERT INTO retail_product_images(product_id,blob_url,blob_key,mime_type,bytes,sha256,position,alt_en,alt_ar)
+    VALUES(product_id,'https://example.test/delete-a-plus.jpg','test/delete-a-plus.jpg','image/jpeg',1,repeat('3',64),0,'Delete test','اختبار الحذف') RETURNING id INTO image_id;
+  PERFORM * FROM retail_update_admin_product_pdp_content_as_actor(
+    created.public_id,'[]'::jsonb,'[]'::jsonb,
+    jsonb_build_array(jsonb_build_object('title',jsonb_build_object('en','Title','ar','عنوان','zh','标题'),'body',jsonb_build_object('en','Body','ar','النص','zh','正文'),'image','https://example.test/delete-a-plus.jpg')),
+    '30000000-0000-4000-8000-000000000002'::uuid,'owner','Owner','owner',false
+  );
+  BEGIN
+    PERFORM * FROM retail_detach_product_image_as_actor(image_id,false,'30000000-0000-4000-8000-000000000003'::uuid,'owner','Owner','owner',false);
+    RAISE EXCEPTION 'ordinary delete unexpectedly removed referenced media';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM <> 'image is used by product PDP content' THEN RAISE; END IF;
+  END;
+  SELECT * INTO detached FROM retail_detach_product_image_as_actor(image_id,true,'30000000-0000-4000-8000-000000000004'::uuid,'owner','Owner','owner',false);
+  IF NOT detached.deleted OR detached.replayed OR NOT detached.removed_references THEN RAISE EXCEPTION 'explicit reference removal did not delete media'; END IF;
+  SELECT pdp_a_plus INTO a_plus FROM retail_products WHERE id=product_id;
+  IF (a_plus->0) ? 'image' OR EXISTS(SELECT 1 FROM retail_product_images WHERE id=image_id) THEN RAISE EXCEPTION 'explicit delete left an A+ reference or image'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM retail_blob_delete_outbox WHERE blob_url='https://example.test/delete-a-plus.jpg') THEN RAISE EXCEPTION 'explicit delete did not queue Blob cleanup'; END IF;
+  IF NOT EXISTS(SELECT 1 FROM retail_admin_audit WHERE idempotency_key='30000000-0000-4000-8000-000000000004'::uuid AND action='product.image.detach' AND actor_attributed) THEN RAISE EXCEPTION 'explicit delete was not attributed'; END IF;
+  SELECT * INTO replay FROM retail_detach_product_image_as_actor(image_id,true,'30000000-0000-4000-8000-000000000004'::uuid,'owner','Owner','owner',false);
+  IF NOT replay.deleted OR NOT replay.replayed OR NOT replay.removed_references THEN RAISE EXCEPTION 'explicit delete did not replay idempotently'; END IF;
+END $$;
+
 ROLLBACK;

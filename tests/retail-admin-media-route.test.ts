@@ -28,7 +28,7 @@ vi.mock("@/src/lib/retail/operations", async () => {
   };
 });
 
-import { POST } from "@/app/api/admin/retail/media/route";
+import { DELETE, POST } from "@/app/api/admin/retail/media/route";
 
 describe("retail admin media route", () => {
   beforeEach(() => {
@@ -40,6 +40,7 @@ describe("retail admin media route", () => {
     mocks.validateRetailImage.mockResolvedValue({ bytes: new Uint8Array([1, 2, 3]), mime: "image/jpeg", extension: "jpg", sha256: "a".repeat(64) });
     mocks.put.mockResolvedValue({ url: blobUrl });
     mocks.attachRetailProductImage.mockResolvedValue({ id: imageId, blob_url: blobUrl, replayed: false });
+    mocks.listRetailBlobDeleteOutbox.mockResolvedValue([]);
   });
 
   it("passes the authenticated actor through form and Blob awaits to the DB image wrapper", async () => {
@@ -56,5 +57,22 @@ describe("retail admin media route", () => {
       url: blobUrl, key: `retail/products/${productId}/${idempotencyKey}-${"a".repeat(64)}.jpg`, mime: "image/jpeg", bytes: 3,
       sha256: "a".repeat(64), altEn: "Retail test image", altAr: "صورة اختبار", idempotencyKey,
     }, actor);
+  });
+
+  it("requires a UUID delete receipt and passes the explicit reference-removal choice to the DB", async () => {
+    mocks.detachRetailProductImage.mockResolvedValue({ blob_url: blobUrl, blob_key: "retail/products/test.jpg", deleted: true, replayed: false, removed_references: true });
+    const response = await DELETE(new Request("https://preview.example/api/admin/retail/media", { method: "DELETE", headers: { origin: "https://preview.example", "content-type": "application/json" }, body: JSON.stringify({ imageId, removeReferences: true, idempotencyKey }) }));
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ ok: true, deleted: true, removedReferences: true });
+    expect(mocks.detachRetailProductImage).toHaveBeenCalledWith({ imageId, removeReferences: true, idempotencyKey }, actor);
+  });
+
+  it("returns the referenced-media rejection unchanged for an ordinary delete", async () => {
+    mocks.detachRetailProductImage.mockRejectedValue(new Error("image is used by product PDP content"));
+    const response = await DELETE(new Request("https://preview.example/api/admin/retail/media", { method: "DELETE", headers: { origin: "https://preview.example", "content-type": "application/json" }, body: JSON.stringify({ imageId, idempotencyKey }) }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ ok: false, error: "image is used by product PDP content" });
   });
 });

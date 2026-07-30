@@ -1,5 +1,17 @@
 # Direct retail operations runbook
 
+## Catalog Agent
+
+受控自动化 Agent 的目录协议、发布门槛与凭证配置流程见
+[`retail-catalog-agent-api.md`](./retail-catalog-agent-api.md)；机器可读接口见
+[`retail-catalog-agent-openapi.yaml`](./retail-catalog-agent-openapi.yaml)。在服务器秘密管理器
+中通过 `RETAIL_AGENT_OPERATORS_JSON` 配置静态机器 principal（id、name、零售角色、至少
+32 字符 token）；调用方仅以 `$RETAIL_AGENT_TOKEN` 注入该 token，绝不写入浏览器、代码、
+日志或 Prompt。总开关为 `RETAIL_AGENT_ENABLED`，写开关为
+`RETAIL_AGENT_CATALOG_WRITE_ENABLED`，生产写入还需
+`RETAIL_AGENT_PRODUCTION_ENABLED`；疑似泄露时先关闭总开关，再替换受影响 principal 的 token
+并审计其 actor 和幂等键。
+
 ## Production shape
 
 - Deploy the Next.js application and API routes on Vercel.
