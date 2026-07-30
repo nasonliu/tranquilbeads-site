@@ -36,6 +36,10 @@ export type RetailProduct = {
   available: boolean;
   stock?: number;
   variants?: RetailProductVariant[];
+  /** Product-level, localized PDP copy. It never authorizes price or stock. */
+  highlights?: RetailLocaleText[];
+  details?: Array<{ label: RetailLocaleText; value: RetailLocaleText }>;
+  aPlus?: Array<{ eyebrow?: RetailLocaleText; title: RetailLocaleText; body: RetailLocaleText; image?: string }>;
 };
 
 export type RetailProductVariant = {

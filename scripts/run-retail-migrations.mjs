@@ -41,6 +41,7 @@ const migrationNames = [
   "20260816_retail_rma_line_discount_cap.sql",
   "20260817_retail_media_delete_conflict.sql",
   "20260818_retail_product_styles.sql",
+  "20260819_retail_product_pdp_content.sql",
 ];
 
 const migrationTarget = process.env.RETAIL_MIGRATION_TARGET;

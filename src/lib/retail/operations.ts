@@ -25,6 +25,26 @@ export const productUpdateDto = productDto.omit({ sku: true, amountMinor: true, 
   status: z.enum(["draft", "published", "archived"]).optional(),
   idempotencyKey: z.string().uuid(),
 });
+const localizedPdpText = z.object({
+  en: z.string().trim().min(1).max(4_000),
+  ar: z.string().trim().min(1).max(4_000),
+  zh: z.string().trim().min(1).max(4_000),
+}).strict();
+const aPlusImageUrl = z.string().trim().max(2_048).url().refine((value) => value.startsWith("https://"), "image must use https");
+export const productPdpContentDto = z.object({
+  highlights: z.array(localizedPdpText.refine((value) => value.en.length <= 400 && value.ar.length <= 400 && (value.zh?.length ?? 0) <= 400, "highlight too long")).max(5).default([]),
+  details: z.array(z.object({
+    label: localizedPdpText.refine((value) => value.en.length <= 160 && value.ar.length <= 160 && (value.zh?.length ?? 0) <= 160, "detail label too long"),
+    value: localizedPdpText.refine((value) => value.en.length <= 2_000 && value.ar.length <= 2_000 && (value.zh?.length ?? 0) <= 2_000, "detail value too long"),
+  }).strict()).max(12).default([]),
+  aPlus: z.array(z.object({
+    eyebrow: localizedPdpText.refine((value) => value.en.length <= 160 && value.ar.length <= 160 && (value.zh?.length ?? 0) <= 160, "eyebrow too long").optional(),
+    title: localizedPdpText.refine((value) => value.en.length <= 240 && value.ar.length <= 240 && (value.zh?.length ?? 0) <= 240, "A+ title too long"),
+    body: localizedPdpText,
+    image: aPlusImageUrl.optional(),
+  }).strict()).max(6).default([]),
+  idempotencyKey: z.string().uuid(),
+}).strict();
 export const priceDto = z.object({ amountMinor: z.number().int().positive(), idempotencyKey: z.string().uuid(), reason: z.string().trim().min(1).max(200) });
 export const inventoryAdjustmentDto = z.object({ productId: z.string().uuid(), delta: z.number().int().refine((v) => v !== 0), reason: z.string().trim().min(1).max(200), idempotencyKey: z.string().uuid() });
 export const fulfilmentDto = z.object({ orderId: z.number().int().positive(), carrier: z.string().trim().max(100), tracking: z.string().trim().max(200), note: z.string().trim().max(2000), idempotencyKey: z.string().uuid() });
@@ -50,7 +70,7 @@ export async function listStorefrontShippingZones(): Promise<StorefrontShippingZ
 export async function quoteRetailCheckout(items:z.infer<typeof retailCartDto>,checkout:z.infer<typeof retailCheckoutDto>){const q=sql();const rows=await q`SELECT * FROM retail_quote_checkout(${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb)`;const row=rows[0];if(!row)throw new Error("quote_unavailable");return{currency:String(row.currency).trim(),subtotalMinor:Number(row.subtotal_minor),shippingMinor:Number(row.shipping_minor),taxMinor:Number(row.tax_minor),discountMinor:Number(row.discount_minor),totalMinor:Number(row.total_minor),shippingMethod:String(row.shipping_method),items:row.items_snapshot,shipping:row.shipping_snapshot,quoteHash:String(row.quote_hash)};}
 export async function getStorefrontOrderByRequestId(requestId:string){const q=sql();const rows=await q`SELECT public_id,client_request_id,paypal_order_id,status,currency,subtotal_minor,shipping_minor,tax_minor,discount_minor,amount_minor,shipping_method,items_snapshot,checkout_shipping,checkout_email,fulfilment_status,carrier,tracking_number,created_at,captured_at FROM retail_orders WHERE client_request_id=${requestId}::uuid LIMIT 1`;const row=rows[0];if(!row)return null;return{...row,subtotal_minor:Number(row.subtotal_minor),shipping_minor:Number(row.shipping_minor),tax_minor:Number(row.tax_minor),discount_minor:Number(row.discount_minor),amount_minor:Number(row.amount_minor)};}
 
-export async function listAdminProducts() { const q = sql(); return q`SELECT p.public_id,p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,p.status,p.created_at,p.updated_at,h.amount_minor,COALESCE(i.image_count,0)::int image_count,COALESCE(i.images,'[]'::json) images FROM retail_products p LEFT JOIN LATERAL(SELECT amount_minor FROM retail_price_history WHERE product_id=p.id AND active ORDER BY created_at DESC LIMIT 1) h ON true LEFT JOIN LATERAL(SELECT count(*) image_count,json_agg(json_build_object('id',id,'url',blob_url,'alt_en',alt_en,'alt_ar',alt_ar,'position',position) ORDER BY position) images FROM retail_product_images WHERE product_id=p.id) i ON true ORDER BY p.created_at DESC`; }
+export async function listAdminProducts() { const q = sql(); return q`SELECT p.public_id,p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,p.pdp_highlights,p.pdp_details,p.pdp_a_plus,p.status,p.created_at,p.updated_at,h.amount_minor,COALESCE(i.image_count,0)::int image_count,COALESCE(i.images,'[]'::json) images FROM retail_products p LEFT JOIN LATERAL(SELECT amount_minor FROM retail_price_history WHERE product_id=p.id AND active ORDER BY created_at DESC LIMIT 1) h ON true LEFT JOIN LATERAL(SELECT count(*) image_count,json_agg(json_build_object('id',id,'url',blob_url,'alt_en',alt_en,'alt_ar',alt_ar,'position',position) ORDER BY position) images FROM retail_product_images WHERE product_id=p.id) i ON true ORDER BY p.created_at DESC`; }
 export async function createAdminProduct(d: z.infer<typeof productDto>, actor: RetailAdminActor) {
   if (d.status === "published") throw new Error("product_requires_verified_image");
   const q = sql();
@@ -61,6 +81,12 @@ export async function createAdminProduct(d: z.infer<typeof productDto>, actor: R
 export async function updateAdminProduct(id: string, d: z.infer<typeof productUpdateDto>, actor: RetailAdminActor) {
   const q = sql(); const rows = await q`SELECT * FROM retail_update_admin_product_as_actor(${id}::uuid,${d.slug ?? null}::text,${d.titleEn ?? null}::text,${d.titleAr ?? null}::text,${d.descriptionEn ?? null}::text,${d.descriptionAr ?? null}::text,${d.titleZh || null}::text,${d.descriptionZh || null}::text,${d.titleZh !== undefined},${d.descriptionZh !== undefined},${d.status ?? null}::text,${d.idempotencyKey}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy})`;
   if (!rows[0]) throw new Error("product_not_found_or_missing_verified_image"); return rows[0];
+}
+export async function updateAdminProductPdpContent(id: string, d: z.infer<typeof productPdpContentDto>, actor: RetailAdminActor) {
+  const q = sql();
+  const rows = await q`SELECT * FROM retail_update_admin_product_pdp_content_as_actor(${id}::uuid,${JSON.stringify(d.highlights)}::jsonb,${JSON.stringify(d.details)}::jsonb,${JSON.stringify(d.aPlus)}::jsonb,${d.idempotencyKey}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy})`;
+  if (!rows[0]) throw new Error("product_not_found");
+  return rows[0];
 }
 export async function archiveAdminProduct(id: string, idempotencyKey: string, actor: RetailAdminActor) { return updateAdminProduct(id, { status: "archived", idempotencyKey }, actor); }
 export async function changeProductPrice(id: string, d: z.infer<typeof priceDto>, actor: RetailAdminActor) { const q = sql(); const rows = await q`SELECT retail_change_product_price_as_actor(${id}::uuid,${d.amountMinor},${d.idempotencyKey}::uuid,${d.reason},${actor.id},${actor.name},${actor.role},${actor.legacy}) AS changed`; return rows[0]; }

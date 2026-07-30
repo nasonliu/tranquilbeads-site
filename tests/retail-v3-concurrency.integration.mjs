@@ -39,6 +39,14 @@ async function catalogCreateAttempt(db, productId, sku, key) {
 }
 function assert(condition, message) { if (!condition) throw new Error(message); }
 function assertNoDeadlock(outcomes) { for (const outcome of outcomes) if (!outcome.ok && outcome.error?.code === "40P01") throw outcome.error; }
+async function waitUntilLockWait(db, pid) {
+  for (let index = 0; index < 100; index += 1) {
+    const result = await db.query("SELECT wait_event_type FROM pg_stat_activity WHERE pid=$1", [pid]);
+    if (result.rows[0]?.wait_event_type === "Lock") return;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  throw new Error(`session ${pid} did not enter a lock wait`);
+}
 async function assertProductMirror(db, id) {
   const result = await db.query(`SELECT pb.on_hand product_on_hand,pb.reserved product_reserved,
       COALESCE(sum(vb.on_hand),0)::bigint variant_on_hand,COALESCE(sum(vb.reserved),0)::bigint variant_reserved
@@ -181,6 +189,35 @@ try {
   const expired = await setup.query("SELECT retail_release_expired_reservations() AS released");
   assert(Number(expired.rows[0].released) >= 1, "expiry must release the seeded order");
   await assertProductMirror(setup, productId);
+
+  // PDP content and media deletion serialize product row then image row. If
+  // content wins, deletion must recheck and fail; if deletion wins, the
+  // content update must recheck and reject the now-missing media reference.
+  const mediaUrl = `https://example.test/${tag}-pdp.jpg`;
+  const media = await setup.query(`INSERT INTO retail_product_images(product_id,blob_url,blob_key,mime_type,bytes,sha256,position,alt_en,alt_ar)
+    VALUES($1,$2,$3,'image/jpeg',1,$4,0,'PDP concurrency image','صورة اختبار') RETURNING id`, [productId, mediaUrl, `${tag}-pdp.jpg`, tag]);
+  const contentArgs = [created.rows[0].public_id, JSON.stringify([]), JSON.stringify([]), JSON.stringify([{ title: { en: "PDP story", ar: "قصة المنتج", zh: "商品故事" }, body: { en: "Concurrency content", ar: "محتوى التزامن", zh: "并发内容" }, image: mediaUrl }])];
+  const updateSql = "SELECT * FROM retail_update_admin_product_pdp_content_as_actor($1::uuid,$2::jsonb,$3::jsonb,$4::jsonb,$5::uuid,'concurrency','Concurrency','owner',false)";
+  const bPid = Number((await b.query("SELECT pg_backend_pid() AS pid")).rows[0].pid);
+  await a.query("BEGIN");
+  await a.query(updateSql, [...contentArgs, crypto.randomUUID()]);
+  const blockedDelete = attempt(b, "SELECT * FROM retail_detach_product_image($1::uuid)", [media.rows[0].id]);
+  await waitUntilLockWait(setup, bPid);
+  await a.query("COMMIT");
+  let contentRace = await blockedDelete;
+  assert(!contentRace.ok && contentRace.error?.message.includes("image is used by product PDP content"), "content-first race must preserve referenced media");
+  assert(Number((await setup.query("SELECT count(*)::int AS n FROM retail_product_images WHERE id=$1", [media.rows[0].id])).rows[0].n) === 1, "content-first race deleted referenced media");
+
+  await setup.query(updateSql, [created.rows[0].public_id, "[]", "[]", "[]", crypto.randomUUID()]);
+  const aPid = Number((await a.query("SELECT pg_backend_pid() AS pid")).rows[0].pid);
+  await b.query("BEGIN");
+  await b.query("SELECT * FROM retail_detach_product_image($1::uuid)", [media.rows[0].id]);
+  const blockedUpdate = attempt(a, updateSql, [...contentArgs, crypto.randomUUID()]);
+  await waitUntilLockWait(setup, aPid);
+  await b.query("COMMIT");
+  contentRace = await blockedUpdate;
+  assert(!contentRace.ok && contentRace.error?.message.includes("A+ image must belong to the product media library"), "delete-first race must reject a dangling A+ reference");
+  assert(Number((await setup.query("SELECT count(*)::int AS n FROM retail_product_images WHERE id=$1", [media.rows[0].id])).rows[0].n) === 0, "delete-first race did not remove media");
   console.log("retail V3 concurrency integration: passed");
 } finally {
   if (productId) await setup.query("DELETE FROM retail_products WHERE id=$1", [productId]).catch(() => {});

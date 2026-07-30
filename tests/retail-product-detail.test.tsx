@@ -35,4 +35,15 @@ describe("retail product detail", () => {
     render(<RetailProductDetail locale="en" product={{ ...product, variants: [{ ...product.variants[0], available: false, stock: 0 }] }} images={["/one.jpg"]} />);
     expect(screen.getByRole("button", { name: "Out of stock" })).toBeDisabled();
   });
+
+  it("uses the selected SKU for quantity while progressively rendering supplied merchandising content", () => {
+    render(<RetailProductDetail locale="en" product={{ ...product, highlights: [{ en: "Natural stone beads", ar: "خرز حجري طبيعي" }], details: [{ label: { en: "Material", ar: "المادة" }, value: { en: "Obsidian", ar: "سبج" } }], aPlus: [{ eyebrow: { en: "Craft", ar: "الحرفية" }, title: { en: "Made to keep", ar: "صنع ليدوم" }, body: { en: "Selected for daily use.", ar: "مختار للاستخدام اليومي." }, image: "/two.jpg" }] }} images={["/one.jpg", "/two.jpg"]} />);
+    expect(screen.getByRole("heading", { name: "Product highlights" })).toBeInTheDocument();
+    expect(screen.getByText("Natural stone beads")).toBeInTheDocument();
+    expect(screen.getByText("Material")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Made to keep" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Increase quantity" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add to cart" }));
+    expect(window.localStorage.getItem("noor-retail-cart-v1")).toBe('{"beads-black-33":2}');
+  });
 });

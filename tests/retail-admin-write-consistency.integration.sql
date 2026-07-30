@@ -12,6 +12,7 @@ DECLARE
   approved_order_id BIGINT;
   checkout_order_id BIGINT;
   ledger_id UUID;
+  image_id UUID;
   row_result RECORD;
   observed BIGINT;
 BEGIN
@@ -68,8 +69,51 @@ BEGIN
     '10000000-0000-4000-8000-000000000004'
   );
   IF NOT row_result.replayed THEN RAISE EXCEPTION 'image replay was not recognized'; END IF;
+  image_id:=row_result.id;
   SELECT count(*) INTO observed FROM retail_product_images WHERE product_id=(SELECT id FROM retail_products WHERE public_id=product_public);
   IF observed<>1 THEN RAISE EXCEPTION 'image retry created % rows',observed; END IF;
+
+  IF retail_pdp_localized_text_valid('{"en":"missing Arabic"}'::jsonb,400) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'PDP localized validation accepted a missing required locale';
+  END IF;
+  SELECT * INTO row_result FROM retail_update_admin_product_pdp_content_as_actor(
+    product_public,
+    '[{"en":"Natural beads","ar":"خرز طبيعي","zh":"天然珠子"}]'::jsonb,
+    '[{"label":{"en":"Material","ar":"الخامة","zh":"材质"},"value":{"en":"Preview","ar":"معاينة","zh":"预览"}}]'::jsonb,
+    '[{"title":{"en":"Craft","ar":"الحرفية","zh":"工艺"},"body":{"en":"Preview content","ar":"محتوى المعاينة","zh":"预览内容"},"image":"https://example.test/integration.webp"}]'::jsonb,
+    '10000000-0000-4000-8000-000000000040','owner','Owner','owner',true
+  );
+  SELECT * INTO row_result FROM retail_update_admin_product_pdp_content_as_actor(
+    product_public,
+    '[{"en":"Natural beads","ar":"خرز طبيعي","zh":"天然珠子"}]'::jsonb,
+    '[{"label":{"en":"Material","ar":"الخامة","zh":"材质"},"value":{"en":"Preview","ar":"معاينة","zh":"预览"}}]'::jsonb,
+    '[{"title":{"en":"Craft","ar":"الحرفية","zh":"工艺"},"body":{"en":"Preview content","ar":"محتوى المعاينة","zh":"预览内容"},"image":"https://example.test/integration.webp"}]'::jsonb,
+    '10000000-0000-4000-8000-000000000040','owner','Owner','owner',true
+  );
+  IF NOT row_result.replayed THEN RAISE EXCEPTION 'PDP content replay was not recognized'; END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM retail_products
+    WHERE public_id=product_public
+      AND pdp_highlights->0->>'zh'='天然珠子'
+      AND pdp_details->0->'label'->>'en'='Material'
+      AND pdp_a_plus->0->>'image'='https://example.test/integration.webp'
+  ) THEN RAISE EXCEPTION 'PDP content was not persisted'; END IF;
+  BEGIN
+    PERFORM * FROM retail_detach_product_image(image_id);
+    RAISE EXCEPTION 'expected A+ media reference to block deletion';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM NOT LIKE '%image is used by product PDP content%' THEN RAISE; END IF;
+  END;
+  BEGIN
+    PERFORM * FROM retail_update_admin_product_pdp_content_as_actor(
+      product_public,'[]'::jsonb,'[]'::jsonb,
+      '[{"title":{"en":"Bad image","ar":"صورة غير صالحة","zh":"无效图片"},"body":{"en":"Body","ar":"النص","zh":"正文"},"image":"https://other.example/not-owned.jpg"}]'::jsonb,
+      '10000000-0000-4000-8000-000000000041','owner','Owner','owner',true
+    );
+    RAISE EXCEPTION 'expected foreign A+ image rejection';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM NOT LIKE '%must belong to the product media library%' THEN RAISE; END IF;
+  END;
 
   PERFORM retail_change_product_price_with_audit(product_public,125,'10000000-0000-4000-8000-000000000005','integration');
   PERFORM retail_change_product_price_with_audit(product_public,125,'10000000-0000-4000-8000-000000000005','integration');

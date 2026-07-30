@@ -31,6 +31,9 @@ export type StorefrontV3Product = {
   description_en: string;
   description_ar: string;
   description_zh: string | null;
+  pdp_highlights: unknown;
+  pdp_details: unknown;
+  pdp_a_plus: unknown;
   images: Array<{ url: string }>;
   variants: StorefrontV3Variant[];
 };
@@ -62,7 +65,7 @@ function sql(): Sql {
 export async function listStorefrontV3Products(): Promise<StorefrontV3Product[]> {
   try {
     const rows = await sql()`
-      SELECT p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,
+      SELECT p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,p.pdp_highlights,p.pdp_details,p.pdp_a_plus,
         COALESCE((
           SELECT json_agg(json_build_object('url',image.blob_url) ORDER BY image.position)
           FROM retail_product_images image WHERE image.product_id=p.id
@@ -111,7 +114,7 @@ export async function listStorefrontV3Products(): Promise<StorefrontV3Product[]>
 export async function getStorefrontV3ProductBySlug(slug: string): Promise<StorefrontV3Product | undefined> {
   try {
     const rows = await sql()`
-      SELECT p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,
+      SELECT p.sku,p.slug,p.title_en,p.title_ar,p.title_zh,p.description_en,p.description_ar,p.description_zh,p.pdp_highlights,p.pdp_details,p.pdp_a_plus,
         COALESCE((
           SELECT json_agg(json_build_object('url',image.blob_url) ORDER BY image.position)
           FROM retail_product_images image WHERE image.product_id=p.id
@@ -142,6 +145,7 @@ export async function getStorefrontV3ProductBySlug(slug: string): Promise<Storef
         AND EXISTS (
           SELECT 1 FROM retail_product_variants v
           JOIN retail_product_styles style ON style.id=v.style_id AND style.status='active'
+          JOIN retail_variant_inventory_balances balance ON balance.variant_id=v.id
           JOIN retail_variant_price_history price ON price.variant_id=v.id AND price.active=true
           WHERE v.product_id=p.id AND v.status='active'
         )
