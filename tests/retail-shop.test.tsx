@@ -3,8 +3,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/image", () => ({ default: () => <span /> }));
 import { loadRetailPaypalSdk, RetailShop } from "@/src/components/retail-shop";
+import { RetailReferenceCurrencyProvider, RetailReferenceCurrencyToolbar } from "@/src/components/retail-reference-currency";
 import { getRetailCopy } from "@/src/data/retail/copy";
 import { localizeRetailVariantOptions } from "@/src/data/retail/types";
+import type { ReferenceCurrencySnapshot } from "@/src/lib/retail/reference-currency";
 
 const product = { sku: "sku-new", name: { en: "New", ar: "جديد" }, description: { en: "d", ar: "و" }, image: "/retail.jpg", priceMinor: 100, currency: "USD" as const, available: true, stock: 2 };
 const variantProduct = { sku: "bracelet", name: { en: "Bracelet", ar: "سوار", zh: "手链" }, description: { en: "d", ar: "و", zh: "描述" }, image: "/retail.jpg", priceMinor: 100, currency: "USD" as const, available: true, stock: 3, variants: [
@@ -14,6 +16,7 @@ const variantProduct = { sku: "bracelet", name: { en: "Bracelet", ar: "سوار"
 const zones = [{ country: "US", name: { en: "United States", ar: "الولايات المتحدة" }, shippingMinor: 250, freeShippingThresholdMinor: null, taxRateBps: 500 }];
 const quote = { currency: "USD" as const, subtotalMinor: 100, shippingMinor: 250, taxMinor: 18, totalMinor: 368, shippingMethod: "standard" as const };
 const copy = getRetailCopy("en");
+const referenceSnapshot: ReferenceCurrencySnapshot = { base: "USD", asOf: "2026-07-29T16:00:00.000Z", source: "test source", version: "test-v1", rateMicros: { USD: 1_000_000, AED: 3_672_500, SAR: 3_750_000, CNY: 6_766_300, EUR: 878_730, GBP: 752_500 } };
 const localizedOptions = {
   en: { Colour: "Red", Size: "Small" },
   ar: { "اللون": "أحمر", "المقاس": "صغير" },
@@ -193,5 +196,43 @@ describe("retail storefront checkout", () => {
     expect(screen.getByLabelText("Email")).toHaveValue("");
     expect(screen.getByLabelText("Phone")).toHaveValue("");
     expect(screen.getByLabelText("Address line 1")).toHaveValue("");
+  });
+
+  it("shows a persisted reference currency without changing USD quote or order payloads", async () => {
+    let options: Parameters<NonNullable<typeof window.paypal>["Buttons"]>[0] | undefined;
+    const requests: Array<{ url: string; body: Record<string, unknown> }> = [];
+    window.paypal = { Buttons: vi.fn((value) => { options = value; return { render: vi.fn() }; }) };
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body ?? "{}")) as Record<string, unknown>;
+      requests.push({ url: String(input), body });
+      if (String(input).includes("/quote")) return new Response(JSON.stringify({ ok: true, quote }), { status: 200 });
+      return new Response(JSON.stringify({ ok: true, orderId: "PAYPAL-USD" }), { status: 200 });
+    }));
+    render(<RetailReferenceCurrencyProvider snapshot={referenceSnapshot}>
+      <RetailReferenceCurrencyToolbar locale="zh" />
+      <RetailShop locale="zh" products={[product]} zones={zones} enabled paypalClientId="client-reference" currency="USD" copy={getRetailCopy("zh")} />
+    </RetailReferenceCurrencyProvider>);
+    fireEvent.change(screen.getByLabelText("显示币种（参考价）"), { target: { value: "AED" } });
+    expect(await screen.findByText(/≈ AED\s*3\.67/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "加入购物车 New" }));
+    fireEvent.change(screen.getByLabelText("电子邮箱"), { target: { value: "buyer@example.com" } });
+    fireEvent.change(screen.getByLabelText("收件人"), { target: { value: "Buyer" } });
+    fireEvent.change(screen.getByLabelText("地址第一行"), { target: { value: "1 Main St" } });
+    fireEvent.change(screen.getByLabelText("城市"), { target: { value: "Austin" } });
+    fireEvent.change(screen.getByLabelText("邮政编码"), { target: { value: "78701" } });
+    fireEvent.change(screen.getByLabelText("联系电话"), { target: { value: "5551112222" } });
+    fireEvent.change(screen.getByLabelText("国家/地区"), { target: { value: "US" } });
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("button", { name: "确认价格" }));
+    await vi.waitFor(() => expect(options).toBeDefined());
+    await expect(options!.createOrder()).resolves.toBe("PAYPAL-USD");
+    expect(requests[0].body).not.toHaveProperty("currency");
+    expect(requests[0].body).not.toHaveProperty("rateMicros");
+    expect(requests[1].body).toMatchObject({ expectedTotalMinor: 368 });
+    expect(requests[1].body).not.toHaveProperty("currency");
+    expect(requests[1].body).not.toHaveProperty("rateMicros");
+    expect(window.localStorage.getItem("noor-retail-cart-v1")).toBe('{"sku-new":1}');
+    expect(window.localStorage.getItem("noor-retail-reference-currency-v1")).toBe("AED");
+    expect(screen.getAllByText(/PayPal 将以 USD 结算/)).toHaveLength(2);
   });
 });

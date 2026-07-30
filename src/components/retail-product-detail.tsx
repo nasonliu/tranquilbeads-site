@@ -7,12 +7,12 @@ import { useMemo, useState } from "react";
 
 import styles from "./retail-product-detail.module.css";
 import type { RetailLocale, RetailLocaleText, RetailProduct, RetailProductStyle, RetailProductVariant } from "@/src/data/retail/types";
+import { RetailReferenceMoney } from "@/src/components/retail-reference-currency";
 
 const cartStorageKey = "noor-retail-cart-v1";
 
 type Props = { locale: RetailLocale; product: RetailProduct; images: string[] };
 
-const money = (amount: number) => `USD ${(amount / 100).toFixed(2)}`;
 const localized = (locale: RetailLocale, value: RetailLocaleText) => value[locale] ?? value.en;
 
 function label(locale: RetailLocale) {
@@ -92,7 +92,7 @@ export function RetailProductDetail({ locale, product, images }: Props) {
         {selectedStyle ? <p className="text-xs font-semibold uppercase tracking-[.18em] text-muted">{copy.style}: {selectedStyle.code}</p> : null}
         <h1 className="noor-title mt-2 text-3xl font-semibold md:text-5xl">{localized(locale, product.name)}</h1>
         <p className="mt-4 whitespace-pre-line leading-7 text-muted">{localized(locale, product.description)}</p>
-        <p className={styles.price}>{display ? money(display.priceMinor) : "—"}</p>
+        <p className={styles.price}>{display ? <RetailReferenceMoney usdMinor={display.priceMinor} locale={locale} /> : "—"}</p>
 
         {product.highlights?.length ? <section className={styles.highlights} aria-labelledby="product-highlights"><h2 id="product-highlights">{copy.highlights}</h2><ul>{product.highlights.map((highlight, index) => <li key={`${localized(locale, highlight)}-${index}`}>{localized(locale, highlight)}</li>)}</ul></section> : null}
         {styleOptions.length > 1 ? <fieldset className="mt-7"><legend className="text-sm font-semibold">{copy.style}</legend><div className="mt-2 flex flex-wrap gap-2">{styleOptions.map((style) => <button key={style.publicId} type="button" onClick={() => chooseStyle(style.publicId)} aria-pressed={style.publicId === styleId} className={styles.optionButton}>{localized(locale, style.name)}</button>)}</div></fieldset> : null}
