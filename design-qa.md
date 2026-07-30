@@ -34,4 +34,37 @@
 - P1: none.
 - P2: none after the desktop and mobile density pass.
 
+## Retail product detail and content editor
+
+### Scope and visual truth
+
+- Screen: Chinese sandbox product detail plus the authenticated Chinese `Content & A+` editor.
+- Before/reference screenshot: `/tmp/projectnoor-pdp-before-20260729.png` (1497 x 1296).
+- Storefront implementation screenshot: `/tmp/projectnoor-pdp-after-20260730.png` (1497 x 2197 full page) and `/tmp/projectnoor-pdp-after-top-20260730.png` (1497 x 801 viewport).
+- Admin implementation screenshot: `/tmp/projectnoor-admin-content-after-20260730.png` (1497 x 2705 full page).
+- Mobile implementation screenshot: `/tmp/projectnoor-pdp-mobile-20260730-v2.png` (375 x 812 capture from a temporary 390 x 844 viewport override).
+- Combined comparison: `/tmp/projectnoor-pdp-comparison-viewport-20260730.png`.
+- Verified Preview: `https://tranquilbeads-retail-preview.vercel.app/zh/shop/mvp-sandbox-tasbih-20260727`.
+
+### Comparison history
+
+1. The previous PDP exposed only one large image, title, price, SKU, stock, and an add-to-cart button, followed immediately by the footer.
+2. The implementation preserves the existing cream, serif, rounded-panel TranquilBeads language while adding a gallery rail contract, five highlights, quantity control, trust links, specification table, and an image-capable A+ story module.
+3. The final desktop comparison shows the stronger purchase hierarchy and added merchandising depth without replacing the existing site header, footer, colors, or typography.
+
+### Interaction and state checks
+
+- Chinese storefront rendered all five saved highlights, three detail rows, and the saved A+ module from the database.
+- Quantity increased from 1 to 2 and the product entered the cart; the button changed to `已加入购物车`.
+- The mobile breakpoint retained the gallery, SKU authority, quantity control, product content, trust links, and A+ content; the temporary viewport override was reset afterwards.
+- The standalone admin route separated content from product information, SKC, SKU, price/inventory, media, and preview pages.
+- The Chinese admin editor loaded saved English, Arabic, and Chinese values and confirmed `Saved.` after the write.
+- No current application console errors were reported in the storefront or admin tab. Two stale Chrome-extension message-channel entries belonged to the superseded Preview URL and were not application errors.
+
+### Severity assessment
+
+- P0: none.
+- P1: none.
+- P2: none after desktop, mobile, persistence, and interaction verification.
+
 final result: passed
