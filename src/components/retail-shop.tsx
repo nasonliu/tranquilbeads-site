@@ -161,7 +161,7 @@ export function RetailShop({ locale, products, enabled, copy, initialFilters }: 
 
   return <section className="noor-container">
     <div data-testid="retail-catalog-layout" className="grid items-start gap-6 lg:grid-cols-[minmax(220px,260px)_minmax(0,1fr)]">
-      <aside aria-label={copy.catalog} className="lg:sticky lg:top-28">
+      <aside aria-label={copy.catalog}>
         <button
           type="button"
           aria-expanded={mobileFiltersOpen}
@@ -175,7 +175,7 @@ export function RetailShop({ locale, products, enabled, copy, initialFilters }: 
 
         <div
           id="retail-catalog-filters"
-          className={`${mobileFiltersOpen ? "mt-3 block" : "hidden"} noor-panel rounded-[1.5rem] p-5 lg:mt-0 lg:block lg:max-h-[calc(100vh-8.5rem)] lg:overflow-y-auto`}
+          className={`${mobileFiltersOpen ? "mt-3 block" : "hidden"} noor-panel rounded-[1.5rem] p-5 lg:mt-0 lg:block`}
         >
           <div className="border-b border-border/80 pb-4">
             <div className="flex items-start justify-between gap-3">
