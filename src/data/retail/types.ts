@@ -75,6 +75,11 @@ export type RetailShippingZone = {
   shippingMinor: number;
   freeShippingThresholdMinor: number | null;
   taxRateBps: number;
+  carrier?: string;
+  serviceCode?: string | null;
+  deliveryMinDays?: number | null;
+  deliveryMaxDays?: number | null;
+  dutiesMode?: "DDP" | "DAP" | "UNKNOWN";
 };
 
 export type RetailCheckout = {

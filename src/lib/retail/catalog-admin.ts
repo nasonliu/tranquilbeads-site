@@ -10,6 +10,17 @@ import { guardedRetailSql } from "./database-identity";
 const uuid = z.string().uuid();
 const text = z.string().trim().min(1).max(240);
 const optionalText = z.string().trim().max(4_000).optional();
+const nullablePositiveInt = z.number().int().positive().max(2_000_000_000).nullable().optional();
+const logisticsFields = {
+  shippingWeightGrams: nullablePositiveInt,
+  packageLengthMm: nullablePositiveInt,
+  packageWidthMm: nullablePositiveInt,
+  packageHeightMm: nullablePositiveInt,
+  customsDescriptionEn: z.string().trim().max(240).nullable().optional(),
+  hsCode: z.string().trim().regex(/^[0-9]{4,12}$/).nullable().optional(),
+  originCountry: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/).nullable().optional(),
+  dangerousGoods: z.boolean().optional(),
+};
 const localizedOptions = z.object({
   en: z.record(z.string().min(1).max(80), z.string().trim().min(1).max(160)).default({}),
   ar: z.record(z.string().min(1).max(80), z.string().trim().min(1).max(160)).default({}),
@@ -26,6 +37,7 @@ export const variantCreateDto = z.object({
   optionValues: localizedOptions,
   amountMinor: z.number().int().positive().max(900_000_000_000_000),
   onHand: z.number().int().min(0).max(900_000_000_000_000),
+  ...logisticsFields,
   idempotencyKey: uuid,
 });
 export const variantUpdateDto = z.object({
@@ -38,6 +50,7 @@ export const variantUpdateDto = z.object({
   status: z.enum(["active", "archived"]).optional(),
   amountMinor: z.number().int().positive().max(900_000_000_000_000).optional(),
   onHand: z.number().int().min(0).max(900_000_000_000_000).optional(),
+  ...logisticsFields,
   idempotencyKey: uuid,
 }).refine((value) => Object.keys(value).some((key) => key !== "idempotencyKey"), "empty_update");
 
@@ -154,9 +167,9 @@ async function store(operation: string, request: unknown, key: string, response:
 export async function listCatalogVariants(productId?: string) {
   const sql = guardedRetailSql();
   return productId
-    ? sql`SELECT v.public_id,v.sku,v.title_en,v.title_ar,v.title_zh,v.option_values,v.status,v.created_at,v.updated_at,p.public_id AS product_public_id,p.sku AS product_sku,p.title_en AS product_title_en,s.public_id AS style_public_id,s.code AS style_code,s.title_en AS style_title_en,s.title_ar AS style_title_ar,s.title_zh AS style_title_zh,s.status AS style_status,s.position AS style_position,h.amount_minor,b.on_hand,b.reserved,(b.on_hand-b.reserved) AS available
+    ? sql`SELECT v.public_id,v.sku,v.title_en,v.title_ar,v.title_zh,v.option_values,v.status,v.shipping_weight_grams,v.package_length_mm,v.package_width_mm,v.package_height_mm,v.customs_description_en,v.hs_code,v.origin_country,v.dangerous_goods,v.created_at,v.updated_at,p.public_id AS product_public_id,p.sku AS product_sku,p.title_en AS product_title_en,s.public_id AS style_public_id,s.code AS style_code,s.title_en AS style_title_en,s.title_ar AS style_title_ar,s.title_zh AS style_title_zh,s.status AS style_status,s.position AS style_position,h.amount_minor,b.on_hand,b.reserved,(b.on_hand-b.reserved) AS available
       FROM retail_product_variants v JOIN retail_products p ON p.id=v.product_id JOIN retail_product_styles s ON s.id=v.style_id JOIN retail_variant_inventory_balances b ON b.variant_id=v.id LEFT JOIN LATERAL(SELECT amount_minor FROM retail_variant_price_history WHERE variant_id=v.id AND active ORDER BY created_at DESC LIMIT 1) h ON true WHERE p.public_id=${productId}::uuid ORDER BY s.position,s.created_at,v.created_at DESC`
-    : sql`SELECT v.public_id,v.sku,v.title_en,v.title_ar,v.title_zh,v.option_values,v.status,v.created_at,v.updated_at,p.public_id AS product_public_id,p.sku AS product_sku,p.title_en AS product_title_en,s.public_id AS style_public_id,s.code AS style_code,s.title_en AS style_title_en,s.title_ar AS style_title_ar,s.title_zh AS style_title_zh,s.status AS style_status,s.position AS style_position,h.amount_minor,b.on_hand,b.reserved,(b.on_hand-b.reserved) AS available
+    : sql`SELECT v.public_id,v.sku,v.title_en,v.title_ar,v.title_zh,v.option_values,v.status,v.shipping_weight_grams,v.package_length_mm,v.package_width_mm,v.package_height_mm,v.customs_description_en,v.hs_code,v.origin_country,v.dangerous_goods,v.created_at,v.updated_at,p.public_id AS product_public_id,p.sku AS product_sku,p.title_en AS product_title_en,s.public_id AS style_public_id,s.code AS style_code,s.title_en AS style_title_en,s.title_ar AS style_title_ar,s.title_zh AS style_title_zh,s.status AS style_status,s.position AS style_position,h.amount_minor,b.on_hand,b.reserved,(b.on_hand-b.reserved) AS available
       FROM retail_product_variants v JOIN retail_products p ON p.id=v.product_id JOIN retail_product_styles s ON s.id=v.style_id JOIN retail_variant_inventory_balances b ON b.variant_id=v.id LEFT JOIN LATERAL(SELECT amount_minor FROM retail_variant_price_history WHERE variant_id=v.id AND active ORDER BY created_at DESC LIMIT 1) h ON true ORDER BY p.created_at DESC,s.position,s.created_at,v.created_at DESC`;
 }
 
@@ -242,8 +255,8 @@ export async function createCatalogVariant(input: z.infer<typeof variantCreateDt
     // gate, so two variant updates cannot each hold a different balance and
     // then wait on the other while recomputing the product mirror.
     tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || id::text,0)) FROM retail_products WHERE public_id=${productId}::uuid`,
-    tx`INSERT INTO retail_product_variants(public_id,product_id,style_id,sku,title_en,title_ar,title_zh,option_values,status)
-      SELECT ${publicId}::uuid,p.id,COALESCE((SELECT s.id FROM retail_product_styles s WHERE s.public_id=${data.styleId ?? null}::uuid AND s.product_id=p.id),(SELECT s.id FROM retail_product_styles s WHERE s.product_id=p.id ORDER BY s.position,s.created_at LIMIT 1)),${data.sku},${data.titleEn},${data.titleAr},${data.titleZh},${payload(data.optionValues)}::jsonb,'active' FROM retail_products p WHERE p.public_id=${productId}::uuid`,
+    tx`INSERT INTO retail_product_variants(public_id,product_id,style_id,sku,title_en,title_ar,title_zh,option_values,status,shipping_weight_grams,package_length_mm,package_width_mm,package_height_mm,customs_description_en,hs_code,origin_country,dangerous_goods)
+      SELECT ${publicId}::uuid,p.id,COALESCE((SELECT s.id FROM retail_product_styles s WHERE s.public_id=${data.styleId ?? null}::uuid AND s.product_id=p.id),(SELECT s.id FROM retail_product_styles s WHERE s.product_id=p.id ORDER BY s.position,s.created_at LIMIT 1)),${data.sku},${data.titleEn},${data.titleAr},${data.titleZh},${payload(data.optionValues)}::jsonb,'active',${data.shippingWeightGrams ?? null},${data.packageLengthMm ?? null},${data.packageWidthMm ?? null},${data.packageHeightMm ?? null},${data.customsDescriptionEn ?? null},${data.hsCode ?? null},${data.originCountry ?? null},${data.dangerousGoods ?? false} FROM retail_products p WHERE p.public_id=${productId}::uuid`,
     tx`INSERT INTO retail_variant_price_history(variant_id,amount_minor,idempotency_key,changed_by)
       SELECT id,${data.amountMinor},${crypto.randomUUID()}::uuid,${actor.id} FROM retail_product_variants WHERE public_id=${publicId}::uuid`,
     tx`INSERT INTO retail_variant_inventory_balances(variant_id,on_hand,reserved)
@@ -288,6 +301,18 @@ export async function updateCatalogVariant(publicId: string, input: z.infer<type
     if (data.onHand !== undefined) {
       updates.push(tx`UPDATE retail_variant_inventory_balances SET on_hand=${data.onHand},updated_at=now() WHERE variant_id=(SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid)`);
       updates.push(tx`SELECT retail_sync_product_inventory_from_variants((SELECT product_id FROM retail_product_variants WHERE public_id=${publicId}::uuid))`);
+    }
+    if ([data.shippingWeightGrams,data.packageLengthMm,data.packageWidthMm,data.packageHeightMm,data.customsDescriptionEn,data.hsCode,data.originCountry,data.dangerousGoods].some((value)=>value!==undefined)) {
+      updates.push(tx`UPDATE retail_product_variants SET
+        shipping_weight_grams=CASE WHEN ${data.shippingWeightGrams !== undefined} THEN ${data.shippingWeightGrams ?? null} ELSE shipping_weight_grams END,
+        package_length_mm=CASE WHEN ${data.packageLengthMm !== undefined} THEN ${data.packageLengthMm ?? null} ELSE package_length_mm END,
+        package_width_mm=CASE WHEN ${data.packageWidthMm !== undefined} THEN ${data.packageWidthMm ?? null} ELSE package_width_mm END,
+        package_height_mm=CASE WHEN ${data.packageHeightMm !== undefined} THEN ${data.packageHeightMm ?? null} ELSE package_height_mm END,
+        customs_description_en=CASE WHEN ${data.customsDescriptionEn !== undefined} THEN ${data.customsDescriptionEn ?? null} ELSE customs_description_en END,
+        hs_code=CASE WHEN ${data.hsCode !== undefined} THEN ${data.hsCode ?? null} ELSE hs_code END,
+        origin_country=CASE WHEN ${data.originCountry !== undefined} THEN ${data.originCountry ?? null} ELSE origin_country END,
+        dangerous_goods=CASE WHEN ${data.dangerousGoods !== undefined} THEN ${data.dangerousGoods ?? false} ELSE dangerous_goods END,
+        updated_at=now() WHERE public_id=${publicId}::uuid`);
     }
     return updates;
   });

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isLocale } from "@/src/lib/i18n";
 import { redeemCustomerPortalToken, type CustomerPortalOrder } from "@/src/lib/retail/customer-portal";
 import { localizeRetailVariantOptions } from "@/src/data/retail/types";
+import { retailTrackingUrl } from "@/src/lib/retail/shipping";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -58,6 +59,7 @@ export default async function CustomerPortalPage({ params }: CustomerPortalPageP
   if (!order) notFound();
   const labels = copy(locale);
   const trackingAvailable = Boolean(order.carrier || order.trackingNumber);
+  const trackingUrl = retailTrackingUrl(order.carrier, order.trackingNumber);
 
   return <main className="noor-container pt-12">
     <section className="noor-panel mx-auto max-w-2xl rounded-[1.75rem] p-7">
@@ -69,7 +71,7 @@ export default async function CustomerPortalPage({ params }: CustomerPortalPageP
         <div className="flex justify-between gap-4"><dt>{labels.ordered}</dt><dd className="font-semibold">{new Intl.DateTimeFormat(locale, { dateStyle: "medium" }).format(new Date(order.orderedAt))}</dd></div>
       </dl>
       <div className="mt-7 border-t border-black/10 pt-5"><h2 className="text-lg font-semibold">{labels.items}</h2><ul className="mt-3 space-y-3 text-sm">{order.items.map((item, index) => <li key={`${item.variantSku ?? productTitle(item, locale)}-${index}`} className="flex justify-between gap-4"><span><span className="block font-medium">{productTitle(item, locale)}</span>{optionSummary(item, locale) ? <span className="block text-xs text-muted">{optionSummary(item, locale)}</span> : null}<span className="block text-xs text-muted">{item.productSku ?? "—"} · {item.variantSku ?? "—"}</span></span><span className="text-right">×{Number(item.quantity ?? 0)}<span className="block text-xs text-muted">{labels.price} {money(Number(item.unitAmountMinor ?? 0), order.currency)}</span>{Number(item.discountMinor ?? 0) > 0 ? <span className="block text-xs text-muted">{labels.discount} −{money(Number(item.discountMinor), order.currency)}</span> : null}<span className="block font-medium">{money(Number(item.lineTotalMinor ?? ((Number(item.quantity ?? 0) * Number(item.unitAmountMinor ?? 0)) - Number(item.discountMinor ?? 0))), order.currency)}</span></span></li>)}</ul></div>
-      <div className="mt-7 border-t border-black/10 pt-5"><h2 className="text-lg font-semibold">{labels.shipping}</h2>{trackingAvailable ? <dl className="mt-3 space-y-2 text-sm"><div className="flex justify-between gap-4"><dt>{labels.carrier}</dt><dd>{order.carrier || "—"}</dd></div><div className="flex justify-between gap-4"><dt>{labels.tracking}</dt><dd>{order.trackingNumber || "—"}</dd></div><div className="mt-3 font-medium">{order.fulfilmentStatus === "fulfilled" ? labels.fulfilled : labels.unfulfilled}</div></dl> : <p className="mt-3 text-sm text-muted">{labels.none}</p>}</div>
+      <div className="mt-7 border-t border-black/10 pt-5"><h2 className="text-lg font-semibold">{labels.shipping}</h2>{trackingAvailable ? <dl className="mt-3 space-y-2 text-sm"><div className="flex justify-between gap-4"><dt>{labels.carrier}</dt><dd>{order.carrier || "—"}</dd></div><div className="flex justify-between gap-4"><dt>{labels.tracking}</dt><dd>{trackingUrl ? <a className="font-medium text-[#6b7a51] underline" href={trackingUrl} target="_blank" rel="noreferrer">{order.trackingNumber || "—"}</a> : order.trackingNumber || "—"}</dd></div><div className="mt-3 font-medium">{order.fulfilmentStatus === "fulfilled" ? labels.fulfilled : labels.unfulfilled}</div></dl> : <p className="mt-3 text-sm text-muted">{labels.none}</p>}</div>
       <div className="mt-7 border-t border-black/10 pt-5"><a className="text-sm font-medium text-[#6b7a51] hover:underline" href={`/${locale}/shop/account/${token}/returns`}>{labels.returns}</a></div>
     </section>
   </main>;

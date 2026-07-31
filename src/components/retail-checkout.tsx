@@ -86,6 +86,15 @@ const emptyFields = {
 };
 
 const promotionErrors = new Set(["invalid_promotion", "promotion_unavailable", "promotion_exhausted"]);
+function shippingZoneLabel(zone: RetailShippingZone, locale: Locale) {
+  const name = zone.name[locale] ?? zone.name.en;
+  if (!zone.deliveryMinDays && !zone.deliveryMaxDays) return name;
+  const range = zone.deliveryMinDays === zone.deliveryMaxDays
+    ? `${zone.deliveryMinDays}`
+    : `${zone.deliveryMinDays ?? "?"}–${zone.deliveryMaxDays ?? "?"}`;
+  const days = locale === "ar" ? `${range} أيام عمل` : locale === "zh" ? `${range} 个工作日` : `${range} business days`;
+  return `${name} · ${days}`;
+}
 const checkoutFields = [
   { key: "email", en: "Email", ar: "البريد الإلكتروني", type: "email", autoComplete: "email" },
   { key: "recipient", en: "Recipient", ar: "اسم المستلم", type: "text", autoComplete: "name" },
@@ -327,7 +336,7 @@ export function RetailCheckoutPage({
           {label("Country", "الدولة")}
         <select aria-label={label("Country", "الدولة")} value={fields.country} onChange={(event) => setFields((current) => ({ ...current, country: event.target.value }))} className="mt-2 w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 outline-none transition focus:border-accent">
           <option value="">{label("Select country", "اختر الدولة")}</option>
-          {zones.map((zone) => <option key={zone.country} value={zone.country}>{zone.name[locale] ?? zone.name.en}</option>)}
+          {zones.map((zone) => <option key={zone.country} value={zone.country}>{shippingZoneLabel(zone, locale)}</option>)}
         </select>
         </label>
         <label className="flex gap-3 text-sm leading-6">

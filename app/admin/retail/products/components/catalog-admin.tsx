@@ -8,9 +8,10 @@ import { AdminShell } from "../../ui";
 import { type AdminLocale } from "../../admin-locale";
 import { RetailProductDetail } from "@/src/components/retail-product-detail";
 import { toRetailProduct } from "@/src/data/retail/product-view-model";
+import { ProductLogisticsManager } from "./product-logistics-admin";
 
 type Row = Record<string, unknown>;
-type PageKind = "list" | "new" | "overview" | "content" | "styles" | "variants" | "pricing" | "media" | "preview";
+type PageKind = "list" | "new" | "overview" | "content" | "styles" | "variants" | "pricing" | "logistics" | "media" | "preview";
 type RetailLocaleText = { en: string; ar: string; zh: string };
 type ContentDetail = { label: RetailLocaleText; value: RetailLocaleText };
 type APlusModule = { eyebrow: RetailLocaleText; title: RetailLocaleText; body: RetailLocaleText; image: string };
@@ -56,7 +57,7 @@ function ProductList({ products, locale, t }: { products: Row[]; locale: AdminLo
 }
 
 function ProductNav({ productId, active, t }: { productId: string; active: PageKind; t: Copy }) {
-  const nav: Array<[PageKind, string, string]> = [["overview", t.overview, ""], ["content", t.content, "content"], ["styles", t.styles, "styles"], ["variants", t.variants, "variants"], ["pricing", t.pricing, "pricing-inventory"], ["media", t.media, "media"], ["preview", t.preview, "preview"]];
+  const nav: Array<[PageKind, string, string]> = [["overview", t.overview, ""], ["content", t.content, "content"], ["styles", t.styles, "styles"], ["variants", t.variants, "variants"], ["pricing", t.pricing, "pricing-inventory"], ["logistics", t === labels.zh ? "物流与报关" : "Logistics & customs", "logistics"], ["media", t.media, "media"], ["preview", t.preview, "preview"]];
   return <nav className="mb-6 flex gap-2 overflow-x-auto border-b border-[#dfd2c0] pb-3" aria-label={t.productDetails}>{nav.map(([id, label, path]) => <Link className={`shrink-0 rounded-md px-3 py-2 text-sm ${active === id ? "bg-[#eadcc8] font-semibold text-[#5a442d]" : "text-[#65584a] hover:bg-[#f1e7da]"}`} href={`/admin/retail/products/${productId}${path ? `/${path}` : ""}`} key={id}>{label}</Link>)}</nav>;
 }
 
@@ -67,6 +68,7 @@ function ProductWorkspace({ kind, productId, product, locale, t, reload }: { kin
     {kind === "styles" && <StyleManager productId={productId} product={product} t={t} />}
     {kind === "variants" && <VariantManager productId={productId} locale={locale} t={t} mode="variants" />}
     {kind === "pricing" && <VariantManager productId={productId} locale={locale} t={t} mode="pricing" />}
+    {kind === "logistics" && <ProductLogisticsManager productId={productId} locale={locale} />}
     {kind === "media" && <MediaManager productId={productId} product={product} t={t} reload={reload} />}
     {kind === "preview" && <AdminProductPreview productId={productId} product={product} locale={locale} t={t} />}
   </>;

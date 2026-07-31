@@ -3,6 +3,7 @@ import "server-only";
 import { guardedRetailSql } from "./database-identity";
 import { customerPortalUrl, issueNotificationCustomerPortalToken } from "./customer-portal";
 import { customerAccountVerifyUrl, issueNotificationCustomerLoginLink } from "./customer-auth";
+import { retailTrackingUrl } from "./shipping";
 import { isLocale, type Locale } from "@/src/lib/i18n";
 
 type Fetcher=typeof fetch;
@@ -77,7 +78,9 @@ export async function deliverRetailNotifications(fetcher:Fetcher=fetch){
       // message; it is never written to the outbox or included in error/log text.
       const portalLink=row.kind==="order_confirmed"?customerPortalUrl((await issueNotificationCustomerPortalToken(Number(row.order_id),row.id)).token,locale):row.kind==="account_access"?customerAccountVerifyUrl((await issueNotificationCustomerLoginLink(row.recipient,row.id)).token,locale):null;
       const portalHtml=portalLink?`<p><a href="${escapeHtml(portalLink)}">${escapeHtml(copy.portalLabel)}</a></p>`:"";
-      const html=`<h1>${escapeHtml(copy.subject)}</h1><p>${escapeHtml(copy.detail).replaceAll("&lt;br&gt;","<br>")}</p><p>${locale==="ar"?"مرجع الطلب":locale==="zh"?"订单编号":"Order reference"}: ${escapeHtml(reference)}</p>${portalHtml}<p>${escapeHtml(copy.help)}</p>`;
+      const trackingUrl=row.kind==="order_fulfilled"?retailTrackingUrl(carrier,tracking):null;
+      const trackingHtml=trackingUrl?`<p><a href="${escapeHtml(trackingUrl)}">${locale==="ar"?"تتبع الشحنة على YunTrack":locale==="zh"?"在 YunTrack 查询物流":"Track shipment on YunTrack"}</a></p>`:"";
+      const html=`<h1>${escapeHtml(copy.subject)}</h1><p>${escapeHtml(copy.detail).replaceAll("&lt;br&gt;","<br>")}</p><p>${locale==="ar"?"مرجع الطلب":locale==="zh"?"订单编号":"Order reference"}: ${escapeHtml(reference)}</p>${portalHtml}${trackingHtml}<p>${escapeHtml(copy.help)}</p>`;
       const response=await fetcher("https://api.resend.com/emails",{method:"POST",headers:{authorization:`Bearer ${apiKey}`,"content-type":"application/json","idempotency-key":`retail-notification-${row.id}`},body:JSON.stringify({from,to:[row.recipient],subject:copy.subject,html,reply_to:replyTo}),cache:"no-store"});
       if(!response.ok)throw new Error(`email_${response.status}`);
       await q`UPDATE retail_notification_outbox SET status='sent',claimed_at=NULL,sent_at=now(),last_error=NULL WHERE id=${row.id}::uuid AND status='processing'`;sent++;

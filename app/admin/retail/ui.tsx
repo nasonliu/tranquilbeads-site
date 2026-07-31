@@ -587,6 +587,13 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
                   ? null
                   : Number(data.get("freeShippingThresholdMinor")),
               taxRateBps: Number(data.get("taxRateBps")),
+              carrier: String(data.get("carrier")),
+              serviceCode: String(data.get("serviceCode")) || null,
+              deliveryMinDays: data.get("deliveryMinDays") === "" ? null : Number(data.get("deliveryMinDays")),
+              deliveryMaxDays: data.get("deliveryMaxDays") === "" ? null : Number(data.get("deliveryMaxDays")),
+              dutiesMode: String(data.get("dutiesMode")),
+              rateSource: String(data.get("rateSource")),
+              lastVerifiedAt: data.get("lastVerifiedAt") ? new Date(String(data.get("lastVerifiedAt"))).toISOString() : null,
               active: data.get("active") === "on",
               idempotencyKey: (shippingIdempotencyKey.current ??= uuid()),
             });
@@ -594,7 +601,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
               shippingIdempotencyKey.current = null;
               form.reset();
               const active = form.elements.namedItem("active") as HTMLInputElement | null;
-              if (active) active.checked = true;
+              if (active) active.checked = false;
               setResult(copy.shippingSaved);
             } else {
               setResult(copy.writeReadback);
@@ -615,6 +622,11 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
           ["shippingMinor", "number"],
           ["freeShippingThresholdMinor", "number"],
           ["taxRateBps", "number"],
+          ["carrier", "text"],
+          ["serviceCode", "text"],
+          ["deliveryMinDays", "number"],
+          ["deliveryMaxDays", "number"],
+          ["lastVerifiedAt", "date"],
         ].map(([name, type]) => (
           <label className="text-sm" key={name}>
             {fieldCopy[locale][name] ?? name}
@@ -624,13 +636,26 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
               name={name}
               type={type}
               maxLength={name === "country" ? 2 : undefined}
-              min={type === "number" ? 0 : undefined}
-              required={name !== "freeShippingThresholdMinor"}
+              min={type === "number" ? (["deliveryMinDays", "deliveryMaxDays"].includes(name) ? 1 : 0) : undefined}
+              defaultValue={name === "carrier" ? "YunExpress" : undefined}
+              required={!['freeShippingThresholdMinor','serviceCode','deliveryMinDays','deliveryMaxDays','lastVerifiedAt'].includes(name)}
             />
           </label>
         ))}
+        <label className="text-sm">
+          {fieldCopy[locale].dutiesMode ?? "Duties mode"}
+          <select className="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5" name="dutiesMode" defaultValue="UNKNOWN">
+            <option value="UNKNOWN">UNKNOWN</option><option value="DDP">DDP</option><option value="DAP">DAP</option>
+          </select>
+        </label>
+        <label className="text-sm">
+          {fieldCopy[locale].rateSource ?? "Rate source"}
+          <select className="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5" name="rateSource" defaultValue="manual_contract">
+            <option value="manual_contract">manual_contract</option><option value="provider_api">provider_api</option><option value="estimated">estimated</option>
+          </select>
+        </label>
         <label className="flex items-center gap-2 text-sm">
-          <input name="active" type="checkbox" defaultChecked />
+          <input name="active" type="checkbox" />
           {copy.enabledAtCheckout}
         </label>
         <div>
@@ -644,7 +669,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
         <table className="w-full text-left text-sm">
           <thead>
             <tr>
-              {["country", "name_en", "name_ar", "name_zh", "shipping_minor", "free_shipping_threshold_minor", "tax_rate_bps", "active", "action"].map((column) => (
+              {["country", "name_en", "carrier", "service_code", "delivery_min_days", "delivery_max_days", "duties_mode", "rate_source", "last_verified_at", "shipping_minor", "free_shipping_threshold_minor", "tax_rate_bps", "active", "action"].map((column) => (
                 <th className="px-3 py-2" key={column}>{columnCopy[locale][column] ?? column}</th>
               ))}
             </tr>
@@ -655,8 +680,13 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
                 {[
                   "country",
                   "name_en",
-                  "name_ar",
-                  "name_zh",
+                  "carrier",
+                  "service_code",
+                  "delivery_min_days",
+                  "delivery_max_days",
+                  "duties_mode",
+                  "rate_source",
+                  "last_verified_at",
                   "shipping_minor",
                   "free_shipping_threshold_minor",
                   "tax_rate_bps",
@@ -694,7 +724,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
                 </td>
               </tr>
             )) : (
-              <tr><td className="px-3 py-8 text-center text-muted" colSpan={9}>{copy.noRecords}</td></tr>
+              <tr><td className="px-3 py-8 text-center text-muted" colSpan={14}>{copy.noRecords}</td></tr>
             )}
           </tbody>
         </table>
