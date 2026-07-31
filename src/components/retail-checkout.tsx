@@ -363,7 +363,7 @@ export function RetailCheckoutPage({
             {[
               [label("Subtotal", "المجموع الفرعي"), quote.subtotalMinor],
               [label("Shipping", "الشحن"), quote.shippingMinor],
-              ...(quote.discountMinor ? [[`${label("Discount", "الخصم")}${quote.promotionCode ? ` (${quote.promotionCode})` : ""}`, -quote.discountMinor]] : []),
+              ...(quote.discountMinor ? [[`${label("Discount", "الخصم")}${quote.promotionCode ? ` (${quote.promotionAutomatic ? label("automatic offer", "عرض تلقائي") : quote.promotionCode})` : ""}`, -quote.discountMinor]] : []),
               [label("Tax", "الضريبة"), quote.taxMinor],
               [label("Total", "الإجمالي"), quote.totalMinor],
             ].map(([name, amount], index, rows) => <div key={String(name)} className={`flex items-center justify-between gap-4 ${index === rows.length - 1 ? "border-t border-black/10 pt-3 text-base font-semibold" : ""}`}>

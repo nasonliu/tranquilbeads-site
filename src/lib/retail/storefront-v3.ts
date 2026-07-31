@@ -50,12 +50,32 @@ export type StorefrontV3Quote = {
   shipping: unknown;
   quoteHash: string;
   promotionCode: string | null;
+  promotionAutomatic: boolean;
 };
 
 export type StorefrontV3CartItem = { variantSku: string; quantity: number };
 
 function sql(): Sql {
   return guardedRetailSql();
+}
+
+async function resolvedPromotionCode(
+  query: Sql,
+  items: StorefrontV3CartItem[],
+  checkout: unknown,
+  explicitCode?: string,
+  requestId?: string,
+) {
+  const explicit = explicitCode?.trim();
+  if (explicit) return explicit;
+  if (requestId) {
+    const existing = await query`SELECT promotion.code FROM retail_promotion_redemptions redemption
+      JOIN retail_promotions promotion ON promotion.id=redemption.promotion_id
+      WHERE redemption.request_id=${requestId}::uuid LIMIT 1`;
+    if (existing[0]?.code) return String(existing[0].code);
+  }
+  const rows = await query`SELECT retail_best_automatic_promotion(${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb) AS code`;
+  return rows[0]?.code ? String(rows[0].code) : undefined;
 }
 
 /**
@@ -162,11 +182,14 @@ export async function quoteStorefrontV3(
   checkout: unknown,
   promotionCode?: string,
 ): Promise<StorefrontV3Quote> {
-  const rows = await sql()`SELECT * FROM retail_quote_checkout_v3(
+  const query = sql();
+  const resolvedCode = await resolvedPromotionCode(query, items, checkout, promotionCode);
+  const rows = await query`WITH quoted AS (SELECT * FROM retail_quote_checkout_v3(
     ${JSON.stringify(items)}::jsonb,
     ${JSON.stringify(checkout)}::jsonb,
-    ${promotionCode ?? null}
-  )`;
+    ${resolvedCode ?? null}
+  )) SELECT quoted.*,COALESCE(promotion.automatic,false) AS promotion_automatic FROM quoted
+    LEFT JOIN retail_promotions promotion ON promotion.id=quoted.promotion_id`;
   const row = rows[0];
   if (!row) throw new Error("quote_unavailable");
   return {
@@ -175,6 +198,7 @@ export async function quoteStorefrontV3(
     discountMinor: Number(row.discount_minor), totalMinor: Number(row.total_minor),
     shippingMethod: "standard", items: row.items_snapshot, shipping: row.shipping_snapshot,
     quoteHash: String(row.quote_hash), promotionCode: row.promotion_code ? String(row.promotion_code) : null,
+    promotionAutomatic: row.promotion_automatic === true,
   };
 }
 
@@ -186,9 +210,10 @@ export async function reserveStorefrontV3Order(
   promotionCode?: string,
 ) {
   const query = sql();
+  const resolvedCode = await resolvedPromotionCode(query, items, checkout, promotionCode, requestId);
   await query`SELECT * FROM retail_create_checkout_v3(
     ${requestId}::uuid,${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb,
-    ${expectedTotalMinor},${promotionCode ?? null}
+    ${expectedTotalMinor},${resolvedCode ?? null}
   )`;
   const rows = await query`SELECT o.paypal_order_id,o.client_request_id,o.currency,o.subtotal_minor,o.shipping_minor,
     o.tax_minor,o.discount_minor,o.amount_minor,o.shipping_method,o.checkout_email,o.checkout_shipping,o.status,

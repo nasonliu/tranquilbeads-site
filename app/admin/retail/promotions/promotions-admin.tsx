@@ -1,121 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 
-type AdminLocale = "en" | "zh";
+import { type AdminLocale } from "../admin-locale";
+import { AdminShell } from "../ui";
+
 type Row = Record<string, unknown>;
-
-const copy = {
-  en: {
-    back: "Back to retail admin", title: "Promotions", subtitle: "Create and control checkout discount codes.", code: "Code", kind: "Type", amount: "Amount", minimum: "Minimum subtotal (USD cents)", scope: "Scope JSON", starts: "Starts at", ends: "Ends at", max: "Maximum redemptions", perCustomer: "Maximum per customer", active: "Active", status: "Status", used: "Used", create: "Create promotion", disable: "Disable", enable: "Enable", error: "Could not save changes", none: "No promotions yet", percent: "Percent (basis points)", fixed: "Fixed amount", freeShipping: "Free shipping", enabled: "Enabled", disabled: "Disabled",
-  },
-  zh: {
-    back: "返回零售后台", title: "促销管理", subtitle: "创建并管理结账优惠码。", code: "优惠码", kind: "类型", amount: "优惠金额", minimum: "最低订单金额（美元分）", scope: "适用范围 JSON", starts: "开始时间", ends: "结束时间", max: "总使用上限", perCustomer: "每位客户上限", active: "启用", status: "状态", used: "已使用", create: "创建促销", disable: "停用", enable: "启用", error: "保存失败", none: "尚无促销", percent: "百分比（基点）", fixed: "固定金额", freeShipping: "免运费", enabled: "已启用", disabled: "已停用",
-  },
-} as const;
-
+type Kind = "percent" | "fixed" | "free_shipping";
+type Form = { code: string; kind: Kind; amount: string; minimum: string; automatic: boolean; all: boolean; variantSkus: string[]; startsAt: string; endsAt: string; maxRedemptions: string; maxPerCustomer: string; active: boolean };
+const empty = (): Form => ({ code: "", kind: "percent", amount: "10", minimum: "0", automatic: false, all: true, variantSkus: [], startsAt: "", endsAt: "", maxRedemptions: "", maxPerCustomer: "1", active: false });
 const id = () => crypto.randomUUID();
 
-async function api(url: string, method = "GET", body?: unknown) {
-  const response = await fetch(url, {
-    method,
-    headers: body ? { "content-type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const json = await response.json();
-  if (!response.ok || !json.ok) throw new Error(json.error || "request_failed");
-  return json;
-}
+const copy = {
+  en: { title: "Promotions", subtitle: "Automatic threshold offers and customer-entered codes use the same server-authoritative checkout rules.", newOffer: "New promotion", editOffer: "Edit promotion", code: "Campaign code", codeHelp: "Customers enter this code unless Automatic is selected.", kind: "Discount type", percent: "Percentage off", fixed: "Fixed amount off", freeShipping: "Free shipping", amount: "Discount", minimum: "Minimum subtotal", delivery: "Application", automatic: "Apply automatically", coupon: "Customer enters code", scope: "Eligible products", all: "All sellable SKUs", selected: "Selected SKUs", starts: "Starts", ends: "Ends", max: "Total redemption limit", perCustomer: "Per-customer limit", active: "Enabled", save: "Save promotion", cancel: "Cancel edit", status: "Status", used: "Redemptions", actions: "Actions", edit: "Edit", disable: "Disable", enable: "Enable", none: "No promotions yet.", failed: "Could not save promotion.", saved: "Promotion saved.", live: "Live", scheduled: "Scheduled", ended: "Ended", paused: "Paused", exhausted: "Exhausted", automaticBadge: "Automatic", codeBadge: "Code", usd: "USD", percentUnit: "%" },
+  zh: { title: "促销管理", subtitle: "自动满减和顾客优惠码使用同一套服务端结账规则，金额不会由浏览器决定。", newOffer: "新建促销", editOffer: "编辑促销", code: "活动代码", codeHelp: "选择自动应用时仅作内部识别，否则由顾客结账时输入。", kind: "优惠类型", percent: "百分比折扣", fixed: "固定金额减免", freeShipping: "免运费", amount: "优惠额度", minimum: "最低订单金额", delivery: "应用方式", automatic: "自动应用", coupon: "顾客输入优惠码", scope: "适用商品", all: "全部可售 SKU", selected: "指定 SKU", starts: "开始时间", ends: "结束时间", max: "总使用上限", perCustomer: "每位顾客上限", active: "启用", save: "保存促销", cancel: "取消编辑", status: "状态", used: "已使用", actions: "操作", edit: "编辑", disable: "停用", enable: "启用", none: "尚无促销。", failed: "促销保存失败。", saved: "促销已保存。", live: "进行中", scheduled: "未开始", ended: "已结束", paused: "已停用", exhausted: "已用完", automaticBadge: "自动", codeBadge: "优惠码", usd: "美元", percentUnit: "%" },
+} as const;
 
-function storedLocale(): AdminLocale {
-  if (typeof window === "undefined") return "en";
-  return window.localStorage.getItem("retail_admin_locale") === "zh" ? "zh" : "en";
+async function api(path: string, method = "GET", body?: unknown) {
+  const response = await fetch(path, { method, headers: body ? { "content-type": "application/json" } : undefined, body: body ? JSON.stringify(body) : undefined, cache: "no-store" });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.ok) throw new Error(String(result.error ?? "request_failed"));
+  return result as Row;
 }
-
-function promotionKind(value: unknown, locale: AdminLocale) {
-  const t = copy[locale];
-  if (value === "percent") return t.percent;
-  if (value === "fixed") return t.fixed;
-  if (value === "free_shipping") return t.freeShipping;
-  return String(value ?? "—");
-}
+function storedLocale(): AdminLocale { return typeof window !== "undefined" && localStorage.getItem("retail_admin_locale") === "zh" ? "zh" : "en"; }
+function localInput(value: unknown) { if (!value) return ""; const date = new Date(String(value)); return Number.isNaN(date.getTime()) ? "" : new Date(date.getTime()-date.getTimezoneOffset()*60_000).toISOString().slice(0,16); }
+function scopeSkus(value: unknown) { if (!value || typeof value !== "object" || Array.isArray(value)) return []; const skus = (value as Row).variantSkus; return Array.isArray(skus) ? skus.map(String) : []; }
 
 export function PromotionsAdmin() {
-  const [locale, setLocaleState] = useState<AdminLocale>("en");
-  const t = copy[locale];
-  const [rows, setRows] = useState<Row[]>([]);
-  const [message, setMessage] = useState("");
-  const [form, setForm] = useState({ code: "", kind: "percent", amount: "", minimumSubtotalMinor: "0", scope: '{"all":true}', startsAt: "", endsAt: "", maxRedemptions: "", maxPerCustomer: "", active: true });
-  const load = async () => setRows((await api("/api/admin/retail/promotions")).promotions ?? []);
+  const [locale, setLocaleState] = useState<AdminLocale>(storedLocale); const t = copy[locale];
+  const [rows, setRows] = useState<Row[]>([]); const [variants, setVariants] = useState<Row[]>([]); const [form, setForm] = useState<Form>(empty); const [editing, setEditing] = useState<string>(); const [message, setMessage] = useState("");
+  const load = useCallback(async () => { const [promotions, catalog] = await Promise.all([api("/api/admin/retail/promotions"),api("/api/admin/retail/catalog/variants")]); setRows((promotions.promotions as Row[] | undefined) ?? []); setVariants((catalog.variants as Row[] | undefined) ?? []); }, []);
+  useEffect(() => { void load().catch(() => setMessage(copy[storedLocale()].failed)); }, [load]);
+  const changeLocale = (next: AdminLocale) => { localStorage.setItem("retail_admin_locale", next); setLocaleState(next); };
+  const money = (minor: unknown) => new Intl.NumberFormat(locale === "zh" ? "zh-CN" : "en-US", { style: "currency", currency: "USD" }).format(Number(minor || 0)/100);
+  const kindLabel = (kind: unknown) => kind === "fixed" ? t.fixed : kind === "free_shipping" ? t.freeShipping : t.percent;
+  const amountLabel = (row: Row) => row.kind === "percent" ? `${Number(row.amount)/100}${t.percentUnit}` : row.kind === "fixed" ? money(row.amount) : t.freeShipping;
+  const status = (row: Row) => { const now=Date.now(), starts=row.starts_at?new Date(String(row.starts_at)).getTime():0, ends=row.ends_at?new Date(String(row.ends_at)).getTime():Infinity, max=row.max_redemptions===null?Infinity:Number(row.max_redemptions), used=Number(row.redemptions||0); if(!row.active)return t.paused;if(used>=max)return t.exhausted;if(starts>now)return t.scheduled;if(ends<=now)return t.ended;return t.live; };
+  const save = async (event: FormEvent) => { event.preventDefault(); setMessage(""); try { const amount=form.kind==="percent"?Math.round(Number(form.amount)*100):form.kind==="fixed"?Math.round(Number(form.amount)*100):0; const body={ code:form.code.trim().toUpperCase(),kind:form.kind,amount,minimumSubtotalMinor:Math.round(Number(form.minimum)*100),automatic:form.automatic,scope:form.all?{all:true}:{variantSkus:form.variantSkus},startsAt:form.startsAt?new Date(form.startsAt).toISOString():null,endsAt:form.endsAt?new Date(form.endsAt).toISOString():null,maxRedemptions:form.maxRedemptions?Number(form.maxRedemptions):null,maxPerCustomer:form.maxPerCustomer?Number(form.maxPerCustomer):null,active:form.active,idempotencyKey:id()}; await api(editing?`/api/admin/retail/promotions/${editing}`:"/api/admin/retail/promotions",editing?"PATCH":"POST",body); setForm(empty());setEditing(undefined);await load();setMessage(t.saved); } catch { setMessage(t.failed); } };
+  const edit = (row: Row) => { const skus=scopeSkus(row.scope);setEditing(String(row.id));setForm({code:String(row.code),kind:row.kind as Kind,amount:row.kind==="percent"?String(Number(row.amount)/100):row.kind==="fixed"?String(Number(row.amount)/100):"0",minimum:String(Number(row.minimum_subtotal_minor||0)/100),automatic:row.automatic===true,all:Boolean((row.scope as Row | undefined)?.all) || !skus.length,variantSkus:skus,startsAt:localInput(row.starts_at),endsAt:localInput(row.ends_at),maxRedemptions:row.max_redemptions?String(row.max_redemptions):"",maxPerCustomer:row.max_per_customer?String(row.max_per_customer):"",active:row.active===true});window.scrollTo({top:0,behavior:"smooth"}); };
+  const toggle = async (row: Row) => { try { await api(`/api/admin/retail/promotions/${String(row.id)}`,"PATCH",{active:!row.active,idempotencyKey:id()});await load(); } catch { setMessage(t.failed); } };
+  const inputClass="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5";
 
-  useEffect(() => {
-    setLocaleState(storedLocale());
-    void load().catch(() => setMessage(copy[storedLocale()].error));
-  }, []);
-
-  const setLocale = (next: AdminLocale) => {
-    window.localStorage.setItem("retail_admin_locale", next);
-    setLocaleState(next);
-  };
-
-  async function create(event: React.FormEvent) {
-    event.preventDefault();
-    setMessage("");
-    try {
-      await api("/api/admin/retail/promotions", "POST", {
-        ...form,
-        amount: Number(form.amount),
-        minimumSubtotalMinor: Number(form.minimumSubtotalMinor),
-        scope: JSON.parse(form.scope),
-        startsAt: form.startsAt ? new Date(form.startsAt).toISOString() : null,
-        endsAt: form.endsAt ? new Date(form.endsAt).toISOString() : null,
-        maxRedemptions: form.maxRedemptions ? Number(form.maxRedemptions) : null,
-        maxPerCustomer: form.maxPerCustomer ? Number(form.maxPerCustomer) : null,
-        idempotencyKey: id(),
-      });
-      await load();
-    } catch {
-      setMessage(t.error);
-    }
-  }
-
-  async function toggle(row: Row) {
-    try {
-      await api(`/api/admin/retail/promotions/${row.id}`, "PATCH", { active: !row.active, idempotencyKey: id() });
-      await load();
-    } catch {
-      setMessage(t.error);
-    }
-  }
-
-  return <main className="mx-auto max-w-6xl p-6 text-[#34271f]">
-    <div className="flex items-start justify-between gap-4">
-      <div>
-        <a className="text-sm text-[#6f4e37] underline" href="/admin/retail/overview">← {t.back}</a>
-        <h1 className="mt-2 text-3xl font-semibold">{t.title}</h1>
-        <p className="mt-1 text-sm text-[#6d5c4e]">{t.subtitle}</p>
-      </div>
-      <button className="rounded border px-3 py-2 text-sm" onClick={() => setLocale(locale === "en" ? "zh" : "en")}>{locale === "en" ? "中文" : "English"}</button>
-    </div>
-    {message && <p role="alert" className="mt-3 text-red-700">{message}</p>}
-    <form className="mt-6 grid gap-3 rounded-lg border bg-white p-4 md:grid-cols-2" onSubmit={create}>
-      <label>{t.code}<input required value={form.code} onChange={(event) => setForm({ ...form, code: event.target.value })} /></label>
-      <label>{t.kind}<select value={form.kind} onChange={(event) => setForm({ ...form, kind: event.target.value })}><option value="percent">{t.percent}</option><option value="fixed">{t.fixed}</option><option value="free_shipping">{t.freeShipping}</option></select></label>
-      <label>{t.amount}<input required type="number" min="0" value={form.amount} onChange={(event) => setForm({ ...form, amount: event.target.value })} /></label>
-      <label>{t.minimum}<input required type="number" min="0" value={form.minimumSubtotalMinor} onChange={(event) => setForm({ ...form, minimumSubtotalMinor: event.target.value })} /></label>
-      <label>{t.starts}<input type="datetime-local" value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} /></label>
-      <label>{t.ends}<input type="datetime-local" value={form.endsAt} onChange={(event) => setForm({ ...form, endsAt: event.target.value })} /></label>
-      <label>{t.max}<input type="number" min="1" value={form.maxRedemptions} onChange={(event) => setForm({ ...form, maxRedemptions: event.target.value })} /></label>
-      <label>{t.perCustomer}<input type="number" min="1" value={form.maxPerCustomer} onChange={(event) => setForm({ ...form, maxPerCustomer: event.target.value })} /></label>
-      <label className="md:col-span-2">{t.scope}<textarea required rows={2} value={form.scope} onChange={(event) => setForm({ ...form, scope: event.target.value })} /></label>
-      <label><input type="checkbox" checked={form.active} onChange={(event) => setForm({ ...form, active: event.target.checked })} />{t.active}</label>
-      <button className="rounded bg-[#6f4e37] px-4 py-2 text-white md:w-fit">{t.create}</button>
-    </form>
-    <section className="mt-8 overflow-x-auto">
-      <table className="w-full text-left text-sm"><thead><tr><th>{t.code}</th><th>{t.kind}</th><th>{t.amount}</th><th>{t.status}</th><th>{t.used}</th><th /></tr></thead><tbody>
-        {rows.map((row) => <tr className="border-t" key={String(row.id)}><td>{String(row.code)}</td><td>{promotionKind(row.kind, locale)}</td><td>{String(row.amount)}</td><td>{row.active ? t.enabled : t.disabled}</td><td>{String(row.redemptions)}</td><td><button className="rounded border px-2 py-1" onClick={() => void toggle(row)}>{row.active ? t.disable : t.enable}</button></td></tr>)}
-        {rows.length === 0 && <tr><td colSpan={6}>{t.none}</td></tr>}
-      </tbody></table>
-    </section>
-  </main>;
+  return <AdminShell section="promotions" locale={locale} onLocale={changeLocale} refresh={() => void load()}><main className="mx-auto max-w-7xl px-5 py-7 sm:px-8"><header><h1 className="noor-title text-3xl">{t.title}</h1><p className="mt-2 max-w-3xl text-sm text-muted">{t.subtitle}</p></header>{message&&<p className="mt-4 text-sm" role="status">{message}</p>}
+    <form onSubmit={save} className="mt-6 grid gap-4 rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-5 md:grid-cols-2"><h2 className="text-xl font-semibold md:col-span-2">{editing?t.editOffer:t.newOffer}</h2><label className="text-sm">{t.code}<input required minLength={3} maxLength={64} pattern="[A-Za-z0-9_-]+" className={inputClass} value={form.code} onChange={(e)=>setForm({...form,code:e.target.value})}/><span className="mt-1 block text-xs text-muted">{t.codeHelp}</span></label><label className="text-sm">{t.kind}<select className={inputClass} value={form.kind} onChange={(e)=>setForm({...form,kind:e.target.value as Kind})}><option value="percent">{t.percent}</option><option value="fixed">{t.fixed}</option><option value="free_shipping">{t.freeShipping}</option></select></label>
+    {form.kind!=="free_shipping"&&<label className="text-sm">{t.amount} ({form.kind==="percent"?t.percentUnit:t.usd})<input required min="0.01" step="0.01" type="number" className={inputClass} value={form.amount} onChange={(e)=>setForm({...form,amount:e.target.value})}/></label>}<label className="text-sm">{t.minimum} ({t.usd})<input required min="0" step="0.01" type="number" className={inputClass} value={form.minimum} onChange={(e)=>setForm({...form,minimum:e.target.value})}/></label>
+    <fieldset className="rounded-lg border border-[#dfd2c0] p-3"><legend className="px-1 text-sm font-medium">{t.delivery}</legend><label className="mr-5 text-sm"><input className="mr-2" type="radio" checked={form.automatic} onChange={()=>setForm({...form,automatic:true})}/>{t.automatic}</label><label className="text-sm"><input className="mr-2" type="radio" checked={!form.automatic} onChange={()=>setForm({...form,automatic:false})}/>{t.coupon}</label></fieldset><fieldset className="rounded-lg border border-[#dfd2c0] p-3"><legend className="px-1 text-sm font-medium">{t.scope}</legend><label className="mr-5 text-sm"><input className="mr-2" type="radio" checked={form.all} onChange={()=>setForm({...form,all:true})}/>{t.all}</label><label className="text-sm"><input className="mr-2" type="radio" checked={!form.all} onChange={()=>setForm({...form,all:false})}/>{t.selected}</label></fieldset>
+    {!form.all&&<label className="text-sm md:col-span-2">{t.selected}<select multiple required className={`${inputClass} min-h-44`} value={form.variantSkus} onChange={(e)=>setForm({...form,variantSkus:Array.from(e.target.selectedOptions,(option)=>option.value)})}>{variants.map((variant)=><option key={String(variant.sku)} value={String(variant.sku)}>{String(variant.sku)} · {String(variant.title_en||"")}</option>)}</select></label>}
+    <label className="text-sm">{t.starts}<input type="datetime-local" className={inputClass} value={form.startsAt} onChange={(e)=>setForm({...form,startsAt:e.target.value})}/></label><label className="text-sm">{t.ends}<input type="datetime-local" className={inputClass} value={form.endsAt} onChange={(e)=>setForm({...form,endsAt:e.target.value})}/></label><label className="text-sm">{t.max}<input min="1" type="number" className={inputClass} value={form.maxRedemptions} onChange={(e)=>setForm({...form,maxRedemptions:e.target.value})}/></label><label className="text-sm">{t.perCustomer}<input min="1" type="number" className={inputClass} value={form.maxPerCustomer} onChange={(e)=>setForm({...form,maxPerCustomer:e.target.value})}/></label><label className="text-sm"><input className="mr-2" type="checkbox" checked={form.active} onChange={(e)=>setForm({...form,active:e.target.checked})}/>{t.active}</label><div className="flex gap-2"><button className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white">{t.save}</button>{editing&&<button type="button" className="rounded-md border px-4 py-2 text-sm" onClick={()=>{setEditing(undefined);setForm(empty());}}>{t.cancel}</button>}</div></form>
+    <section className="mt-7 overflow-x-auto rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-3"><table className="w-full text-left text-sm"><thead><tr className="text-muted"><th className="p-3">{t.code}</th><th className="p-3">{t.kind}</th><th className="p-3">{t.minimum}</th><th className="p-3">{t.delivery}</th><th className="p-3">{t.status}</th><th className="p-3">{t.used}</th><th className="p-3">{t.actions}</th></tr></thead><tbody>{rows.map((row)=><tr className="border-t border-[#e8ded1]" key={String(row.id)}><td className="p-3 font-medium">{String(row.code)}</td><td className="p-3">{kindLabel(row.kind)} · {amountLabel(row)}</td><td className="p-3">{money(row.minimum_subtotal_minor)}</td><td className="p-3"><span className="rounded-full bg-[#eadcc8] px-2 py-1 text-xs">{row.automatic?t.automaticBadge:t.codeBadge}</span></td><td className="p-3">{status(row)}</td><td className="p-3">{String(row.redemptions||0)}{row.max_redemptions?` / ${String(row.max_redemptions)}`:""}</td><td className="p-3"><div className="flex gap-2"><button className="rounded border px-2 py-1" onClick={()=>edit(row)}>{t.edit}</button><button className="rounded border px-2 py-1" onClick={()=>void toggle(row)}>{row.active?t.disable:t.enable}</button></div></td></tr>)}{!rows.length&&<tr><td className="p-8 text-muted" colSpan={7}>{t.none}</td></tr>}</tbody></table></section>
+  </main></AdminShell>;
 }

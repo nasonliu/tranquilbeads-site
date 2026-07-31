@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { RetailShop, type RetailShopFacet, type RetailShopFilters } from "@/src/components/retail-shop";
+import { RetailNewsletterSignup } from "@/src/components/retail-newsletter-signup";
 import { getRetailCopy } from "@/src/data/retail/copy";
 import { localizeRetailVariantOptions } from "@/src/data/retail/types";
 import { getRetailRuntimeConfig } from "@/src/lib/retail/config";
@@ -90,5 +91,6 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/[lo
       </div>
     </section>
     <RetailShop locale={locale} products={products} zones={zones} paypalClientId={config.enabled ? config.paypalClientId : undefined} currency="USD" enabled={enabled} copy={copy} initialFilters={filters} />
+    <RetailNewsletterSignup locale={locale} />
   </div>;
 }

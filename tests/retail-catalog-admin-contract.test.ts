@@ -58,7 +58,8 @@ describe("retail catalogue and promotion administration", () => {
     expect(catalogue).toContain("optionValues");
     expect(promotions).toContain("促销管理");
     expect(promotions).toContain("retail_admin_locale");
-    expect(promotions).toContain("promotionKind");
+    expect(promotions).toContain("kindLabel");
+    expect(promotions).toContain("automatic");
     expect(promotions).toContain("maxPerCustomer");
   });
 

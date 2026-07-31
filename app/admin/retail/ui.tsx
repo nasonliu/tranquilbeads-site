@@ -16,6 +16,7 @@ import {
   FileImage,
   LayoutDashboard,
   LogOut,
+  Mail,
   MapPin,
   Package,
   PackageCheck,
@@ -62,6 +63,7 @@ type RetailAdminSection =
   | "products"
   | "catalog"
   | "promotions"
+  | "marketing"
   | "inventory"
   | "returns"
   | "customers"
@@ -99,6 +101,7 @@ const sectionIcons: Record<Exclude<RetailAdminSection, "legacy">, LucideIcon> = 
   products: Package,
   catalog: Package,
   promotions: ReceiptText,
+  marketing: Mail,
   inventory: Boxes,
   returns: PackageCheck,
   customers: Users,

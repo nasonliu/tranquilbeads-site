@@ -109,4 +109,5 @@ export type RetailQuote = {
   totalMinor: number;
   shippingMethod: "standard";
   promotionCode?: string | null;
+  promotionAutomatic?: boolean;
 };

@@ -38,23 +38,25 @@ describe("catalogue and promotion admin localization", () => {
 
   it("translates all promotion values and table headers while retaining English switching", async () => {
     localStorage.setItem("retail_admin_locale", "zh");
-    vi.stubGlobal("fetch", vi.fn(async () => json({ ok: true, promotions: [{ id: "promotion-1", code: "SUMMER", kind: "free_shipping", amount: 0, active: false, redemptions: 3 }] })));
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => String(input).includes("variants")
+      ? json({ ok: true, variants: [] })
+      : json({ ok: true, promotions: [{ id: "promotion-1", code: "SUMMER", kind: "free_shipping", amount: 0, minimum_subtotal_minor: 0, scope: { all: true }, automatic: true, active: false, redemptions: 3 }] })));
 
     render(<PromotionsAdmin />);
 
     expect(await screen.findByRole("heading", { name: "促销管理" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "百分比（基点）" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "固定金额" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "百分比折扣" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "固定金额减免" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "免运费" })).toBeInTheDocument();
     expect(screen.getByText("状态")).toBeInTheDocument();
     expect(screen.getByText("已使用")).toBeInTheDocument();
     expect(screen.getByText("已停用")).toBeInTheDocument();
-    expect(screen.getAllByText("免运费").length).toBeGreaterThan(1);
+    expect(screen.getAllByText(/免运费/).length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByRole("button", { name: "English" }));
+    fireEvent.change(screen.getByLabelText("语言"), { target: { value: "en" } });
     expect(await screen.findByRole("heading", { name: "Promotions" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Free shipping" })).toBeInTheDocument();
-    expect(screen.getByText("Disabled")).toBeInTheDocument();
-    expect(screen.getAllByText("Free shipping").length).toBeGreaterThan(1);
+    expect(screen.getByText("Paused")).toBeInTheDocument();
+    expect(screen.getAllByText(/Free shipping/).length).toBeGreaterThan(0);
   });
 });

@@ -95,6 +95,7 @@ const promotionFields = z.object({
   scope: promotionScope,
   maxRedemptions: z.number().int().positive().max(10_000_000).nullable().optional(),
   maxPerCustomer: z.number().int().positive().max(10_000_000).nullable().optional(),
+  automatic: z.boolean().optional(),
   active: z.boolean().default(true),
 });
 function validatePromotion(value: Partial<z.infer<typeof promotionFields>>, ctx: z.RefinementCtx) {
@@ -320,7 +321,7 @@ export async function updateCatalogVariant(publicId: string, input: z.infer<type
 
 export async function listPromotions() {
   const sql = guardedRetailSql();
-  return sql`SELECT p.id,p.code,p.kind,p.amount,p.starts_at,p.ends_at,p.minimum_subtotal_minor,p.scope,p.max_redemptions,p.max_per_customer,p.active,p.created_at,p.updated_at,COALESCE(r.redemptions,0)::bigint AS redemptions FROM retail_promotions p LEFT JOIN LATERAL(SELECT count(*) AS redemptions FROM retail_promotion_redemptions WHERE promotion_id=p.id AND status IN ('reserved','committed')) r ON true ORDER BY p.created_at DESC`;
+  return sql`SELECT p.id,p.code,p.kind,p.amount,p.starts_at,p.ends_at,p.minimum_subtotal_minor,p.scope,p.max_redemptions,p.max_per_customer,p.automatic,p.active,p.created_at,p.updated_at,COALESCE(r.redemptions,0)::bigint AS redemptions FROM retail_promotions p LEFT JOIN LATERAL(SELECT count(*) AS redemptions FROM retail_promotion_redemptions WHERE promotion_id=p.id AND status IN ('reserved','committed')) r ON true ORDER BY p.created_at DESC`;
 }
 
 export async function createPromotion(input: z.infer<typeof promotionCreateDto>, actor: RetailAdminActor) {
@@ -328,8 +329,8 @@ export async function createPromotion(input: z.infer<typeof promotionCreateDto>,
   const prior = await replay("promotion.create", request, idempotencyKey, actor);
   if (prior) return prior;
   return store("promotion.create", request, idempotencyKey, { id }, actor, "promotion.create", "promotion", id, (tx) => [
-    tx`INSERT INTO retail_promotions(id,code,kind,amount,starts_at,ends_at,minimum_subtotal_minor,scope,max_redemptions,max_per_customer,active)
-      VALUES(${id}::uuid,${data.code},${data.kind},${data.amount},${data.startsAt ?? null}::timestamptz,${data.endsAt ?? null}::timestamptz,${data.minimumSubtotalMinor},${payload(data.scope)}::jsonb,${data.maxRedemptions ?? null},${data.maxPerCustomer ?? null},${data.active})`,
+    tx`INSERT INTO retail_promotions(id,code,kind,amount,starts_at,ends_at,minimum_subtotal_minor,scope,max_redemptions,max_per_customer,automatic,active)
+      VALUES(${id}::uuid,${data.code},${data.kind},${data.amount},${data.startsAt ?? null}::timestamptz,${data.endsAt ?? null}::timestamptz,${data.minimumSubtotalMinor},${payload(data.scope)}::jsonb,${data.maxRedemptions ?? null},${data.maxPerCustomer ?? null},${data.automatic ?? false},${data.active})`,
   ]);
 }
 
@@ -341,6 +342,6 @@ export async function updatePromotion(id: string, input: z.infer<typeof promotio
   const existing = await sql`SELECT id FROM retail_promotions WHERE id=${id}::uuid LIMIT 1`;
   if (!existing[0]) throw new Error("promotion_not_found");
   return store("promotion.update", request, idempotencyKey, { id }, actor, "promotion.update", "promotion", id, (tx) => [
-    tx`UPDATE retail_promotions SET code=COALESCE(${data.code ?? null},code),kind=COALESCE(${data.kind ?? null},kind),amount=COALESCE(${data.amount ?? null},amount),starts_at=CASE WHEN ${data.startsAt !== undefined} THEN ${data.startsAt ?? null}::timestamptz ELSE starts_at END,ends_at=CASE WHEN ${data.endsAt !== undefined} THEN ${data.endsAt ?? null}::timestamptz ELSE ends_at END,minimum_subtotal_minor=COALESCE(${data.minimumSubtotalMinor ?? null},minimum_subtotal_minor),scope=COALESCE(${data.scope === undefined ? null : payload(data.scope)}::jsonb,scope),max_redemptions=CASE WHEN ${data.maxRedemptions !== undefined} THEN ${data.maxRedemptions ?? null} ELSE max_redemptions END,max_per_customer=CASE WHEN ${data.maxPerCustomer !== undefined} THEN ${data.maxPerCustomer ?? null} ELSE max_per_customer END,active=COALESCE(${data.active ?? null},active),updated_at=now() WHERE id=${id}::uuid`,
+    tx`UPDATE retail_promotions SET code=COALESCE(${data.code ?? null},code),kind=COALESCE(${data.kind ?? null},kind),amount=COALESCE(${data.amount ?? null},amount),starts_at=CASE WHEN ${data.startsAt !== undefined} THEN ${data.startsAt ?? null}::timestamptz ELSE starts_at END,ends_at=CASE WHEN ${data.endsAt !== undefined} THEN ${data.endsAt ?? null}::timestamptz ELSE ends_at END,minimum_subtotal_minor=COALESCE(${data.minimumSubtotalMinor ?? null},minimum_subtotal_minor),scope=COALESCE(${data.scope === undefined ? null : payload(data.scope)}::jsonb,scope),max_redemptions=CASE WHEN ${data.maxRedemptions !== undefined} THEN ${data.maxRedemptions ?? null} ELSE max_redemptions END,max_per_customer=CASE WHEN ${data.maxPerCustomer !== undefined} THEN ${data.maxPerCustomer ?? null} ELSE max_per_customer END,automatic=COALESCE(${data.automatic ?? null},automatic),active=COALESCE(${data.active ?? null},active),updated_at=now() WHERE id=${id}::uuid`,
   ]);
 }
