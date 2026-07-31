@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
 import { RetailShop, type RetailShopFacet, type RetailShopFilters } from "@/src/components/retail-shop";
-import { PageHero } from "@/src/components/page-hero";
 import { getRetailCopy } from "@/src/data/retail/copy";
 import { localizeRetailVariantOptions } from "@/src/data/retail/types";
 import { getRetailRuntimeConfig } from "@/src/lib/retail/config";
@@ -80,5 +79,16 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/[lo
     }),
   }));
   const enabled = config.enabled && products.length > 0;
-  return <div className="space-y-12 pt-8 md:space-y-16"><PageHero eyebrow={copy.eyebrow} title={copy.title} description={copy.description} /><RetailShop locale={locale} products={products} zones={zones} paypalClientId={config.enabled ? config.paypalClientId : undefined} currency="USD" enabled={enabled} copy={copy} initialFilters={filters} /></div>;
+  return <div className="space-y-8 pt-6 md:space-y-10">
+    <section className="noor-container">
+      <div className="noor-panel noor-card-glow rounded-[1.75rem] px-6 py-7 sm:px-8">
+        <p className="noor-kicker text-xs font-semibold text-accent-deep">{copy.eyebrow}</p>
+        <div className="mt-3 grid items-end gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(18rem,1.1fr)]">
+          <h1 className="noor-title text-4xl leading-tight text-foreground sm:text-5xl">{copy.title}</h1>
+          <p className="max-w-2xl text-sm leading-7 text-muted sm:text-base">{copy.description}</p>
+        </div>
+      </div>
+    </section>
+    <RetailShop locale={locale} products={products} zones={zones} paypalClientId={config.enabled ? config.paypalClientId : undefined} currency="USD" enabled={enabled} copy={copy} initialFilters={filters} />
+  </div>;
 }

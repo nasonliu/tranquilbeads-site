@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("next/image", () => ({ default: () => <span /> }));
@@ -41,16 +41,17 @@ function renderShop(initialFilters?: { material?: string[]; beadCount?: string[]
 describe("retail shop category filters", () => {
   it("derives chips from sellable SKU facets, supports same-facet OR and keeps the selection shareable", () => {
     renderShop();
-    expect(screen.getByRole("button", { name: "Kuka wood" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Amber" })).toBeInTheDocument();
+    const catalog = screen.getByRole("complementary", { name: "Catalog" });
+    expect(within(catalog).getByRole("button", { name: /Kuka wood/ })).toBeInTheDocument();
+    expect(within(catalog).getByRole("button", { name: /Amber/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Hidden" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Kuka wood" }));
+    fireEvent.click(screen.getByRole("button", { name: /Kuka wood/ }));
     expect(screen.getByRole("heading", { name: "Kuka Tasbih" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Amber Tasbih" })).not.toBeInTheDocument();
     expect(window.location.search).toBe("?material=Kuka+wood");
 
-    fireEvent.click(screen.getByRole("button", { name: "Amber" }));
+    fireEvent.click(screen.getByRole("button", { name: /Amber/ }));
     expect(screen.getByRole("heading", { name: "Kuka Tasbih" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Amber Tasbih" })).toBeInTheDocument();
     expect(window.location.search).toContain("material=Kuka+wood");
@@ -62,7 +63,7 @@ describe("retail shop category filters", () => {
     expect(screen.getByRole("heading", { name: "Kuka Tasbih" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Amber Tasbih" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "6 mm" }));
+    fireEvent.click(screen.getByRole("button", { name: /6 mm/ }));
     expect(screen.getByText("No available products match these filters.")).toBeInTheDocument();
     expect(window.localStorage.getItem("noor-retail-cart-v1")).toBe("{}");
 
@@ -81,6 +82,6 @@ describe("retail shop category filters", () => {
     render(<RetailShop locale="ar" products={arabicProducts} zones={zones} enabled paypalClientId="test-client-ar" currency="USD" copy={getRetailCopy("ar")} initialFilters={{ material: ["خشب كوكا"] }} />);
     expect(screen.getByRole("heading", { name: "مسبحة كوكا" })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "مسبحة كهرمان" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "خشب كوكا" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /خشب كوكا/ })).toHaveAttribute("aria-pressed", "true");
   });
 });

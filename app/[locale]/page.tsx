@@ -200,8 +200,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         actions={
           <>
             <Link
-              href={withLocale(locale, "/contact")}
+              href={withLocale(locale, "/shop")}
               className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-deep"
+            >
+              {locale === "en" ? "Shop retail" : "تسوّق بالتجزئة"}
+            </Link>
+            <Link
+              href={withLocale(locale, "/contact")}
+              className="rounded-full border border-accent/35 px-6 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
             >
               {copy.hero.primaryCta}
             </Link>

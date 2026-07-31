@@ -24,6 +24,7 @@ describe("localized site rendering", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/featured collections/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: /shop retail/i })).toHaveAttribute("href", "/en/shop");
     expect(screen.getByRole("link", { name: /request catalog/i })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /next showcase item/i }),
