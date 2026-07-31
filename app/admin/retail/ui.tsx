@@ -55,6 +55,7 @@ import {
   type AdminLocale,
 } from "./admin-locale";
 import { localizeRetailVariantOptions } from "@/src/data/retail/types";
+import { YunExpressProviderPanel } from "./yunexpress-provider-panel";
 
 type Row = Record<string, unknown>;
 type RetailAdminSection =
@@ -1571,7 +1572,7 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
       body = <section className="grid gap-5">{financeView}</section>;
       break;
     case "settings":
-      body = <ShippingZones zones={shippingZones} refresh={refresh} />;
+      body = <><YunExpressProviderPanel locale={locale}/><ShippingZones zones={shippingZones} refresh={refresh} /></>;
       break;
     case "media":
       body = <ProductMedia products={products} refresh={refresh} />;
@@ -1597,6 +1598,7 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
           />
           {customerView}
           {financeView}
+          <YunExpressProviderPanel locale={locale}/>
           <ShippingZones zones={shippingZones} refresh={refresh} />
           <OrderActions refresh={refresh} />
           <ProductMedia products={products} refresh={refresh} />

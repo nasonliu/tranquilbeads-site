@@ -1,6 +1,7 @@
 import { getRetailServerConfig, isRetailNotificationConfigurationValid } from "@/src/lib/retail/config";
 import { guardedRetailSql } from "@/src/lib/retail/database-identity";
 import { isRetailBlobConfigured } from "@/src/lib/retail/blob";
+import { isYunExpressConfigured } from "@/src/lib/retail/yunexpress";
 
 export const runtime="nodejs";export const dynamic="force-dynamic";
 const noStore={"cache-control":"no-store"};
@@ -14,7 +15,7 @@ const notificationsConfigured=()=>isRetailNotificationConfigurationValid();
 const notificationsRequired=()=>process.env.VERCEL_ENV==="production";
 export async function GET(){
   const config=getRetailServerConfig(),databaseUrl=process.env.RETAIL_DATABASE_URL||process.env.DATABASE_URL;
-  if(!config.enabled||!databaseUrl)return Response.json({ok:false,status:"not_ready",paymentConfigured:config.enabled,notificationSchemaReady:false,accountSchemaReady:false,notificationsConfigured:notificationsConfigured(),notificationConfiguration:notificationConfiguration(),notificationsRequired:notificationsRequired(),blobConfigured:isRetailBlobConfigured()},{status:503,headers:noStore});
+  if(!config.enabled||!databaseUrl)return Response.json({ok:false,status:"not_ready",paymentConfigured:config.enabled,notificationSchemaReady:false,accountSchemaReady:false,notificationsConfigured:notificationsConfigured(),notificationConfiguration:notificationConfiguration(),notificationsRequired:notificationsRequired(),blobConfigured:isRetailBlobConfigured(),yunExpressConfigured:isYunExpressConfigured()},{status:503,headers:noStore});
   try{
     const rows=await guardedRetailSql()`SELECT
       to_regprocedure('retail_quote_checkout_v3(jsonb,jsonb,text)') IS NOT NULL
@@ -40,6 +41,6 @@ export async function GET(){
       (SELECT count(*)::int FROM retail_shipping_zones WHERE active) AS active_shipping_zones`;
     const blobConfigured=isRetailBlobConfigured(),notifications=notificationsConfigured(),requireNotifications=notificationsRequired();
     const ready=rows[0]?.checkout_ready===true&&rows[0]?.variant_catalog_ready===true&&rows[0]?.shipping_ready===true&&rows[0]?.notification_schema_ready===true&&rows[0]?.account_schema_ready===true&&Number(rows[0]?.active_shipping_zones??0)>0&&blobConfigured&&(!requireNotifications||notifications);
-    return Response.json({ok:ready,status:ready?"ready":"configuration_required",database:true,databaseEnvironment:config.databaseEnvironment,paymentConfigured:true,paymentMode:config.paymentMode,checkoutVersion:"v3",variantCatalogReady:rows[0]?.variant_catalog_ready===true,notificationSchemaReady:rows[0]?.notification_schema_ready===true,accountSchemaReady:rows[0]?.account_schema_ready===true,activeShippingZones:Number(rows[0]?.active_shipping_zones??0),notificationsConfigured:notifications,notificationConfiguration:notificationConfiguration(),notificationsRequired:requireNotifications,blobConfigured},{status:ready?200:503,headers:noStore});
-  }catch{return Response.json({ok:false,status:"database_unavailable",paymentConfigured:true,notificationSchemaReady:false,accountSchemaReady:false,notificationsConfigured:notificationsConfigured(),notificationConfiguration:notificationConfiguration(),notificationsRequired:notificationsRequired(),blobConfigured:isRetailBlobConfigured()},{status:503,headers:noStore});}
+    return Response.json({ok:ready,status:ready?"ready":"configuration_required",database:true,databaseEnvironment:config.databaseEnvironment,paymentConfigured:true,paymentMode:config.paymentMode,checkoutVersion:"v3",variantCatalogReady:rows[0]?.variant_catalog_ready===true,notificationSchemaReady:rows[0]?.notification_schema_ready===true,accountSchemaReady:rows[0]?.account_schema_ready===true,activeShippingZones:Number(rows[0]?.active_shipping_zones??0),notificationsConfigured:notifications,notificationConfiguration:notificationConfiguration(),notificationsRequired:requireNotifications,blobConfigured,yunExpressConfigured:isYunExpressConfigured()},{status:ready?200:503,headers:noStore});
+  }catch{return Response.json({ok:false,status:"database_unavailable",paymentConfigured:true,notificationSchemaReady:false,accountSchemaReady:false,notificationsConfigured:notificationsConfigured(),notificationConfiguration:notificationConfiguration(),notificationsRequired:notificationsRequired(),blobConfigured:isRetailBlobConfigured(),yunExpressConfigured:isYunExpressConfigured()},{status:503,headers:noStore});}
 }
