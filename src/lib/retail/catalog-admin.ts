@@ -99,6 +99,16 @@ export const promotionUpdateDto = promotionFields.partial().extend({ idempotency
 type StoredResponse = { publicId?: string; id?: string; replayed?: boolean };
 
 function payload(value: unknown) { return JSON.stringify(value); }
+export function canonicalPayload(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalPayload(item)).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.entries(value as Record<string, unknown>)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonicalPayload(item)}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value) ?? "null";
+}
 function actorAudit(sql: RetailTransactionSql, actor: RetailAdminActor, action: string, entityType: string, entityId: string, key: string, detail: unknown) {
   return sql`INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail,idempotency_key,actor_id,actor_name,actor_role,legacy_actor,actor_attributed)
     VALUES(${action},${entityType},${entityId},${payload(detail)}::jsonb,${key}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy},true)`;
@@ -111,7 +121,10 @@ async function replay(operation: string, request: unknown, key: string, actor: R
     WHERE i.idempotency_key=${key}::uuid LIMIT 1`;
   const row = rows[0];
   if (!row) return undefined;
-  if (row.operation !== operation || JSON.stringify(row.request_payload) !== JSON.stringify(request)) throw new Error("idempotency_conflict");
+  // PostgreSQL jsonb canonicalizes object key order, while JavaScript preserves
+  // insertion order. Compare canonical structures so an exact retry replays
+  // instead of being mistaken for a conflicting payload.
+  if (row.operation !== operation || canonicalPayload(row.request_payload) !== canonicalPayload(request)) throw new Error("idempotency_conflict");
   if (row.actor_id !== actor.id || row.actor_name !== actor.name || row.actor_role !== actor.role || row.legacy_actor !== actor.legacy) throw new Error("idempotency_actor_conflict");
   return { ...(row.response_payload as StoredResponse), replayed: true };
 }
@@ -255,8 +268,17 @@ export async function updateCatalogVariant(publicId: string, input: z.infer<type
   return store("catalog.variant.update", request, idempotencyKey, { publicId }, actor, "catalog.variant.update", "product_variant", publicId, (tx) => {
     const updates = [
       tx`SELECT pg_advisory_xact_lock(hashtextextended('retail.catalog.inventory:' || product_id::text,0)) FROM retail_product_variants WHERE public_id=${publicId}::uuid`,
-      tx`UPDATE retail_product_variants SET style_id=COALESCE((SELECT id FROM retail_product_styles WHERE public_id=${data.styleId ?? null}::uuid),style_id),sku=COALESCE(${data.sku ?? null},sku),title_en=COALESCE(${data.titleEn ?? null},title_en),title_ar=COALESCE(${data.titleAr ?? null},title_ar),title_zh=COALESCE(${data.titleZh ?? null},title_zh),option_values=COALESCE(${data.optionValues === undefined ? null : payload(data.optionValues)}::jsonb,option_values),status=COALESCE(${data.status ?? null},status),updated_at=now() WHERE public_id=${publicId}::uuid`,
     ];
+    // Identity columns are protected by a database trigger for the default
+    // variant. Do not mention them in an UPDATE statement unless the caller
+    // explicitly requested an identity change; PostgreSQL UPDATE OF triggers
+    // fire based on the statement's column list even when values are unchanged.
+    if (data.styleId !== undefined || data.sku !== undefined) {
+      updates.push(tx`UPDATE retail_product_variants SET style_id=COALESCE((SELECT id FROM retail_product_styles WHERE public_id=${data.styleId ?? null}::uuid),style_id),sku=COALESCE(${data.sku ?? null},sku),updated_at=now() WHERE public_id=${publicId}::uuid`);
+    }
+    if (data.titleEn !== undefined || data.titleAr !== undefined || data.titleZh !== undefined || data.optionValues !== undefined || data.status !== undefined) {
+      updates.push(tx`UPDATE retail_product_variants SET title_en=COALESCE(${data.titleEn ?? null},title_en),title_ar=COALESCE(${data.titleAr ?? null},title_ar),title_zh=COALESCE(${data.titleZh ?? null},title_zh),option_values=COALESCE(${data.optionValues === undefined ? null : payload(data.optionValues)}::jsonb,option_values),status=COALESCE(${data.status ?? null},status),updated_at=now() WHERE public_id=${publicId}::uuid`);
+    }
     if (data.amountMinor !== undefined) updates.push(tx`UPDATE retail_variant_price_history SET active=false WHERE variant_id=(SELECT id FROM retail_product_variants WHERE public_id=${publicId}::uuid) AND active`);
     if (data.amountMinor !== undefined) updates.push(tx`INSERT INTO retail_variant_price_history(variant_id,amount_minor,idempotency_key,changed_by) SELECT id,${data.amountMinor},${crypto.randomUUID()}::uuid,${actor.id} FROM retail_product_variants WHERE public_id=${publicId}::uuid`);
     // The CHECK(reserved <= on_hand) is deliberately allowed to reject a stale

@@ -199,5 +199,12 @@ export async function reserveStorefrontV3Order(
     FROM retail_orders o WHERE o.client_request_id=${requestId}::uuid LIMIT 1`;
   const order = rows[0];
   if (!order) throw new Error("checkout_unavailable");
+  const checkoutValue = checkout && typeof checkout === "object" && !Array.isArray(checkout) ? checkout as Record<string, unknown> : null;
+  const consent = checkoutValue?.marketingConsent === true;
+  const accountIntent = checkoutValue?.accountIntent === "create_or_access" ? "create_or_access" : "guest";
+  const locale = checkoutValue?.locale;
+  if (locale !== "en" && locale !== "ar" && locale !== "zh") throw new Error("checkout_unavailable");
+  await query`SELECT retail_set_checkout_marketing_intent(${requestId}::uuid,${consent},${locale}) AS recorded`;
+  await query`SELECT retail_set_checkout_account_intent(${requestId}::uuid,${accountIntent}) AS recorded`;
   return order;
 }

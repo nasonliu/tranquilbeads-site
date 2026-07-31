@@ -94,8 +94,14 @@ export async function listRetailRefundsNeedingReconciliation(){const sql=getSql(
 
 export async function markRetailOrderCaptured(paypalOrderId: string, captureId: string, customer: unknown = {}, shipping: unknown = {}, feeMinor: number | null = null, netMinor: number | null = null) {
   const sql = getSql();
-  const result = await sql`SELECT retail_apply_paypal_capture(${paypalOrderId}, ${captureId}, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}, ${netMinor}) AS applied`;
+  const result = await sql`SELECT retail_apply_paypal_capture_and_finalize(${paypalOrderId}, ${captureId}, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}, ${netMinor}) AS applied`;
   return result[0]?.applied === true;
+}
+
+export async function finalizeRetailCustomerPostCapture(paypalOrderId: string) {
+  const sql = getSql();
+  const result = await sql`SELECT retail_finalize_customer_post_capture(${paypalOrderId}) AS finalized`;
+  return result[0]?.finalized === true;
 }
 
 export async function restoreRetailOrderAfterCaptureFailure(paypalOrderId: string) {
@@ -179,7 +185,7 @@ export async function processVerifiedWebhook(
       VALUES (${eventId}::text, ${eventType}::text, ${safePayloadJson}::text, ${safePayloadJson}::jsonb, 'received')
       ON CONFLICT (paypal_event_id) DO NOTHING`,
     tx`WITH capture_update AS (
-      SELECT retail_apply_paypal_capture(${orderId}::text, ${captureId}::text, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}::bigint, ${netMinor}::bigint) AS applied
+      SELECT retail_apply_paypal_capture_and_finalize(${orderId}::text, ${captureId}::text, ${JSON.stringify(customer)}::jsonb, ${JSON.stringify(shipping)}::jsonb, ${feeMinor}::bigint, ${netMinor}::bigint) AS applied
       WHERE ${eventType}::text = 'PAYMENT.CAPTURE.COMPLETED'
         AND EXISTS (SELECT 1 FROM retail_webhook_events WHERE paypal_event_id=${eventId}::text AND status='received')
         AND ${orderId}::text IS NOT NULL AND ${captureId}::text IS NOT NULL AND ${currency}::text = 'USD'
@@ -244,9 +250,16 @@ export async function processVerifiedWebhook(
       RETURNING status`,
     tx`SELECT status FROM retail_webhook_events WHERE paypal_event_id=${eventId}::text`,
   ]);
-  if (processedRows[0]) return "processed";
+  if (processedRows[0]) {
+    return "processed";
+  }
   if (rejectedRows[0]) return "duplicate";
-  return classifyWebhookRow(finalRows[0]?.status);
+  const outcome = classifyWebhookRow(finalRows[0]?.status);
+  // Recover legacy captures written before the atomic wrapper existed.
+  if (outcome === "duplicate" && eventType === "PAYMENT.CAPTURE.COMPLETED" && orderId) {
+    await sql`SELECT retail_finalize_customer_post_capture(${orderId}) AS finalized`;
+  }
+  return outcome;
 }
 
 export async function auditRetailEvent(orderId: string | null, action: string, detail: unknown) {

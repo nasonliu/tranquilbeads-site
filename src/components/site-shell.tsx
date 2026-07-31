@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { UserRound } from "lucide-react";
 
 import { siteSettings } from "@/src/data/site";
 import { retailPolicyPaths } from "@/src/data/retail/policies";
 import type { Locale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
+import { RetailCartButton, RetailCartDrawer, RetailCartProvider } from "@/src/components/retail-cart";
 
 type SiteShellProps = {
   locale: Locale;
@@ -36,7 +38,7 @@ export function SiteShell({
   const switchLocaleHref = `/${otherLocale}${pathWithoutLocale}`;
 
   return (
-    <div className="noor-shell">
+    <RetailCartProvider><div className="noor-shell">
       <header className="sticky top-0 z-20 border-b border-border/70 bg-panel/90 backdrop-blur-xl">
         <div className="noor-container flex items-center justify-between gap-3 py-4 sm:gap-6">
           <Link href={withLocale(locale)} prefetch={isRetailShop ? false : undefined} className="flex min-w-0 items-center gap-3">
@@ -67,6 +69,8 @@ export function SiteShell({
           </nav>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            {isRetailShop ? <RetailCartButton locale={locale} /> : null}
+            {isRetailShop && locale !== "zh" ? <Link href={`/${locale}/shop/account`} aria-label={locale === "ar" ? "حسابي" : "My account"} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/80 bg-white/55"><UserRound aria-hidden="true" size={18} /></Link> : null}
             <Link
               href={switchLocaleHref}
               prefetch={isRetailShop ? false : undefined}
@@ -160,6 +164,7 @@ export function SiteShell({
       >
         {locale === "en" ? "WhatsApp Us" : isChinese ? "WhatsApp 联系我们" : "واتساب"}
       </a>
-    </div>
+      <RetailCartDrawer locale={locale} />
+    </div></RetailCartProvider>
   );
 }

@@ -2,6 +2,7 @@ import "server-only";
 
 import { guardedRetailSql } from "./database-identity";
 import { customerPortalUrl, issueNotificationCustomerPortalToken } from "./customer-portal";
+import { customerAccountVerifyUrl, issueNotificationCustomerLoginLink } from "./customer-auth";
 import { isLocale, type Locale } from "@/src/lib/i18n";
 
 type Fetcher=typeof fetch;
@@ -29,6 +30,7 @@ function notificationCopy(locale:Locale,kind:string,reference:string,amount:stri
     order_cancelled:{en:"Your order has been cancelled.",ar:"تم إلغاء طلبك.",zh:"您的订单已取消。"},
     payment_failed:{en:"We could not complete your payment.",ar:"تعذر إتمام دفعتك.",zh:"我们未能完成您的付款。"},
     checkout_expired:{en:"Your checkout expired before payment was completed.",ar:"انتهت صلاحية إتمام الطلب قبل اكتمال الدفع.",zh:"您的结账在付款完成前已过期。"},
+    account_access:{en:"Your secure account link is ready.",ar:"رابط حسابك الآمن جاهز.",zh:"您的安全账户链接已准备就绪。"},
   } as const;
   const state=details[kind as keyof typeof details];
   const subjects={
@@ -38,15 +40,16 @@ function notificationCopy(locale:Locale,kind:string,reference:string,amount:stri
     order_cancelled:{en:`TranquilBeads order ${reference} cancelled`,ar:`تم إلغاء طلب TranquilBeads ${reference}`,zh:`TranquilBeads 订单 ${reference} 已取消`},
     payment_failed:{en:`TranquilBeads payment update for ${reference}`,ar:`تحديث الدفع لطلب TranquilBeads ${reference}`,zh:`TranquilBeads 订单 ${reference} 付款更新`},
     checkout_expired:{en:`TranquilBeads checkout expired for ${reference}`,ar:`انتهت صلاحية إتمام طلب TranquilBeads ${reference}`,zh:`TranquilBeads 订单 ${reference} 结账已过期`},
+    account_access:{en:"Your TranquilBeads account link",ar:"رابط حساب TranquilBeads الخاص بك",zh:"您的 TranquilBeads 账户链接"},
   } as const;
   const subject=subjects[kind as keyof typeof subjects];
   if(!state||!subject)throw new Error("unsupported_notification_kind");
-  return {subject:subject[locale],detail:state[locale],portalLabel:locale==="ar"?"عرض طلبك وتحديثات التوصيل":locale==="zh"?"查看订单和配送更新":"View your order and delivery updates",help:locale==="ar"?"إذا احتجت إلى مساعدة، يُرجى الرد على هذه الرسالة الإلكترونية.":locale==="zh"?"如需帮助，请回复此邮件。":"If you need help, reply to this email."};
+  return {subject:subject[locale],detail:state[locale],portalLabel:kind==="account_access"?(locale==="ar"?"فتح حسابي":locale==="zh"?"打开我的账户":"Open my account"):(locale==="ar"?"عرض طلبك وتحديثات التوصيل":locale==="zh"?"查看订单和配送更新":"View your order and delivery updates"),help:locale==="ar"?"إذا احتجت إلى مساعدة، يُرجى الرد على هذه الرسالة الإلكترونية.":locale==="zh"?"如需帮助，请回复此邮件。":"If you need help, reply to this email."};
 }
 
 export async function deliverRetailNotifications(fetcher:Fetcher=fetch){
-  const databaseUrl=process.env.RETAIL_DATABASE_URL||process.env.DATABASE_URL,apiKey=process.env.RETAIL_RESEND_API_KEY,from=process.env.RETAIL_EMAIL_FROM,portalTokenSecret=process.env.RETAIL_PORTAL_TOKEN_SECRET;
-  if(!databaseUrl||!apiKey||!from||!portalTokenSecret||portalTokenSecret.length<32)return{processed:0,sent:0,failed:0,configured:false};
+  const databaseUrl=process.env.RETAIL_DATABASE_URL||process.env.DATABASE_URL,apiKey=process.env.RETAIL_RESEND_API_KEY,from=process.env.RETAIL_EMAIL_FROM,replyTo=process.env.RETAIL_EMAIL_REPLY_TO,portalTokenSecret=process.env.RETAIL_PORTAL_TOKEN_SECRET;
+  if(!databaseUrl||!apiKey||!from||!replyTo||!portalTokenSecret||portalTokenSecret.length<32)return{processed:0,sent:0,failed:0,configured:false};
   const q=guardedRetailSql();
   await q`UPDATE retail_notification_outbox SET status='failed',claimed_at=NULL,last_error=COALESCE(last_error,'delivery_lease_expired') WHERE status='processing' AND claimed_at<now()-interval '10 minutes'`;
   const rows=await q`WITH candidates AS (SELECT id FROM retail_notification_outbox WHERE status IN ('pending','failed') AND available_at<=now() AND attempts<8 AND recipient IS NOT NULL ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 10),claimed AS (UPDATE retail_notification_outbox n SET status='processing',claimed_at=now(),attempts=attempts+1 FROM candidates c WHERE n.id=c.id RETURNING n.*) SELECT c.id,c.kind,c.recipient,c.payload,c.payload->>'refundedMinor' AS refunded_minor_text,c.order_id,o.public_id,o.client_request_id,o.currency,o.amount_minor,o.carrier,o.tracking_number,o.checkout_locale FROM claimed c JOIN retail_orders o ON o.id=c.order_id` as unknown as NotificationRow[];
@@ -72,10 +75,10 @@ export async function deliverRetailNotifications(fetcher:Fetcher=fetch){
       const copy=notificationCopy(locale,row.kind,reference,amount,refundAmount,carrier,tracking);
       // The deterministic bearer credential exists only while constructing this
       // message; it is never written to the outbox or included in error/log text.
-      const portalLink=row.kind==="order_confirmed"?customerPortalUrl((await issueNotificationCustomerPortalToken(Number(row.order_id),row.id)).token,locale):null;
+      const portalLink=row.kind==="order_confirmed"?customerPortalUrl((await issueNotificationCustomerPortalToken(Number(row.order_id),row.id)).token,locale):row.kind==="account_access"?customerAccountVerifyUrl((await issueNotificationCustomerLoginLink(row.recipient,row.id)).token,locale):null;
       const portalHtml=portalLink?`<p><a href="${escapeHtml(portalLink)}">${escapeHtml(copy.portalLabel)}</a></p>`:"";
       const html=`<h1>${escapeHtml(copy.subject)}</h1><p>${escapeHtml(copy.detail).replaceAll("&lt;br&gt;","<br>")}</p><p>${locale==="ar"?"مرجع الطلب":locale==="zh"?"订单编号":"Order reference"}: ${escapeHtml(reference)}</p>${portalHtml}<p>${escapeHtml(copy.help)}</p>`;
-      const response=await fetcher("https://api.resend.com/emails",{method:"POST",headers:{authorization:`Bearer ${apiKey}`,"content-type":"application/json","idempotency-key":`retail-notification-${row.id}`},body:JSON.stringify({from,to:[row.recipient],subject:copy.subject,html}),cache:"no-store"});
+      const response=await fetcher("https://api.resend.com/emails",{method:"POST",headers:{authorization:`Bearer ${apiKey}`,"content-type":"application/json","idempotency-key":`retail-notification-${row.id}`},body:JSON.stringify({from,to:[row.recipient],subject:copy.subject,html,reply_to:replyTo}),cache:"no-store"});
       if(!response.ok)throw new Error(`email_${response.status}`);
       await q`UPDATE retail_notification_outbox SET status='sent',claimed_at=NULL,sent_at=now(),last_error=NULL WHERE id=${row.id}::uuid AND status='processing'`;sent++;
     }catch(error){const message=error instanceof Error?error.message.slice(0,200):"delivery_failed";await q`UPDATE retail_notification_outbox SET status='failed',claimed_at=NULL,last_error=${message},available_at=now()+make_interval(secs=>LEAST(3600,60*(2^LEAST(attempts,6)))) WHERE id=${row.id}::uuid AND status='processing'`;failed++;}

@@ -43,6 +43,8 @@ const migrationNames = [
   "20260818_retail_product_styles.sql",
   "20260819_retail_product_pdp_content.sql",
   "20260820_retail_agent_catalog.sql",
+  "20260821_retail_customer_accounts.sql",
+  "20260822_retail_atomic_capture_customer_finalize.sql",
 ];
 
 const migrationTarget = process.env.RETAIL_MIGRATION_TARGET;

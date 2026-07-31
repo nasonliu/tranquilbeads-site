@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { getRetailPaymentGate } from "@/src/lib/retail/gate";
+import { getRetailPaymentCreationGate } from "@/src/lib/retail/gate";
 import { retailCheckoutDto } from "@/src/lib/retail/operations";
 import { createPaypalOrder, getPaypalAccessToken } from "@/src/lib/retail/paypal";
 import { consumeRetailRateLimit } from "@/src/lib/retail/rate-limit";
@@ -20,7 +20,7 @@ const requestSchema = z.object({
 }).strict();
 
 export async function POST(request: Request) {
-  const gate = getRetailPaymentGate();
+  const gate = getRetailPaymentCreationGate();
   if (!gate.enabled) return Response.json({ ok: false, error: "retail_unavailable" }, { status: 503 });
   let input: z.infer<typeof requestSchema>;
   try { input = requestSchema.parse(await request.json()); } catch { return Response.json({ ok: false, error: "invalid_request" }, { status: 400 }); }

@@ -8,8 +8,7 @@ import { useMemo, useState } from "react";
 import styles from "./retail-product-detail.module.css";
 import type { RetailLocale, RetailLocaleText, RetailProduct, RetailProductStyle, RetailProductVariant } from "@/src/data/retail/types";
 import { RetailReferenceMoney } from "@/src/components/retail-reference-currency";
-
-const cartStorageKey = "noor-retail-cart-v1";
+import { addRetailCart } from "@/src/components/retail-cart";
 
 type Props = { locale: RetailLocale; product: RetailProduct; images: string[] };
 
@@ -73,12 +72,7 @@ export function RetailProductDetail({ locale, product, images }: Props) {
 
   function addToCart() {
     if (!selected?.available) return;
-    try {
-      const stored = JSON.parse(window.localStorage.getItem(cartStorageKey) ?? "{}") as Record<string, number>;
-      const next = Math.min(selected.stock, Math.max(0, Number(stored[selected.sku] ?? 0)) + purchaseQuantity);
-      window.localStorage.setItem(cartStorageKey, JSON.stringify({ ...stored, [selected.sku]: next }));
-      setAdded(true);
-    } catch { /* storage failure must not prevent the rest of the PDP */ }
+    try { addRetailCart(selected.sku, purchaseQuantity, selected.stock); setAdded(true); } catch { /* storage failure must not prevent the rest of the PDP */ }
   }
 
   return <main className="noor-container py-8 md:py-12">

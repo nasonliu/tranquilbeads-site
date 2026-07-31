@@ -7,12 +7,18 @@ type ConfiguredAgent = RetailAgentActor & { token: string };
 
 function configuredAgents(): ConfiguredAgent[] {
   const raw = process.env.RETAIL_AGENT_OPERATORS_JSON;
-  if (!raw) return [];
+  const previewImportToken = process.env.VERCEL_ENV === "preview"
+    ? process.env.RETAIL_AGENT_PREVIEW_IMPORT_TOKEN
+    : undefined;
+  const previewImportActor: ConfiguredAgent[] = previewImportToken && previewImportToken.length >= 32
+    ? [{ id: "preview-catalog-import", name: "Preview catalog importer", role: "operations", token: previewImportToken, legacy: false }]
+    : [];
+  if (!raw) return previewImportActor;
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
+    if (!Array.isArray(parsed)) return previewImportActor;
     const ids = new Set<string>();
-    return parsed.flatMap((row): ConfiguredAgent[] => {
+    return [...parsed.flatMap((row): ConfiguredAgent[] => {
       if (!row || typeof row !== "object") return [];
       const value = row as Record<string, unknown>;
       const id = typeof value.id === "string" ? value.id.trim() : "";
@@ -22,8 +28,8 @@ function configuredAgents(): ConfiguredAgent[] {
       if (!id || !name || !role || token.length < 32 || ids.has(id)) return [];
       ids.add(id);
       return [{ id, name, role, token, legacy: false }];
-    });
-  } catch { return []; }
+    }), ...previewImportActor];
+  } catch { return previewImportActor; }
 }
 
 function tokenDigest(value: string) { return crypto.createHash("sha256").update(value).digest(); }

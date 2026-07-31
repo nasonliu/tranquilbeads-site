@@ -37,3 +37,12 @@ export function getRetailServerConfig(env: Env = process.env): RetailServerConfi
   if (!config.enabled) return config;
   return { ...config, paypalClientSecret: env.PAYPAL_CLIENT_SECRET!, paypalWebhookId: env.PAYPAL_WEBHOOK_ID!, paypalBaseUrl: config.paymentMode === "live" ? PAYPAL_LIVE_API_BASE_URL : PAYPAL_SANDBOX_API_BASE_URL };
 }
+
+export function isRetailNotificationConfigurationValid(env: Env = process.env) {
+  return Boolean(
+    env.RETAIL_RESEND_API_KEY
+    && env.RETAIL_EMAIL_FROM
+    && env.RETAIL_EMAIL_REPLY_TO
+    && (env.RETAIL_PORTAL_TOKEN_SECRET?.length ?? 0) >= 32,
+  );
+}

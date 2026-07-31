@@ -90,6 +90,9 @@ export type RetailCheckout = {
   termsVersion: "2026-07-28";
   termsAccepted: true;
   locale: "en" | "ar" | "zh";
+  accountIntent?: "guest" | "create_or_access";
+  /** Explicit opt-in only; it never controls order and delivery email. */
+  marketingConsent?: boolean;
 };
 
 export type RetailQuote = {

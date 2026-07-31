@@ -1,6 +1,8 @@
+import { after } from "next/server";
 import { z } from "zod";
 
 import { getRetailPaymentGate } from "@/src/lib/retail/gate";
+import { deliverRetailNotificationsWithDiagnostics } from "@/src/lib/retail/notification-delivery";
 import { capturePaypalOrder, getPaypalAccessToken, getPaypalOrderDetails, getPaypalOrderState } from "@/src/lib/retail/paypal";
 import { consumeRetailRateLimit } from "@/src/lib/retail/rate-limit";
 
@@ -8,6 +10,9 @@ export const runtime = "nodejs";
 const schema = z.object({ orderId: z.string().min(1).max(128),requestId:z.string().uuid() }).strict();
 type PaypalOrderDetails = Awaited<ReturnType<typeof getPaypalOrderDetails>>;
 const emptyPaypalOrderDetails: PaypalOrderDetails = { customer: { email: "", name: "" }, shipping: { recipient: "", line1: "", line2: "", region: "", city: "", postalCode: "", country: "" }, breakdown: null };
+const scheduleRetailNotificationDelivery = () => {
+  after(() => deliverRetailNotificationsWithDiagnostics());
+};
 
 export async function POST(request: Request) {
   const gate = getRetailPaymentGate();
@@ -17,12 +22,16 @@ export async function POST(request: Request) {
   const { config } = gate;
   try {
     if(!await consumeRetailRateLimit(request,"checkout_capture",30,1000))return Response.json({ok:false,error:"rate_limited"},{status:429,headers:{"retry-after":"900"}});
-    const { auditRetailEvent, claimRetailCapture, getRetailOrder, markRetailOrderCaptured, restoreRetailOrderAfterCaptureFailure } = await import("@/src/lib/retail/db");
+    const { auditRetailEvent, claimRetailCapture, finalizeRetailCustomerPostCapture, getRetailOrder, markRetailOrderCaptured, restoreRetailOrderAfterCaptureFailure } = await import("@/src/lib/retail/db");
     const current = await getRetailOrder(input.orderId);
     if (!current) return Response.json({ ok: false, error: "order_not_found" }, { status: 404 });
     if(current.client_request_id!==input.requestId)return Response.json({ok:false,error:"request_conflict"},{status:409});
     if (current.status === "expired") return Response.json({ ok: false, error: "checkout_expired" }, { status: 410 });
-    if (current.status === "captured") return Response.json({ ok: true, orderId: input.orderId });
+    if (current.status === "captured") {
+      await finalizeRetailCustomerPostCapture(input.orderId);
+      scheduleRetailNotificationDelivery();
+      return Response.json({ ok: true, orderId: input.orderId });
+    }
     const token=await getPaypalAccessToken({clientId:config.paypalClientId,clientSecret:config.paypalClientSecret,baseUrl:config.paypalBaseUrl});
     const order = await claimRetailCapture(input.orderId);
     if (!order) return Response.json({ ok: false, error: current.status === "capturing" ? "capture_in_progress" : "order_unavailable" }, { status: 409 });
@@ -46,6 +55,7 @@ export async function POST(request: Request) {
     try {
       if (!await markRetailOrderCaptured(input.orderId, captureId!, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null)) return Response.json({ ok: false, error: "capture_conflict" }, { status: 409 });
       await auditRetailEvent(input.orderId, "captured", { captureId });
+      scheduleRetailNotificationDelivery();
       return Response.json({ ok: true, orderId: input.orderId,requestId:input.requestId });
     } catch {
       // Preserve `capturing`: the stable capture id and verified webhook can

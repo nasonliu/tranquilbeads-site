@@ -1,4 +1,7 @@
+import { after } from "next/server";
+
 import { getRetailPaymentGate } from "@/src/lib/retail/gate";
+import { deliverRetailNotificationsWithDiagnostics } from "@/src/lib/retail/notification-delivery";
 import { getPaypalAccessToken, getPaypalOrderDetails, verifyPaypalWebhook } from "@/src/lib/retail/paypal";
 import { webhookResponseStatus } from "@/src/lib/retail/webhook-result";
 
@@ -6,6 +9,9 @@ export const runtime = "nodejs";
 type PaypalEvent = { id?: string; event_type?: string; resource?: { supplementary_data?: { related_ids?: { order_id?: string; capture_id?: string } }; id?: string; dispute_id?: string; disputed_transactions?: Array<{ seller_transaction_id?: string; transaction_info?: { seller_transaction_id?: string } }> } };
 type PaypalOrderDetails = Awaited<ReturnType<typeof getPaypalOrderDetails>>;
 const emptyPaypalOrderDetails: PaypalOrderDetails = { customer: { email: "", name: "" }, shipping: { recipient: "", line1: "", line2: "", region: "", city: "", postalCode: "", country: "" }, breakdown: null };
+const scheduleRetailNotificationDelivery = () => {
+  after(() => deliverRetailNotificationsWithDiagnostics());
+};
 
 export async function POST(request: Request) {
   const gate = getRetailPaymentGate();
@@ -30,7 +36,9 @@ export async function POST(request: Request) {
       catch { /* the verified capture can still be durably applied without enrichment */ }
     }
     stage = "db_process";
-    return new Response(null, { status: webhookResponseStatus(await processVerifiedWebhook(event.id, event.event_type, rawPayload, event, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null)) });
+    const result = await processVerifiedWebhook(event.id, event.event_type, rawPayload, event, details.customer, details.shipping, details.breakdown?.feeMinor ?? null, details.breakdown?.netMinor ?? null);
+    if (event.event_type === "PAYMENT.CAPTURE.COMPLETED" && result !== "retry") scheduleRetailNotificationDelivery();
+    return new Response(null, { status: webhookResponseStatus(result) });
   } catch (error) {
     const code = typeof error === "object" && error !== null && "code" in error && typeof error.code === "string" && /^[0-9A-Z]{5}$/.test(error.code)
       ? error.code

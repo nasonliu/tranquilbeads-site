@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 
-import { getRetailRuntimeConfig, getRetailServerConfig } from "@/src/lib/retail/config";
+import { getRetailRuntimeConfig, getRetailServerConfig, isRetailNotificationConfigurationValid } from "@/src/lib/retail/config";
 
 const sandboxConfiguration = {
   RETAIL_SHOP_ENABLED: "true",
@@ -41,5 +41,15 @@ describe("retail payment configuration", () => {
     expect(getRetailServerConfig(liveConfiguration)).toMatchObject({ enabled: true, paymentMode: "live", paypalBaseUrl: "https://api-m.paypal.com" });
     expect(getRetailRuntimeConfig({ ...liveConfiguration, VERCEL_ENV: "preview", RETAIL_DATABASE_ENVIRONMENT: "preview" })).toEqual({ enabled: false, reason: "payment_environment_not_allowed" });
     expect(getRetailRuntimeConfig({ ...liveConfiguration, VERCEL_ENV: "production", RETAIL_DATABASE_ENVIRONMENT: "preview" })).toEqual({ enabled: false, reason: "database_environment_mismatch" });
+  });
+
+  it("requires every server-only delivery setting for customer notifications", () => {
+    expect(isRetailNotificationConfigurationValid({})).toBe(false);
+    expect(isRetailNotificationConfigurationValid({
+      RETAIL_RESEND_API_KEY: "resend-key",
+      RETAIL_EMAIL_FROM: "Orders <orders@example.test>",
+      RETAIL_EMAIL_REPLY_TO: "support@example.test",
+      RETAIL_PORTAL_TOKEN_SECRET: "a-portal-token-secret-with-at-least-32-chars",
+    })).toBe(true);
   });
 });

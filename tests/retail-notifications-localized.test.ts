@@ -33,6 +33,7 @@ describe("localized retail notifications", () => {
     process.env.RETAIL_DATABASE_IDENTITY = "retail-notifications-localized";
     process.env.RETAIL_RESEND_API_KEY = "test-key";
     process.env.RETAIL_EMAIL_FROM = "orders@example.test";
+    process.env.RETAIL_EMAIL_REPLY_TO = "support@example.test";
     process.env.RETAIL_PORTAL_TOKEN_SECRET = "notification-token-secret-at-least-32-bytes";
     process.env.NEXT_PUBLIC_SITE_URL = "https://preview.example.test";
   });
@@ -64,6 +65,27 @@ describe("localized retail notifications", () => {
     expect(messages.map((message) => message.html).join(" ")).toContain("المبلغ المسترد حتى الآن");
     expect(messages.map((message) => message.subject).join(" ")).toContain("已取消");
     expect(messages.map((message) => message.html).join(" ")).toContain("تعذر إتمام دفعتك");
+  });
+
+  it("routes customer replies to the configured Workspace mailbox", async () => {
+    mocked.setRows([row("en", "order_cancelled")]);
+    const fetcher = vi.fn().mockResolvedValue(new Response("{}", { status: 200 }));
+    await expect(deliverRetailNotifications(fetcher)).resolves.toMatchObject({ sent: 1, failed: 0 });
+    const message = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
+    expect(message.reply_to).toBe("support@example.test");
+  });
+
+  it("fails closed without a Workspace reply mailbox", async () => {
+    delete process.env.RETAIL_EMAIL_REPLY_TO;
+    mocked.setRows([row("en")]);
+    const fetcher = vi.fn();
+    await expect(deliverRetailNotifications(fetcher)).resolves.toEqual({
+      processed: 0,
+      sent: 0,
+      failed: 0,
+      configured: false,
+    });
+    expect(fetcher).not.toHaveBeenCalled();
   });
 
   it("fails closed for an unsupported outbox kind", async () => {

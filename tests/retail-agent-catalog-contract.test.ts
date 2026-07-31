@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { authenticateRetailAgent, requireRetailAgentPermission } from "@/src/lib/retail/agent-auth";
 import { agentCatalogActionDto } from "@/src/lib/retail/agent-catalog";
+import { canonicalPayload } from "@/src/lib/retail/catalog-admin";
 
 const read = (name: string) => fs.readFileSync(path.join(process.cwd(), name), "utf8");
 
@@ -14,6 +15,32 @@ describe("retail agent catalog API contract", () => {
     expect(authenticateRetailAgent(new Request("http://localhost", { headers: { authorization: `Bearer ${"t".repeat(32)}` } }))).toEqual({ id: "catalog-1", name: "Catalog", role: "operations", legacy: false });
     expect(authenticateRetailAgent(new Request("http://localhost", { headers: { authorization: "Bearer wrong" } }))).toBeNull();
     if (prior === undefined) delete process.env.RETAIL_AGENT_OPERATORS_JSON; else process.env.RETAIL_AGENT_OPERATORS_JSON = prior;
+  });
+
+  it("accepts the revocable bootstrap importer only in Preview", () => {
+    const saved = {
+      token: process.env.RETAIL_AGENT_PREVIEW_IMPORT_TOKEN,
+      vercel: process.env.VERCEL_ENV,
+      operators: process.env.RETAIL_AGENT_OPERATORS_JSON,
+    };
+    const token = "p".repeat(64);
+    const request = new Request("http://localhost", { headers: { authorization: `Bearer ${token}` } });
+    try {
+      delete process.env.RETAIL_AGENT_OPERATORS_JSON;
+      process.env.RETAIL_AGENT_PREVIEW_IMPORT_TOKEN = token;
+      process.env.VERCEL_ENV = "preview";
+      expect(authenticateRetailAgent(request)).toMatchObject({ id: "preview-catalog-import", role: "operations" });
+      process.env.RETAIL_AGENT_OPERATORS_JSON = "{}";
+      expect(authenticateRetailAgent(request)).toMatchObject({ id: "preview-catalog-import", role: "operations" });
+      process.env.RETAIL_AGENT_OPERATORS_JSON = "[]";
+      expect(authenticateRetailAgent(request)).toMatchObject({ id: "preview-catalog-import", role: "operations" });
+      process.env.VERCEL_ENV = "production";
+      expect(authenticateRetailAgent(request)).toBeNull();
+    } finally {
+      if (saved.token === undefined) delete process.env.RETAIL_AGENT_PREVIEW_IMPORT_TOKEN; else process.env.RETAIL_AGENT_PREVIEW_IMPORT_TOKEN = saved.token;
+      if (saved.vercel === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = saved.vercel;
+      if (saved.operators === undefined) delete process.env.RETAIL_AGENT_OPERATORS_JSON; else process.env.RETAIL_AGENT_OPERATORS_JSON = saved.operators;
+    }
   });
 
   it("keeps reads and writes behind explicit, independently revocable switches", () => {
@@ -47,6 +74,7 @@ describe("retail agent catalog API contract", () => {
     expect(catalog).toContain("createCatalogVariant");
     expect(catalog).toContain("reorderRetailProductImages");
     expect(read("src/lib/retail/operations.ts")).toContain("p.media_version AS image_version");
+    expect(read("src/lib/retail/catalog-admin.ts")).toContain("if (data.styleId !== undefined || data.sku !== undefined)");
     expect(route).toContain('requireRetailAgentPermission(request, "products:write")');
     expect(auth).toContain("RETAIL_AGENT_ENABLED");
     expect(auth).toContain("RETAIL_AGENT_CATALOG_WRITE_ENABLED");
@@ -54,6 +82,12 @@ describe("retail agent catalog API contract", () => {
     expect(media).toContain("uploadRetailProductImage");
     expect(media).toContain("deleteRetailProductImage");
     expect(media).toContain("reorderRetailProductImages");
+  });
+
+  it("replays jsonb payloads regardless of object key order", () => {
+    expect(canonicalPayload({ b: 2, a: { d: 4, c: 3 }, list: [{ z: 1, y: 2 }] }))
+      .toBe(canonicalPayload({ list: [{ y: 2, z: 1 }], a: { c: 3, d: 4 }, b: 2 }));
+    expect(canonicalPayload({ a: 1 })).not.toBe(canonicalPayload({ a: 2 }));
   });
 
   it("accepts the documented flat draft, PDP, SKC, SKU, and media action envelopes", () => {

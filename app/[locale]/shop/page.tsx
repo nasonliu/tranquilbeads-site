@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
-import { RetailShop } from "@/src/components/retail-shop";
+import { RetailShop, type RetailShopFacet, type RetailShopFilters } from "@/src/components/retail-shop";
 import { PageHero } from "@/src/components/page-hero";
 import { getRetailCopy } from "@/src/data/retail/copy";
 import { localizeRetailVariantOptions } from "@/src/data/retail/types";
@@ -12,6 +12,27 @@ import { listStorefrontV3Products } from "@/src/lib/retail/storefront-v3";
 
 export const dynamic = "force-dynamic";
 
+const facetOptionNames: Record<"en" | "ar", Record<RetailShopFacet, string[]>> = {
+  en: { material: ["material"], beadCount: ["bead count", "beads"], diameter: ["diameter", "bead diameter"] },
+  ar: { material: ["المادة", "الخامة", "مادة"], beadCount: ["عدد الخرزات", "عدد الحبات"], diameter: ["قطر الخرزة", "القطر"] },
+};
+
+function normalizedOptionName(value: string) {
+  return value.trim().toLocaleLowerCase().replace(/[\s_-]+/g, "");
+}
+
+function facetValue(options: Record<string, string>, names: string[]) {
+  const keys = new Set(names.map(normalizedOptionName));
+  return Object.entries(options).find(([name]) => keys.has(normalizedOptionName(name)))?.[1]?.trim() || undefined;
+}
+
+function initialFilters(search: Record<string, string | string[] | undefined>): RetailShopFilters {
+  return Object.fromEntries((["material", "beadCount", "diameter"] as RetailShopFacet[]).map((facet) => {
+    const values = search[facet];
+    return [facet, (Array.isArray(values) ? values : values ? [values] : []).filter(Boolean)];
+  })) as RetailShopFilters;
+}
+
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop">) {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
@@ -21,13 +42,14 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop">) 
   return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, "/shop")}`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
 }
 
-export default async function ShopPage({ params }: PageProps<"/[locale]/shop">) {
+export default async function ShopPage({ params, searchParams }: PageProps<"/[locale]/shop">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   if (locale === "zh") redirect("/en/shop");
   const copy = getRetailCopy(locale);
   const config = getRetailRuntimeConfig();
   const zones = await listStorefrontShippingZones();
+  const filters = initialFilters(await searchParams);
   const products = (await listStorefrontV3Products()).filter((p) => Boolean(p.images[0]?.url)).map((p) => ({
     sku:p.sku,
     slug:p.slug,
@@ -48,7 +70,15 @@ export default async function ShopPage({ params }: PageProps<"/[locale]/shop">) 
       available:Number(variant.available)>0,
       stock:Number(variant.available),
     })),
+    // Facets only derive from structured options on sellable SKUs; no title
+    // parsing means the category result remains safe for agent-managed data.
+    filterVariants:p.variants.filter((variant) => Number(variant.available)>0).map((variant) => {
+      const styleOptions = localizeRetailVariantOptions(variant.style_option_values ?? {}, locale);
+      const variantOptions = localizeRetailVariantOptions(variant.option_values, locale);
+      const valueFor = (facet: RetailShopFacet) => facetValue(styleOptions, facetOptionNames[locale][facet]) ?? facetValue(variantOptions, facetOptionNames[locale][facet]);
+      return { material:valueFor("material"), beadCount:valueFor("beadCount"), diameter:valueFor("diameter") };
+    }),
   }));
   const enabled = config.enabled && products.length > 0;
-  return <div className="space-y-12 pt-8 md:space-y-16"><PageHero eyebrow={copy.eyebrow} title={copy.title} description={copy.description} /><RetailShop locale={locale} products={products} zones={zones} paypalClientId={config.enabled ? config.paypalClientId : undefined} currency="USD" enabled={enabled} copy={copy} /></div>;
+  return <div className="space-y-12 pt-8 md:space-y-16"><PageHero eyebrow={copy.eyebrow} title={copy.title} description={copy.description} /><RetailShop locale={locale} products={products} zones={zones} paypalClientId={config.enabled ? config.paypalClientId : undefined} currency="USD" enabled={enabled} copy={copy} initialFilters={filters} /></div>;
 }

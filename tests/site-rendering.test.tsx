@@ -66,6 +66,8 @@ describe("localized site rendering", () => {
     const wrapper = container.querySelector("[data-locale-shell]");
     expect(wrapper).toHaveAttribute("lang", "ar");
     expect(wrapper).toHaveAttribute("dir", "rtl");
+    expect(document.documentElement).toHaveAttribute("lang", "ar");
+    expect(document.documentElement).toHaveAttribute("dir", "rtl");
   });
 
   it("renders the collections page with collection highlights", async () => {

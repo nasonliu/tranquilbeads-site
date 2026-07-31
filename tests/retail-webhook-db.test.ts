@@ -41,7 +41,8 @@ describe("verified webhook database transaction", () => {
     expect(statements[0]).not.toContain("UPDATE");
     expect(statements[1]).toContain("WITH capture_update AS");
     expect(statements[1]).toContain("UPDATE retail_webhook_events SET status = CASE");
-    expect(statements[1]).toContain("retail_apply_paypal_capture(?::text, ?::text, ?::jsonb, ?::jsonb, ?::bigint, ?::bigint)");
+    expect(statements[1]).toContain("retail_apply_paypal_capture_and_finalize(?::text, ?::text, ?::jsonb, ?::jsonb, ?::bigint, ?::bigint)");
+    expect(statements[1]).not.toContain("retail_apply_paypal_capture(?::text");
     expect(statements[1]).toContain("paypal_event_id=?::text");
     expect(statements[1]).not.toContain("INSERT INTO retail_webhook_events");
     expect(statements[1]).not.toContain("processed_event AS");

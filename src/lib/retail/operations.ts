@@ -56,7 +56,8 @@ export const retailCheckoutDto = z.object({
   city: z.string().trim().min(1).max(100), region: z.string().trim().max(100).default(""),
   postalCode: z.string().trim().max(30).default(""), country: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/),
   phone: z.string().trim().max(50).default(""), termsVersion: z.string().trim().min(1).max(50), termsAccepted: z.literal(true),
-  locale: z.enum(["en", "ar", "zh"]),
+  locale: z.enum(["en", "ar", "zh"]), accountIntent: z.enum(["guest", "create_or_access"]).default("guest"),
+  marketingConsent: z.boolean().default(false),
 }).strict();
 export const retailCartDto = z.array(z.object({ sku:z.string().trim().min(1).max(100), quantity:z.number().int().min(1).max(10) }).strict()).min(1).max(10);
 export const shippingZoneDto = z.object({ country:z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/), nameEn:z.string().trim().min(1).max(100), nameAr:z.string().trim().min(1).max(100), nameZh:z.string().trim().max(100).optional(), shippingMinor:z.number().int().nonnegative(), freeShippingThresholdMinor:z.number().int().positive().nullable(), taxRateBps:z.number().int().min(0).max(10000), active:z.boolean(), idempotencyKey:z.string().uuid() }).strict();
