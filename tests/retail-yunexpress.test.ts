@@ -27,10 +27,14 @@ describe("YunExpress provider adapter", () => {
       {product_code:"B2",product_name:"Express",fee_name:"freight",calculate_amount:21,currency:"CNY",interval_day:"3-5",price_name:"Contract",price_type:"AG",convert_currency:"USD",convert_amount:3,origin:"YT-SZ"},
     ]}),{status:200});}) as unknown as typeof fetch;
     const rates=await quoteYunExpressShipping({countryCode:"US",postalCode:"10001",weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
-    expect(calls.map((call)=>call.url)).toEqual(["https://openapi-sbx.yunexpress.cn/openapi/oauth2/token","https://openapi-sbx.yunexpress.cn/v1/price-trial/get_V2"]);
-    expect(JSON.parse(String(calls[1].init.body))).toMatchObject({country_code:"US",postal_code:"10001",weight:.3,length:18,width:12,height:6,origin:"YT-SZ"});
+    expect(calls[0].url).toBe("https://openapi-sbx.yunexpress.cn/openapi/oauth2/token");
+    const quoteUrl=new URL(calls[1].url);
+    expect(`${quoteUrl.origin}${quoteUrl.pathname}`).toBe("https://openapi-sbx.yunexpress.cn/v1/price-trial/get");
+    expect(Object.fromEntries(quoteUrl.searchParams)).toMatchObject({country_code:"US",postal_code:"10001",weight:"0.3",length:"18",width:"12",height:"6",origin:"YT-SZ"});
+    expect(calls[1].init.method).toBe("GET");
+    expect(calls[1].init.body).toBeUndefined();
     const headers=calls[1].init.headers as Record<string,string>;
-    expect(headers.token).toBe("t".repeat(32)); expect(headers.date).toBe("1700000000000"); expect(headers.sign).toBe(signYunExpressRequest({date:headers.date,method:"POST",uri:"/v1/price-trial/get_V2",body:String(calls[1].init.body)},"secret-test"));
+    expect(headers.token).toBe("t".repeat(32)); expect(headers.date).toBe("1700000000000"); expect(headers.sign).toBe(signYunExpressRequest({date:headers.date,method:"GET",uri:`${quoteUrl.pathname}${quoteUrl.search}`},"secret-test"));
     expect(rates).toEqual([
       expect.objectContaining({productCode:"A1",amount:1.5,currency:"USD",deliveryWindow:"5-8",fees:expect.arrayContaining([expect.objectContaining({name:"freight"}),expect.objectContaining({name:"fuel"})])}),
       expect.objectContaining({productCode:"B2",amount:3,currency:"USD"}),

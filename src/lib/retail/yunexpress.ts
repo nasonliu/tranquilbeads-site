@@ -88,22 +88,22 @@ export async function verifyYunExpressConnection(fetcher: Fetcher = fetch, now =
   return { configured: true, authenticated: true, environment: config.environment } as const;
 }
 
-async function signedRequest(uri: string, payload: unknown, fetcher: Fetcher, now: number) {
+async function signedGetRequest(pathname: string, params: Record<string, string | number>, fetcher: Fetcher, now: number) {
   const config = getYunExpressConfig();
   if (!config) throw new Error("yunexpress_not_configured");
   const token = await accessToken(config, fetcher, now);
-  const date = String(now), body = JSON.stringify(payload), method = "POST";
+  const query = new URLSearchParams(Object.entries(params).map(([key, value]) => [key, String(value)])).toString();
+  const uri = query ? `${pathname}?${query}` : pathname;
+  const date = String(now), method = "GET";
   return fetchJson(fetcher, `${config.baseUrl}${uri}`, {
     method,
     headers: {
       token,
       date,
-      sign: signYunExpressRequest({ date, method, uri, body }, config.appSecret),
+      sign: signYunExpressRequest({ date, method, uri }, config.appSecret),
       "accept-language": "en-US",
-      "content-type": "application/json;charset=utf-8",
       accept: "application/json",
     },
-    body,
   });
 }
 
@@ -135,7 +135,7 @@ export type YunExpressRate = {
 export async function quoteYunExpressShipping(input: z.infer<typeof yunExpressQuoteDto>, fetcher: Fetcher = fetch, now = Date.now()): Promise<YunExpressRate[]> {
   const parsed = yunExpressQuoteDto.parse(input);
   const config = getYunExpressConfig();
-  const body = {
+  const query = {
     country_code: parsed.countryCode,
     weight: parsed.weightGrams / 1_000,
     weight_unit: "KG",
@@ -146,7 +146,7 @@ export async function quoteYunExpressShipping(input: z.infer<typeof yunExpressQu
     ...(config?.origin ? { origin: config.origin } : {}),
     pieces: 1,
   };
-  const response = quoteResponse.safeParse(await signedRequest("/v1/price-trial/get_V2", body, fetcher, now));
+  const response = quoteResponse.safeParse(await signedGetRequest("/v1/price-trial/get", query, fetcher, now));
   if (!response.success) throw new Error("yunexpress_invalid_response");
   const providerSucceeded = response.data.success === true || response.data.success === "true";
   if (!providerSucceeded) throw new Error("yunexpress_quote_failed");
