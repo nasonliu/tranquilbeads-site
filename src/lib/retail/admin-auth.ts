@@ -31,7 +31,7 @@ function config() {
   const password = process.env.ADMIN_RETAIL_PASSWORD;
   const secret = process.env.ADMIN_RETAIL_SESSION_SECRET;
   if (!secret || secret.length < 32) throw new Error("retail_admin_not_configured");
-  if (password !== undefined && password.length > 0 && password.length < 16) throw new Error("retail_admin_not_configured");
+  if (password !== undefined && password.length > 0 && password.length < 8) throw new Error("retail_admin_not_configured");
   return { password: password || undefined, secret };
 }
 
@@ -58,7 +58,7 @@ function configuredOperators(): ConfiguredOperator[] {
       const role = typeof value.role === "string" && retailRoles.includes(value.role as RetailRole) ? value.role as RetailRole : undefined;
       const password = typeof value.password === "string" ? value.password : "";
       const email = typeof value.email === "string" && value.email.includes("@") ? value.email.trim().toLowerCase() : undefined;
-      if (!id || !name || !role || password.length < 16 || ids.has(id)) return [];
+      if (!id || !name || !role || password.length < 8 || ids.has(id)) return [];
       ids.add(id);
       return [{ id, name, role, password, legacy: false, ...(email ? { email } : {}) }];
     });

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createRetailAdminSession, readRetailAdminSession, consumeRetailAdminLoginFailure, verifyRetailAdminSession } from "@/src/lib/retail/admin-auth";
+import { authenticateRetailAdmin, createRetailAdminSession, readRetailAdminSession, consumeRetailAdminLoginFailure, verifyRetailAdminSession } from "@/src/lib/retail/admin-auth";
 import { detectRetailImage } from "@/src/lib/retail/upload-validation";
 
 describe("retail admin security helpers", () => {
@@ -17,6 +17,33 @@ describe("retail admin security helpers", () => {
     expect(JSON.parse(Buffer.from(session.split(".")[0]!, "base64url").toString())).toMatchObject({ v: 3, id: "ops-1" });
     if (priorSecret === undefined) delete process.env.ADMIN_RETAIL_SESSION_SECRET; else process.env.ADMIN_RETAIL_SESSION_SECRET = priorSecret;
     if (priorOperators === undefined) delete process.env.ADMIN_RETAIL_OPERATORS_JSON; else process.env.ADMIN_RETAIL_OPERATORS_JSON = priorOperators;
+  });
+
+  it("accepts eight-character admin passwords and fails closed at seven", () => {
+    const priorPassword = process.env.ADMIN_RETAIL_PASSWORD;
+    const priorSecret = process.env.ADMIN_RETAIL_SESSION_SECRET;
+    const priorOperators = process.env.ADMIN_RETAIL_OPERATORS_JSON;
+    try {
+      process.env.ADMIN_RETAIL_SESSION_SECRET = "s".repeat(32);
+      process.env.ADMIN_RETAIL_PASSWORD = "12345678";
+      process.env.ADMIN_RETAIL_OPERATORS_JSON = JSON.stringify([{ id: "ops-8", name: "Ops", role: "operations", password: "abcdefgh" }]);
+      expect(authenticateRetailAdmin("12345678")).toMatchObject({ id: "legacy-admin", role: "owner" });
+      expect(authenticateRetailAdmin("abcdefgh", "ops-8")).toMatchObject({ id: "ops-8", role: "operations" });
+      process.env.ADMIN_RETAIL_PASSWORD = "1234567";
+      expect(() => authenticateRetailAdmin("1234567")).toThrow("retail_admin_not_configured");
+      process.env.ADMIN_RETAIL_PASSWORD = "12345678";
+      process.env.ADMIN_RETAIL_OPERATORS_JSON = JSON.stringify([{ id: "ops-7", name: "Ops", role: "operations", password: "abcdefg" }]);
+      expect(authenticateRetailAdmin("abcdefg", "ops-7")).toBeNull();
+    } finally {
+      if (priorPassword === undefined) delete process.env.ADMIN_RETAIL_PASSWORD; else process.env.ADMIN_RETAIL_PASSWORD = priorPassword;
+      if (priorSecret === undefined) delete process.env.ADMIN_RETAIL_SESSION_SECRET; else process.env.ADMIN_RETAIL_SESSION_SECRET = priorSecret;
+      if (priorOperators === undefined) delete process.env.ADMIN_RETAIL_OPERATORS_JSON; else process.env.ADMIN_RETAIL_OPERATORS_JSON = priorOperators;
+    }
+  });
+
+  it("keeps the API and browser password boundary aligned at eight", () => {
+    expect(readFileSync("app/api/admin/retail/login/route.ts", "utf8")).toContain("password: z.string().min(8)");
+    expect(readFileSync("app/admin/retail/ui.tsx", "utf8")).toContain("minLength={8}");
   });
 
   it("fails closed when login failure storage is unavailable", async () => {

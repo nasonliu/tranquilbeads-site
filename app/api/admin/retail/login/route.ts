@@ -2,7 +2,7 @@ import { z } from "zod";
 import { assertSameOrigin, authenticateRetailAdmin, consumeRetailAdminLoginFailure, setRetailAdminSession } from "@/src/lib/retail/admin-auth";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
-const loginDto = z.object({ password: z.string().min(16).max(256), actorId: z.string().trim().min(1).max(100).optional() }).strict();
+const loginDto = z.object({ password: z.string().min(8).max(256), actorId: z.string().trim().min(1).max(100).optional() }).strict();
 
 export async function POST(request: Request) {
   try {

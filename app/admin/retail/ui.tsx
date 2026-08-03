@@ -296,7 +296,7 @@ export function RetailAdminLogin() {
               type="password"
               autoComplete="current-password"
               required
-              minLength={16}
+              minLength={8}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
