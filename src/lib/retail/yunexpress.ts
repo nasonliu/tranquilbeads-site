@@ -30,8 +30,41 @@ type YunEnvironment = keyof typeof API_BASES;
 type Fetcher = typeof fetch;
 type YunConfig = { environment: YunEnvironment; baseUrl: string; appId: string; appSecret: string; sourceKey: string; origin?: string };
 type TokenCache = { key: string; accessToken: string; expiresAt: number } | null;
+type TokenFlight = { key: string; promise: Promise<string> } | null;
+
+export type YunExpressCountry = { code: string; name: string; active: boolean };
+export type YunExpressCoverageResult = {
+  countryCode: string;
+  postalCode: string;
+  status: "quote_available" | "no_eligible_service" | "provider_not_bound" | "auth_or_permission" | "provider_throttled" | "transient_transport" | "invalid_provider_payload";
+  providerCode?: string;
+  rates: YunExpressRate[];
+};
+
+export const yunExpressCoverageDto = z.object({
+  countries: z.array(z.object({
+    countryCode: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/),
+    postalCode: z.string().trim().max(30).default(""),
+  }).strict()).min(1).max(6),
+  weightGrams: z.number().int().min(1).max(30_000).default(300),
+  lengthMm: z.number().int().min(1).max(2_000).default(180),
+  widthMm: z.number().int().min(1).max(2_000).default(120),
+  heightMm: z.number().int().min(1).max(2_000).default(60),
+  packageType: z.enum(["C", "E"]).default("C"),
+}).strict();
+
+export class YunExpressProviderError extends Error {
+  constructor(readonly operation: string, readonly providerCode?: string) {
+    super(`yunexpress_${operation}_failed`);
+  }
+}
+
+class YunExpressHttpError extends Error {
+  constructor(readonly status: number) { super("yunexpress_http_failed"); }
+}
 
 let tokenCache: TokenCache = null;
+let tokenFlight: TokenFlight = null;
 
 export function getYunExpressConfig(env: NodeJS.ProcessEnv = process.env): YunConfig | null {
   const environment: YunEnvironment = env.YUNEXPRESS_ENV === "production" ? "production" : "sandbox";
@@ -57,7 +90,7 @@ async function fetchJson(fetcher: Fetcher, url: string, init: RequestInit) {
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     const response = await fetcher(url, { ...init, signal: controller.signal, cache: "no-store" });
-    if (!response.ok) throw new Error("yunexpress_request_failed");
+    if (!response.ok) throw new YunExpressHttpError(response.status);
     return await response.json() as unknown;
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("yunexpress_")) throw error;
@@ -69,16 +102,24 @@ const tokenResponse = z.object({ accessToken: z.string().min(16), expiresIn: z.c
 
 async function accessToken(config: YunConfig, fetcher: Fetcher, now: number) {
   const cacheKey = `${config.environment}:${config.appId}:${config.sourceKey}`;
-  if (tokenCache?.key === cacheKey && tokenCache.expiresAt > now + TOKEN_SAFETY_MS) return tokenCache.accessToken;
-  const raw = await fetchJson(fetcher, `${config.baseUrl}/openapi/oauth2/token`, {
-    method: "POST",
-    headers: { "content-type": "application/json;charset=utf-8", accept: "application/json" },
-    body: JSON.stringify({ grantType: "client_credentials", appId: config.appId, appSecret: config.appSecret, sourceKey: config.sourceKey }),
-  });
-  const parsed = tokenResponse.safeParse(raw);
-  if (!parsed.success) throw new Error("yunexpress_auth_failed");
-  tokenCache = { key: cacheKey, accessToken: parsed.data.accessToken, expiresAt: now + parsed.data.expiresIn * 1_000 };
-  return parsed.data.accessToken;
+  if (tokenCache?.key === cacheKey && tokenCache.expiresAt > now) return tokenCache.accessToken;
+  if (tokenFlight?.key === cacheKey) return tokenFlight.promise;
+  const promise = (async () => {
+    const raw = await fetchJson(fetcher, `${config.baseUrl}/openapi/oauth2/token`, {
+      method: "POST",
+      headers: { "content-type": "application/json;charset=utf-8", accept: "application/json" },
+      body: JSON.stringify({ grantType: "client_credentials", appId: config.appId, appSecret: config.appSecret, sourceKey: config.sourceKey }),
+    });
+    const parsed = tokenResponse.safeParse(raw);
+    if (!parsed.success) throw new Error("yunexpress_auth_failed");
+    const lifetimeMs = parsed.data.expiresIn * 1_000;
+    const safetyMs = Math.min(TOKEN_SAFETY_MS, Math.max(1_000, Math.floor(lifetimeMs / 2)));
+    tokenCache = { key: cacheKey, accessToken: parsed.data.accessToken, expiresAt: now + Math.max(1_000, lifetimeMs - safetyMs) };
+    return parsed.data.accessToken;
+  })();
+  tokenFlight = { key: cacheKey, promise };
+  try { return await promise; }
+  finally { if (tokenFlight?.promise === promise) tokenFlight = null; }
 }
 
 export async function verifyYunExpressConnection(fetcher: Fetcher = fetch, now = Date.now()) {
@@ -127,6 +168,51 @@ const quoteResponse = z.object({
   msg: z.string().optional(),
 }).passthrough();
 
+function responseArray(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (!value || typeof value !== "object") return [];
+  const record = value as Record<string, unknown>;
+  for (const key of ["result", "detail", "data", "countries", "list", "items"]) {
+    const nested = record[key];
+    if (Array.isArray(nested)) return nested;
+    if (nested && typeof nested === "object") {
+      const found = responseArray(nested);
+      if (found.length) return found;
+    }
+  }
+  return [];
+}
+
+function firstString(record: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
+
+export async function listYunExpressCountries(fetcher: Fetcher = fetch, now = Date.now()): Promise<YunExpressCountry[]> {
+  const raw = await signedGetRequest("/v1/basic-data/countries/getlist", {}, fetcher, now);
+  const envelope = z.object({ success: z.union([z.boolean(), z.string()]).optional(), code: z.union([z.string(), z.number()]).optional() }).passthrough().safeParse(raw);
+  if (!envelope.success) throw new Error("yunexpress_invalid_response");
+  if (envelope.data.success === false || envelope.data.success === "false") throw new YunExpressProviderError("countries", envelope.data.code === undefined ? undefined : String(envelope.data.code));
+  const unique = new Map<string, YunExpressCountry>();
+  for (const item of responseArray(raw)) {
+    if (!item || typeof item !== "object") continue;
+    const record = item as Record<string, unknown>;
+    const code = firstString(record, ["country_code", "countryCode", "country_iso_code", "countryIsoCode", "code"]).toUpperCase();
+    if (!/^[A-Z]{2}$/.test(code)) continue;
+    const name = firstString(record, ["country_name_en", "countryNameEn", "english_name", "englishName", "country_name", "countryName", "name"]) || code;
+    const status = record.status ?? record.enabled ?? record.is_enable ?? record.isEnabled;
+    const active = status !== false && status !== 0 && !["0", "false", "disabled", "inactive"].includes(String(status).toLowerCase());
+    const existing = unique.get(code);
+    if (!existing || (active && !existing.active)) unique.set(code, { code, name, active });
+  }
+  const countries = [...unique.values()].sort((a, b) => a.code.localeCompare(b.code));
+  if (!countries.length) throw new Error("yunexpress_invalid_response");
+  return countries;
+}
+
 export type YunExpressRate = {
   productCode: string; productName: string; priceName: string; priceType: string; deliveryWindow: string;
   amount: number; currency: string; origin: string; fees: Array<{ name: string; amount: number; currency: string }>;
@@ -149,7 +235,7 @@ export async function quoteYunExpressShipping(input: z.infer<typeof yunExpressQu
   const response = quoteResponse.safeParse(await signedGetRequest("/v1/price-trial/get", query, fetcher, now));
   if (!response.success) throw new Error("yunexpress_invalid_response");
   const providerSucceeded = response.data.success === true || response.data.success === "true";
-  if (!providerSucceeded) throw new Error("yunexpress_quote_failed");
+  if (!providerSucceeded) throw new YunExpressProviderError("quote", response.data.code === undefined ? undefined : String(response.data.code));
   const grouped = new Map<string, YunExpressRate>();
   for (const line of response.data.result) {
     const currency = line.convert_currency || line.currency;
@@ -163,4 +249,56 @@ export async function quoteYunExpressShipping(input: z.infer<typeof yunExpressQu
   return [...grouped.values()].sort((a, b) => a.amount - b.amount);
 }
 
-export function resetYunExpressTokenCacheForTests() { tokenCache = null; }
+function coverageStatus(error: unknown): YunExpressCoverageResult["status"] {
+  if (error instanceof YunExpressProviderError) {
+    if (error.providerCode === "02060015") return "provider_not_bound";
+    if (error.providerCode === "0200412101" || error.providerCode === "401" || error.providerCode === "403") return "auth_or_permission";
+    if (error.providerCode === "429") return "provider_throttled";
+  }
+  if (error instanceof YunExpressHttpError) {
+    if (error.status === 401 || error.status === 403) return "auth_or_permission";
+    if (error.status === 429) return "provider_throttled";
+    if (error.status >= 500) return "transient_transport";
+  }
+  const message = error instanceof Error ? error.message : "";
+  if (message === "yunexpress_auth_failed" || message === "yunexpress_not_configured") return "auth_or_permission";
+  if (message === "yunexpress_unavailable" || message === "yunexpress_http_failed") return "transient_transport";
+  return "invalid_provider_payload";
+}
+
+export async function probeYunExpressCoverage(input: z.infer<typeof yunExpressCoverageDto>, fetcher: Fetcher = fetch, now = Date.now()): Promise<YunExpressCoverageResult[]> {
+  const parsed = yunExpressCoverageDto.parse(input);
+  await verifyYunExpressConnection(fetcher, now);
+  const results: YunExpressCoverageResult[] = new Array(parsed.countries.length);
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < parsed.countries.length) {
+      const index = cursor++;
+      const country = parsed.countries[index];
+      try {
+        const rates = await quoteYunExpressShipping({
+          countryCode: country.countryCode,
+          postalCode: country.postalCode,
+          weightGrams: parsed.weightGrams,
+          lengthMm: parsed.lengthMm,
+          widthMm: parsed.widthMm,
+          heightMm: parsed.heightMm,
+          packageType: parsed.packageType,
+        }, fetcher, now + index);
+        results[index] = { countryCode: country.countryCode, postalCode: country.postalCode, status: rates.length ? "quote_available" : "no_eligible_service", rates };
+      } catch (error) {
+        results[index] = {
+          countryCode: country.countryCode,
+          postalCode: country.postalCode,
+          status: coverageStatus(error),
+          ...(error instanceof YunExpressProviderError && error.providerCode ? { providerCode: error.providerCode } : {}),
+          rates: [],
+        };
+      }
+    }
+  };
+  await Promise.all([worker(), worker()]);
+  return results;
+}
+
+export function resetYunExpressTokenCacheForTests() { tokenCache = null; tokenFlight = null; }

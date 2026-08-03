@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { getYunExpressConfig, quoteYunExpressShipping, resetYunExpressTokenCacheForTests, signYunExpressRequest, verifyYunExpressConnection } from "@/src/lib/retail/yunexpress";
+import { getYunExpressConfig, listYunExpressCountries, probeYunExpressCoverage, quoteYunExpressShipping, resetYunExpressTokenCacheForTests, signYunExpressRequest, verifyYunExpressConnection } from "@/src/lib/retail/yunexpress";
 
 const saved = { env:process.env.YUNEXPRESS_ENV, appId:process.env.YUNEXPRESS_APP_ID, appSecret:process.env.YUNEXPRESS_APP_SECRET, sourceKey:process.env.YUNEXPRESS_SOURCE_KEY, origin:process.env.YUNEXPRESS_ORIGIN_CODE };
 const restore = (name:string,value:string|undefined) => value===undefined ? delete process.env[name] : void (process.env[name]=value);
@@ -47,6 +47,14 @@ describe("YunExpress provider adapter", () => {
     await expect(verifyYunExpressConnection()).resolves.toEqual({configured:false,authenticated:false,environment:null});
   });
 
+  it("coalesces concurrent OAuth requests and safely reuses short-lived tokens", async () => {
+    let tokenCalls=0;
+    const fetcher=vi.fn(async ()=>{tokenCalls+=1;await new Promise((resolve)=>setTimeout(resolve,5));return new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:60}),{status:200});}) as unknown as typeof fetch;
+    await Promise.all([verifyYunExpressConnection(fetcher,1_700_000_000_000),verifyYunExpressConnection(fetcher,1_700_000_000_000)]);
+    await verifyYunExpressConnection(fetcher,1_700_000_010_000);
+    expect(tokenCalls).toBe(1);
+  });
+
   it("protects admin provider routes and never exposes a public write endpoint", () => {
     const root=process.cwd();
     const status=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/status/route.ts"),"utf8");
@@ -56,5 +64,47 @@ describe("YunExpress provider adapter", () => {
     expect(quote).toContain("assertSameOrigin");
     expect(quote).toContain("consumeRetailRateLimit");
     expect(fs.existsSync(path.join(root,"app/api/retail/shipping/provider"))).toBe(false);
+  });
+
+  it("normalizes and deduplicates the provider country list", async () => {
+    let calls=0;
+    const fetcher=vi.fn(async (_url:string|URL|Request)=>++calls===1
+      ? new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200})
+      : new Response(JSON.stringify({success:true,result:[
+        {country_code:"US",country_name_en:"United States",status:1},
+        {countryCode:"de",countryName:"Germany",enabled:true},
+        {country_code:"US",country_name_en:"USA",status:0},
+        {country_code:"INVALID",country_name_en:"Invalid"},
+      ]}),{status:200})) as unknown as typeof fetch;
+    await expect(listYunExpressCountries(fetcher,1_700_000_000_000)).resolves.toEqual([
+      {code:"DE",name:"Germany",active:true},
+      {code:"US",name:"United States",active:true},
+    ]);
+  });
+
+  it("classifies a bounded coverage batch without exposing provider messages", async () => {
+    let calls=0;
+    const fetcher=vi.fn(async (url:string|URL|Request)=>{
+      if(++calls===1)return new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200});
+      const country=new URL(String(url)).searchParams.get("country_code");
+      if(country==="US")return new Response(JSON.stringify({success:true,result:[{product_code:"A1",product_name:"Direct",fee_name:"freight",calculate_amount:7,currency:"USD"}]}),{status:200});
+      return new Response(JSON.stringify({success:false,code:"02060015",msg:"internal contract detail"}),{status:200});
+    }) as unknown as typeof fetch;
+    const results=await probeYunExpressCoverage({countries:[{countryCode:"US",postalCode:"10001"},{countryCode:"DE",postalCode:"10115"}],weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
+    expect(results).toEqual([
+      expect.objectContaining({countryCode:"US",status:"quote_available",rates:[expect.objectContaining({productCode:"A1",amount:7,currency:"USD"})]}),
+      {countryCode:"DE",postalCode:"10115",status:"provider_not_bound",providerCode:"02060015",rates:[]},
+    ]);
+    expect(JSON.stringify(results)).not.toContain("internal contract detail");
+  });
+
+  it("classifies provider HTTP throttling without leaking a response body", async () => {
+    let calls=0;
+    const fetcher=vi.fn(async ()=>++calls===1
+      ? new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200})
+      : new Response("provider secret detail",{status:429})) as unknown as typeof fetch;
+    const results=await probeYunExpressCoverage({countries:[{countryCode:"US",postalCode:"10001"}],weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
+    expect(results).toEqual([{countryCode:"US",postalCode:"10001",status:"provider_throttled",rates:[]}]);
+    expect(JSON.stringify(results)).not.toContain("provider secret detail");
   });
 });
