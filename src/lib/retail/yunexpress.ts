@@ -36,8 +36,9 @@ export type YunExpressCountry = { code: string; name: string; active: boolean };
 export type YunExpressCoverageResult = {
   countryCode: string;
   postalCode: string;
-  status: "quote_available" | "no_eligible_service" | "provider_not_bound" | "auth_or_permission" | "provider_throttled" | "transient_transport" | "invalid_provider_payload";
+  status: "quote_available" | "no_eligible_service" | "provider_not_bound" | "auth_or_permission" | "provider_throttled" | "transport_timeout" | "transport_network" | "provider_unavailable" | "invalid_provider_payload";
   providerCode?: string;
+  httpStatus?: number;
   rates: YunExpressRate[];
 };
 
@@ -61,6 +62,12 @@ export class YunExpressProviderError extends Error {
 
 class YunExpressHttpError extends Error {
   constructor(readonly status: number) { super("yunexpress_http_failed"); }
+}
+
+class YunExpressTransportError extends Error {
+  constructor(readonly category: "timeout" | "network" | "invalid_json") {
+    super(`yunexpress_${category}`);
+  }
 }
 
 let tokenCache: TokenCache = null;
@@ -89,12 +96,22 @@ async function fetchJson(fetcher: Fetcher, url: string, init: RequestInit) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    const response = await fetcher(url, { ...init, signal: controller.signal, cache: "no-store" });
+    let response: Response;
+    try {
+      response = await fetcher(url, { ...init, signal: controller.signal, cache: "no-store" });
+    } catch (error) {
+      throw new YunExpressTransportError(controller.signal.aborted ? "timeout" : "network");
+    }
     if (!response.ok) throw new YunExpressHttpError(response.status);
-    return await response.json() as unknown;
+    try {
+      return await response.json() as unknown;
+    } catch {
+      throw new YunExpressTransportError("invalid_json");
+    }
   } catch (error) {
+    if (error instanceof YunExpressHttpError || error instanceof YunExpressTransportError) throw error;
     if (error instanceof Error && error.message.startsWith("yunexpress_")) throw error;
-    throw new Error("yunexpress_unavailable");
+    throw new YunExpressTransportError("network");
   } finally { clearTimeout(timer); }
 }
 
@@ -249,21 +266,26 @@ export async function quoteYunExpressShipping(input: z.infer<typeof yunExpressQu
   return [...grouped.values()].sort((a, b) => a.amount - b.amount);
 }
 
-function coverageStatus(error: unknown): YunExpressCoverageResult["status"] {
+export function classifyYunExpressFailure(error: unknown): Pick<YunExpressCoverageResult, "status" | "providerCode" | "httpStatus"> {
   if (error instanceof YunExpressProviderError) {
-    if (error.providerCode === "02060015") return "provider_not_bound";
-    if (error.providerCode === "0200412101" || error.providerCode === "401" || error.providerCode === "403") return "auth_or_permission";
-    if (error.providerCode === "429") return "provider_throttled";
+    const providerCode = error.providerCode;
+    if (providerCode === "02060015") return { status: "provider_not_bound", providerCode };
+    if (providerCode === "0200412101" || providerCode === "401" || providerCode === "403") return { status: "auth_or_permission", ...(providerCode ? { providerCode } : {}) };
+    if (providerCode === "429") return { status: "provider_throttled", providerCode };
   }
   if (error instanceof YunExpressHttpError) {
-    if (error.status === 401 || error.status === 403) return "auth_or_permission";
-    if (error.status === 429) return "provider_throttled";
-    if (error.status >= 500) return "transient_transport";
+    if (error.status === 401 || error.status === 403) return { status: "auth_or_permission", httpStatus: error.status };
+    if (error.status === 429) return { status: "provider_throttled", httpStatus: error.status };
+    if (error.status >= 500) return { status: "provider_unavailable", httpStatus: error.status };
+  }
+  if (error instanceof YunExpressTransportError) {
+    if (error.category === "timeout") return { status: "transport_timeout" };
+    if (error.category === "network") return { status: "transport_network" };
+    return { status: "invalid_provider_payload" };
   }
   const message = error instanceof Error ? error.message : "";
-  if (message === "yunexpress_auth_failed" || message === "yunexpress_not_configured") return "auth_or_permission";
-  if (message === "yunexpress_unavailable" || message === "yunexpress_http_failed") return "transient_transport";
-  return "invalid_provider_payload";
+  if (message === "yunexpress_auth_failed" || message === "yunexpress_not_configured") return { status: "auth_or_permission" };
+  return { status: "invalid_provider_payload" };
 }
 
 export async function probeYunExpressCoverage(input: z.infer<typeof yunExpressCoverageDto>, fetcher: Fetcher = fetch, now = Date.now()): Promise<YunExpressCoverageResult[]> {
@@ -275,6 +297,7 @@ export async function probeYunExpressCoverage(input: z.infer<typeof yunExpressCo
     while (cursor < parsed.countries.length) {
       const index = cursor++;
       const country = parsed.countries[index];
+      const startedAt = Date.now();
       try {
         const rates = await quoteYunExpressShipping({
           countryCode: country.countryCode,
@@ -287,11 +310,17 @@ export async function probeYunExpressCoverage(input: z.infer<typeof yunExpressCo
         }, fetcher, now + index);
         results[index] = { countryCode: country.countryCode, postalCode: country.postalCode, status: rates.length ? "quote_available" : "no_eligible_service", rates };
       } catch (error) {
+        const failure = classifyYunExpressFailure(error);
+        console.warn("yunexpress_coverage_probe_failed", {
+          countryCode: country.countryCode,
+          status: failure.status,
+          ...(failure.httpStatus ? { httpStatus: failure.httpStatus } : {}),
+          durationMs: Date.now() - startedAt,
+        });
         results[index] = {
           countryCode: country.countryCode,
           postalCode: country.postalCode,
-          status: coverageStatus(error),
-          ...(error instanceof YunExpressProviderError && error.providerCode ? { providerCode: error.providerCode } : {}),
+          ...failure,
           rates: [],
         };
       }

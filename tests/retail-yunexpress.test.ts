@@ -104,7 +104,53 @@ describe("YunExpress provider adapter", () => {
       ? new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200})
       : new Response("provider secret detail",{status:429})) as unknown as typeof fetch;
     const results=await probeYunExpressCoverage({countries:[{countryCode:"US",postalCode:"10001"}],weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
-    expect(results).toEqual([{countryCode:"US",postalCode:"10001",status:"provider_throttled",rates:[]}]);
+    expect(results).toEqual([{countryCode:"US",postalCode:"10001",status:"provider_throttled",httpStatus:429,rates:[]}]);
     expect(JSON.stringify(results)).not.toContain("provider secret detail");
+  });
+
+  it("classifies network failures without leaking details", async () => {
+    const failure=new TypeError("private network detail");
+    let calls=0;
+    const fetcher=vi.fn(async ()=>{if(++calls===1)return new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200});throw failure;}) as unknown as typeof fetch;
+    const results=await probeYunExpressCoverage({countries:[{countryCode:"US",postalCode:"10001"}],weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
+    expect(results).toEqual([{countryCode:"US",postalCode:"10001",status:"transport_network",rates:[]}]);
+    expect(JSON.stringify(results)).not.toContain(failure.message);
+  });
+
+  it("classifies only the local eight-second abort as a transport timeout", async () => {
+    vi.useFakeTimers();
+    try {
+      let calls=0;
+      const fetcher=vi.fn(async (_url:string|URL|Request,init?:RequestInit)=>{
+        if(++calls===1)return new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200});
+        return await new Promise<Response>((_resolve,reject)=>init?.signal?.addEventListener("abort",()=>reject(Object.assign(new Error("private abort detail"),{name:"AbortError"})),{once:true}));
+      }) as unknown as typeof fetch;
+      const pending=probeYunExpressCoverage({countries:[{countryCode:"US",postalCode:"10001"}],weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
+      await vi.advanceTimersByTimeAsync(8_000);
+      await expect(pending).resolves.toEqual([{countryCode:"US",postalCode:"10001",status:"transport_timeout",rates:[]}]);
+    } finally { vi.useRealTimers(); }
+  });
+
+  it("distinguishes provider HTTP 5xx from invalid JSON without exposing response bodies", async () => {
+    const run=async(response:Response)=>{
+      resetYunExpressTokenCacheForTests();
+      let calls=0;
+      const fetcher=vi.fn(async ()=>++calls===1?new Response(JSON.stringify({accessToken:"t".repeat(32),expiresIn:7200}),{status:200}):response) as unknown as typeof fetch;
+      return probeYunExpressCoverage({countries:[{countryCode:"DE",postalCode:"10115"}],weightGrams:300,lengthMm:180,widthMm:120,heightMm:60,packageType:"C"},fetcher,1_700_000_000_000);
+    };
+    await expect(run(new Response("upstream private detail",{status:502}))).resolves.toEqual([{countryCode:"DE",postalCode:"10115",status:"provider_unavailable",httpStatus:502,rates:[]}]);
+    const invalid=await run(new Response("not json",{status:200,headers:{"content-type":"text/html"}}));
+    expect(invalid).toEqual([{countryCode:"DE",postalCode:"10115",status:"invalid_provider_payload",rates:[]}]);
+    expect(JSON.stringify(invalid)).not.toContain("not json");
+  });
+
+  it("keeps OAuth-stage provider diagnostics visible in the coverage route and admin UI", () => {
+    const root=process.cwd();
+    const route=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/coverage/route.ts"),"utf8");
+    const panel=fs.readFileSync(path.join(root,"app/admin/retail/yunexpress-provider-panel.tsx"),"utf8");
+    expect(route).toContain("classifyYunExpressFailure(error)");
+    expect(route).toContain("providerStatus: failure.status");
+    expect(panel).toContain("body.providerStatus");
+    expect(panel).toContain("httpStatus:body.httpStatus");
   });
 });
