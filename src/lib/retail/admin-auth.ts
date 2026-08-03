@@ -23,7 +23,7 @@ const rolePermissions: Record<RetailRole, ReadonlySet<RetailPermission>> = {
   viewer: new Set(["orders:read", "finance:read"]),
 };
 
-type ConfiguredOperator = RetailAdminActor & { password: string };
+type ConfiguredOperator = RetailAdminActor & { password: string; email?: string };
 type SessionPayload = RetailAdminActor & { exp: number; v: 3; jti: string; cv: string };
 type ParsedSession = { actor: RetailAdminActor; exp: number; jti: string; cv: string };
 
@@ -50,17 +50,24 @@ function configuredOperators(): ConfiguredOperator[] {
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     const ids = new Set<string>();
-    return parsed.flatMap((row): ConfiguredOperator[] => {
+    const operators = parsed.flatMap((row): ConfiguredOperator[] => {
       if (!row || typeof row !== "object") return [];
       const value = row as Record<string, unknown>;
       const id = typeof value.id === "string" ? value.id.trim() : "";
       const name = typeof value.name === "string" ? value.name.trim() : "";
       const role = typeof value.role === "string" && retailRoles.includes(value.role as RetailRole) ? value.role as RetailRole : undefined;
       const password = typeof value.password === "string" ? value.password : "";
+      const email = typeof value.email === "string" && value.email.includes("@") ? value.email.trim().toLowerCase() : undefined;
       if (!id || !name || !role || password.length < 16 || ids.has(id)) return [];
       ids.add(id);
-      return [{ id, name, role, password, legacy: false }];
+      return [{ id, name, role, password, legacy: false, ...(email ? { email } : {}) }];
     });
+    const emails = new Set<string>();
+    for (const operator of operators) {
+      if (operator.email && emails.has(operator.email)) return [];
+      if (operator.email) emails.add(operator.email);
+    }
+    return operators;
   } catch { return []; }
 }
 
@@ -124,6 +131,29 @@ export function authenticateRetailAdmin(password: string, actorId?: string): Ret
   }
   const operator = currentActor(selected, false);
   return operator && safeEqual(password, operator.password) ? { id: operator.id, name: operator.name, role: operator.role, legacy: false } : null;
+}
+
+function actorWithoutCredential(actor: RetailAdminActor & { password: string }) {
+  return { id: actor.id, name: actor.name, role: actor.role, legacy: actor.legacy } satisfies RetailAdminActor;
+}
+
+export function retailAdminActorForEmail(value: string): RetailAdminActor | null {
+  const email = value.trim().toLowerCase();
+  const legacyEmail = process.env.ADMIN_RETAIL_MAGIC_LINK_EMAIL?.trim().toLowerCase();
+  const operators = configuredOperators();
+  if (legacyEmail && operators.some((candidate) => candidate.email === legacyEmail)) return null;
+  if (legacyEmail && email === legacyEmail) {
+    const actor = currentActor("legacy-admin", true);
+    return actor ? actorWithoutCredential(actor) : null;
+  }
+  const operator = operators.find((candidate) => candidate.email === email);
+  return operator ? actorWithoutCredential(operator) : null;
+}
+
+export function retailAdminActorById(id: string): RetailAdminActor | null {
+  const legacy = id === "legacy-admin";
+  const actor = currentActor(id, legacy);
+  return actor ? actorWithoutCredential(actor) : null;
 }
 
 export async function requireRetailAdmin() {

@@ -225,7 +225,13 @@ export function RetailAdminLogin() {
     : { label: "Operator ID (optional)", hint: "Leave blank to use the legacy retail-admin login." };
   const [actorId, setActorId] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [linkPending, setLinkPending] = useState(false);
+  const [linkMessage, setLinkMessage] = useState("");
   const [error, setError] = useState("");
+  const magicCopy = locale === "zh"
+    ? { divider: "或者", label: "管理员邮箱", action: "发送一次性登录链接", sent: "如果邮箱已获授权，登录链接将在几分钟内送达。" }
+    : { divider: "or", label: "Admin email", action: "Email me a one-time sign-in link", sent: "If this email is authorized, a sign-in link will arrive within a few minutes." };
 
   return (
     <AdminLocaleContext.Provider value={locale}>
@@ -299,6 +305,15 @@ export function RetailAdminLogin() {
             {copy.signIn}
           </button>
           {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+          <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-wider text-muted"><span className="h-px flex-1 bg-[#dfd2c0]"/><span>{magicCopy.divider}</span><span className="h-px flex-1 bg-[#dfd2c0]"/></div>
+          <label className="block text-sm">
+            {magicCopy.label}
+            <input className="mt-2 w-full rounded-lg border border-[#cdbda9] bg-white p-3" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+          </label>
+          <button className="mt-4 w-full rounded-lg border border-accent/40 px-4 py-3 font-medium text-accent-deep disabled:opacity-60" type="button" disabled={linkPending || !email.trim()} onClick={async()=>{setLinkPending(true);setLinkMessage("");try{await fetch("/api/admin/retail/auth/request-link",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({email:email.trim()})});setLinkMessage(magicCopy.sent);}finally{setLinkPending(false);}}}>
+            {linkPending ? "…" : magicCopy.action}
+          </button>
+          {linkMessage && <p className="mt-3 text-sm text-[#52603d]" role="status">{linkMessage}</p>}
         </form>
       </main>
     </AdminLocaleContext.Provider>
