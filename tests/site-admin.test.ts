@@ -20,6 +20,20 @@ async function createSiteFixture() {
       email: "sales@tranquilbeads.com",
       whatsappHref: "https://wa.me/8618929564545",
       whatsappDisplay: "+86 189 2956 4545",
+      whatsappContacts: [
+        {
+          id: "china",
+          label: { en: "China team", ar: "فريق الصين" },
+          href: "https://wa.me/8618929564545",
+          display: "+86 189 2956 4545",
+        },
+        {
+          id: "uk",
+          label: { en: "UK team", ar: "فريق المملكة المتحدة" },
+          href: "https://wa.me/44784089109",
+          display: "+44 7840 89109",
+        },
+      ],
       socialProof: [],
     },
     collections: [],
@@ -39,6 +53,7 @@ describe("site admin helpers", () => {
 
     expect(snapshot.brandName).toBe("TranquilBeads");
     expect(snapshot.contact.email).toBe("sales@tranquilbeads.com");
+    expect(snapshot.contact.whatsappContacts).toHaveLength(2);
     expect(snapshot.counts.products).toBe(0);
   });
 
@@ -72,5 +87,89 @@ describe("site admin helpers", () => {
     const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
     expect(saved.siteSettings.email).toBe("hello@tranquilbeads.com");
     expect(saved.siteSettings.whatsappHref).toBe("https://wa.me/8611122223333");
+    expect(saved.siteSettings.whatsappContacts?.find(({ id }) => id === "china")).toMatchObject({
+      href: "https://wa.me/8611122223333",
+      display: "+86 111 2222 3333",
+    });
+    expect(saved.siteSettings.whatsappContacts?.find(({ id }) => id === "uk")).toMatchObject({
+      href: "https://wa.me/44784089109",
+      display: "+44 7840 89109",
+    });
   });
+
+  it("updates the designated primary contact without relying on list order", async () => {
+    const { filePath } = await createSiteFixture();
+    const content = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
+    content.siteSettings.whatsappContacts?.reverse();
+    await writeFile(filePath, JSON.stringify(content, null, 2), "utf8");
+
+    await updateContactSettings({
+      filePath,
+      confirm: true,
+      email: content.siteSettings.email,
+      whatsappDisplay: "+86 111 2222 3333",
+      whatsappHref: "https://wa.me/8611122223333",
+    });
+
+    const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
+    expect(saved.siteSettings.whatsappContacts?.find(({ id }) => id === "china")).toMatchObject({
+      href: "https://wa.me/8611122223333",
+      display: "+86 111 2222 3333",
+    });
+    expect(saved.siteSettings.whatsappContacts?.find(({ id }) => id === "uk")).toMatchObject({
+      href: "https://wa.me/44784089109",
+      display: "+44 7840 89109",
+    });
+  });
+
+  it("stops instead of overwriting another contact when the primary id is missing", async () => {
+    const { filePath } = await createSiteFixture();
+    const content = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
+    content.siteSettings.whatsappContacts =
+      content.siteSettings.whatsappContacts?.filter(({ id }) => id !== "china") ?? [];
+    await writeFile(filePath, JSON.stringify(content, null, 2), "utf8");
+
+    await expect(
+      updateContactSettings({
+        filePath,
+        confirm: true,
+        email: content.siteSettings.email,
+        whatsappDisplay: "+86 111 2222 3333",
+        whatsappHref: "https://wa.me/8611122223333",
+      }),
+    ).rejects.toThrow(/exactly one primary china contact/i);
+
+    const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
+    expect(saved.siteSettings.whatsappContacts?.[0]).toMatchObject({
+      id: "uk",
+      href: "https://wa.me/44784089109",
+    });
+  });
+
+  it.each(["missing", "empty"] as const)(
+    "stops when the contacts field is %s",
+    async (state) => {
+      const { filePath } = await createSiteFixture();
+      const content = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
+      if (state === "missing") {
+        delete content.siteSettings.whatsappContacts;
+      } else {
+        content.siteSettings.whatsappContacts = [];
+      }
+      await writeFile(filePath, JSON.stringify(content, null, 2), "utf8");
+
+      await expect(
+        updateContactSettings({
+          filePath,
+          confirm: true,
+          email: content.siteSettings.email,
+          whatsappDisplay: "+86 111 2222 3333",
+          whatsappHref: "https://wa.me/8611122223333",
+        }),
+      ).rejects.toThrow(/exactly one primary china contact/i);
+
+      const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
+      expect(saved.siteSettings.whatsappHref).toBe("https://wa.me/8618929564545");
+    },
+  );
 });

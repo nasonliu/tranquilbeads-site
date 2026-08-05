@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { siteSettings } from "@/src/data/site";
 import type { Locale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
+import { WhatsAppContactMenu } from "@/src/components/whatsapp-contact-menu";
 
 type SiteShellProps = {
   locale: Locale;
@@ -67,14 +68,7 @@ export function SiteShell({
             >
               {locale === "en" ? "العربية" : "English"}
             </Link>
-            <a
-              href={siteSettings.whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent-deep transition hover:border-accent hover:bg-accent/10 sm:inline-flex"
-            >
-              WhatsApp
-            </a>
+            <WhatsAppContactMenu locale={locale} variant="header" />
           </div>
         </div>
         <div className="noor-container flex gap-2 overflow-x-auto pb-4 lg:hidden">
@@ -119,20 +113,23 @@ export function SiteShell({
               {locale === "en" ? "Contact" : "التواصل"}
             </p>
             <p>{siteSettings.email}</p>
-            <p className="latin-ui">{siteSettings.whatsappDisplay}</p>
+            {siteSettings.whatsappContacts.map((contact) => (
+              <a
+                key={contact.id}
+                className="latin-ui block hover:text-white"
+                href={contact.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {contact.label[locale]}: {contact.display}
+              </a>
+            ))}
             <p>{footerCopy.rights}</p>
           </div>
         </div>
       </footer>
 
-      <a
-        href={siteSettings.whatsappHref}
-        target="_blank"
-        rel="noreferrer"
-        className="latin-ui fixed bottom-5 right-5 z-30 rounded-full bg-accent-deep px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(28,36,20,0.28)] transition hover:-translate-y-0.5"
-      >
-        {locale === "en" ? "WhatsApp Us" : "واتساب"}
-      </a>
+      <WhatsAppContactMenu locale={locale} variant="floating" />
     </div>
   );
 }

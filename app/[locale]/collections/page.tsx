@@ -55,16 +55,24 @@ export default async function CollectionsPage({
                   : "نبقي الإصدار الأول مركزًا عمدًا: تصاميم تسابيح أساسية، وتوليفات هدايا راقية، وقطع ديكور داعمة."}
               </p>
             </div>
-            <a
-              href={siteSettings.whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="latin-ui block rounded-[1.5rem] border border-accent/25 bg-[#1f1a15] p-6 text-sm leading-7 text-[#efe6d8]"
-            >
-              {locale === "en"
-                ? "Need the full line sheet? Start a WhatsApp conversation and ask for the current export assortment."
-                : "هل تحتاج إلى كشف التشكيلة الكامل؟ ابدأ محادثة واتساب واطلب تشكيلة التصدير الحالية."}
-            </a>
+            {siteSettings.whatsappContacts.map((contact) => (
+              <a
+                key={contact.id}
+                href={contact.href}
+                target="_blank"
+                rel="noreferrer"
+                className="latin-ui block rounded-[1.5rem] border border-accent/25 bg-[#1f1a15] p-6 text-sm leading-7 text-[#efe6d8]"
+              >
+                <span className="block font-semibold">
+                  {contact.label[locale]} · {contact.display}
+                </span>
+                <span className="mt-2 block text-[#dcccb5]">
+                  {locale === "en"
+                    ? "Need the full line sheet? Start a WhatsApp conversation and ask for the current export assortment."
+                    : "هل تحتاج إلى كشف التشكيلة الكامل؟ ابدأ محادثة واتساب واطلب تشكيلة التصدير الحالية."}
+                </span>
+              </a>
+            ))}
           </div>
         }
       />

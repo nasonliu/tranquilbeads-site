@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import siteContentJson from "@/src/data/site-content.json";
 import type { Locale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
 
@@ -75,9 +76,10 @@ export const siteSettings = {
     en: "Elegant tasbih and Islamic culture products for modern wholesale partners.",
     ar: "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع.",
   },
-  email: "sales@tranquilbeads.com",
-  whatsappHref: "https://wa.me/8618929564545",
-  whatsappDisplay: "+86 189 2956 4545",
+  email: siteContentJson.siteSettings.email,
+  whatsappHref: siteContentJson.siteSettings.whatsappHref,
+  whatsappDisplay: siteContentJson.siteSettings.whatsappDisplay,
+  whatsappContacts: siteContentJson.siteSettings.whatsappContacts,
   socialProof: [
     {
       value: "12+",

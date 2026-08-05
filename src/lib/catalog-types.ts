@@ -7,12 +7,20 @@ export type SocialProofItem = {
   label: LocalizedString;
 };
 
+export type WhatsAppContact = {
+  id: string;
+  label: LocalizedString;
+  href: string;
+  display: string;
+};
+
 export type SiteSettings = {
   brandName: string;
   tagline: LocalizedString;
   email: string;
   whatsappHref: string;
   whatsappDisplay: string;
+  whatsappContacts?: WhatsAppContact[];
   socialProof: SocialProofItem[];
 };
 

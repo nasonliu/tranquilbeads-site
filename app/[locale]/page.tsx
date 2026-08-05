@@ -203,14 +203,17 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             >
               {copy.hero.primaryCta}
             </Link>
-            <a
-              href={siteSettings.whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="latin-ui rounded-full border border-accent/35 px-6 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
-            >
-              {copy.hero.secondaryCta}
-            </a>
+            {siteSettings.whatsappContacts.map((contact) => (
+              <a
+                key={contact.id}
+                href={contact.href}
+                target="_blank"
+                rel="noreferrer"
+                className="latin-ui rounded-full border border-accent/35 px-6 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
+              >
+                {copy.hero.secondaryCta} · {contact.label[locale]}
+              </a>
+            ))}
           </>
         }
         showcase={<HomeCoverflow items={heroShowcaseItems} locale={locale} />}

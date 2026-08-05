@@ -62,4 +62,25 @@ describe("InquiryForm", () => {
       "https://wa.me/971500000000",
     );
   });
+
+  it("offers every configured WhatsApp team", () => {
+    render(
+      <InquiryForm
+        {...baseProps}
+        whatsappContacts={[
+          { href: "https://wa.me/8618929564545", label: "China team" },
+          { href: "https://wa.me/44784089109", label: "UK team" },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: /chat on whatsapp · china team/i })).toHaveAttribute(
+      "href",
+      "https://wa.me/8618929564545",
+    );
+    expect(screen.getByRole("link", { name: /chat on whatsapp · uk team/i })).toHaveAttribute(
+      "href",
+      "https://wa.me/44784089109",
+    );
+  });
 });

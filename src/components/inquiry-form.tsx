@@ -8,6 +8,10 @@ type InquiryFormProps = {
   locale: Locale;
   interestOptions: string[];
   whatsappHref: string;
+  whatsappContacts?: Array<{
+    href: string;
+    label: string;
+  }>;
   submissionEndpoint?: string;
   copy?: {
     title?: string;
@@ -112,6 +116,7 @@ export function InquiryForm({
   locale,
   interestOptions,
   whatsappHref,
+  whatsappContacts,
   submissionEndpoint,
   copy,
 }: InquiryFormProps) {
@@ -129,6 +134,9 @@ export function InquiryForm({
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">(
     "idle",
   );
+  const contactLinks = whatsappContacts?.length
+    ? whatsappContacts
+    : [{ href: whatsappHref, label: "" }];
 
   function updateValue(field: keyof FormState, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -281,14 +289,18 @@ export function InquiryForm({
           >
             {content.submit}
           </button>
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noreferrer"
-            className="latin-ui rounded-full border border-accent/35 px-5 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
-          >
-            {content.whatsappLabel}
-          </a>
+          {contactLinks.map((contact) => (
+            <a
+              key={contact.href}
+              href={contact.href}
+              target="_blank"
+              rel="noreferrer"
+              className="latin-ui rounded-full border border-accent/35 px-5 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
+            >
+              {content.whatsappLabel}
+              {contact.label ? ` · ${contact.label}` : ""}
+            </a>
+          ))}
         </div>
 
         {status === "success" ? (
