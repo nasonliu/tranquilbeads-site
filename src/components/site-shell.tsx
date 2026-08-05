@@ -9,6 +9,7 @@ import { retailPolicyPaths } from "@/src/data/retail/policies";
 import type { Locale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
 import { RetailCartButton, RetailCartDrawer, RetailCartProvider } from "@/src/components/retail-cart";
+import { WhatsAppContactMenu } from "@/src/components/whatsapp-contact-menu";
 
 type SiteShellProps = {
   locale: Locale;
@@ -78,14 +79,7 @@ export function SiteShell({
             >
               {otherLocale === "ar" ? "العربية" : otherLocale === "zh" ? "中文" : "English"}
             </Link>
-            <a
-              href={siteSettings.whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="hidden rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent-deep transition hover:border-accent hover:bg-accent/10 sm:inline-flex"
-            >
-              WhatsApp
-            </a>
+            <WhatsAppContactMenu locale={locale} variant="header" />
           </div>
         </div>
         <div className="noor-container flex gap-2 overflow-x-auto pb-4 lg:hidden">
@@ -148,22 +142,23 @@ export function SiteShell({
               {locale === "en" ? "Contact" : isChinese ? "联系我们" : "التواصل"}
             </p>
             <p>{siteSettings.email}</p>
-            <a className="latin-ui block hover:text-white" href={siteSettings.whatsappHref} target="_blank" rel="noreferrer">
-              {siteSettings.whatsappDisplay}
-            </a>
+            {siteSettings.whatsappContacts.map((contact) => (
+              <a
+                key={contact.id}
+                className="latin-ui block hover:text-white"
+                href={contact.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {contact.label[locale] ?? contact.label.en}: {contact.display}
+              </a>
+            ))}
             <p>{footerCopy.rights}</p>
           </div>
         </div>
       </footer>
 
-      <a
-        href={siteSettings.whatsappHref}
-        target="_blank"
-        rel="noreferrer"
-        className="latin-ui fixed bottom-5 right-5 z-30 hidden rounded-full bg-accent-deep px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_35px_rgba(28,36,20,0.28)] transition hover:-translate-y-0.5 sm:block"
-      >
-        {locale === "en" ? "WhatsApp Us" : isChinese ? "WhatsApp 联系我们" : "واتساب"}
-      </a>
+      <WhatsAppContactMenu locale={locale} variant="floating" />
       <RetailCartDrawer locale={locale} />
     </div></RetailCartProvider>
   );

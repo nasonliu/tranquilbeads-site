@@ -17,6 +17,7 @@ export async function getSiteSnapshot(filePath: string) {
       email: content.siteSettings.email,
       whatsappHref: content.siteSettings.whatsappHref,
       whatsappDisplay: content.siteSettings.whatsappDisplay,
+      whatsappContacts: content.siteSettings.whatsappContacts ?? [],
     },
     counts: {
       collections: content.collections.length,
@@ -27,6 +28,27 @@ export async function getSiteSnapshot(filePath: string) {
 
 export async function updateContactSettings(options: UpdateContactSettingsOptions) {
   const content = await readSiteContent(options.filePath);
+  const primaryContactIndex =
+    content.siteSettings.whatsappContacts?.findIndex(
+      (contact) => contact.id === "china",
+    ) ?? -1;
+  if (
+    content.siteSettings.whatsappContacts?.length &&
+    primaryContactIndex < 0
+  ) {
+    throw new Error("WhatsApp contacts are missing the primary china contact");
+  }
+  const whatsappContacts = content.siteSettings.whatsappContacts?.length
+    ? content.siteSettings.whatsappContacts.map((contact, index) =>
+        index === primaryContactIndex
+          ? {
+              ...contact,
+              href: options.whatsappHref,
+              display: options.whatsappDisplay,
+            }
+          : contact,
+      )
+    : undefined;
   const changed =
     content.siteSettings.email !== options.email ||
     content.siteSettings.whatsappHref !== options.whatsappHref ||
@@ -41,6 +63,7 @@ export async function updateContactSettings(options: UpdateContactSettingsOption
           email: options.email,
           whatsappHref: options.whatsappHref,
           whatsappDisplay: options.whatsappDisplay,
+          ...(whatsappContacts ? { whatsappContacts } : {}),
         },
       },
       options.filePath,
@@ -54,6 +77,7 @@ export async function updateContactSettings(options: UpdateContactSettingsOption
       email: options.email,
       whatsappHref: options.whatsappHref,
       whatsappDisplay: options.whatsappDisplay,
+      ...(whatsappContacts ? { whatsappContacts } : {}),
     },
   };
 }

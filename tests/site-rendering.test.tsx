@@ -71,6 +71,30 @@ describe("localized site rendering", () => {
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
   });
 
+  it("exposes both WhatsApp teams from the shared site shell", async () => {
+    render(
+      await LocaleLayout({
+        children: <div>English layout</div>,
+        params: Promise.resolve({ locale: "en" }),
+      }),
+    );
+
+    expect(
+      screen
+        .getAllByRole("link", { name: /whatsapp \+86 189 2956 4545/i })
+        .every((link) => link.getAttribute("href") === "https://wa.me/8618929564545"),
+    ).toBe(true);
+    expect(
+      screen
+        .getAllByRole("link", { name: /whatsapp \+44 7840 89109/i })
+        .every((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
+    ).toBe(true);
+    expect(screen.getByText(/uk team: \+44 7840 89109/i)).toHaveAttribute(
+      "href",
+      "https://wa.me/44784089109",
+    );
+  });
+
   it("renders the collections page with collection highlights", async () => {
     render(await CollectionsPage({ params: Promise.resolve({ locale: "en" }) }));
 
@@ -105,6 +129,15 @@ describe("localized site rendering", () => {
         .getAllByRole("link", { name: /chat on whatsapp/i })
         .some((link) => link.getAttribute("href")?.includes("wa.me")),
     ).toBe(true);
+    expect(
+      screen
+        .getAllByRole("link", { name: /chat on whatsapp · uk team/i })
+        .some((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
+    ).toBe(true);
+    expect(screen.getByText(/uk team: \+44 7840 89109/i)).toHaveAttribute(
+      "href",
+      "https://wa.me/44784089109",
+    );
   });
 
   it("renders a Noon retail page with UAE and Saudi buying options", async () => {

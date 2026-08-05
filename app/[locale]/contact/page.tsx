@@ -54,14 +54,17 @@ export default async function ContactPage({
                 {card}
               </div>
             ))}
-            <a
-              href={siteSettings.whatsappHref}
-              target="_blank"
-              rel="noreferrer"
-              className="latin-ui rounded-[1.5rem] bg-[#1f1a15] px-5 py-5 text-sm font-semibold text-[#efe6d8]"
-            >
-              {copy.contactPage.whatsappLabel}
-            </a>
+            {siteSettings.whatsappContacts.map((contact) => (
+              <a
+                key={contact.id}
+                href={contact.href}
+                target="_blank"
+                rel="noreferrer"
+                className="latin-ui rounded-[1.5rem] bg-[#1f1a15] px-5 py-5 text-sm font-semibold text-[#efe6d8]"
+              >
+                {copy.contactPage.whatsappLabel} · {contact.label[locale] ?? contact.label.en}
+              </a>
+            ))}
           </div>
         }
       />
@@ -72,6 +75,10 @@ export default async function ContactPage({
             locale={locale}
             interestOptions={getInterestOptions(locale)}
             whatsappHref={siteSettings.whatsappHref}
+            whatsappContacts={siteSettings.whatsappContacts.map((contact) => ({
+              href: contact.href,
+              label: `${contact.label[locale] ?? contact.label.en} · ${contact.display}`,
+            }))}
             submissionEndpoint="/api/inquiries"
             copy={{
               labels: {
@@ -118,7 +125,19 @@ export default async function ContactPage({
 
           <div className="rounded-[1.5rem] border border-border/70 bg-white/60 p-6 text-sm leading-7 text-muted">
             <p className="font-semibold text-foreground">{siteSettings.email}</p>
-            <p className="latin-ui mt-2">{siteSettings.whatsappDisplay}</p>
+            <div className="latin-ui mt-2 space-y-1">
+              {siteSettings.whatsappContacts.map((contact) => (
+                <a
+                  key={contact.id}
+                  href={contact.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block transition hover:text-foreground"
+                >
+                  {contact.label[locale] ?? contact.label.en}: {contact.display}
+                </a>
+              ))}
+            </div>
             <p className="mt-4">
               {locale === "en"
                 ? "Form submissions are saved securely on the server so our team can review and reply."

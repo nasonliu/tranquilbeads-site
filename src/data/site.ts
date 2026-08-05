@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import type { Locale, WholesaleLocale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
+import siteContentJson from "@/src/data/site-content.json";
 
 type LocalizedString = Record<Exclude<Locale, "zh">, string> & { zh?: string };
 
@@ -76,9 +77,10 @@ export const siteSettings = {
     ar: "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع.",
     zh: "为现代批发合作伙伴打造的雅致念珠与伊斯兰文化产品。",
   },
-  email: "sales@tranquilbeads.com",
-  whatsappHref: "https://wa.me/8618929564545",
-  whatsappDisplay: "+86 189 2956 4545",
+  email: siteContentJson.siteSettings.email,
+  whatsappHref: siteContentJson.siteSettings.whatsappHref,
+  whatsappDisplay: siteContentJson.siteSettings.whatsappDisplay,
+  whatsappContacts: siteContentJson.siteSettings.whatsappContacts,
   socialProof: [
     {
       value: "12+",

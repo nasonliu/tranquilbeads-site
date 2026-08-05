@@ -9,6 +9,28 @@
     "email": "sales@tranquilbeads.com",
     "whatsappHref": "https://wa.me/8618929564545",
     "whatsappDisplay": "+86 189 2956 4545",
+    "whatsappContacts": [
+      {
+        "id": "china",
+        "label": {
+          "en": "China team",
+          "ar": "فريق الصين",
+          "zh": "中国团队"
+        },
+        "href": "https://wa.me/8618929564545",
+        "display": "+86 189 2956 4545"
+      },
+      {
+        "id": "uk",
+        "label": {
+          "en": "UK team",
+          "ar": "فريق المملكة المتحدة",
+          "zh": "英国团队"
+        },
+        "href": "https://wa.me/44784089109",
+        "display": "+44 7840 89109"
+      }
+    ],
     "socialProof": [
       {
         "value": "12+",
