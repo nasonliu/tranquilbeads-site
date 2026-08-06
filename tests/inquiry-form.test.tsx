@@ -63,24 +63,25 @@ describe("InquiryForm", () => {
     );
   });
 
-  it("offers every configured WhatsApp team", () => {
+  it("offers every configured WhatsApp support channel without regions or numbers", () => {
     render(
       <InquiryForm
         {...baseProps}
         whatsappContacts={[
-          { href: "https://wa.me/8618929564545", label: "China team" },
-          { href: "https://wa.me/44784089109", label: "UK team" },
+          { href: "https://wa.me/8618929564545", label: "Sales support 1" },
+          { href: "https://wa.me/44784089109", label: "Sales support 2" },
         ]}
       />,
     );
 
-    expect(screen.getByRole("link", { name: /chat on whatsapp · china team/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /chat on whatsapp · sales support 1/i })).toHaveAttribute(
       "href",
       "https://wa.me/8618929564545",
     );
-    expect(screen.getByRole("link", { name: /chat on whatsapp · uk team/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /chat on whatsapp · sales support 2/i })).toHaveAttribute(
       "href",
       "https://wa.me/44784089109",
     );
+    expect(document.body).not.toHaveTextContent(/china team|uk team|\+86|\+44/i);
   });
 });

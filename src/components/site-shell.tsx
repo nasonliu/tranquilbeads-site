@@ -121,7 +121,7 @@ export function SiteShell({
                 target="_blank"
                 rel="noreferrer"
               >
-                {contact.label[locale]}: {contact.display}
+                {contact.label[locale]}
               </a>
             ))}
             <p>{footerCopy.rights}</p>

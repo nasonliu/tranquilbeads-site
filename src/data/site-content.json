@@ -13,8 +13,8 @@
       {
         "id": "china",
         "label": {
-          "en": "China team",
-          "ar": "فريق الصين"
+          "en": "Sales support 1",
+          "ar": "دعم المبيعات ١"
         },
         "href": "https://wa.me/8618929564545",
         "display": "+86 189 2956 4545"
@@ -22,8 +22,8 @@
       {
         "id": "uk",
         "label": {
-          "en": "UK team",
-          "ar": "فريق المملكة المتحدة"
+          "en": "Sales support 2",
+          "ar": "دعم المبيعات ٢"
         },
         "href": "https://wa.me/44784089109",
         "display": "+44 7840 89109"

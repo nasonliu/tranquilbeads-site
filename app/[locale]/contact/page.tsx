@@ -77,7 +77,7 @@ export default async function ContactPage({
             whatsappHref={siteSettings.whatsappHref}
             whatsappContacts={siteSettings.whatsappContacts.map((contact) => ({
               href: contact.href,
-              label: `${contact.label[locale]} · ${contact.display}`,
+              label: contact.label[locale],
             }))}
             submissionEndpoint={process.env.NEXT_PUBLIC_FORM_ENDPOINT}
             copy={{
@@ -134,7 +134,7 @@ export default async function ContactPage({
                   rel="noreferrer"
                   className="block transition hover:text-foreground"
                 >
-                  {contact.label[locale]}: {contact.display}
+                  {contact.label[locale]}
                 </a>
               ))}
             </div>
