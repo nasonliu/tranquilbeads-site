@@ -55,14 +55,29 @@ describe("YunExpress provider adapter", () => {
     expect(tokenCalls).toBe(1);
   });
 
+  it("invalidates the token cache when the production secret rotates", async () => {
+    let tokenCalls=0;
+    const fetcher=vi.fn(async ()=>new Response(JSON.stringify({accessToken:String(++tokenCalls).repeat(32),expiresIn:7200}),{status:200})) as unknown as typeof fetch;
+    await verifyYunExpressConnection(fetcher,1_700_000_000_000);
+    process.env.YUNEXPRESS_APP_SECRET="rotated-secret-test";
+    await verifyYunExpressConnection(fetcher,1_700_000_010_000);
+    expect(tokenCalls).toBe(2);
+  });
+
   it("protects admin provider routes and never exposes a public write endpoint", () => {
     const root=process.cwd();
     const status=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/status/route.ts"),"utf8");
     const quote=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/quote/route.ts"),"utf8");
+    const countries=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/countries/route.ts"),"utf8");
+    const coverage=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/coverage/route.ts"),"utf8");
     expect(status).toContain('requireRetailPermission("shipping:write")');
     expect(quote).toContain('requireRetailPermission("shipping:write")');
     expect(quote).toContain("assertSameOrigin");
     expect(quote).toContain("consumeRetailRateLimit");
+    expect(countries).toContain("consumeRetailRateLimit");
+    expect(countries).not.toContain("sandbox_only");
+    expect(coverage).toContain('environment === "production" ? 8 : 90');
+    expect(coverage).not.toContain("sandbox_only");
     expect(fs.existsSync(path.join(root,"app/api/retail/shipping/provider"))).toBe(false);
   });
 
@@ -152,5 +167,6 @@ describe("YunExpress provider adapter", () => {
     expect(route).toContain("providerStatus: failure.status");
     expect(panel).toContain("body.providerStatus");
     expect(panel).toContain("httpStatus:body.httpStatus");
+    expect(panel).not.toContain('status.environment!=="sandbox"');
   });
 });

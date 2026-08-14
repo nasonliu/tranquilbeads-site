@@ -118,7 +118,8 @@ async function fetchJson(fetcher: Fetcher, url: string, init: RequestInit) {
 const tokenResponse = z.object({ accessToken: z.string().min(16), expiresIn: z.coerce.number().int().positive() }).passthrough();
 
 async function accessToken(config: YunConfig, fetcher: Fetcher, now: number) {
-  const cacheKey = `${config.environment}:${config.appId}:${config.sourceKey}`;
+  const secretFingerprint = crypto.createHash("sha256").update(config.appSecret, "utf8").digest("hex");
+  const cacheKey = `${config.environment}:${config.appId}:${config.sourceKey}:${secretFingerprint}`;
   if (tokenCache?.key === cacheKey && tokenCache.expiresAt > now) return tokenCache.accessToken;
   if (tokenFlight?.key === cacheKey) return tokenFlight.promise;
   const promise = (async () => {
@@ -270,7 +271,7 @@ export function classifyYunExpressFailure(error: unknown): Pick<YunExpressCovera
   if (error instanceof YunExpressProviderError) {
     const providerCode = error.providerCode;
     if (providerCode === "02060015") return { status: "provider_not_bound", providerCode };
-    if (providerCode === "0200412101" || providerCode === "401" || providerCode === "403") return { status: "auth_or_permission", ...(providerCode ? { providerCode } : {}) };
+    if (providerCode === "0200412101" || providerCode === "0200412002" || providerCode === "401" || providerCode === "403") return { status: "auth_or_permission", ...(providerCode ? { providerCode } : {}) };
     if (providerCode === "429") return { status: "provider_throttled", providerCode };
   }
   if (error instanceof YunExpressHttpError) {

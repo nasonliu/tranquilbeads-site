@@ -9,8 +9,12 @@ export async function POST(request: Request) {
   try {
     await requireRetailPermission("shipping:write");
     await assertSameOrigin();
-    if (getYunExpressConfig()?.environment !== "sandbox") return Response.json({ ok: false, error: "sandbox_only" }, { status: 403 });
-    if (!await consumeRetailRateLimit(request, "yunexpress_coverage", 90, 1000, 3600)) {
+    const environment = getYunExpressConfig()?.environment;
+    // Each request may contain six read-only price trials.  Eight production
+    // batches are enough for the curated global fixture set without allowing
+    // an accidental high-volume provider sweep.
+    const hourlyLimit = environment === "production" ? 8 : 90;
+    if (!await consumeRetailRateLimit(request, "yunexpress_coverage", hourlyLimit, 1000, 3600)) {
       return Response.json({ ok: false, error: "rate_limited" }, { status: 429, headers: { "cache-control": "no-store" } });
     }
     const results = await probeYunExpressCoverage(yunExpressCoverageDto.parse(await request.json()));
