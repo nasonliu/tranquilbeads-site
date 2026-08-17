@@ -8,7 +8,7 @@ const googleAdsInquiryConversionSendTo = "AW-18288748181/1fQ3CJDf18kcEJXN4JBE";
 
 declare global {
   interface Window {
-    dataLayer?: unknown[];
+    dataLayer?: Object[];
     gtag?: (...args: unknown[]) => void;
   }
 }

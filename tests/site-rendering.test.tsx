@@ -71,28 +71,18 @@ describe("localized site rendering", () => {
     expect(document.documentElement).toHaveAttribute("dir", "rtl");
   });
 
-  it("exposes both WhatsApp teams from the shared site shell", async () => {
-    render(
+  it("exposes both WhatsApp contacts without regions or phone numbers", async () => {
+    const { container } = render(
       await LocaleLayout({
         children: <div>English layout</div>,
         params: Promise.resolve({ locale: "en" }),
       }),
     );
 
-    expect(
-      screen
-        .getAllByRole("link", { name: /whatsapp \+86 189 2956 4545/i })
-        .every((link) => link.getAttribute("href") === "https://wa.me/8618929564545"),
-    ).toBe(true);
-    expect(
-      screen
-        .getAllByRole("link", { name: /whatsapp \+44 7840 89109/i })
-        .every((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
-    ).toBe(true);
-    expect(screen.getByText(/uk team: \+44 7840 89109/i)).toHaveAttribute(
-      "href",
-      "https://wa.me/44784089109",
-    );
+    const supportLinks = screen.getAllByRole("link", { name: /^whatsapp support$/i });
+    expect(supportLinks.some((link) => link.getAttribute("href") === "https://wa.me/8618929564545")).toBe(true);
+    expect(supportLinks.some((link) => link.getAttribute("href") === "https://wa.me/44784089109")).toBe(true);
+    expect(container.textContent).not.toMatch(/china team|uk team|\+86 189|\+44 7840/i);
   });
 
   it("renders the collections page with collection highlights", async () => {
@@ -131,13 +121,10 @@ describe("localized site rendering", () => {
     ).toBe(true);
     expect(
       screen
-        .getAllByRole("link", { name: /chat on whatsapp · uk team/i })
+        .getAllByRole("link", { name: /chat on whatsapp · whatsapp support/i })
         .some((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
     ).toBe(true);
-    expect(screen.getByText(/uk team: \+44 7840 89109/i)).toHaveAttribute(
-      "href",
-      "https://wa.me/44784089109",
-    );
+    expect(document.body.textContent).not.toMatch(/china team|uk team|\+86 189|\+44 7840/i);
   });
 
   it("renders a Noon retail page with UAE and Saudi buying options", async () => {

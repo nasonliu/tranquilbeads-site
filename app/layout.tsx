@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
-import Script from "next/script";
-
-import { GoogleAdsClickTracker } from "@/src/components/google-ads-click-tracker";
+import { GoogleTagManager } from "@next/third-parties/google";
 
 import "./globals.css";
 
-const googleAdsId = "AW-18288748181";
-
-const googleAdsInitScript = `
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'AW-18288748181');
-`;
+const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-M9JCZKFC";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -81,19 +72,18 @@ export default function RootLayout({
         } as React.CSSProperties
       }
     >
+      <GoogleTagManager gtmId={gtmId} />
       <body>
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
         {children}
-        <GoogleAdsClickTracker />
-        <Script
-          id="google-ads-init"
-          strategy="beforeInteractive"
-        >
-          {googleAdsInitScript}
-        </Script>
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`}
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
