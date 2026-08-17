@@ -70,6 +70,7 @@ describe("YunExpress provider adapter", () => {
     const quote=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/quote/route.ts"),"utf8");
     const countries=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/countries/route.ts"),"utf8");
     const coverage=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/coverage/route.ts"),"utf8");
+    const optimize=fs.readFileSync(path.join(root,"app/api/admin/retail/shipping/provider/optimize/route.ts"),"utf8");
     expect(status).toContain('requireRetailPermission("shipping:write")');
     expect(quote).toContain('requireRetailPermission("shipping:write")');
     expect(quote).toContain("assertSameOrigin");
@@ -78,6 +79,10 @@ describe("YunExpress provider adapter", () => {
     expect(countries).not.toContain("sandbox_only");
     expect(coverage).toContain('environment === "production" ? 8 : 90');
     expect(coverage).not.toContain("sandbox_only");
+    expect(optimize).toContain('requireRetailPermission("shipping:write")');
+    expect(optimize).toContain("assertSameOrigin");
+    expect(optimize).toContain('"yunexpress_optimize"');
+    expect(optimize).toContain('environment === "production" ? 6 : 30');
     expect(fs.existsSync(path.join(root,"app/api/retail/shipping/provider"))).toBe(false);
   });
 
