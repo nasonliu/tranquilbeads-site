@@ -215,8 +215,11 @@ export async function quoteStorefrontV3(
       LEFT JOIN retail_promotions promotion ON promotion.id=quoted.promotion_id`;
   } catch (error) {
     const databaseError = error && typeof error === "object"
-      ? error as { code?: unknown; routine?: unknown; dataType?: unknown; table?: unknown; column?: unknown; constraint?: unknown }
+      ? error as { code?: unknown; routine?: unknown; dataType?: unknown; table?: unknown; column?: unknown; constraint?: unknown; where?: unknown; position?: unknown; internalPosition?: unknown }
       : {};
+    const safeContext = typeof databaseError.where === "string"
+      ? databaseError.where.match(/line \d+ at [^\n]+/)?.[0]
+      : undefined;
     console.warn("retail_storefront_quote_stage_failed", {
       stage: "authoritative_quote",
       category: error instanceof Error ? error.message : "unknown",
@@ -226,6 +229,9 @@ export async function quoteStorefrontV3(
       table: typeof databaseError.table === "string" ? databaseError.table : undefined,
       column: typeof databaseError.column === "string" ? databaseError.column : undefined,
       constraint: typeof databaseError.constraint === "string" ? databaseError.constraint : undefined,
+      context: safeContext,
+      position: typeof databaseError.position === "string" ? databaseError.position : undefined,
+      internalPosition: typeof databaseError.internalPosition === "string" ? databaseError.internalPosition : undefined,
     });
     throw error;
   }
