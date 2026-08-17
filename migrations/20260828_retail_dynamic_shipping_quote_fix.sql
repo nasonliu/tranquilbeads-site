@@ -83,7 +83,7 @@ BEGIN
   IF dynamic_shipping IS NOT NULL THEN normalized_shipping:=normalized_shipping||jsonb_build_object('delivery',dynamic_shipping-'amountMinor'-'taxRateBps'-'fx'); END IF;
   SELECT jsonb_agg(jsonb_build_object('variantSku',COALESCE(x->>'variantSku',x->>'sku'),'quantity',(x->>'quantity')::bigint) ORDER BY COALESCE(x->>'variantSku',x->>'sku')) INTO normalized_items FROM jsonb_array_elements(p_items) x;
   RETURN QUERY SELECT 'USD'::char(3),subtotal,shipping,tax,discount,subtotal+shipping+tax-discount,
-    CASE WHEN dynamic_shipping IS NULL THEN 'standard' ELSE 'yunexpress:'||dynamic_shipping->>'serviceCode' END,
+    CASE WHEN dynamic_shipping IS NULL THEN 'standard' ELSE 'yunexpress:'||(dynamic_shipping->>'serviceCode') END,
     item,normalized_shipping,encode(digest(normalized_items::text||normalized_shipping::text||subtotal::text||':'||shipping::text||':'||tax::text||':'||discount::text||':'||COALESCE(promotion_id::text,''),'sha256'),'hex'),promotion_code,promotion_id;
 END $$;
 

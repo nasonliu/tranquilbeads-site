@@ -11,6 +11,7 @@ describe("retail launch must-haves", () => {
     const order = read("app/api/retail/orders/route.ts");
     const checkout = read("src/lib/retail/storefront-v3.ts");
     const migration = read("migrations/20260828_retail_dynamic_shipping_quote_fix.sql");
+    const returnFix = read("migrations/20260829_retail_dynamic_shipping_return_fix.sql");
     const runner = read("scripts/run-retail-migrations.mjs");
     expect(quote).toContain("quoteStorefrontV3");
     expect(order).toContain("shippingQuoteToken");
@@ -18,7 +19,10 @@ describe("retail launch must-haves", () => {
     expect(migration).toContain("invalid shipping quote");
     expect(migration).toContain("expiresAt");
     expect(migration).toContain("CREATE OR REPLACE FUNCTION retail_quote_checkout_v3");
+    expect(migration).toContain("'yunexpress:'||(dynamic_shipping->>'serviceCode')");
+    expect(returnFix).toContain("dynamic shipping return expression is unavailable");
     expect(runner).toContain("20260828_retail_dynamic_shipping_quote_fix.sql");
+    expect(runner).toContain("20260829_retail_dynamic_shipping_return_fix.sql");
   });
 
   it("keeps promotional delivery consent-backed and unsubscribe-capable", () => {
