@@ -199,13 +199,24 @@ export async function quoteStorefrontV3(
     country: String(checkoutValue.country ?? ""), postalCode: String(checkoutValue.postalCode ?? ""),
   });
   const authoritativeCheckout = shippingQuote ? { ...checkoutValue, _serverShipping: shippingQuote.internal } : checkout;
-  const resolvedCode = await resolvedPromotionCode(query, items, authoritativeCheckout, promotionCode);
-  const rows = await query`WITH quoted AS (SELECT * FROM retail_quote_checkout_v3(
-    ${JSON.stringify(items)}::jsonb,
-    ${JSON.stringify(authoritativeCheckout)}::jsonb,
-    ${resolvedCode ?? null}
-  )) SELECT quoted.*,COALESCE(promotion.automatic,false) AS promotion_automatic FROM quoted
-    LEFT JOIN retail_promotions promotion ON promotion.id=quoted.promotion_id`;
+  let resolvedCode: string | undefined;
+  try { resolvedCode = await resolvedPromotionCode(query, items, authoritativeCheckout, promotionCode); }
+  catch (error) {
+    console.warn("retail_storefront_quote_stage_failed", { stage: "automatic_promotion", category: error instanceof Error ? error.message : "unknown" });
+    throw error;
+  }
+  let rows;
+  try {
+    rows = await query`WITH quoted AS (SELECT * FROM retail_quote_checkout_v3(
+      ${JSON.stringify(items)}::jsonb,
+      ${JSON.stringify(authoritativeCheckout)}::jsonb,
+      ${resolvedCode ?? null}
+    )) SELECT quoted.*,COALESCE(promotion.automatic,false) AS promotion_automatic FROM quoted
+      LEFT JOIN retail_promotions promotion ON promotion.id=quoted.promotion_id`;
+  } catch (error) {
+    console.warn("retail_storefront_quote_stage_failed", { stage: "authoritative_quote", category: error instanceof Error ? error.message : "unknown" });
+    throw error;
+  }
   const row = rows[0];
   if (!row) throw new Error("quote_unavailable");
   return {
