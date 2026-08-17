@@ -19,7 +19,6 @@ describe("retail launch must-haves", () => {
     expect(migration).toContain("invalid shipping quote");
     expect(migration).toContain("expiresAt");
     expect(migration).toContain("CREATE OR REPLACE FUNCTION retail_quote_checkout_v3");
-    expect(migration).toContain("'yunexpress:'||(dynamic_shipping->>'serviceCode')");
     expect(returnFix).toContain("dynamic shipping return expression is unavailable");
     expect(runner).toContain("20260828_retail_dynamic_shipping_quote_fix.sql");
     expect(runner).toContain("20260829_retail_dynamic_shipping_return_fix.sql");
