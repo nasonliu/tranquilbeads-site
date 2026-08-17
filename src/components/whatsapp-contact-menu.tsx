@@ -11,7 +11,14 @@ export function WhatsAppContactMenu({
   variant,
 }: WhatsAppContactMenuProps) {
   const isFloating = variant === "floating";
-  const summaryLabel = locale === "ar" ? "واتساب" : isFloating ? "WhatsApp Us" : "WhatsApp";
+  const summaryLabel =
+    locale === "ar"
+      ? "واتساب"
+      : locale === "zh"
+        ? "WhatsApp 联系我们"
+        : isFloating
+          ? "WhatsApp Us"
+          : "WhatsApp";
 
   return (
     <details
@@ -41,16 +48,13 @@ export function WhatsAppContactMenu({
             href={contact.href}
             target="_blank"
             rel="noreferrer"
-            aria-label={
-              locale === "ar"
-                ? `فتح محادثة واتساب — ${contact.label.ar}`
-                : `Open WhatsApp chat — ${contact.label.en}`
-            }
+            aria-label={contact.label[locale] ?? contact.label.en}
             className="block rounded-xl px-4 py-3 transition hover:bg-accent/10"
           >
-            <span className="block text-sm font-semibold text-accent-deep">
-              {contact.label[locale]}
+            <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-accent-deep">
+              {contact.label[locale] ?? contact.label.en}
             </span>
+            <span className="mt-1 block text-sm font-semibold">{locale === "ar" ? "ابدأ المحادثة" : locale === "zh" ? "开始聊天" : "Start chat"}</span>
           </a>
         ))}
       </div>

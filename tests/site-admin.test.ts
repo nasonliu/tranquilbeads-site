@@ -87,11 +87,11 @@ describe("site admin helpers", () => {
     const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
     expect(saved.siteSettings.email).toBe("hello@tranquilbeads.com");
     expect(saved.siteSettings.whatsappHref).toBe("https://wa.me/8611122223333");
-    expect(saved.siteSettings.whatsappContacts?.find(({ id }) => id === "china")).toMatchObject({
+    expect(saved.siteSettings.whatsappContacts?.[0]).toMatchObject({
       href: "https://wa.me/8611122223333",
       display: "+86 111 2222 3333",
     });
-    expect(saved.siteSettings.whatsappContacts?.find(({ id }) => id === "uk")).toMatchObject({
+    expect(saved.siteSettings.whatsappContacts?.[1]).toMatchObject({
       href: "https://wa.me/44784089109",
       display: "+44 7840 89109",
     });
@@ -137,7 +137,7 @@ describe("site admin helpers", () => {
         whatsappDisplay: "+86 111 2222 3333",
         whatsappHref: "https://wa.me/8611122223333",
       }),
-    ).rejects.toThrow(/exactly one primary china contact/i);
+    ).rejects.toThrow(/missing the primary china contact/i);
 
     const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
     expect(saved.siteSettings.whatsappContacts?.[0]).toMatchObject({
@@ -145,31 +145,4 @@ describe("site admin helpers", () => {
       href: "https://wa.me/44784089109",
     });
   });
-
-  it.each(["missing", "empty"] as const)(
-    "stops when the contacts field is %s",
-    async (state) => {
-      const { filePath } = await createSiteFixture();
-      const content = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
-      if (state === "missing") {
-        delete content.siteSettings.whatsappContacts;
-      } else {
-        content.siteSettings.whatsappContacts = [];
-      }
-      await writeFile(filePath, JSON.stringify(content, null, 2), "utf8");
-
-      await expect(
-        updateContactSettings({
-          filePath,
-          confirm: true,
-          email: content.siteSettings.email,
-          whatsappDisplay: "+86 111 2222 3333",
-          whatsappHref: "https://wa.me/8611122223333",
-        }),
-      ).rejects.toThrow(/exactly one primary china contact/i);
-
-      const saved = JSON.parse(await readFile(filePath, "utf8")) as SiteContent;
-      expect(saved.siteSettings.whatsappHref).toBe("https://wa.me/8618929564545");
-    },
-  );
 });

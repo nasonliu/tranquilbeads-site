@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { isLocale, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 import { blogArticles } from "@/src/data/blog-articles";
 
 export function generateStaticParams() {
@@ -11,7 +11,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  if (!isLocale(locale)) return {};
+  if (!isWholesaleLocale(locale)) return {};
   return {
     title: locale === "en"
       ? "Tasbih, Misbaha & Prayer Beads Buyer's Guides | TranquilBeads"
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  if (!isLocale(locale)) notFound();
+  if (!isWholesaleLocale(locale)) notFound();
 
   return (
     <div className="noor-container space-y-12 pt-8 md:space-y-16">

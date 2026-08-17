@@ -1,0 +1,109 @@
+name: Retail CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retail-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: projectnoor_retail_ci
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d projectnoor_retail_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/projectnoor_retail_ci
+      RETAIL_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/projectnoor_retail_ci
+      RETAIL_DATABASE_IDENTITY: projectnoor-retail-ci-v1
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Generate Next.js route types
+        run: npm run typegen
+
+      - name: Type-check retail storefront
+        run: npm run typecheck:retail
+
+      - name: Type-check retail administration
+        run: npm run typecheck:admin
+
+      - name: Run retail and localization tests
+        run: npm run test:retail:ci -- --pool=forks --no-file-parallelism --maxWorkers=1
+
+      - name: Provision the isolated migration identity
+        run: |
+          psql "$DATABASE_URL" -v retail_identity="$RETAIL_DATABASE_IDENTITY" <<'SQL'
+          CREATE TABLE retail_runtime_environment (
+            singleton BOOLEAN PRIMARY KEY DEFAULT true CHECK(singleton),
+            identity TEXT NOT NULL UNIQUE CHECK(length(identity) BETWEEN 16 AND 128),
+            created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+          );
+          INSERT INTO retail_runtime_environment (singleton, identity)
+          VALUES (true, :'retail_identity');
+          SQL
+
+      - name: Apply retail expand migration
+        env:
+          RETAIL_MIGRATION_TARGET: "20260811_retail_order_locale_notifications.sql"
+        run: npm run migrate:retail
+
+      - name: Verify expand deployment contract
+        run: psql "$DATABASE_URL" -f tests/retail-expand-contract.integration.sql
+
+      - name: Apply retail contract migration
+        run: npm run migrate:retail
+
+      - name: Verify migration idempotency
+        run: npm run migrate:retail
+
+      - name: Run retail PostgreSQL integration contracts
+        run: |
+          npm run test:retail:sql
+          psql "$DATABASE_URL" -f tests/retail-zh-media.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-atomic-admin-audit.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-disputes.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-variants-promotions.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-promotion-line-allocation.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-customer-portal.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-paypal-settlement.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-rma.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-variant-authority.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-product-styles.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-customer-address-admin.integration.sql
+
+      - name: Run retail concurrency gate
+        run: npm run test:retail:concurrency
+
+      - name: Build production application
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npm run build

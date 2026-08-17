@@ -35,8 +35,8 @@ function toLocalizedString(value: Partial<LocalizedString>, fallback: string): L
 }
 
 function toTags(
-  value: Partial<Record<keyof LocalizedString, string[]>> | undefined,
-): Record<keyof LocalizedString, string[]> {
+  value: ProductImportRecord["tags"],
+): Product["tags"] {
   const en = value?.en?.length ? value.en : [];
   const ar = value?.ar?.length ? value.ar : en;
   return { en, ar };

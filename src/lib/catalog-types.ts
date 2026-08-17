@@ -1,6 +1,8 @@
-import type { Locale } from "@/src/lib/i18n";
+import type { Locale, WholesaleLocale } from "@/src/lib/i18n";
 
-export type LocalizedString = Record<Locale, string>;
+/** The legacy wholesale catalog is bilingual; Chinese belongs to direct retail. */
+export type LocalizedString = Record<WholesaleLocale, string> &
+  Partial<Record<Exclude<Locale, WholesaleLocale>, string>>;
 
 export type SocialProofItem = {
   value: string;
@@ -32,7 +34,8 @@ export type Collection = {
   featured: boolean;
   overview: LocalizedString;
   positioning: LocalizedString;
-  highlightPoints: Record<Locale, string[]>;
+  highlightPoints: Record<WholesaleLocale, string[]> &
+    Partial<Record<Exclude<Locale, WholesaleLocale>, string[]>>;
 };
 
 export type ProductGalleryItem = {
@@ -53,7 +56,8 @@ export type Product = {
   summary: LocalizedString;
   image: string;
   material: LocalizedString;
-  tags: Record<Locale, string[]>;
+  tags: Record<WholesaleLocale, string[]> &
+    Partial<Record<Exclude<Locale, WholesaleLocale>, string[]>>;
   detailIntro: LocalizedString;
   detailBody: LocalizedString;
   idealFor: LocalizedString;

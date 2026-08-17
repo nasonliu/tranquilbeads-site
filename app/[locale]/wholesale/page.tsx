@@ -3,14 +3,14 @@ import { notFound } from "next/navigation";
 
 import { getPageCopy, getPageMetadata } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
-import { isLocale, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/wholesale">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -26,7 +26,7 @@ export default async function WholesalePage({
 }: PageProps<"/[locale]/wholesale">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 

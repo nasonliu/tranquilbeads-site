@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 export type CandidateImageRecord = {
   id: number;
   product_group: string;
@@ -22,6 +25,13 @@ export type RankedCandidateImage = CandidateImageRecord & {
   score: number;
   reasons: string[];
 };
+
+// The image-manager catalog only exposes the NAS upload tree.  Keep this
+// allowlist independent of request input: it is deliberately not configurable
+// by a query parameter or an environment variable.
+export const CANDIDATE_IMAGE_ROOT = "/Volumes/office/products/Pic/upload";
+const DATABASE_IMAGE_ROOT = "/vol1/1000/office/products/Pic/upload";
+const PREVIEW_IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 
 const KEYWORD_GROUPS: Array<{ key: string; aliases: string[] }> = [
   { key: "amber", aliases: ["amber", "amber-look", "baltic amber", "琥珀"] },
@@ -86,10 +96,41 @@ function extractBeadCount(text: string): string | null {
 }
 
 export function mapDatabasePathToMountedPath(dbPath: string): string {
-  if (dbPath.startsWith("/vol1/1000/office/")) {
-    return dbPath.replace("/vol1/1000/office/", "/Volumes/office/");
+  if (dbPath === DATABASE_IMAGE_ROOT || dbPath.startsWith(`${DATABASE_IMAGE_ROOT}/`)) {
+    return `${CANDIDATE_IMAGE_ROOT}${dbPath.slice(DATABASE_IMAGE_ROOT.length)}`;
   }
   return dbPath;
+}
+
+function isWithinRoot(candidate: string, root: string) {
+  const relative = path.relative(root, candidate);
+  return relative !== "" && !relative.startsWith(`..${path.sep}`) && relative !== ".." && !path.isAbsolute(relative);
+}
+
+/**
+ * Resolves an image-manager path only when it remains a regular image below
+ * the one catalog root, including after symlinks are resolved.
+ */
+export function resolveCandidateImagePath(rawPath: string): string | null {
+  if (!rawPath || rawPath.includes("\0")) return null;
+  const segments = rawPath.split(/[\\/]+/).filter(Boolean);
+  if (segments.some((segment) => segment === ".." || segment.startsWith("."))) return null;
+
+  const mountedPath = mapDatabasePathToMountedPath(rawPath);
+  if (!path.isAbsolute(mountedPath) || !isWithinRoot(mountedPath, CANDIDATE_IMAGE_ROOT)) return null;
+  if (!PREVIEW_IMAGE_EXTENSIONS.has(path.extname(mountedPath).toLowerCase())) return null;
+
+  try {
+    // Reject the symlink itself, even when its target currently happens to be
+    // inside the root. This also closes time-of-check path swapping.
+    if (!fs.lstatSync(/* turbopackIgnore: true */ mountedPath).isFile()) return null;
+    const realRoot = fs.realpathSync(/* turbopackIgnore: true */ CANDIDATE_IMAGE_ROOT);
+    const realPath = fs.realpathSync(/* turbopackIgnore: true */ mountedPath);
+    if (!isWithinRoot(realPath, realRoot) || !fs.statSync(/* turbopackIgnore: true */ realPath).isFile()) return null;
+    return realPath;
+  } catch {
+    return null;
+  }
 }
 
 export function buildCandidateQuerySql(context: CandidateContext): string {

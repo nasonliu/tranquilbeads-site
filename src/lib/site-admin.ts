@@ -28,22 +28,27 @@ export async function getSiteSnapshot(filePath: string) {
 
 export async function updateContactSettings(options: UpdateContactSettingsOptions) {
   const content = await readSiteContent(options.filePath);
-  const whatsappContacts = content.siteSettings.whatsappContacts;
-  const primaryContacts = whatsappContacts?.filter(
-    (contact) => contact.id === "china",
-  );
-  if (!whatsappContacts?.length || primaryContacts?.length !== 1) {
-    throw new Error("WhatsApp contacts require exactly one primary china contact");
+  const primaryContactIndex =
+    content.siteSettings.whatsappContacts?.findIndex(
+      (contact) => contact.id === "china",
+    ) ?? -1;
+  if (
+    content.siteSettings.whatsappContacts?.length &&
+    primaryContactIndex < 0
+  ) {
+    throw new Error("WhatsApp contacts are missing the primary china contact");
   }
-  const updatedWhatsappContacts = whatsappContacts.map((contact) =>
-    contact.id === "china"
-      ? {
-          ...contact,
-          href: options.whatsappHref,
-          display: options.whatsappDisplay,
-        }
-      : contact,
-  );
+  const whatsappContacts = content.siteSettings.whatsappContacts?.length
+    ? content.siteSettings.whatsappContacts.map((contact, index) =>
+        index === primaryContactIndex
+          ? {
+              ...contact,
+              href: options.whatsappHref,
+              display: options.whatsappDisplay,
+            }
+          : contact,
+      )
+    : undefined;
   const changed =
     content.siteSettings.email !== options.email ||
     content.siteSettings.whatsappHref !== options.whatsappHref ||
@@ -58,7 +63,7 @@ export async function updateContactSettings(options: UpdateContactSettingsOption
           email: options.email,
           whatsappHref: options.whatsappHref,
           whatsappDisplay: options.whatsappDisplay,
-          whatsappContacts: updatedWhatsappContacts,
+          ...(whatsappContacts ? { whatsappContacts } : {}),
         },
       },
       options.filePath,
@@ -72,7 +77,7 @@ export async function updateContactSettings(options: UpdateContactSettingsOption
       email: options.email,
       whatsappHref: options.whatsappHref,
       whatsappDisplay: options.whatsappDisplay,
-      whatsappContacts: updatedWhatsappContacts,
+      ...(whatsappContacts ? { whatsappContacts } : {}),
     },
   };
 }

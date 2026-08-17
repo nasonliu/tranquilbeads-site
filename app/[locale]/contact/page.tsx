@@ -9,14 +9,14 @@ import {
 } from "@/src/data/site";
 import { InquiryForm } from "@/src/components/inquiry-form";
 import { PageHero } from "@/src/components/page-hero";
-import { isLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale } from "@/src/lib/i18n";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/contact">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -32,7 +32,7 @@ export default async function ContactPage({
 }: PageProps<"/[locale]/contact">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 
@@ -62,7 +62,7 @@ export default async function ContactPage({
                 rel="noreferrer"
                 className="latin-ui rounded-[1.5rem] bg-[#1f1a15] px-5 py-5 text-sm font-semibold text-[#efe6d8]"
               >
-                {copy.contactPage.whatsappLabel} · {contact.label[locale]}
+                {copy.contactPage.whatsappLabel} · {contact.label[locale] ?? contact.label.en}
               </a>
             ))}
           </div>
@@ -77,9 +77,9 @@ export default async function ContactPage({
             whatsappHref={siteSettings.whatsappHref}
             whatsappContacts={siteSettings.whatsappContacts.map((contact) => ({
               href: contact.href,
-              label: contact.label[locale],
+              label: contact.label[locale] ?? contact.label.en,
             }))}
-            submissionEndpoint={process.env.NEXT_PUBLIC_FORM_ENDPOINT}
+            submissionEndpoint="/api/inquiries"
             copy={{
               labels: {
                 name: contactFormCopy.fields.name[locale],
@@ -134,14 +134,14 @@ export default async function ContactPage({
                   rel="noreferrer"
                   className="block transition hover:text-foreground"
                 >
-                  {contact.label[locale]}
+                  {contact.label[locale] ?? contact.label.en}
                 </a>
               ))}
             </div>
             <p className="mt-4">
               {locale === "en"
-                ? "Hosted form endpoint can be connected later by setting NEXT_PUBLIC_FORM_ENDPOINT in Vercel."
-                : "يمكن توصيل نقطة نهاية النموذج لاحقًا عبر ضبط NEXT_PUBLIC_FORM_ENDPOINT في Vercel."}
+                ? "Form submissions are saved securely on the server so our team can review and reply."
+                : "يتم حفظ الاستفسارات على الخادم حتى يتمكن فريقنا من مراجعتها والرد عليها."}
             </p>
           </div>
         </div>

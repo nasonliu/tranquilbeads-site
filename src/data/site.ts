@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-import siteContentJson from "@/src/data/site-content.json";
-import type { Locale } from "@/src/lib/i18n";
+import type { Locale, WholesaleLocale } from "@/src/lib/i18n";
 import { withLocale } from "@/src/lib/i18n";
+import siteContentJson from "@/src/data/site-content.json";
 
-type LocalizedString = Record<Locale, string>;
+type LocalizedString = Record<Exclude<Locale, "zh">, string> & { zh?: string };
 
 type NavItem = {
   href: string;
@@ -19,7 +19,7 @@ type Collection = {
   featured: boolean;
   overview: LocalizedString;
   positioning: LocalizedString;
-  highlightPoints: Record<Locale, string[]>;
+  highlightPoints: Record<Exclude<Locale, "zh">, string[]> & { zh?: string[] };
 };
 
 type Product = {
@@ -29,7 +29,7 @@ type Product = {
   summary: LocalizedString;
   image: string;
   material: LocalizedString;
-  tags: Record<Locale, string[]>;
+  tags: Record<Exclude<Locale, "zh">, string[]> & { zh?: string[] };
   detailIntro: LocalizedString;
   detailBody: LocalizedString;
   idealFor: LocalizedString;
@@ -75,6 +75,7 @@ export const siteSettings = {
   tagline: {
     en: "Elegant tasbih and Islamic culture products for modern wholesale partners.",
     ar: "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع.",
+    zh: "为现代批发合作伙伴打造的雅致念珠与伊斯兰文化产品。",
   },
   email: siteContentJson.siteSettings.email,
   whatsappHref: siteContentJson.siteSettings.whatsappHref,
@@ -110,6 +111,7 @@ export const navItems: NavItem[] = [
   { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
   { href: "/amazon", label: { en: "Amazon Retail", ar: "أمازون للتجزئة" } },
   { href: "/noon", label: { en: "Noon Retail", ar: "نون للتجزئة" } },
+  { href: "/shop", label: { en: "Retail Shop", ar: "متجر التجزئة" } },
   { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
   { href: "/blog", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
   { href: "/contact", label: { en: "Contact", ar: "التواصل" } },
@@ -1308,7 +1310,7 @@ export function getPageMetadata(
   page: keyof typeof pageDescriptions,
   title: string,
 ): Metadata {
-  const description = pageDescriptions[page][locale];
+  const description = (pageDescriptions[page] as { en: string; ar: string; zh?: string })[locale] ?? pageDescriptions[page].en;
   const path = page === "home" ? "/" : `/${page}`;
   const canonicalPath = withLocale(locale, path);
   return {
@@ -1337,27 +1339,32 @@ export function getPageMetadata(
 export function getPageCopy(locale: Locale) {
   return {
     locale,
-    nav: navItems.map((item) => ({
+    nav: (locale === "zh" ? [
+      { href: "/shop", label: { en: "Retail shop", ar: "متجر التجزئة", zh: "零售商店" } },
+      { href: "/privacy", label: { en: "Privacy", ar: "الخصوصية", zh: "隐私政策" } },
+      { href: "/terms", label: { en: "Terms of sale", ar: "شروط البيع", zh: "销售条款" } },
+      { href: "/shipping-returns", label: { en: "Shipping & returns", ar: "الشحن والإرجاع", zh: "配送与退货" } },
+    ] : navItems).map((item) => ({
       href: item.href,
-      label: item.label[locale],
+      label: item.label[locale] ?? item.label.en,
     })),
     hero: {
-      eyebrow: locale === "en" ? "B2B Tasbih, Misbaha & Prayer Beads" : "تسابيح ومسابح وخرز صلاة للجملة",
+      eyebrow: locale === "en" ? "B2B Tasbih, Misbaha & Prayer Beads" : locale === "zh" ? "念珠与祈祷珠零售" : "تسابيح ومسابح وخرز صلاة للجملة",
       title:
         locale === "en"
           ? "Tasbih crafted for modern wholesale partners"
-          : "تسابيح مصممة لشركاء الجملة العصريين",
+          : locale === "zh" ? "为现代顾客精选的念珠" : "تسابيح مصممة لشركاء الجملة العصريين",
       description:
         locale === "en"
           ? "TranquilBeads pairs elevated design, dependable production, and culturally aligned naming for tasbih, misbaha, tasbeeh and prayer beads across Gulf, Turkish diaspora, and gifting channels."
-          : "يجمع ترانكويل بيدز بين التصميم الراقي والإنتاج الموثوق والسرد الثقافي المتوازن لخدمة الموزعين ومتاجر المتاحف وبرامج الهدايا وتجار التجزئة المتميزين.",
-      primaryCta: locale === "en" ? "Request Catalog" : "اطلب الكتالوج",
-      secondaryCta: contactFormCopy.whatsappLabel[locale],
-      featuredLabel: locale === "en" ? "Featured collections" : "مجموعات مميزة",
+          : locale === "zh" ? "欢迎浏览 TranquilBeads 直接零售商店。" : "يجمع ترانكويل بيدز بين التصميم الراقي والإنتاج الموثوق والسرد الثقافي المتوازن لخدمة الموزعين ومتاجر المتاحف وبرامج الهدايا وتجار التجزئة المتميزين.",
+      primaryCta: locale === "en" ? "Request Catalog" : locale === "zh" ? "浏览商店" : "اطلب الكتالوج",
+      secondaryCta: contactFormCopy.whatsappLabel[locale] ?? contactFormCopy.whatsappLabel.en,
+      featuredLabel: locale === "en" ? "Featured collections" : locale === "zh" ? "精选商品" : "مجموعات مميزة",
       metricsIntro:
         locale === "en"
           ? "Built for distributors that need shelf-ready stories, accurate material naming, gift box options, and reliable replenishment."
-          : "مصمم لفرق التوزيع التي تحتاج إلى قصة عرض قوية وتوريد موثوق.",
+          : locale === "zh" ? "请前往零售商店查看可直接购买的商品。" : "مصمم لفرق التوزيع التي تحتاج إلى قصة عرض قوية وتوريد موثوق.",
     },
     collectionsPage: {
       title: locale === "en" ? "Signature Tasbih Collections" : "مجموعات تسابيح مميزة",
@@ -1396,9 +1403,9 @@ export function getPageCopy(locale: Locale) {
           : ["شاركنا السوق والكمية المستهدفة", "استلم اقتراح تشكيلة مركزة", "اعتمد التغليف والجدول الزمني للإطلاق"],
     },
     contactPage: {
-      title: contactFormCopy.title[locale],
-      description: contactFormCopy.description[locale],
-      whatsappLabel: contactFormCopy.whatsappLabel[locale],
+      title: contactFormCopy.title[locale] ?? contactFormCopy.title.en,
+      description: contactFormCopy.description[locale] ?? contactFormCopy.description.en,
+      whatsappLabel: contactFormCopy.whatsappLabel[locale] ?? contactFormCopy.whatsappLabel.en,
       detailCards:
         locale === "en"
           ? [
@@ -1411,11 +1418,11 @@ export function getPageCopy(locale: Locale) {
             ],
     },
     footer: {
-      summary: siteSettings.tagline[locale],
+      summary: siteSettings.tagline[locale] ?? siteSettings.tagline.en,
       rights:
         locale === "en"
           ? "Premium tasbih and Islamic culture goods for contemporary trade partners."
-          : "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء التجارة المعاصرين.",
+          : locale === "zh" ? "为现代消费者提供的雅致念珠与文化产品。" : "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء التجارة المعاصرين。",
     },
   };
 }
@@ -1439,7 +1446,7 @@ export function getProductsByCollection(collectionSlug: string) {
 }
 
 // SEO: map product material to related blog article
-export function getProductRelatedGuide(locale: Locale, product: Product): { slug: string; title: string } | null {
+export function getProductRelatedGuide(locale: WholesaleLocale, product: Product): { slug: string; title: string } | null {
   const text = [
     product.material[locale],
     ...(product.tags[locale] || []),

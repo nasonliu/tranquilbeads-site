@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/.playwright-cli/
+/output/playwright/
 
 # next.js
 /.next/
@@ -44,3 +46,7 @@ yarn-error.log*
 next-env.d.ts
 factory/
 .image-manager.local.json
+.env*.local
+!.env.local.example
+handoff-private/
+.artifacts/

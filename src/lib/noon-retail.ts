@@ -1,8 +1,8 @@
-import type { Locale } from "@/src/lib/i18n";
+import type { WholesaleLocale } from "@/src/lib/i18n";
 
 export type NoonMarket = "uae" | "saudi";
 
-export type LocalizedString = Record<Locale, string>;
+export type LocalizedString = Record<WholesaleLocale, string>;
 
 export type NoonRetailSeed = {
   market: NoonMarket;
@@ -45,7 +45,7 @@ export function getNoonStoreLinks() {
   return noonStoreLinks;
 }
 
-export function getNoonMarketLabel(market: NoonMarket, locale: Locale) {
+export function getNoonMarketLabel(market: NoonMarket, locale: WholesaleLocale) {
   if (locale === "ar") {
     return market === "uae" ? "نون الإمارات" : "نون السعودية";
   }

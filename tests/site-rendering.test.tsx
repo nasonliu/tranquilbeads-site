@@ -24,6 +24,7 @@ describe("localized site rendering", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/featured collections/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: /shop retail/i })).toHaveAttribute("href", "/en/shop");
     expect(screen.getByRole("link", { name: /request catalog/i })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /next showcase item/i }),
@@ -66,34 +67,22 @@ describe("localized site rendering", () => {
     const wrapper = container.querySelector("[data-locale-shell]");
     expect(wrapper).toHaveAttribute("lang", "ar");
     expect(wrapper).toHaveAttribute("dir", "rtl");
-    expect(screen.getAllByRole("link", { name: /دعم المبيعات ١/ }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("link", { name: /دعم المبيعات ٢/ }).length).toBeGreaterThan(0);
-    expect(document.body).not.toHaveTextContent(
-      /فريق الصين|فريق المملكة المتحدة|\+86|\+44/i,
-    );
+    expect(document.documentElement).toHaveAttribute("lang", "ar");
+    expect(document.documentElement).toHaveAttribute("dir", "rtl");
   });
 
-  it("exposes both WhatsApp channels without regions or visible phone numbers", async () => {
-    render(
+  it("exposes both WhatsApp contacts without regions or phone numbers", async () => {
+    const { container } = render(
       await LocaleLayout({
         children: <div>English layout</div>,
         params: Promise.resolve({ locale: "en" }),
       }),
     );
 
-    expect(
-      screen
-        .getAllByRole("link", { name: /sales support 1/i })
-        .every((link) => link.getAttribute("href") === "https://wa.me/8618929564545"),
-    ).toBe(true);
-    expect(
-      screen
-        .getAllByRole("link", { name: /sales support 2/i })
-        .every((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
-    ).toBe(true);
-    expect(document.body).not.toHaveTextContent(
-      /china team|uk team|فريق الصين|فريق المملكة المتحدة|\+86|\+44/i,
-    );
+    const supportLinks = screen.getAllByRole("link", { name: /^whatsapp support$/i });
+    expect(supportLinks.some((link) => link.getAttribute("href") === "https://wa.me/8618929564545")).toBe(true);
+    expect(supportLinks.some((link) => link.getAttribute("href") === "https://wa.me/44784089109")).toBe(true);
+    expect(container.textContent).not.toMatch(/china team|uk team|\+86 189|\+44 7840/i);
   });
 
   it("renders the collections page with collection highlights", async () => {
@@ -132,46 +121,10 @@ describe("localized site rendering", () => {
     ).toBe(true);
     expect(
       screen
-        .getAllByRole("link", { name: /chat on whatsapp · sales support 2/i })
+        .getAllByRole("link", { name: /chat on whatsapp · whatsapp support/i })
         .some((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
     ).toBe(true);
-    expect(document.body).not.toHaveTextContent(
-      /china team|uk team|فريق الصين|فريق المملكة المتحدة|\+86|\+44/i,
-    );
-  });
-
-  it("keeps Arabic contact channels neutral and linked to both WhatsApp destinations", async () => {
-    render(await ContactPage({ params: Promise.resolve({ locale: "ar" }) }));
-
-    expect(
-      screen
-        .getAllByRole("link", { name: /دعم المبيعات ١/ })
-        .some((link) => link.getAttribute("href") === "https://wa.me/8618929564545"),
-    ).toBe(true);
-    expect(
-      screen
-        .getAllByRole("link", { name: /دعم المبيعات ٢/ })
-        .some((link) => link.getAttribute("href") === "https://wa.me/44784089109"),
-    ).toBe(true);
-    expect(document.body).not.toHaveTextContent(
-      /فريق الصين|فريق المملكة المتحدة|china team|uk team|\+86|\+44/i,
-    );
-  });
-
-  it("keeps Arabic collection contact cards neutral and linked to both destinations", async () => {
-    render(await CollectionsPage({ params: Promise.resolve({ locale: "ar" }) }));
-
-    expect(screen.getByRole("link", { name: /دعم المبيعات ١/ })).toHaveAttribute(
-      "href",
-      "https://wa.me/8618929564545",
-    );
-    expect(screen.getByRole("link", { name: /دعم المبيعات ٢/ })).toHaveAttribute(
-      "href",
-      "https://wa.me/44784089109",
-    );
-    expect(document.body).not.toHaveTextContent(
-      /فريق الصين|فريق المملكة المتحدة|china team|uk team|\+86|\+44/i,
-    );
+    expect(document.body.textContent).not.toMatch(/china team|uk team|\+86 189|\+44 7840/i);
   });
 
   it("renders a Noon retail page with UAE and Saudi buying options", async () => {

@@ -13,8 +13,9 @@
       {
         "id": "china",
         "label": {
-          "en": "Sales support 1",
-          "ar": "دعم المبيعات ١"
+          "en": "WhatsApp support",
+          "ar": "دعم واتساب",
+          "zh": "WhatsApp 客服"
         },
         "href": "https://wa.me/8618929564545",
         "display": "+86 189 2956 4545"
@@ -22,8 +23,9 @@
       {
         "id": "uk",
         "label": {
-          "en": "Sales support 2",
-          "ar": "دعم المبيعات ٢"
+          "en": "WhatsApp support",
+          "ar": "دعم واتساب",
+          "zh": "WhatsApp 客服"
         },
         "href": "https://wa.me/44784089109",
         "display": "+44 7840 89109"

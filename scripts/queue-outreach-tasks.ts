@@ -6,9 +6,8 @@ import {
   readOutreachStore,
   writeOutreachStore,
   persistOutreachTaskBundle,
-  type OutreachStore,
 } from "../src/lib/outreach-store";
-import type { OutreachCampaign, OutreachLead } from "../src/lib/outreach-types";
+import type { OutreachCampaign, OutreachLead, OutreachStore } from "../src/lib/outreach-types";
 
 export type QueueOutreachTasksOptions = {
   outreachDir?: string;

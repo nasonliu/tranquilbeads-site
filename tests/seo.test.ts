@@ -34,7 +34,7 @@ describe("SEO helpers", () => {
     expect(getRealProductImages(product!)[0]).toContain("/images/imported/natural-kuka-wood-tasbih/");
   });
 
-  it("emits Breadcrumb structured data for product catalog pages", () => {
+  it("emits Breadcrumb structured data for wholesale catalogue pages", () => {
     const collection = getCollectionBySlug("gift-sets");
     const product = getProductBySlug("baltic-amber-gift-set");
 

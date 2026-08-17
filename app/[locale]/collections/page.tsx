@@ -8,14 +8,14 @@ import {
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
 import { CollectionCard } from "@/src/components/collection-card";
-import { isLocale, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/collections">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -31,7 +31,7 @@ export default async function CollectionsPage({
 }: PageProps<"/[locale]/collections">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 
@@ -64,7 +64,7 @@ export default async function CollectionsPage({
                 className="latin-ui block rounded-[1.5rem] border border-accent/25 bg-[#1f1a15] p-6 text-sm leading-7 text-[#efe6d8]"
               >
                 <span className="block font-semibold">
-                  {contact.label[locale]}
+                  {contact.label[locale] ?? contact.label.en}
                 </span>
                 <span className="mt-2 block text-[#dcccb5]">
                   {locale === "en"

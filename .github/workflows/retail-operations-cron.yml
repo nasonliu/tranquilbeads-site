@@ -1,0 +1,45 @@
+name: Retail operations cron
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: retail-operations-cron
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Reconcile captures, reservations, and notifications
+        env:
+          RETAIL_CRON_ENDPOINT: ${{ secrets.RETAIL_CRON_ENDPOINT }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${RETAIL_CRON_ENDPOINT:-}" || -z "${CRON_SECRET:-}" ]]; then
+            echo "RETAIL_CRON_ENDPOINT and CRON_SECRET repository secrets are required."
+            exit 1
+          fi
+          if [[ "${RETAIL_CRON_ENDPOINT}" != https://* ]]; then
+            echo "RETAIL_CRON_ENDPOINT must use HTTPS."
+            exit 1
+          fi
+          response="$(curl --fail-with-body --silent --show-error \
+            --retry 2 --retry-all-errors --max-time 60 \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            -- "${RETAIL_CRON_ENDPOINT}")"
+          printf '%s\n' "${response}"
+          if ! jq -e '
+            .ok == true and
+            ((.pending // 0) | tonumber) == 0 and
+            ((.notifications.failed // 0) | tonumber) == 0 and
+            ((.marketingCampaigns.failed // 0) | tonumber) == 0
+          ' <<<"${response}" >/dev/null; then
+            echo "Retail reconciliation reported pending or failed work."
+            exit 1
+          fi

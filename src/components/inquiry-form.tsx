@@ -4,6 +4,15 @@ import { useState } from "react";
 
 import type { Locale } from "@/src/lib/i18n";
 
+const googleAdsInquiryConversionSendTo = "AW-18288748181/1fQ3CJDf18kcEJXN4JBE";
+
+declare global {
+  interface Window {
+    dataLayer?: Object[];
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 type InquiryFormProps = {
   locale: Locale;
   interestOptions: string[];
@@ -164,23 +173,24 @@ export function InquiryForm({
 
     setStatus("submitting");
 
-    if (!submissionEndpoint) {
-      setStatus("success");
-      setValues(emptyState);
-      return;
-    }
+    const endpoint = submissionEndpoint || "/api/inquiries";
 
     try {
-      const response = await fetch(submissionEndpoint, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          locale,
+          sourcePath: window.location.pathname,
+        }),
       });
 
       if (!response.ok) {
         throw new Error("Submission failed");
       }
 
+      trackInquiryConversion(values);
       setStatus("success");
       setValues(emptyState);
     } catch {
@@ -318,6 +328,59 @@ export function InquiryForm({
       </form>
     </div>
   );
+}
+
+function trackInquiryConversion(values: FormState) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "website_inquiry_submit",
+    inquiry_interest: values.interest,
+    inquiry_country: values.country,
+    inquiry_source_path: window.location.pathname,
+  });
+
+  if (typeof window.gtag !== "function") {
+    return;
+  }
+
+  const userData = buildEnhancedConversionUserData(values);
+
+  if (Object.keys(userData).length > 0) {
+    window.gtag("set", "user_data", userData);
+  }
+
+  window.gtag("event", "conversion", {
+    send_to: googleAdsInquiryConversionSendTo,
+    value: 1.0,
+    currency: "USD",
+  });
+}
+
+function buildEnhancedConversionUserData(values: FormState) {
+  const email = extractEmail(values.contact);
+  const phoneNumber = email ? extractE164PhoneNumber(values.contact) : "";
+  const userData: Record<string, string> = {};
+
+  if (email) {
+    userData.email = email;
+  }
+
+  if (phoneNumber) {
+    userData.phone_number = phoneNumber;
+  }
+
+  return userData;
+}
+
+function extractEmail(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .match(/[^\s@]+@[^\s@]+\.[^\s@]+/)?.[0] ?? "";
+}
+
+function extractE164PhoneNumber(value: string) {
+  return value.match(/\+[1-9]\d{10,14}/)?.[0] ?? "";
 }
 
 function Field({

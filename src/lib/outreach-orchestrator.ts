@@ -1,6 +1,5 @@
 import {
   applyOutreachTaskChanges,
-  type OutreachStore,
 } from "@/src/lib/outreach-store";
 import {
   assertCanTransitionTaskStatus,
@@ -8,6 +7,7 @@ import {
 import type {
   OutreachChannel,
   OutreachEvent,
+  OutreachStore,
   OutreachTask,
 } from "@/src/lib/outreach-types";
 import {

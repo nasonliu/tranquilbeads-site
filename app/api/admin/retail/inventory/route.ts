@@ -1,0 +1,7 @@
+import { z } from "zod";
+import { assertSameOrigin, requireRetailPermission } from "@/src/lib/retail/admin-auth";
+import { adjustInventory, inventoryAdjustmentDto, listInventory, listInventoryLedger } from "@/src/lib/retail/operations";
+export const runtime="nodejs"; export const dynamic="force-dynamic";
+const noStore={"cache-control":"no-store"};
+export async function GET(request:Request){try{await requireRetailPermission("inventory:write");const url=new URL(request.url),id=url.searchParams.get("productId")??undefined;return Response.json({ok:true,balances:await listInventory(id),ledger:await listInventoryLedger(id)},{headers:noStore})}catch(e){const message=e instanceof Error?e.message:"invalid_request";const status=message==="unauthorized"?401:message==="forbidden"?403:400;return Response.json({ok:false,error:status===401?"unauthorized":status===403?"forbidden":"invalid_request"},{status,headers:noStore})}}
+export async function POST(request:Request){try{const actor=await requireRetailPermission("inventory:write");await assertSameOrigin();await adjustInventory(inventoryAdjustmentDto.parse(await request.json()),actor);return Response.json({ok:true},{headers:noStore})}catch(e){const message=e instanceof Error?e.message:"invalid_request";const status=message==="unauthorized"?401:message==="forbidden"?403:400;return Response.json({ok:false,error:status===401?"unauthorized":status===403?"forbidden":"invalid_request"},{status,headers:noStore})}}

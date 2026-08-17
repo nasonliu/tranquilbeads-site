@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("root Google Tag Manager integration", () => {
-  it("installs GTM-M9JCZKFC on every route", () => {
+  it("installs the production container on every route", () => {
     const layout = readFileSync(
       path.join(process.cwd(), "app/layout.tsx"),
       "utf8",
@@ -20,5 +20,6 @@ describe("root Google Tag Manager integration", () => {
     expect(layout).toContain(
       "https://www.googletagmanager.com/ns.html?id=${gtmId}",
     );
+    expect(layout).not.toContain("gtag/js?id=");
   });
 });

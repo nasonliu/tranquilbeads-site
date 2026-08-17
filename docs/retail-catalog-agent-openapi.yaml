@@ -1,0 +1,283 @@
+openapi: 3.1.0
+info:
+  title: Retail Catalog Agent API
+  version: 1.0.0
+  description: Static machine-token API for the Direct Retail Product, Style, Variant, PDP and media catalogue.
+servers:
+  - url: https://preview.example.com
+    description: Replace with the explicitly selected environment.
+security:
+  - bearerAuth: []
+paths:
+  /api/agent/retail/catalog:
+    get:
+      operationId: getRetailCatalogSnapshot
+      summary: Return complete products, styles and variants snapshot
+      responses:
+        '200': { description: Snapshot, content: { application/json: { schema: { $ref: '#/components/schemas/SnapshotResponse' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503': { $ref: '#/components/responses/Disabled' }
+    post:
+      operationId: retailCatalogAction
+      summary: Execute a flat, audited and idempotent catalogue action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CatalogAction' }
+            examples:
+              createDraft:
+                value: { action: product.create, sku: TB-001, slug: red-tasbih, titleEn: Red Tasbih, titleAr: مسبحة حمراء, status: draft, amountMinor: 1234, onHand: 10, idempotencyKey: 11111111-1111-4111-8111-111111111111 }
+              publish:
+                value: { action: product.update, productId: 33333333-3333-4333-8333-333333333333, status: published, idempotencyKey: 22222222-2222-4222-8222-222222222222 }
+      responses:
+        '200': { description: Updated or replayed, content: { application/json: { schema: { $ref: '#/components/schemas/ActionResponse' } } } }
+        '201': { description: Product, Style or Variant created, content: { application/json: { schema: { $ref: '#/components/schemas/ActionResponse' } } } }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503': { $ref: '#/components/responses/Disabled' }
+  /api/agent/retail/media:
+    get:
+      operationId: getRetailMediaCapabilities
+      summary: Return enabled media capabilities
+      responses:
+        '200': { description: Capabilities, content: { application/json: { schema: { $ref: '#/components/schemas/CapabilitiesResponse' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503': { $ref: '#/components/responses/Disabled' }
+    post:
+      operationId: uploadRetailProductImage
+      summary: Upload an image for a Product
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [productId, idempotencyKey, file]
+              properties:
+                productId: { $ref: '#/components/schemas/Uuid' }
+                idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+                altEn: { type: string, maxLength: 300 }
+                altAr: { type: string, maxLength: 300 }
+                file: { type: string, format: binary }
+      responses:
+        '200': { description: Idempotent replay, content: { application/json: { schema: { $ref: '#/components/schemas/MediaUploadResponse' } } } }
+        '201': { description: Image uploaded, content: { application/json: { schema: { $ref: '#/components/schemas/MediaUploadResponse' } } } }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503': { $ref: '#/components/responses/Disabled' }
+    patch:
+      operationId: reorderRetailProductMedia
+      summary: Replace complete media order using expectedVersion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MediaReorder' }
+      responses:
+        '200': { description: Reordered or replayed, content: { application/json: { schema: { $ref: '#/components/schemas/MediaReorderResponse' } } } }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/MediaVersionConflict' }
+        '422': { $ref: '#/components/responses/MediaSetInvalid' }
+        '503': { $ref: '#/components/responses/Disabled' }
+    delete:
+      operationId: deleteRetailProductImage
+      summary: Detach media, optionally removing PDP references
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MediaDelete' }
+      responses:
+        '200': { description: Deleted or replayed, content: { application/json: { schema: { $ref: '#/components/schemas/MediaDeleteResponse' } } } }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '503': { $ref: '#/components/responses/Disabled' }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer }
+  schemas:
+    Uuid: { type: string, format: uuid }
+    LocalizedOptions:
+      type: object
+      required: [en, ar, zh]
+      properties:
+        en: { type: object, additionalProperties: { type: string } }
+        ar: { type: object, additionalProperties: { type: string } }
+        zh: { type: object, additionalProperties: { type: string } }
+    CatalogAction:
+      oneOf:
+        - $ref: '#/components/schemas/ProductCreate'
+        - $ref: '#/components/schemas/ProductUpdate'
+        - $ref: '#/components/schemas/ProductContentReplace'
+        - $ref: '#/components/schemas/StyleCreate'
+        - $ref: '#/components/schemas/StyleUpdate'
+        - $ref: '#/components/schemas/VariantCreate'
+        - $ref: '#/components/schemas/VariantUpdate'
+        - $ref: '#/components/schemas/MediaReorderAction'
+    ProductCreate:
+      type: object
+      required: [action, sku, slug, titleEn, titleAr, status, amountMinor, idempotencyKey]
+      properties:
+        action: { const: product.create }
+        sku: { type: string, minLength: 1, maxLength: 80 }
+        slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+        titleEn: { type: string, minLength: 1, maxLength: 200 }
+        titleAr: { type: string, minLength: 1, maxLength: 200 }
+        titleZh: { type: string, maxLength: 200 }
+        descriptionEn: { type: string, maxLength: 4000, default: '' }
+        descriptionAr: { type: string, maxLength: 4000, default: '' }
+        descriptionZh: { type: string, maxLength: 4000 }
+        status: { const: draft }
+        amountMinor: { type: integer, minimum: 1 }
+        onHand: { type: integer, minimum: 0, default: 0 }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    ProductUpdate:
+      type: object
+      required: [action, productId, idempotencyKey]
+      properties:
+        action: { const: product.update }
+        productId: { $ref: '#/components/schemas/Uuid' }
+        slug: { type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$' }
+        titleEn: { type: string, minLength: 1, maxLength: 200 }
+        titleAr: { type: string, minLength: 1, maxLength: 200 }
+        titleZh: { type: string, maxLength: 200 }
+        descriptionEn: { type: string, maxLength: 4000 }
+        descriptionAr: { type: string, maxLength: 4000 }
+        descriptionZh: { type: string, maxLength: 4000 }
+        status: { type: string, enum: [draft, published, archived] }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    ProductContentReplace:
+      type: object
+      required: [action, productId, idempotencyKey]
+      properties:
+        action: { const: product.content.replace }
+        productId: { $ref: '#/components/schemas/Uuid' }
+        highlights: { type: array, maxItems: 5, items: { type: object } }
+        details: { type: array, maxItems: 12, items: { type: object } }
+        aPlus: { type: array, maxItems: 6, items: { type: object } }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    StyleCreate:
+      type: object
+      required: [action, productId, code, titleEn, idempotencyKey]
+      properties:
+        action: { const: style.create }
+        productId: { $ref: '#/components/schemas/Uuid' }
+        code: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]*$' }
+        titleEn: { type: string, minLength: 1, maxLength: 240 }
+        titleAr: { type: string, minLength: 1, maxLength: 240 }
+        titleZh: { type: string, minLength: 1, maxLength: 240 }
+        optionValues: { $ref: '#/components/schemas/LocalizedOptions' }
+        primaryImageId: { oneOf: [{ $ref: '#/components/schemas/Uuid' }, { type: 'null' }] }
+        status: { type: string, enum: [active, archived], default: active }
+        position: { type: integer, minimum: 0, maximum: 32767, default: 0 }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    StyleUpdate:
+      type: object
+      required: [action, styleId, idempotencyKey]
+      properties:
+        action: { const: style.update }
+        styleId: { $ref: '#/components/schemas/Uuid' }
+        code: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]*$' }
+        titleEn: { type: string, maxLength: 4000 }
+        titleAr: { type: string, maxLength: 4000 }
+        titleZh: { type: string, maxLength: 4000 }
+        optionValues: { $ref: '#/components/schemas/LocalizedOptions' }
+        primaryImageId: { oneOf: [{ $ref: '#/components/schemas/Uuid' }, { type: 'null' }] }
+        status: { type: string, enum: [active, archived] }
+        position: { type: integer, minimum: 0, maximum: 32767 }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    VariantCreate:
+      type: object
+      required: [action, productId, sku, titleEn, titleAr, titleZh, optionValues, amountMinor, onHand, idempotencyKey]
+      properties:
+        action: { const: variant.create }
+        productId: { $ref: '#/components/schemas/Uuid' }
+        styleId: { $ref: '#/components/schemas/Uuid' }
+        sku: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]*$' }
+        titleEn: { type: string, minLength: 1, maxLength: 240 }
+        titleAr: { type: string, minLength: 1, maxLength: 240 }
+        titleZh: { type: string, minLength: 1, maxLength: 240 }
+        optionValues: { $ref: '#/components/schemas/LocalizedOptions' }
+        amountMinor: { type: integer, minimum: 1 }
+        onHand: { type: integer, minimum: 0 }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    VariantUpdate:
+      type: object
+      required: [action, variantId, idempotencyKey]
+      properties:
+        action: { const: variant.update }
+        variantId: { $ref: '#/components/schemas/Uuid' }
+        styleId: { $ref: '#/components/schemas/Uuid' }
+        sku: { type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9._-]*$' }
+        titleEn: { type: string, maxLength: 4000 }
+        titleAr: { type: string, maxLength: 4000 }
+        titleZh: { type: string, maxLength: 4000 }
+        optionValues: { $ref: '#/components/schemas/LocalizedOptions' }
+        status: { type: string, enum: [active, archived] }
+        amountMinor: { type: integer, minimum: 1 }
+        onHand: { type: integer, minimum: 0 }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    MediaReorder:
+      type: object
+      required: [productId, imageIds, expectedVersion, idempotencyKey]
+      properties:
+        productId: { $ref: '#/components/schemas/Uuid' }
+        imageIds: { type: array, minItems: 1, maxItems: 8, items: { $ref: '#/components/schemas/Uuid' } }
+        expectedVersion: { type: integer, minimum: 0 }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    MediaReorderAction:
+      allOf:
+        - $ref: '#/components/schemas/MediaReorder'
+        - type: object
+          required: [action]
+          properties: { action: { const: media.reorder } }
+    MediaDelete:
+      type: object
+      required: [imageId, idempotencyKey]
+      properties:
+        imageId: { $ref: '#/components/schemas/Uuid' }
+        removeReferences: { type: boolean, default: false }
+        idempotencyKey: { $ref: '#/components/schemas/Uuid' }
+    SnapshotResponse:
+      type: object
+      required: [ok, snapshot]
+      properties: { ok: { const: true }, snapshot: { type: object, required: [products, styles, variants] } }
+    ActionResponse:
+      type: object
+      required: [ok, action, entity, result]
+      properties: { ok: { const: true }, action: { type: string }, entity: { type: string }, result: { type: object }, created: { type: boolean } }
+    CapabilitiesResponse:
+      type: object
+      required: [ok, capabilities]
+      properties: { ok: { const: true }, capabilities: { type: object, properties: { upload: { type: boolean }, delete: { type: boolean }, reorder: { type: boolean } } } }
+    MediaUploadResponse:
+      type: object
+      required: [ok, image, replayed]
+      properties: { ok: { const: true }, image: { type: object, required: [id, url] }, replayed: { type: boolean } }
+    MediaReorderResponse:
+      type: object
+      required: [ok, mediaVersion, imageIds, replayed]
+      properties: { ok: { const: true }, mediaVersion: { type: integer }, imageIds: { type: array, items: { $ref: '#/components/schemas/Uuid' } }, replayed: { type: boolean } }
+    MediaDeleteResponse:
+      type: object
+      required: [ok, deleted, replayed, removedReferences]
+      properties: { ok: { const: true }, deleted: { type: boolean }, replayed: { type: boolean }, removedReferences: { type: boolean } }
+    Error:
+      type: object
+      required: [ok, error]
+      properties: { ok: { const: false }, error: { type: string } }
+  responses:
+    InvalidRequest: { description: invalid_request or a public media error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Unauthorized: { description: unauthorized, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Forbidden: { description: forbidden, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    Disabled: { description: Agent API or write kill switch disabled, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    MediaVersionConflict: { description: media_version_conflict, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    MediaSetInvalid: { description: image_set_mismatch or duplicate_image, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }

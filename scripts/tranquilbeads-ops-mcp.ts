@@ -12,6 +12,13 @@ import { importProducts } from "../src/lib/product-import";
 import { getSiteSnapshot, updateContactSettings } from "../src/lib/site-admin";
 import type { ProductImportPayload } from "../src/lib/catalog-types";
 import { defaultSiteContentPath } from "../src/lib/site-content";
+import {
+  buildGoogleAdsAuthUrl,
+  buildGoogleAdsConversionActionPlan,
+  getGoogleAdsConfigFromEnv,
+  listAccessibleGoogleAdsCustomers,
+  listGoogleAdsConversionActions,
+} from "../src/lib/google-ads-api";
 
 dotenv.config({ path: resolve(process.cwd(), ".env.local") });
 dotenv.config();
@@ -169,6 +176,131 @@ async function main() {
       return {
         content: [{ type: "text", text: "Prepared lead follow-up drafts." }],
         structuredContent: result,
+      };
+    },
+  );
+
+  server.registerTool(
+    "google_ads_auth_url",
+    {
+      description: "Build the Google OAuth consent URL for Google Ads API access.",
+      inputSchema: {
+        clientId: z.string().optional(),
+        redirectUri: z.string().url().optional(),
+        state: z.string().optional(),
+      },
+    },
+    async (args) => {
+      const clientId = args.clientId ?? process.env.GOOGLE_ADS_CLIENT_ID;
+      const redirectUri = args.redirectUri ?? process.env.GOOGLE_ADS_REDIRECT_URI;
+
+      if (!clientId || !redirectUri) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Missing GOOGLE_ADS_CLIENT_ID or GOOGLE_ADS_REDIRECT_URI.",
+            },
+          ],
+          structuredContent: { ok: false },
+          isError: true,
+        };
+      }
+
+      const url = buildGoogleAdsAuthUrl({
+        clientId,
+        redirectUri,
+        state: args.state,
+      });
+
+      return {
+        content: [{ type: "text", text: url }],
+        structuredContent: { ok: true, url },
+      };
+    },
+  );
+
+  server.registerTool(
+    "google_ads_list_customers",
+    {
+      description: "List Google Ads customers available to the configured OAuth user.",
+      inputSchema: {},
+    },
+    async () => {
+      const config = getGoogleAdsConfigFromEnv();
+      const result = await listAccessibleGoogleAdsCustomers(config);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Loaded ${result.resourceNames?.length ?? 0} accessible Google Ads customers.`,
+          },
+        ],
+        structuredContent: result,
+      };
+    },
+  );
+
+  server.registerTool(
+    "google_ads_list_conversion_actions",
+    {
+      description: "List Google Ads conversion actions for the configured or provided customer ID.",
+      inputSchema: {
+        customerId: z.string().optional(),
+      },
+    },
+    async (args) => {
+      const config = getGoogleAdsConfigFromEnv();
+      const actions = await listGoogleAdsConversionActions(config, args.customerId);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Loaded ${actions.length} conversion actions.`,
+          },
+        ],
+        structuredContent: { actions },
+      };
+    },
+  );
+
+  server.registerTool(
+    "google_ads_prepare_conversion_action",
+    {
+      description: "Prepare a dry-run Google Ads conversion action mutate payload. This tool never writes to Google Ads.",
+      inputSchema: {
+        customerId: z.string().optional(),
+        name: z.string(),
+        category: z.string().default("SUBMIT_LEAD_FORM"),
+        type: z.string().default("WEBPAGE"),
+        primaryForGoal: z.boolean().optional(),
+        includeInConversionsMetric: z.boolean().optional(),
+      },
+    },
+    async (args) => {
+      const customerId =
+        args.customerId ??
+        process.env.GOOGLE_ADS_CUSTOMER_ID ??
+        "7091121019";
+      const plan = buildGoogleAdsConversionActionPlan({
+        customerId,
+        name: args.name,
+        category: args.category,
+        type: args.type,
+        primaryForGoal: args.primaryForGoal,
+        includeInConversionsMetric: args.includeInConversionsMetric,
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Prepared dry-run conversion action: ${args.name} for customer ${plan.customerId} via ${plan.endpoint}.`,
+          },
+        ],
+        structuredContent: plan,
       };
     },
   );

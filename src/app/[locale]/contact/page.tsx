@@ -72,7 +72,7 @@ export default async function ContactPage({
             locale={locale}
             interestOptions={getInterestOptions(locale)}
             whatsappHref={siteSettings.whatsappHref}
-            submissionEndpoint={process.env.NEXT_PUBLIC_FORM_ENDPOINT}
+            submissionEndpoint="/api/inquiries"
             copy={{
               labels: {
                 name: contactFormCopy.fields.name[locale],
@@ -121,8 +121,8 @@ export default async function ContactPage({
             <p className="latin-ui mt-2">{siteSettings.whatsappDisplay}</p>
             <p className="mt-4">
               {locale === "en"
-                ? "Hosted form endpoint can be connected later by setting NEXT_PUBLIC_FORM_ENDPOINT in Vercel."
-                : "يمكن توصيل نقطة نهاية النموذج لاحقًا عبر ضبط NEXT_PUBLIC_FORM_ENDPOINT في Vercel."}
+                ? "Form submissions are saved securely on the server so our team can review and reply."
+                : "يتم حفظ الاستفسارات على الخادم حتى يتمكن فريقنا من مراجعتها والرد عليها."}
             </p>
           </div>
         </div>

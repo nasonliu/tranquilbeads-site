@@ -6,9 +6,8 @@ import {
   defaultOutreachDir,
   readOutreachStore,
   writeOutreachStore,
-  type OutreachStore,
 } from "../src/lib/outreach-store";
-import type { OutreachChannel, OutreachLead } from "../src/lib/outreach-types";
+import type { OutreachChannel, OutreachLead, OutreachStore } from "../src/lib/outreach-types";
 
 export type OutreachReplySyncInput = OutreachReplyInput & {
   channel: OutreachChannel;
@@ -52,6 +51,11 @@ export async function syncOutreachReplies(
 
     const nextStore = ingestReply(currentStore, reply);
     const updatedTask = findReplyTask(nextStore, reply);
+    if (!updatedTask) {
+      throw new Error(
+        `Reply ingestion did not preserve the ${reply.channel} task for channelMessageId ${reply.channelMessageId}.`,
+      );
+    }
     const lead = findLeadById(nextStore, updatedTask.leadId);
 
     handoffItems.push(

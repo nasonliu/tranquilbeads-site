@@ -22,6 +22,7 @@ function normalizeProduct(product: Record<string, unknown>): Product {
     : legacyCollection;
 
   return {
+    ...product,
     slug: typeof product.slug === "string" ? product.slug : "",
     name: typeof product.name === "string" ? product.name : "",
     nameAr: typeof product.nameAr === "string" ? product.nameAr : "",
@@ -30,8 +31,6 @@ function normalizeProduct(product: Record<string, unknown>): Product {
     images: Array.isArray(product.images)
       ? product.images.filter((item): item is string => typeof item === "string")
       : [],
-    ...product,
-    collections,
   };
 }
 

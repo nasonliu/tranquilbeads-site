@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { getPageCopy } from "@/src/data/site";
+import { LocaleDocumentAttributes } from "@/src/components/locale-document-attributes";
 import { SiteShell } from "@/src/components/site-shell";
 import { getDir, isLocale, locales } from "@/src/lib/i18n";
 
@@ -27,6 +28,7 @@ export default async function LocaleLayout({
       dir={getDir(locale)}
       className="min-h-screen"
     >
+      <LocaleDocumentAttributes locale={locale} />
       <SiteShell locale={locale} nav={copy.nav} footerCopy={copy.footer}>
         {children}
       </SiteShell>

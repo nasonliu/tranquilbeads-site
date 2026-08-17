@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
+import { get as getBlob, put as putBlob } from "@vercel/blob";
+
 import type {
   OutreachCampaign,
   OutreachEvent,
@@ -14,6 +16,7 @@ import type {
 } from "@/src/lib/outreach-types";
 
 export const defaultOutreachDir = resolve(process.cwd(), "src/data/outreach");
+const defaultOutreachBlobPath = "outreach/store.json";
 
 function getDatasetPath(baseDir: string, fileName: string) {
   return resolve(baseDir, fileName);
@@ -40,6 +43,10 @@ export function createEmptyOutreachStore(): OutreachStore {
 }
 
 export async function readOutreachStore(baseDir = defaultOutreachDir): Promise<OutreachStore> {
+  if (shouldUseBlobOutreachStore(baseDir)) {
+    return readBlobBackedOutreachStore(baseDir);
+  }
+
   return {
     leads: await readArray<OutreachLead>(getDatasetPath(baseDir, "leads.json")),
     campaigns: await readArray<OutreachCampaign>(getDatasetPath(baseDir, "campaigns.json")),
@@ -54,6 +61,11 @@ export async function writeOutreachStore(
   store: OutreachStore,
   baseDir = defaultOutreachDir,
 ) {
+  if (shouldUseBlobOutreachStore(baseDir)) {
+    await writeBlobBackedOutreachStore(store);
+    return;
+  }
+
   await mkdir(baseDir, { recursive: true });
 
   await Promise.all([
@@ -123,4 +135,54 @@ function upsertTasksById(currentTasks: OutreachTask[], nextTasks: OutreachTask[]
   }
 
   return [...tasksById.values()];
+}
+
+function shouldUseBlobOutreachStore(baseDir: string) {
+  if (process.env.OUTREACH_STORE_BACKEND === "blob") {
+    return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  }
+
+  return baseDir === defaultOutreachDir
+    && process.env.VERCEL === "1"
+    && Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+async function readBlobBackedOutreachStore(baseDir: string) {
+  const blob = await getBlob(defaultOutreachBlobPath, {
+    access: "private",
+    useCache: false,
+  });
+
+  if (!blob || blob.statusCode !== 200) {
+    const seededStore = await readDiskOrEmptyOutreachStore(baseDir);
+    await writeBlobBackedOutreachStore(seededStore);
+    return seededStore;
+  }
+
+  const raw = await new Response(blob.stream).text();
+  return JSON.parse(raw) as OutreachStore;
+}
+
+async function writeBlobBackedOutreachStore(store: OutreachStore) {
+  await putBlob(defaultOutreachBlobPath, `${JSON.stringify(store, null, 2)}\n`, {
+    access: "private",
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: "application/json",
+  });
+}
+
+async function readDiskOrEmptyOutreachStore(baseDir: string) {
+  try {
+    return {
+      leads: await readArray<OutreachLead>(getDatasetPath(baseDir, "leads.json")),
+      campaigns: await readArray<OutreachCampaign>(getDatasetPath(baseDir, "campaigns.json")),
+      tasks: await readArray<OutreachTask>(getDatasetPath(baseDir, "tasks.json")),
+      events: await readArray<OutreachEvent>(getDatasetPath(baseDir, "events.json")),
+      templates: await readArray<OutreachTemplate>(getDatasetPath(baseDir, "templates.json")),
+      suppressions: await readOptionalArray<SuppressionEntry>(getDatasetPath(baseDir, "suppressions.json")),
+    };
+  } catch {
+    return createEmptyOutreachStore();
+  }
 }

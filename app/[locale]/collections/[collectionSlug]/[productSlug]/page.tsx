@@ -11,14 +11,14 @@ import {
   products,
 } from "@/src/data/site";
 import { PageHero } from "@/src/components/page-hero";
-import { isLocale, locales, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, wholesaleLocales, withLocale } from "@/src/lib/i18n";
 import {
   buildBreadcrumbJsonLd,
   buildProductMetadata,
 } from "@/src/lib/seo";
 
 export function generateStaticParams() {
-  return locales.flatMap((locale) =>
+  return wholesaleLocales.flatMap((locale) =>
     collections.flatMap((collection) =>
       products
         .filter((product) => product.collection === collection.slug)
@@ -36,7 +36,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/collections/[collectionSlug]/[productSlug]">) {
   const { locale, collectionSlug, productSlug } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -55,7 +55,7 @@ export default async function ProductDetailPage({
 }: PageProps<"/[locale]/collections/[collectionSlug]/[productSlug]">) {
   const { locale, collectionSlug, productSlug } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { InquiryForm } from "@/src/components/inquiry-form";
 
@@ -12,6 +12,26 @@ const baseProps = {
 };
 
 describe("InquiryForm", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(JSON.stringify({ ok: true, leadId: "lead-1" }), {
+          status: 201,
+          headers: { "content-type": "application/json" },
+        }),
+      ),
+    );
+    window.dataLayer = [];
+    window.gtag = vi.fn();
+  });
+
+  afterEach(() => {
+    delete window.dataLayer;
+    delete window.gtag;
+    vi.unstubAllGlobals();
+  });
+
   it("shows validation feedback when submitted empty", async () => {
     render(<InquiryForm {...baseProps} />);
 
@@ -22,7 +42,7 @@ describe("InquiryForm", () => {
     expect(screen.getByText(/choose an interest category/i)).toBeInTheDocument();
   });
 
-  it("submits successfully without a backend endpoint by using the fallback workflow", async () => {
+  it("submits inquiries to the hosted backend endpoint", async () => {
     render(<InquiryForm {...baseProps} />);
 
     fireEvent.change(screen.getByLabelText(/full name/i), {
@@ -52,6 +72,29 @@ describe("InquiryForm", () => {
     await waitFor(() => {
       expect(screen.getByText(/thank you — we will review your inquiry/i)).toBeInTheDocument();
     });
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/inquiries",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: expect.stringContaining("\"company\":\"Noor Retail Group\""),
+      }),
+    );
+    expect(window.dataLayer).toContainEqual(
+      expect.objectContaining({
+        event: "website_inquiry_submit",
+        inquiry_interest: "Tasbih",
+        inquiry_country: "UAE",
+      }),
+    );
+    expect(window.gtag).toHaveBeenCalledWith("set", "user_data", {
+      email: "amina@example.com",
+    });
+    expect(window.gtag).toHaveBeenCalledWith("event", "conversion", {
+      send_to: "AW-18288748181/1fQ3CJDf18kcEJXN4JBE",
+      value: 1.0,
+      currency: "USD",
+    });
   });
 
   it("keeps the WhatsApp shortcut visible", () => {
@@ -63,25 +106,24 @@ describe("InquiryForm", () => {
     );
   });
 
-  it("offers every configured WhatsApp support channel without regions or numbers", () => {
+  it("offers every configured WhatsApp team", () => {
     render(
       <InquiryForm
         {...baseProps}
         whatsappContacts={[
-          { href: "https://wa.me/8618929564545", label: "Sales support 1" },
-          { href: "https://wa.me/44784089109", label: "Sales support 2" },
+          { href: "https://wa.me/8618929564545", label: "China team" },
+          { href: "https://wa.me/44784089109", label: "UK team" },
         ]}
       />,
     );
 
-    expect(screen.getByRole("link", { name: /chat on whatsapp · sales support 1/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /chat on whatsapp · china team/i })).toHaveAttribute(
       "href",
       "https://wa.me/8618929564545",
     );
-    expect(screen.getByRole("link", { name: /chat on whatsapp · sales support 2/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /chat on whatsapp · uk team/i })).toHaveAttribute(
       "href",
       "https://wa.me/44784089109",
     );
-    expect(document.body).not.toHaveTextContent(/china team|uk team|\+86|\+44/i);
   });
 });

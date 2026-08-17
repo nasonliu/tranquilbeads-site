@@ -8,9 +8,8 @@ import {
   defaultOutreachDir,
   readOutreachStore,
   writeOutreachStore,
-  type OutreachStore,
 } from "../src/lib/outreach-store";
-import type { OutreachLead } from "../src/lib/outreach-types";
+import type { OutreachLead, OutreachStore } from "../src/lib/outreach-types";
 
 export type ImportObsidianLeadsOptions = {
   sourcePaths: string[];

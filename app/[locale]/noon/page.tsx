@@ -9,7 +9,7 @@ import {
   getNoonStoreLinks,
   type NoonRetailProduct,
 } from "@/src/lib/noon-retail";
-import { isLocale, withLocale } from "@/src/lib/i18n";
+import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 import {
   buildRetailBreadcrumbJsonLd,
   buildRetailItemListJsonLd,
@@ -165,7 +165,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/[locale]/noon">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     return {};
   }
 
@@ -183,7 +183,7 @@ export default async function NoonRetailPage({
 }: PageProps<"/[locale]/noon">) {
   const { locale } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isWholesaleLocale(locale)) {
     notFound();
   }
 
