@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import { z } from "zod";
 
 import { guardedRetailSql } from "./database-identity";
+import { isReferenceCurrency, type ReferenceCurrencySnapshot } from "./reference-currency";
 import { getRetailReferenceCurrencySnapshot, refreshRetailReferenceCurrencySnapshot } from "./reference-currency-server";
 import { quoteYunExpressShipping, listYunExpressCountries, type YunExpressCountry, type YunExpressRate } from "./yunexpress";
 
@@ -56,7 +57,7 @@ const quotePayloadDto = z.object({
     heightMm: z.number().int().positive(),
     itemCount: z.number().int().positive(),
   }).strict(),
-  fx: z.object({ asOf: z.string().datetime({ offset: true }), version: z.string().min(1), cnyPerUsdMicros: z.number().int().positive(), bufferBps: z.number().int().min(0).max(10_000) }).strict(),
+  fx: z.object({ asOf: z.string().datetime({ offset: true }), version: z.string().min(1), currency: z.string().regex(/^[A-Z]{3}$/), currencyPerUsdMicros: z.number().int().positive(), bufferBps: z.number().int().min(0).max(10_000) }).strict(),
 }).strict();
 
 type ShippingQuotePayload = z.infer<typeof quotePayloadDto>;
@@ -169,29 +170,33 @@ function allowedServiceCodes() {
   return configured?.length ? new Set(configured) : null;
 }
 
-export function chooseStorefrontShippingRate(rates: YunExpressRate[]) {
+function amountToBufferedUsdMinor(amount: number, currencyPerUsdMicros: number, bufferBps: number) {
+  const sourceMinor = Math.ceil(amount * 100);
+  const numerator = sourceMinor * 1_000_000 * (10_000 + bufferBps);
+  const denominator = currencyPerUsdMicros * 10_000;
+  if (!Number.isSafeInteger(numerator) || !Number.isSafeInteger(denominator)) throw new Error("shipping_fx_unavailable");
+  const result = Math.ceil(numerator / denominator);
+  if (!Number.isSafeInteger(result) || result < 1) throw new Error("shipping_fx_unavailable");
+  return result;
+}
+
+export function chooseStorefrontShippingRate(rates: YunExpressRate[], snapshot: ReferenceCurrencySnapshot, bufferBps: number) {
   const allowed = allowedServiceCodes();
-  const eligible = rates.filter((rate) => (!allowed || allowed.has(rate.productCode)) && rate.currency.toUpperCase() === "CNY" && Number.isFinite(rate.amount) && rate.amount > 0);
+  const eligible = rates.flatMap((rate) => {
+    const currency = rate.currency.trim().toUpperCase();
+    const currencyPerUsdMicros = isReferenceCurrency(currency) ? snapshot.rateMicros[currency] : undefined;
+    if ((allowed && !allowed.has(rate.productCode)) || !currencyPerUsdMicros || !Number.isFinite(rate.amount) || rate.amount <= 0) return [];
+    return [{ rate, currency, currencyPerUsdMicros, providerShippingMinor: amountToBufferedUsdMinor(rate.amount, currencyPerUsdMicros, bufferBps) }];
+  });
   if (!eligible.length) throw new Error("shipping_service_unavailable");
-  return eligible.sort((left, right) => left.amount - right.amount || left.productCode.localeCompare(right.productCode))[0];
+  return eligible.sort((left, right) => left.providerShippingMinor - right.providerShippingMinor || left.rate.productCode.localeCompare(right.rate.productCode))[0];
 }
 
 async function shippingFxSnapshot() {
   const refreshed = await refreshRetailReferenceCurrencySnapshot();
   const snapshot = refreshed ?? getRetailReferenceCurrencySnapshot();
-  const cny = snapshot.rateMicros.CNY;
-  if (!Number.isSafeInteger(cny) || !cny || cny < 1) throw new Error("shipping_fx_unavailable");
-  return { snapshot, cny };
-}
-
-function cnyToBufferedUsdMinor(cnyAmount: number, cnyPerUsdMicros: number, bufferBps: number) {
-  const cnyMinor = Math.ceil(cnyAmount * 100);
-  const numerator = cnyMinor * 1_000_000 * (10_000 + bufferBps);
-  const denominator = cnyPerUsdMicros * 10_000;
-  if (!Number.isSafeInteger(numerator) || !Number.isSafeInteger(denominator)) throw new Error("shipping_fx_unavailable");
-  const result = Math.ceil(numerator / denominator);
-  if (!Number.isSafeInteger(result) || result < 1) throw new Error("shipping_fx_unavailable");
-  return result;
+  if (!snapshot.rateMicros.USD) throw new Error("shipping_fx_unavailable");
+  return snapshot;
 }
 
 export type StorefrontShippingQuote = {
@@ -235,10 +240,11 @@ export async function createStorefrontShippingQuote(items: ShippingCartItem[], c
     paddingMm: integerEnv("RETAIL_SHIPPING_PADDING_MM", DEFAULT_PADDING_MM, 0, 100),
     voidBps: integerEnv("RETAIL_SHIPPING_PACKING_VOID_BPS", DEFAULT_VOID_BPS, 0, 10_000),
   });
-  const rate = chooseStorefrontShippingRate(await quoteYunExpressShipping({ countryCode: country, postalCode, weightGrams: parcel.weightGrams, lengthMm: parcel.lengthMm, widthMm: parcel.widthMm, heightMm: parcel.heightMm, packageType: "C" }));
-  const { snapshot, cny } = await shippingFxSnapshot();
+  const rates = await quoteYunExpressShipping({ countryCode: country, postalCode, weightGrams: parcel.weightGrams, lengthMm: parcel.lengthMm, widthMm: parcel.widthMm, heightMm: parcel.heightMm, packageType: "C" });
+  const snapshot = await shippingFxSnapshot();
   const bufferBps = integerEnv("RETAIL_SHIPPING_BUFFER_BPS", DEFAULT_BUFFER_BPS, 0, 10_000);
-  const providerShippingMinor = cnyToBufferedUsdMinor(rate.amount, cny, bufferBps);
+  const selected = chooseStorefrontShippingRate(rates, snapshot, bufferBps);
+  const { rate, providerShippingMinor, currency, currencyPerUsdMicros } = selected;
   const freeThreshold = integerEnv("RETAIL_FREE_SHIPPING_THRESHOLD_USD_MINOR", DEFAULT_FREE_SHIPPING_THRESHOLD_MINOR, 1, 100_000_000);
   const shippingMinor = loaded.subtotalMinor >= freeThreshold ? 0 : providerShippingMinor;
   const quotedAt = new Date(now).toISOString(), expiresAt = new Date(now + QUOTE_TTL_SECONDS * 1_000).toISOString();
@@ -247,7 +253,7 @@ export async function createStorefrontShippingQuote(items: ShippingCartItem[], c
     shippingMinor, providerShippingMinor, carrier: "YunExpress", serviceCode: rate.productCode,
     serviceName: rate.productName, deliveryWindow: rate.deliveryWindow, dutiesMode: "DAP", quotedAt, expiresAt,
     package: { weightGrams: parcel.weightGrams, lengthMm: parcel.lengthMm, widthMm: parcel.widthMm, heightMm: parcel.heightMm, itemCount: parcel.itemCount },
-    fx: { asOf: snapshot.asOf, version: snapshot.version, cnyPerUsdMicros: cny, bufferBps },
+    fx: { asOf: snapshot.asOf, version: snapshot.version, currency, currencyPerUsdMicros, bufferBps },
   };
   return { token: encodePayload(payload), internal: internalShipping(payload), public: { carrier: "YunExpress", serviceCode: rate.productCode, serviceName: rate.productName, deliveryWindow: rate.deliveryWindow, dutiesMode: "DAP", expiresAt, package: parcel } };
 }
