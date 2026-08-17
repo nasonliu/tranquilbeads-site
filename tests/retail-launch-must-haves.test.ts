@@ -10,12 +10,15 @@ describe("retail launch must-haves", () => {
     const quote = read("app/api/retail/quote/route.ts");
     const order = read("app/api/retail/orders/route.ts");
     const checkout = read("src/lib/retail/storefront-v3.ts");
-    const migration = read("migrations/20260826_retail_dynamic_shipping_checkout.sql");
+    const migration = read("migrations/20260828_retail_dynamic_shipping_quote_fix.sql");
+    const runner = read("scripts/run-retail-migrations.mjs");
     expect(quote).toContain("quoteStorefrontV3");
     expect(order).toContain("shippingQuoteToken");
     expect(checkout).toContain("verifyStorefrontShippingQuote");
     expect(migration).toContain("invalid shipping quote");
     expect(migration).toContain("expiresAt");
+    expect(migration).toContain("CREATE OR REPLACE FUNCTION retail_quote_checkout_v3");
+    expect(runner).toContain("20260828_retail_dynamic_shipping_quote_fix.sql");
   });
 
   it("keeps promotional delivery consent-backed and unsubscribe-capable", () => {
