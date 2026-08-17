@@ -26,7 +26,7 @@ describe("retail storefront dynamic shipping", () => {
   it("compares provider currencies only after converting them into buffered USD", () => {
     const rates = [
       { productCode: "FAST", productName: "Fast", priceName: "Contract", priceType: "A", amount: 85, currency: "CNY", deliveryWindow: "5-8", origin: "SZ", fees: [] },
-      { productCode: "VALUE", productName: "Value", priceName: "Contract", priceType: "A", amount: 52, currency: "CNY", deliveryWindow: "8-12", origin: "SZ", fees: [] },
+      { productCode: "VALUE", productName: "Value", priceName: "Contract", priceType: "A", amount: 52, currency: "RMB", deliveryWindow: "8-12", origin: "SZ", fees: [] },
       { productCode: "USD", productName: "USD", priceName: "Contract", priceType: "A", amount: 8, currency: "USD", deliveryWindow: "5-8", origin: "SZ", fees: [] },
     ];
     expect(chooseStorefrontShippingRate(rates, snapshot, 1_000)).toMatchObject({ rate: { productCode: "VALUE" }, providerShippingMinor: 818 });

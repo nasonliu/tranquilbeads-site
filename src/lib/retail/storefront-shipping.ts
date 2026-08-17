@@ -183,12 +183,20 @@ function amountToBufferedUsdMinor(amount: number, currencyPerUsdMicros: number, 
 export function chooseStorefrontShippingRate(rates: YunExpressRate[], snapshot: ReferenceCurrencySnapshot, bufferBps: number) {
   const allowed = allowedServiceCodes();
   const eligible = rates.flatMap((rate) => {
-    const currency = rate.currency.trim().toUpperCase();
+    const providerCurrency = rate.currency.trim().toUpperCase();
+    const currency = providerCurrency === "RMB" || providerCurrency === "CNH" ? "CNY" : providerCurrency;
     const currencyPerUsdMicros = isReferenceCurrency(currency) ? snapshot.rateMicros[currency] : undefined;
     if ((allowed && !allowed.has(rate.productCode)) || !currencyPerUsdMicros || !Number.isFinite(rate.amount) || rate.amount <= 0) return [];
     return [{ rate, currency, currencyPerUsdMicros, providerShippingMinor: amountToBufferedUsdMinor(rate.amount, currencyPerUsdMicros, bufferBps) }];
   });
-  if (!eligible.length) throw new Error("shipping_service_unavailable");
+  if (!eligible.length) {
+    console.warn("storefront_shipping_no_eligible_rate", {
+      returnedRates: rates.length,
+      returnedCurrencies: [...new Set(rates.map((rate) => rate.currency.trim().toUpperCase()))].sort(),
+      allowlistConfigured: Boolean(allowed),
+    });
+    throw new Error("shipping_service_unavailable");
+  }
   return eligible.sort((left, right) => left.providerShippingMinor - right.providerShippingMinor || left.rate.productCode.localeCompare(right.rate.productCode))[0];
 }
 
