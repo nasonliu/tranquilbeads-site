@@ -214,7 +214,19 @@ export async function quoteStorefrontV3(
     )) SELECT quoted.*,COALESCE(promotion.automatic,false) AS promotion_automatic FROM quoted
       LEFT JOIN retail_promotions promotion ON promotion.id=quoted.promotion_id`;
   } catch (error) {
-    console.warn("retail_storefront_quote_stage_failed", { stage: "authoritative_quote", category: error instanceof Error ? error.message : "unknown" });
+    const databaseError = error && typeof error === "object"
+      ? error as { code?: unknown; routine?: unknown; dataType?: unknown; table?: unknown; column?: unknown; constraint?: unknown }
+      : {};
+    console.warn("retail_storefront_quote_stage_failed", {
+      stage: "authoritative_quote",
+      category: error instanceof Error ? error.message : "unknown",
+      code: typeof databaseError.code === "string" ? databaseError.code : undefined,
+      routine: typeof databaseError.routine === "string" ? databaseError.routine : undefined,
+      dataType: typeof databaseError.dataType === "string" ? databaseError.dataType : undefined,
+      table: typeof databaseError.table === "string" ? databaseError.table : undefined,
+      column: typeof databaseError.column === "string" ? databaseError.column : undefined,
+      constraint: typeof databaseError.constraint === "string" ? databaseError.constraint : undefined,
+    });
     throw error;
   }
   const row = rows[0];
