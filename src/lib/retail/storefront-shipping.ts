@@ -33,7 +33,6 @@ const DEFAULT_FREE_SHIPPING_THRESHOLD_MINOR = 9_900;
 const DEFAULT_PACKAGING_WEIGHT_GRAMS = 80;
 const DEFAULT_PADDING_MM = 10;
 const DEFAULT_VOID_BPS = 1_500;
-const DEFAULT_SERVICE_CODES = ["THPHR", "BKPHR", "CNDWA"];
 
 const quotePayloadDto = z.object({
   v: z.literal(1),
@@ -167,12 +166,12 @@ async function loadParcelFacts(items: ShippingCartItem[]) {
 
 function allowedServiceCodes() {
   const configured = process.env.RETAIL_YUNEXPRESS_SERVICE_CODES?.split(",").map((value) => value.trim()).filter(Boolean);
-  return new Set(configured?.length ? configured : DEFAULT_SERVICE_CODES);
+  return configured?.length ? new Set(configured) : null;
 }
 
-function chooseRate(rates: YunExpressRate[]) {
+export function chooseStorefrontShippingRate(rates: YunExpressRate[]) {
   const allowed = allowedServiceCodes();
-  const eligible = rates.filter((rate) => allowed.has(rate.productCode) && rate.currency.toUpperCase() === "CNY" && Number.isFinite(rate.amount) && rate.amount > 0);
+  const eligible = rates.filter((rate) => (!allowed || allowed.has(rate.productCode)) && rate.currency.toUpperCase() === "CNY" && Number.isFinite(rate.amount) && rate.amount > 0);
   if (!eligible.length) throw new Error("shipping_service_unavailable");
   return eligible.sort((left, right) => left.amount - right.amount || left.productCode.localeCompare(right.productCode))[0];
 }
@@ -236,7 +235,7 @@ export async function createStorefrontShippingQuote(items: ShippingCartItem[], c
     paddingMm: integerEnv("RETAIL_SHIPPING_PADDING_MM", DEFAULT_PADDING_MM, 0, 100),
     voidBps: integerEnv("RETAIL_SHIPPING_PACKING_VOID_BPS", DEFAULT_VOID_BPS, 0, 10_000),
   });
-  const rate = chooseRate(await quoteYunExpressShipping({ countryCode: country, postalCode, weightGrams: parcel.weightGrams, lengthMm: parcel.lengthMm, widthMm: parcel.widthMm, heightMm: parcel.heightMm, packageType: "C" }));
+  const rate = chooseStorefrontShippingRate(await quoteYunExpressShipping({ countryCode: country, postalCode, weightGrams: parcel.weightGrams, lengthMm: parcel.lengthMm, widthMm: parcel.widthMm, heightMm: parcel.heightMm, packageType: "C" }));
   const { snapshot, cny } = await shippingFxSnapshot();
   const bufferBps = integerEnv("RETAIL_SHIPPING_BUFFER_BPS", DEFAULT_BUFFER_BPS, 0, 10_000);
   const providerShippingMinor = cnyToBufferedUsdMinor(rate.amount, cny, bufferBps);

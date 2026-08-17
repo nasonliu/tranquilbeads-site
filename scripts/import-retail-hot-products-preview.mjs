@@ -357,6 +357,39 @@ async function ensureCatalogVariants(baseUrl, token, product, productId, styleId
   }
 }
 
+async function ensureCatalogLogistics(baseUrl, token, product) {
+  let current = await snapshot(baseUrl, token);
+  const record = productFromSnapshot(current, product);
+  if (!record) throw new Error(`Product readback missing for ${product.slug}`);
+  let updated = 0;
+  for (const { variant } of readyVariants(product)) {
+    const found = current.variants.find((value) => value.product_public_id === record.public_id && value.sku === variant.sku);
+    if (!found) throw new Error(`Variant readback missing for ${product.slug}/${variant.sku}`);
+    const request = { ...standardTasbihParcel };
+    await apiJson(baseUrl, token, "/api/agent/retail/catalog", {
+      method: "POST",
+      body: JSON.stringify({
+        action: "variant.update",
+        variantId: found.public_id,
+        ...request,
+        idempotencyKey: actionKey(`${product.slug}:variant:${variant.sku}:logistics`, request),
+      }),
+    });
+    current = await snapshot(baseUrl, token);
+    const readback = current.variants.find((value) => value.public_id === found.public_id);
+    if (!readback || Number(readback.shipping_weight_grams) !== request.shippingWeightGrams
+      || Number(readback.package_length_mm) !== request.packageLengthMm
+      || Number(readback.package_width_mm) !== request.packageWidthMm
+      || Number(readback.package_height_mm) !== request.packageHeightMm
+      || readback.origin_country !== request.originCountry
+      || readback.dangerous_goods !== request.dangerousGoods) {
+      throw new Error(`Variant logistics readback mismatch for ${product.slug}/${variant.sku}`);
+    }
+    updated += 1;
+  }
+  return { productId: record.public_id, slug: product.slug, status: "verified", variants: updated };
+}
+
 async function ensureCatalogProduct(baseUrl, token, product) {
   const sellable = readyVariants(product);
   if (!sellable.length) return { slug: product.slug, status: "skipped", readiness: product.readiness };
@@ -428,6 +461,8 @@ async function main() {
   if (vercelCliPath) await fs.access(vercelCliPath);
   const envFile = argument("--env-file");
   const prepareOnly = process.argv.includes("--prepare-only");
+  const logisticsOnly = process.argv.includes("--logistics-only");
+  if (prepareOnly && logisticsOnly) throw new Error("--prepare-only and --logistics-only cannot be combined");
   const explicitBaseUrl = argument("--base-url");
   if (envFile && !prepareOnly && !explicitBaseUrl) {
     throw new Error("--base-url is required when --env-file contains the write credential");
@@ -452,7 +487,7 @@ async function main() {
   if (new Set(items.map((product) => product.sku)).size !== items.length || new Set(items.map((product) => product.slug)).size !== items.length) throw new Error("Catalog product identity is not unique");
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), "tranquilbeads-retail-preview-"));
   try {
-    await prepareImages(selectedImportable, directory);
+    if (!logisticsOnly) await prepareImages(selectedImportable, directory);
     if (prepareOnly) {
       console.log(JSON.stringify({ ok: true, expectedCount: manifest.expectedCount, importable: importable.length, pending: pending.length, products: items.map((item) => ({ slug: item.slug, readiness: item.readiness, distinctImages: item.preparedImages?.length ?? 0, styles: item.styles.length, variants: item.styles.reduce((total, style) => total + style.variants.length, 0) })) }, null, 2));
       return;
@@ -469,8 +504,10 @@ async function main() {
     if (!mediaCapabilities.capabilities?.upload || !mediaCapabilities.capabilities?.reorder) throw new Error("Preview media writes are not enabled");
     const results = [];
     for (const item of selectedImportable) {
-      process.stdout.write(`Importing ${item.slug} ... `);
-      results.push(await ensureCatalogProduct(baseUrl, token, item));
+      process.stdout.write(`${logisticsOnly ? "Updating logistics for" : "Importing"} ${item.slug} ... `);
+      results.push(logisticsOnly
+        ? await ensureCatalogLogistics(baseUrl, token, item)
+        : await ensureCatalogProduct(baseUrl, token, item));
       process.stdout.write("verified\n");
     }
     console.log(JSON.stringify({ ok: true, baseUrl, expectedCount: manifest.expectedCount, imported: results.length, pending: pending.map((product) => ({ slug: product.slug, readiness: product.readiness })), products: results }, null, 2));

@@ -101,5 +101,8 @@ describe("retail 30-product import manifest", () => {
     expect(importer).toContain("archive-conflict");
     expect(importer).not.toContain("if (uploaded[index]) continue");
     expect(importer).toContain("manifestFirstImageOrder(record.images, manifestImages)");
+    expect(importer).toContain("--logistics-only");
+    expect(importer).toContain("Variant logistics readback mismatch");
+    expect(importer).toContain('actionKey(`${product.slug}:variant:${variant.sku}:logistics`, request)');
   });
 });
