@@ -229,7 +229,6 @@ export type StorefrontShippingQuote = {
 function internalShipping(payload: ShippingQuotePayload) {
   return {
     amountMinor: payload.shippingMinor,
-    providerShippingMinor: payload.providerShippingMinor,
     taxRateBps: 0,
     carrier: payload.carrier,
     serviceCode: payload.serviceCode,
@@ -237,10 +236,7 @@ function internalShipping(payload: ShippingQuotePayload) {
     deliveryWindow: payload.deliveryWindow,
     dutiesMode: payload.dutiesMode,
     rateSource: "provider_api",
-    quotedAt: payload.quotedAt,
     expiresAt: payload.expiresAt,
-    package: payload.package,
-    fx: payload.fx,
   };
 }
 
