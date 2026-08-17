@@ -25,6 +25,7 @@ export async function POST(request:Request){
   }catch(error){
     const message=error instanceof Error?error.message:"quote_unavailable";
     if(["invalid checkout","invalid cart","duplicate sku","unknown sku","unavailable sku","unsupported shipping country","shipping_facts_missing","shipping_parcel_too_large","shipping_service_unavailable","invalid promotion","promotion unavailable"].includes(message))return Response.json({ok:false,error:message.replaceAll(" ","_")},{status:422,headers:noStore});
+    console.warn("retail_storefront_quote_failed",{category:message});
     return Response.json({ok:false,error:"quote_unavailable"},{status:503,headers:noStore});
   }
 }
