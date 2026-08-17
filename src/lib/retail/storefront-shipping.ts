@@ -91,6 +91,11 @@ function normalizedCart(items: ShippingCartItem[]) {
   return [...items].map((item) => ({ variantSku: item.variantSku.trim(), quantity: item.quantity })).sort((left, right) => left.variantSku.localeCompare(right.variantSku));
 }
 
+function providerText(value: string, fallback: string, maxLength: number) {
+  const cleaned = value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, maxLength);
+  return cleaned || fallback;
+}
+
 function cartHash(items: ShippingCartItem[]) {
   return crypto.createHash("sha256").update(stableJson(normalizedCart(items)), "utf8").digest("hex");
 }
@@ -256,10 +261,13 @@ export async function createStorefrontShippingQuote(items: ShippingCartItem[], c
   const freeThreshold = integerEnv("RETAIL_FREE_SHIPPING_THRESHOLD_USD_MINOR", DEFAULT_FREE_SHIPPING_THRESHOLD_MINOR, 1, 100_000_000);
   const shippingMinor = loaded.subtotalMinor >= freeThreshold ? 0 : providerShippingMinor;
   const quotedAt = new Date(now).toISOString(), expiresAt = new Date(now + QUOTE_TTL_SECONDS * 1_000).toISOString();
+  const serviceCode = providerText(rate.productCode, "YUNEXPRESS", 100);
+  const serviceName = providerText(rate.productName, serviceCode, 200);
+  const deliveryWindow = providerText(rate.deliveryWindow, "Provider estimate", 100);
   const payload: ShippingQuotePayload = {
     v: 1, exp: Math.floor(now / 1_000) + QUOTE_TTL_SECONDS, cartHash: cartHash(items), country, postalCode,
-    shippingMinor, providerShippingMinor, carrier: "YunExpress", serviceCode: rate.productCode,
-    serviceName: rate.productName, deliveryWindow: rate.deliveryWindow, dutiesMode: "DAP", quotedAt, expiresAt,
+    shippingMinor, providerShippingMinor, carrier: "YunExpress", serviceCode,
+    serviceName, deliveryWindow, dutiesMode: "DAP", quotedAt, expiresAt,
     package: { weightGrams: parcel.weightGrams, lengthMm: parcel.lengthMm, widthMm: parcel.widthMm, heightMm: parcel.heightMm, itemCount: parcel.itemCount },
     fx: { asOf: snapshot.asOf, version: snapshot.version, currency, currencyPerUsdMicros, bufferBps },
   };

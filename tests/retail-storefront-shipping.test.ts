@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { afterEach, describe, expect, it } from "vitest";
 
 import { chooseStorefrontShippingRate, packMixedCartParcel } from "@/src/lib/retail/storefront-shipping";
@@ -38,5 +41,11 @@ describe("retail storefront dynamic shipping", () => {
       { productCode: "FAST", productName: "Fast", priceName: "Contract", priceType: "A", amount: 85, currency: "CNY", deliveryWindow: "5-8", origin: "SZ", fees: [] },
       { productCode: "VALUE", productName: "Value", priceName: "Contract", priceType: "A", amount: 52, currency: "CNY", deliveryWindow: "8-12", origin: "SZ", fees: [] },
     ], snapshot, 1_000)).toMatchObject({ rate: { productCode: "FAST" } });
+  });
+
+  it("keeps provider control characters out of PostgreSQL JSON snapshots", () => {
+    const source = fs.readFileSync(path.join(process.cwd(), "src/lib/retail/storefront-shipping.ts"), "utf8");
+    expect(source).toContain('value.replace(/[\\u0000-\\u001f\\u007f]/g, " ")');
+    expect(source).toContain("const serviceName = providerText");
   });
 });
