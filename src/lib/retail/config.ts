@@ -46,3 +46,15 @@ export function isRetailNotificationConfigurationValid(env: Env = process.env) {
     && (env.RETAIL_PORTAL_TOKEN_SECRET?.length ?? 0) >= 32,
   );
 }
+
+export function isRetailShippingConfigurationValid(env: Env = process.env) {
+  const signingSecret = env.RETAIL_SHIPPING_QUOTE_SECRET || env.RETAIL_PORTAL_TOKEN_SECRET || env.ADMIN_RETAIL_SESSION_SECRET;
+  return Boolean(
+    env.RETAIL_DYNAMIC_SHIPPING_ENABLED === "true"
+    && env.YUNEXPRESS_ENV === "production"
+    && env.YUNEXPRESS_APP_ID
+    && env.YUNEXPRESS_APP_SECRET
+    && env.YUNEXPRESS_SOURCE_KEY
+    && (signingSecret?.length ?? 0) >= 32,
+  );
+}

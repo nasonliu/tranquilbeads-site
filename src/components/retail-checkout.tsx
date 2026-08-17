@@ -120,11 +120,13 @@ export function RetailCheckoutPage({
   zones,
   paypalClientId,
   enabled,
+  dynamicShippingEnabled = false,
 }: {
   locale: Locale;
   zones: RetailShippingZone[];
   paypalClientId?: string;
   enabled: boolean;
+  dynamicShippingEnabled?: boolean;
 }) {
   const cart = useRetailCart();
   const router = useRouter();
@@ -134,6 +136,7 @@ export function RetailCheckoutPage({
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [promotionCode, setPromotionCode] = useState("");
   const [quote, setQuote] = useState<RetailQuote>();
+  const [providerCountries, setProviderCountries] = useState<Array<{ code: string; name: string }>>([]);
   const [message, setMessage] = useState("");
   const payment = useRef<HTMLDivElement>(null);
   const requestId = useRef<string | undefined>(undefined);
@@ -165,6 +168,25 @@ export function RetailCheckoutPage({
   );
 
   latest.current = { cart, checkout, items, promotionCode };
+
+  useEffect(() => {
+    if (!dynamicShippingEnabled) return;
+    let disposed = false;
+    fetch("/api/retail/shipping/countries", { cache: "no-store" })
+      .then(async (response) => response.ok ? response.json() : null)
+      .then((body) => {
+        if (!disposed && Array.isArray(body?.countries)) setProviderCountries(body.countries.filter((country: unknown): country is { code: string; name: string } => Boolean(country && typeof country === "object" && /^[A-Z]{2}$/.test(String((country as { code?: unknown }).code)) && typeof (country as { name?: unknown }).name === "string")));
+      })
+      .catch(() => undefined);
+    return () => { disposed = true; };
+  }, [dynamicShippingEnabled]);
+
+  const countryOptions = useMemo(() => {
+    if (!providerCountries.length) return zones.map((zone) => ({ code: zone.country, label: shippingZoneLabel(zone, locale) }));
+    let names: Intl.DisplayNames | undefined;
+    try { names = new Intl.DisplayNames([locale === "ar" ? "ar" : "en"], { type: "region" }); } catch { names = undefined; }
+    return providerCountries.map((country) => ({ code: country.code, label: names?.of(country.code) ?? country.name })).sort((left, right) => left.label.localeCompare(right.label));
+  }, [locale, providerCountries, zones]);
 
   function resetSensitiveCheckout() {
     setFields(emptyFields);
@@ -214,6 +236,10 @@ export function RetailCheckoutPage({
         ));
       } else if (body.error === "checkout_expired") {
         setMessage(label("Checkout expired. Please try again.", "انتهت صلاحية سلة الدفع. يرجى المحاولة مرة أخرى."));
+      } else if (["shipping_service_unavailable","unsupported_shipping_country"].includes(body.error)) {
+        setMessage(label("Tracked delivery is not available for this destination yet. Check the postal code or contact us.", "التوصيل المتتبع غير متاح لهذه الوجهة حالياً. تحقق من الرمز البريدي أو تواصل معنا."));
+      } else if (["shipping_facts_missing","shipping_parcel_too_large"].includes(body.error)) {
+        setMessage(label("This cart needs a manual shipping check. Please contact us before paying.", "تحتاج هذه السلة إلى مراجعة شحن يدوية. يرجى التواصل معنا قبل الدفع."));
       } else {
         setMessage(label("Checkout could not start.", "تعذر بدء الدفع."));
       }
@@ -244,6 +270,7 @@ export function RetailCheckoutPage({
               body: JSON.stringify({
                 requestId: requestId.current,
                 expectedTotalMinor: quote.totalMinor,
+                ...(quote.shippingQuoteToken ? { shippingQuoteToken: quote.shippingQuoteToken } : {}),
                 ...requestBody(current.items, current.checkout, current.promotionCode),
               }),
             });
@@ -336,7 +363,7 @@ export function RetailCheckoutPage({
           {label("Country", "الدولة")}
         <select aria-label={label("Country", "الدولة")} value={fields.country} onChange={(event) => setFields((current) => ({ ...current, country: event.target.value }))} className="mt-2 w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 outline-none transition focus:border-accent">
           <option value="">{label("Select country", "اختر الدولة")}</option>
-          {zones.map((zone) => <option key={zone.country} value={zone.country}>{shippingZoneLabel(zone, locale)}</option>)}
+          {countryOptions.map((country) => <option key={country.code} value={country.code}>{country.label}</option>)}
         </select>
         </label>
         <label className="flex gap-3 text-sm leading-6">
@@ -350,6 +377,7 @@ export function RetailCheckoutPage({
       </section>
       <aside className="noor-panel h-fit rounded-2xl p-6 lg:sticky lg:top-28">
         <h2 className="text-xl font-semibold">{label("Order summary", "ملخص الطلب")}</h2>
+        <p className="mt-2 rounded-lg bg-[#f4eadb] px-3 py-2 text-xs text-[#6f4f33]">{label("Free international shipping on orders $99+.", "شحن دولي مجاني للطلبات بقيمة 99 دولاراً أو أكثر.")}</p>
         <label className="mt-5 block text-sm font-medium">
           {label("Promotion code", "رمز الخصم")}
           <input aria-label={label("Promotion code", "رمز الخصم")} value={promotionCode} onChange={(event) => setPromotionCode(event.target.value)} className="mt-2 w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 outline-none transition focus:border-accent" />
@@ -370,6 +398,12 @@ export function RetailCheckoutPage({
               <dt>{name}</dt><dd><RetailReferenceMoney locale={locale} usdMinor={Number(amount)} settlementFirst /></dd>
             </div>)}
           </dl>
+          {quote.shippingQuote ? <div className="mt-4 rounded-xl border border-black/10 bg-white/60 p-3 text-xs leading-5 text-muted">
+            <strong className="text-foreground">{label("Tracked international delivery", "توصيل دولي مع التتبع")}</strong><br />
+            {quote.shippingQuote.carrier} · {quote.shippingQuote.serviceName || quote.shippingQuote.serviceCode}
+            {quote.shippingQuote.deliveryWindow ? ` · ${quote.shippingQuote.deliveryWindow}` : ""}<br />
+            {label("Duties and import taxes may be collected on delivery (DAP). Quote valid for 15 minutes.", "قد تُحصّل الرسوم والضرائب عند التسليم (DAP). السعر صالح لمدة 15 دقيقة.")}
+          </div> : null}
           <div ref={payment} className="mt-6 min-h-10" />
         </> : null}
       </aside>

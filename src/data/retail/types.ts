@@ -110,4 +110,14 @@ export type RetailQuote = {
   shippingMethod: "standard";
   promotionCode?: string | null;
   promotionAutomatic?: boolean;
+  shippingQuoteToken?: string;
+  shippingQuote?: {
+    carrier: "YunExpress";
+    serviceCode: string;
+    serviceName: string;
+    deliveryWindow: string;
+    dutiesMode: "DAP" | "DDP";
+    expiresAt: string;
+    package: { weightGrams: number; lengthMm: number; widthMm: number; heightMm: number; volumeCm3: number; itemCount: number };
+  };
 };

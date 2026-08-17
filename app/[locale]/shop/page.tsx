@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop">) 
   if (!isLocale(locale)) return {};
   if (locale === "zh") return { robots: { index: false, follow: true }, alternates: { canonical: `${SITE_URL}/en/shop`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
   const title = locale === "ar" ? "متجر التجزئة" : "Retail Shop";
-  const description = locale === "ar" ? "كتالوج التجزئة قيد الإعداد." : "Direct-retail catalog in preparation.";
+  const description = locale === "ar" ? "تسوّق تسابيح TranquilBeads مباشرة مع شحن دولي متتبع." : "Shop TranquilBeads prayer beads directly with tracked international delivery.";
   return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, "/shop")}`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
 }
 
@@ -81,6 +81,11 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/[lo
   }));
   const enabled = config.enabled && products.length > 0;
   return <div className="space-y-8 pt-6 md:space-y-10">
+    <section className="noor-container"><div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-2xl bg-[#1f1a15] px-5 py-3 text-center text-sm text-[#f5eadb]">
+      <strong>{locale === "ar" ? "شحن مجاني للطلبات بقيمة 99 دولاراً أو أكثر" : "Free shipping on orders $99+"}</strong>
+      <span>{locale === "ar" ? "توصيل دولي متتبع حيث تتوفر خدمة YunExpress" : "Tracked international delivery where YunExpress service is available"}</span>
+      <span>{locale === "ar" ? "تُطبّق العروض التلقائية عند الدفع" : "Automatic offers apply at checkout"}</span>
+    </div></section>
     <section className="noor-container">
       <div className="noor-panel noor-card-glow rounded-[1.75rem] px-6 py-7 sm:px-8">
         <p className="noor-kicker text-xs font-semibold text-accent-deep">{copy.eyebrow}</p>

@@ -3,6 +3,7 @@ import { getRetailServerConfig } from "@/src/lib/retail/config";
 import { guardedRetailSql } from "@/src/lib/retail/database-identity";
 import { getPaypalAccessToken,getPaypalOrderDetails,getPaypalOrderState,PaypalRefundRejectedError,refundPaypalCapture } from "@/src/lib/retail/paypal";
 import { deliverRetailNotifications } from "@/src/lib/retail/notifications";
+import { deliverRetailMarketingCampaigns } from "@/src/lib/retail/marketing-campaigns";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -48,7 +49,8 @@ export async function GET(request: Request) {
     }catch{pending++;}
     const rows = await guardedRetailSql()`SELECT retail_release_expired_reservations() AS released`;
     const notifications=await deliverRetailNotifications();
-    return Response.json({ ok: true, released: Number(rows[0]?.released ?? 0),reconciled,accountingReconciled,refundReconciled,pending,notifications }, { headers: noStore });
+    const marketingCampaigns=await deliverRetailMarketingCampaigns();
+    return Response.json({ ok: true, released: Number(rows[0]?.released ?? 0),reconciled,accountingReconciled,refundReconciled,pending,notifications,marketingCampaigns }, { headers: noStore });
   } catch {
     return Response.json({ ok: false, error: "retail_reservation_cleanup_failed" }, { status: 503, headers: noStore });
   }

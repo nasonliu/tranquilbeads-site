@@ -238,6 +238,19 @@ function readyVariants(product) {
   return product.styles.flatMap((style) => style.variants.filter((variant) => variant.readiness === "ready").map((variant) => ({ style, variant })));
 }
 
+// Current retail Tasbih stock uses the same verified gift-box parcel profile.
+// Keep this explicit in the import request so checkout never invents missing
+// shipping facts. An operator can later replace these per SKU in Catalog.
+const standardTasbihParcel = {
+  shippingWeightGrams: 250,
+  packageLengthMm: 160,
+  packageWidthMm: 110,
+  packageHeightMm: 55,
+  customsDescriptionEn: "Prayer beads in gift box",
+  originCountry: "CN",
+  dangerousGoods: false,
+};
+
 function assertManifestIntegrity(items) {
   const canonicalKeys = items.map((product) => product?.source?.canonicalProductKey);
   const mainImages = items.map((product) => product?.images?.[0]);
@@ -320,6 +333,7 @@ async function ensureCatalogVariants(baseUrl, token, product, productId, styleId
     const request = {
       styleId: styleIds.get(style.code), sku: variant.sku, titleEn: variant.titleEn, titleAr: variant.titleAr,
       titleZh: zh(variant.titleZh ?? variant.titleEn), optionValues: localizedOptions(variant.optionValues), amountMinor: variant.amountMinor, onHand: variant.onHand,
+      ...standardTasbihParcel,
     };
     if (!request.styleId) throw new Error(`Missing style readback for ${product.slug}/${style.code}`);
     if (!found) {
@@ -337,7 +351,9 @@ async function ensureCatalogVariants(baseUrl, token, product, productId, styleId
     }
     current = await snapshot(baseUrl, token);
     found = current.variants.find((value) => value.product_public_id === productId && value.sku === variant.sku);
-    if (!found || found.style_public_id !== request.styleId || Number(found.amount_minor) !== variant.amountMinor || Number(found.on_hand) !== variant.onHand) throw new Error(`Variant readback mismatch for ${product.slug}/${variant.sku}`);
+    if (!found || found.style_public_id !== request.styleId || Number(found.amount_minor) !== variant.amountMinor || Number(found.on_hand) !== variant.onHand
+      || Number(found.shipping_weight_grams) !== request.shippingWeightGrams || Number(found.package_length_mm) !== request.packageLengthMm
+      || Number(found.package_width_mm) !== request.packageWidthMm || Number(found.package_height_mm) !== request.packageHeightMm) throw new Error(`Variant readback mismatch for ${product.slug}/${variant.sku}`);
   }
 }
 

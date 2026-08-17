@@ -17,6 +17,7 @@ const requestSchema = z.object({
   checkout: retailCheckoutDto,
   expectedTotalMinor: z.number().int().positive(),
   promotionCode: z.string().trim().min(1).max(64).optional(),
+  shippingQuoteToken: z.string().trim().min(80).max(8_000).optional(),
 }).strict();
 
 export async function POST(request: Request) {
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
   try {
     if(!await consumeRetailRateLimit(request,"checkout_create",12,500))return Response.json({ok:false,error:"rate_limited"},{status:429,headers:{"retry-after":"900"}});
     const { attachPaypalOrder, getRetailOrderByRequestId } = await import("@/src/lib/retail/db");
-    const reserved = await reserveStorefrontV3Order(input.requestId, input.items,input.checkout,input.expectedTotalMinor,input.promotionCode);
+    const reserved = await reserveStorefrontV3Order(input.requestId, input.items,input.checkout,input.expectedTotalMinor,input.promotionCode,input.shippingQuoteToken);
     if (reserved.paypal_order_id) return Response.json({ ok: true, orderId: reserved.paypal_order_id });
     const lines = reserved.checkout_items as Array<{ variantSku?: string; sku?: string; quantity: number; unitAmountMinor?: number }>;
     if (!Array.isArray(lines) || lines.length === 0 || lines.some((line) => !line.variantSku || !Number.isSafeInteger(Number(line.quantity)) || Number(line.quantity) < 1 || !Number.isSafeInteger(Number(line.unitAmountMinor)) || Number(line.unitAmountMinor) < 1)) throw new Error("checkout_unavailable");
@@ -47,6 +48,8 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "checkout_unavailable" }, { status: 503 });
   } catch (error) {
     if (error instanceof Error && error.message === "checkout_expired") return Response.json({ ok: false, error: "checkout_expired" }, { status: 410 });
+    if (error instanceof Error && error.message === "shipping_quote_expired") return Response.json({ ok: false, error: "shipping_quote_expired" }, { status: 410 });
+    if (error instanceof Error && ["shipping_quote_invalid","shipping_quote_changed"].includes(error.message)) return Response.json({ ok: false, error: error.message }, { status: 409 });
     if (error instanceof Error && ["quote changed","promotion exhausted","promotion unavailable"].includes(error.message)) return Response.json({ok:false,error:error.message.replaceAll(" ","_")},{status:409});
     if (error instanceof Error && ["idempotency conflict"].includes(error.message)) return Response.json({ ok: false, error: "request_conflict" }, { status: 409 });
     if (error instanceof Error && ["invalid cart", "duplicate sku", "unknown sku", "unavailable sku", "invalid promotion"].includes(error.message)) return Response.json({ ok: false, error: "invalid_cart" }, { status: 422 });

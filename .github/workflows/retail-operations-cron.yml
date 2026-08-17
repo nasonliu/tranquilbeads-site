@@ -37,7 +37,8 @@ jobs:
           if ! jq -e '
             .ok == true and
             ((.pending // 0) | tonumber) == 0 and
-            ((.notifications.failed // 0) | tonumber) == 0
+            ((.notifications.failed // 0) | tonumber) == 0 and
+            ((.marketingCampaigns.failed // 0) | tonumber) == 0
           ' <<<"${response}" >/dev/null; then
             echo "Retail reconciliation reported pending or failed work."
             exit 1

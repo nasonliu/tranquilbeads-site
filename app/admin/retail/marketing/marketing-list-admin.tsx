@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { type AdminLocale } from "../admin-locale";
 import { AdminShell } from "../ui";
+import { CampaignAdmin } from "./campaign-admin";
 
 type Row = Record<string, unknown>;
 const key = () => crypto.randomUUID();
@@ -42,6 +43,7 @@ export function MarketingListAdmin() {
     <main className="mx-auto max-w-7xl px-5 py-7 sm:px-8">
       <header className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="noor-title text-3xl">{t.title}</h1><p className="mt-2 text-sm text-muted">{t.subtitle}</p></div><a className="rounded-md border border-[#cdbda9] px-4 py-2 text-sm" href="/api/admin/retail/marketing?format=csv">{t.export}</a></header>
       <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{(["pending","active","unsubscribed","suppressed"] as const).map((name) => <div className="rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-4" key={name}><p className="text-sm text-muted">{status(name)}</p><p className="mt-2 text-3xl font-semibold">{counts[name]}</p></div>)}</section>
+      <CampaignAdmin locale={locale} />
       {message && <p className="mt-4 text-sm" role="status">{message}</p>}
       <section className="mt-6 overflow-x-auto rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-3"><table className="w-full text-left text-sm"><thead><tr className="text-muted"><th className="p-3">{t.email}</th><th className="p-3">{t.locale}</th><th className="p-3">{t.source}</th><th className="p-3">{t.status}</th><th className="p-3">{t.joined}</th><th className="p-3">{t.action}</th></tr></thead><tbody>
         {rows.map((row) => <tr className="border-t border-[#e8ded1]" key={String(row.public_id)}><td className="p-3">{String(row.email)}</td><td className="p-3">{String(row.locale)}</td><td className="p-3">{String(row.source)}</td><td className="p-3">{status(row.status)}</td><td className="p-3">{date(row.consented_at)}</td><td className="p-3"><div className="flex flex-wrap gap-2">{row.status !== "active" && <button className="rounded border px-2 py-1" onClick={() => void setStatus(row,"active")}>{t.restore}</button>}{row.status === "active" && <button className="rounded border px-2 py-1" onClick={() => void setStatus(row,"unsubscribed")}>{t.stop}</button>}{row.status !== "suppressed" && <button className="rounded border px-2 py-1" onClick={() => void setStatus(row,"suppressed")}>{t.suppress}</button>}</div></td></tr>)}

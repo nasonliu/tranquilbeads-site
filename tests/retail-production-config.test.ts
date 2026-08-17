@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 const nextConfig = readFileSync("next.config.ts", "utf8");
 const workflow = readFileSync(".github/workflows/retail-ci.yml", "utf8");
 const migrationRunner = readFileSync("scripts/run-retail-migrations.mjs", "utf8");
+const gate = readFileSync("src/lib/retail/gate.ts", "utf8");
 const tsconfig = JSON.parse(readFileSync("tsconfig.json", "utf8")) as { exclude?: string[] };
 
 describe("retail production build configuration", () => {
@@ -51,5 +52,10 @@ describe("retail production build configuration", () => {
     expect(nextConfig).toContain('key: "X-Frame-Options", value: "DENY"');
     expect(nextConfig).toContain('key: "Permissions-Policy", value: "camera=(), geolocation=(), microphone=()"');
     expect(nextConfig).not.toContain("Content-Security-Policy");
+  });
+
+  it("refuses live PayPal order creation without production shipping and email gates", () => {
+    expect(gate).toContain("isRetailNotificationConfigurationValid");
+    expect(gate).toContain("isRetailShippingConfigurationValid");
   });
 });

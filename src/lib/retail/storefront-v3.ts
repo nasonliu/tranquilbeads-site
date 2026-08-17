@@ -1,6 +1,7 @@
 import "server-only";
 
 import { guardedRetailSql, type RetailSql } from "./database-identity";
+import { createStorefrontShippingQuote, isStorefrontDynamicShippingEnabled, verifyStorefrontShippingQuote } from "./storefront-shipping";
 
 type Sql = RetailSql;
 
@@ -51,6 +52,16 @@ export type StorefrontV3Quote = {
   quoteHash: string;
   promotionCode: string | null;
   promotionAutomatic: boolean;
+  shippingQuoteToken?: string;
+  shippingQuote?: {
+    carrier: "YunExpress";
+    serviceCode: string;
+    serviceName: string;
+    deliveryWindow: string;
+    dutiesMode: "DAP" | "DDP";
+    expiresAt: string;
+    package: { weightGrams: number; lengthMm: number; widthMm: number; heightMm: number; volumeCm3: number; itemCount: number };
+  };
 };
 
 export type StorefrontV3CartItem = { variantSku: string; quantity: number };
@@ -183,10 +194,15 @@ export async function quoteStorefrontV3(
   promotionCode?: string,
 ): Promise<StorefrontV3Quote> {
   const query = sql();
-  const resolvedCode = await resolvedPromotionCode(query, items, checkout, promotionCode);
+  const checkoutValue = checkout && typeof checkout === "object" && !Array.isArray(checkout) ? checkout as Record<string, unknown> : {};
+  const shippingQuote = await createStorefrontShippingQuote(items, {
+    country: String(checkoutValue.country ?? ""), postalCode: String(checkoutValue.postalCode ?? ""),
+  });
+  const authoritativeCheckout = shippingQuote ? { ...checkoutValue, _serverShipping: shippingQuote.internal } : checkout;
+  const resolvedCode = await resolvedPromotionCode(query, items, authoritativeCheckout, promotionCode);
   const rows = await query`WITH quoted AS (SELECT * FROM retail_quote_checkout_v3(
     ${JSON.stringify(items)}::jsonb,
-    ${JSON.stringify(checkout)}::jsonb,
+    ${JSON.stringify(authoritativeCheckout)}::jsonb,
     ${resolvedCode ?? null}
   )) SELECT quoted.*,COALESCE(promotion.automatic,false) AS promotion_automatic FROM quoted
     LEFT JOIN retail_promotions promotion ON promotion.id=quoted.promotion_id`;
@@ -199,6 +215,7 @@ export async function quoteStorefrontV3(
     shippingMethod: "standard", items: row.items_snapshot, shipping: row.shipping_snapshot,
     quoteHash: String(row.quote_hash), promotionCode: row.promotion_code ? String(row.promotion_code) : null,
     promotionAutomatic: row.promotion_automatic === true,
+    ...(shippingQuote ? { shippingQuoteToken: shippingQuote.token, shippingQuote: shippingQuote.public } : {}),
   };
 }
 
@@ -208,11 +225,18 @@ export async function reserveStorefrontV3Order(
   checkout: unknown,
   expectedTotalMinor: number,
   promotionCode?: string,
+  shippingQuoteToken?: string,
 ) {
   const query = sql();
-  const resolvedCode = await resolvedPromotionCode(query, items, checkout, promotionCode, requestId);
+  const checkoutValue = checkout && typeof checkout === "object" && !Array.isArray(checkout) ? checkout as Record<string, unknown> : {};
+  if (isStorefrontDynamicShippingEnabled() && !shippingQuoteToken) throw new Error("shipping_quote_invalid");
+  const serverShipping = shippingQuoteToken ? verifyStorefrontShippingQuote(shippingQuoteToken, items, {
+    country: String(checkoutValue.country ?? ""), postalCode: String(checkoutValue.postalCode ?? ""),
+  }) : undefined;
+  const authoritativeCheckout = serverShipping ? { ...checkoutValue, _serverShipping: serverShipping } : checkout;
+  const resolvedCode = await resolvedPromotionCode(query, items, authoritativeCheckout, promotionCode, requestId);
   await query`SELECT * FROM retail_create_checkout_v3(
-    ${requestId}::uuid,${JSON.stringify(items)}::jsonb,${JSON.stringify(checkout)}::jsonb,
+    ${requestId}::uuid,${JSON.stringify(items)}::jsonb,${JSON.stringify(authoritativeCheckout)}::jsonb,
     ${expectedTotalMinor},${resolvedCode ?? null}
   )`;
   const rows = await query`SELECT o.paypal_order_id,o.client_request_id,o.currency,o.subtotal_minor,o.shipping_minor,
@@ -224,10 +248,9 @@ export async function reserveStorefrontV3Order(
     FROM retail_orders o WHERE o.client_request_id=${requestId}::uuid LIMIT 1`;
   const order = rows[0];
   if (!order) throw new Error("checkout_unavailable");
-  const checkoutValue = checkout && typeof checkout === "object" && !Array.isArray(checkout) ? checkout as Record<string, unknown> : null;
-  const consent = checkoutValue?.marketingConsent === true;
-  const accountIntent = checkoutValue?.accountIntent === "create_or_access" ? "create_or_access" : "guest";
-  const locale = checkoutValue?.locale;
+  const consent = checkoutValue.marketingConsent === true;
+  const accountIntent = checkoutValue.accountIntent === "create_or_access" ? "create_or_access" : "guest";
+  const locale = checkoutValue.locale;
   if (locale !== "en" && locale !== "ar" && locale !== "zh") throw new Error("checkout_unavailable");
   await query`SELECT retail_set_checkout_marketing_intent(${requestId}::uuid,${consent},${locale}) AS recorded`;
   await query`SELECT retail_set_checkout_account_intent(${requestId}::uuid,${accountIntent}) AS recorded`;

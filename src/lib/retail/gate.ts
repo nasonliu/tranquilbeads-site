@@ -1,4 +1,4 @@
-import { getRetailServerConfig, isRetailNotificationConfigurationValid } from "./config";
+import { getRetailServerConfig, isRetailNotificationConfigurationValid, isRetailShippingConfigurationValid } from "./config";
 
 export function getRetailPaymentGate() {
   const config = getRetailServerConfig();
@@ -14,7 +14,7 @@ export function getRetailPaymentCreationGate() {
   // Never create a live PayPal order if required receipt/account email cannot
   // be delivered. Capture recovery keeps the base gate so an already-approved
   // payment is not stranded after an environment configuration change.
-  if (gate.config.paymentMode === "live" && !isRetailNotificationConfigurationValid()) {
+  if (gate.config.paymentMode === "live" && (!isRetailNotificationConfigurationValid() || !isRetailShippingConfigurationValid())) {
     return { enabled: false as const };
   }
   return gate;

@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 
-import { getRetailRuntimeConfig, getRetailServerConfig, isRetailNotificationConfigurationValid } from "@/src/lib/retail/config";
+import { getRetailRuntimeConfig, getRetailServerConfig, isRetailNotificationConfigurationValid, isRetailShippingConfigurationValid } from "@/src/lib/retail/config";
 
 const sandboxConfiguration = {
   RETAIL_SHOP_ENABLED: "true",
@@ -50,6 +50,15 @@ describe("retail payment configuration", () => {
       RETAIL_EMAIL_FROM: "Orders <orders@example.test>",
       RETAIL_EMAIL_REPLY_TO: "support@example.test",
       RETAIL_PORTAL_TOKEN_SECRET: "a-portal-token-secret-with-at-least-32-chars",
+    })).toBe(true);
+  });
+
+  it("requires production YunExpress credentials and a separated quote signature", () => {
+    expect(isRetailShippingConfigurationValid({})).toBe(false);
+    expect(isRetailShippingConfigurationValid({
+      RETAIL_DYNAMIC_SHIPPING_ENABLED: "true", YUNEXPRESS_ENV: "production",
+      YUNEXPRESS_APP_ID: "app-id", YUNEXPRESS_APP_SECRET: "app-secret", YUNEXPRESS_SOURCE_KEY: "source-key",
+      RETAIL_SHIPPING_QUOTE_SECRET: "a-shipping-quote-secret-with-at-least-32-chars",
     })).toBe(true);
   });
 });

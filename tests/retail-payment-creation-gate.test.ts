@@ -35,6 +35,12 @@ describe("retail payment creation gate", () => {
     vi.stubEnv("RETAIL_EMAIL_FROM", "Orders <orders@example.test>");
     vi.stubEnv("RETAIL_EMAIL_REPLY_TO", "support@example.test");
     vi.stubEnv("RETAIL_PORTAL_TOKEN_SECRET", "a-portal-token-secret-with-at-least-32-chars");
+    expect(getRetailPaymentCreationGate()).toEqual({ enabled: false });
+    vi.stubEnv("RETAIL_DYNAMIC_SHIPPING_ENABLED", "true");
+    vi.stubEnv("YUNEXPRESS_ENV", "production");
+    vi.stubEnv("YUNEXPRESS_APP_ID", "app-id");
+    vi.stubEnv("YUNEXPRESS_APP_SECRET", "app-secret");
+    vi.stubEnv("YUNEXPRESS_SOURCE_KEY", "source-key");
     expect(getRetailPaymentCreationGate()).toMatchObject({ enabled: true });
   });
 

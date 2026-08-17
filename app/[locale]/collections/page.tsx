@@ -64,7 +64,7 @@ export default async function CollectionsPage({
                 className="latin-ui block rounded-[1.5rem] border border-accent/25 bg-[#1f1a15] p-6 text-sm leading-7 text-[#efe6d8]"
               >
                 <span className="block font-semibold">
-                  {contact.label[locale] ?? contact.label.en} · {contact.display}
+                  {contact.label[locale] ?? contact.label.en}
                 </span>
                 <span className="mt-2 block text-[#dcccb5]">
                   {locale === "en"

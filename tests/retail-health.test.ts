@@ -16,13 +16,19 @@ vi.mock("@/src/lib/retail/config", () => ({
     && process.env.RETAIL_EMAIL_REPLY_TO
     && (process.env.RETAIL_PORTAL_TOKEN_SECRET?.length ?? 0) >= 32,
   ),
+  isRetailShippingConfigurationValid: () => Boolean(
+    process.env.RETAIL_DYNAMIC_SHIPPING_ENABLED === "true"
+    && process.env.YUNEXPRESS_ENV === "production"
+    && process.env.YUNEXPRESS_APP_ID && process.env.YUNEXPRESS_APP_SECRET && process.env.YUNEXPRESS_SOURCE_KEY
+    && (process.env.RETAIL_PORTAL_TOKEN_SECRET?.length ?? 0) >= 32
+  ),
 }));
 vi.mock("@/src/lib/retail/database-identity", () => ({ guardedRetailSql: () => healthMocks.sql }));
 vi.mock("@/src/lib/retail/blob", () => ({ isRetailBlobConfigured: healthMocks.blobConfigured }));
 
 import { GET } from "@/app/api/retail/health/route";
 
-const readyRows = [{ checkout_ready: true, variant_catalog_ready: true, shipping_ready: true, notification_schema_ready: true, account_schema_ready: true, active_shipping_zones: 1 }];
+const readyRows = [{ checkout_ready: true, variant_catalog_ready: true, shipping_ready: true, marketing_campaign_schema_ready: true, notification_schema_ready: true, account_schema_ready: true, active_shipping_zones: 1 }];
 const enabledConfig = { enabled: true, paymentMode: "sandbox", databaseEnvironment: "preview" };
 
 describe("retail health route", () => {

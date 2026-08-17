@@ -48,15 +48,13 @@ export function WhatsAppContactMenu({
             href={contact.href}
             target="_blank"
             rel="noreferrer"
-            aria-label={`WhatsApp ${contact.display}`}
+            aria-label={contact.label[locale] ?? contact.label.en}
             className="block rounded-xl px-4 py-3 transition hover:bg-accent/10"
           >
             <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-accent-deep">
               {contact.label[locale] ?? contact.label.en}
             </span>
-            <span className="mt-1 block text-sm font-semibold">
-              {contact.display}
-            </span>
+            <span className="mt-1 block text-sm font-semibold">{locale === "ar" ? "ابدأ المحادثة" : locale === "zh" ? "开始聊天" : "Start chat"}</span>
           </a>
         ))}
       </div>

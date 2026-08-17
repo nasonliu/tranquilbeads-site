@@ -48,6 +48,8 @@ const migrationNames = [
   "20260823_retail_global_shipping_foundation.sql",
   "20260824_retail_promotions_marketing_list.sql",
   "20260825_retail_admin_magic_links.sql",
+  "20260826_retail_dynamic_shipping_checkout.sql",
+  "20260827_retail_marketing_campaigns.sql",
 ];
 
 const migrationTarget = process.env.RETAIL_MIGRATION_TARGET;

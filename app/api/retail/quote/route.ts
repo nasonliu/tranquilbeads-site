@@ -24,7 +24,7 @@ export async function POST(request:Request){
     return Response.json({ok:true,quote:await quoteStorefrontV3(input.items,input.checkout,input.promotionCode)},{headers:noStore});
   }catch(error){
     const message=error instanceof Error?error.message:"quote_unavailable";
-    if(["invalid checkout","invalid cart","duplicate sku","unknown sku","unavailable sku","unsupported shipping country","invalid promotion","promotion unavailable"].includes(message))return Response.json({ok:false,error:message.replaceAll(" ","_")},{status:422,headers:noStore});
+    if(["invalid checkout","invalid cart","duplicate sku","unknown sku","unavailable sku","unsupported shipping country","shipping_facts_missing","shipping_parcel_too_large","shipping_service_unavailable","invalid promotion","promotion unavailable"].includes(message))return Response.json({ok:false,error:message.replaceAll(" ","_")},{status:422,headers:noStore});
     return Response.json({ok:false,error:"quote_unavailable"},{status:503,headers:noStore});
   }
 }
