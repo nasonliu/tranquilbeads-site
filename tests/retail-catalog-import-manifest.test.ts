@@ -78,9 +78,10 @@ describe("retail 30-product import manifest", () => {
     expect(importer).toContain('const VERCEL_PROJECT = "tranquilbeads-site"');
     expect(importer).toContain('const VERCEL_SCOPE = "tranquilbeads"');
     expect(importer).toContain('["inspect", origin, "--json", "--scope", VERCEL_SCOPE]');
-    expect(importer).toContain('deployment?.target !== "preview"');
-    expect(importer.indexOf("await assertTrustedPreviewDeployment")).toBeLessThan(importer.indexOf("const token = configuredToken()"));
-    expect(importer.indexOf("await assertTrustedPreviewDeployment")).toBeLessThan(importer.indexOf("dotenv.config({ path: envFile"));
+    expect(importer).toContain("deployment?.target !== expectedTarget");
+    expect(importer).toContain('production ? "production" : "preview"');
+    expect(importer.indexOf("await assertTrustedDeployment")).toBeLessThan(importer.indexOf("const token = configuredToken()"));
+    expect(importer.indexOf("await assertTrustedDeployment")).toBeLessThan(importer.indexOf("dotenv.config({ path: envFile"));
     expect(importer).toContain("--base-url is required when --env-file contains the write credential");
   });
 

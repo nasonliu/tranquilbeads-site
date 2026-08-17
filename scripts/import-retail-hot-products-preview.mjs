@@ -48,16 +48,16 @@ function configuredToken() {
   return operator.token;
 }
 
-function assertPreviewUrl(value) {
+function assertVercelDeploymentUrl(value) {
   const url = new URL(value);
   if (url.protocol !== "https:" || !url.hostname.endsWith(PREVIEW_HOST_SUFFIX)) {
-    throw new Error("This importer only accepts an HTTPS Vercel Preview URL");
+    throw new Error("This importer only accepts an HTTPS Vercel deployment URL");
   }
   return url.origin;
 }
 
-async function assertTrustedPreviewDeployment(value) {
-  const origin = assertPreviewUrl(value);
+async function assertTrustedDeployment(value, expectedTarget) {
+  const origin = assertVercelDeploymentUrl(value);
   if (!vercelCliPath) throw new Error("Vercel CLI verification is required before loading the retail agent credential");
   let deployment;
   try {
@@ -72,11 +72,11 @@ async function assertTrustedPreviewDeployment(value) {
   }
   if (
     deployment?.name !== VERCEL_PROJECT
-    || deployment?.target !== "preview"
+    || deployment?.target !== expectedTarget
     || deployment?.readyState !== "READY"
     || `https://${deployment?.url}` !== origin
   ) {
-    throw new Error("The target is not a READY Preview deployment of the configured Vercel project");
+    throw new Error(`The target is not a READY ${expectedTarget} deployment of the configured Vercel project`);
   }
   return origin;
 }
@@ -462,6 +462,7 @@ async function main() {
   const envFile = argument("--env-file");
   const prepareOnly = process.argv.includes("--prepare-only");
   const logisticsOnly = process.argv.includes("--logistics-only");
+  const production = process.argv.includes("--production");
   if (prepareOnly && logisticsOnly) throw new Error("--prepare-only and --logistics-only cannot be combined");
   const explicitBaseUrl = argument("--base-url");
   if (envFile && !prepareOnly && !explicitBaseUrl) {
@@ -494,7 +495,10 @@ async function main() {
     }
     // Verify ownership through the authenticated Vercel control plane before
     // reading or transmitting the write credential.
-    const baseUrl = await assertTrustedPreviewDeployment(explicitBaseUrl || process.env.RETAIL_AGENT_BASE_URL || "");
+    const baseUrl = await assertTrustedDeployment(
+      explicitBaseUrl || process.env.RETAIL_AGENT_BASE_URL || "",
+      production ? "production" : "preview",
+    );
     if (envFile) {
       dotenv.config({ path: envFile, quiet: true });
       if (process.argv.includes("--delete-env-file")) await fs.unlink(envFile);
