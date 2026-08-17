@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
 import sharp from "sharp";
 
-import { manifestFirstImageOrder } from "./retail-catalog-import-utils.mjs";
+import { manifestFirstImageOrder, resumableManifestPrefix } from "./retail-catalog-import-utils.mjs";
 
 const PREVIEW_HOST_SUFFIX = ".vercel.app";
 const VERCEL_PROJECT = "tranquilbeads-site";
@@ -21,6 +21,7 @@ const execFileAsync = promisify(execFile);
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const catalogPath = path.join(scriptDir, "retail-catalog-30-preview.json");
 let vercelCliPath;
+let idempotencyNamespace;
 
 function argument(name) {
   const index = process.argv.indexOf(name);
@@ -28,7 +29,8 @@ function argument(name) {
 }
 
 function stableUuid(value) {
-  const bytes = crypto.createHash("sha256").update(`tranquilbeads-retail-preview:${value}`).digest().subarray(0, 16);
+  const namespace = idempotencyNamespace ? `${idempotencyNamespace}:` : "";
+  const bytes = crypto.createHash("sha256").update(`tranquilbeads-retail-preview:${namespace}${value}`).digest().subarray(0, 16);
   bytes[6] = (bytes[6] & 0x0f) | 0x50;
   bytes[8] = (bytes[8] & 0x3f) | 0x80;
   const hex = bytes.toString("hex");
@@ -120,8 +122,7 @@ async function apiJson(baseUrl, token, pathname, options = {}) {
 
 async function uploadImage(baseUrl, token, productId, item, prepared, index) {
   const idempotencyKey = stableUuid(`${item.slug}:image:${prepared.sourceUrl}`);
-  const altEn = `${item.titleEn} — view ${index + 1}`;
-  const altAr = `${item.titleAr} — صورة ${index + 1}`;
+  const { altEn, altAr } = imageAlt(item, index);
   if (vercelCliPath) {
     const args = ["curl", "/api/agent/retail/media", "--deployment", baseUrl, "--yes", "--", "--silent", "--show-error", "--request", "POST", "--header", `Authorization: Bearer ${token}`, "--form", `productId=${productId}`, "--form", `idempotencyKey=${idempotencyKey}`, "--form", `altEn=${altEn}`, "--form", `altAr=${altAr}`, "--form", `file=@${prepared.target};type=image/jpeg`];
     let stdout;
@@ -141,6 +142,10 @@ async function uploadImage(baseUrl, token, productId, item, prepared, index) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.ok !== true || !data.image?.id || !data.image?.url) throw new Error(`Image upload failed for ${item.slug} (${response.status} ${data.error || "unknown"})`);
   return data.image;
+}
+
+function imageAlt(item, index) {
+  return { altEn: `${item.titleEn} — view ${index + 1}`, altAr: `${item.titleAr} — صورة ${index + 1}` };
 }
 
 async function snapshot(baseUrl, token) {
@@ -183,8 +188,12 @@ async function downloadImage(url, target) {
   if (!metadata.width || !metadata.height || metadata.width < 300 || metadata.height < 300) throw new Error(`Image is too small: ${url}`);
   const normalized = await sharp(input).rotate().jpeg({ quality: 92, mozjpeg: true }).toBuffer();
   await fs.writeFile(target, normalized);
+  // The upload service decodes and re-encodes JPEGs before hashing and
+  // storing them. Mirror that exact normalization here so a recovery run can
+  // compare the immutable database hash instead of trusting alt text alone.
+  const uploadNormalized = await sharp(normalized).rotate().toFormat("jpeg").toBuffer();
   const visual = await sharp(normalized).resize(16, 16, { fit: "fill" }).greyscale().raw().toBuffer();
-  return { sha256: crypto.createHash("sha256").update(normalized).digest("hex"), visual };
+  return { sha256: crypto.createHash("sha256").update(uploadNormalized).digest("hex"), visual };
 }
 
 function visualDistance(left, right) {
@@ -415,8 +424,16 @@ async function ensureCatalogProduct(baseUrl, token, product) {
   current = await snapshot(baseUrl, token); record = productFromSnapshot(current, product);
   if (!record || record.title_en !== product.titleEn || record.title_ar !== product.titleAr) throw new Error(`Product copy readback mismatch for ${product.slug}`);
 
-  const manifestImages = [];
+  const resumeExistingGallery = process.argv.includes("--resume-existing-gallery");
+  const resumedImageCount = resumeExistingGallery
+    ? resumableManifestPrefix(record.images ?? [], product.preparedImages, (index) => imageAlt(product, index))
+    : 0;
+  // A failed import can stop after one or more verified media writes. An
+  // explicit recovery run reuses that ordered prefix and uploads only the
+  // missing manifest tail, preventing duplicate Blob objects and gallery rows.
+  const manifestImages = resumedImageCount ? record.images.slice(0, resumedImageCount) : [];
   for (const [index, prepared] of product.preparedImages.entries()) {
+    if (index < resumedImageCount) continue;
     const uploaded = await uploadImage(baseUrl, token, productId, product, prepared, index);
     manifestImages.push(uploaded);
     current = await snapshot(baseUrl, token); record = productFromSnapshot(current, product);
@@ -458,6 +475,13 @@ async function ensureCatalogProduct(baseUrl, token, product) {
 
 async function main() {
   vercelCliPath = argument("--vercel-cli");
+  idempotencyNamespace = argument("--idempotency-namespace")?.trim();
+  if (idempotencyNamespace && !/^[a-z0-9][a-z0-9-]{0,63}$/.test(idempotencyNamespace)) {
+    throw new Error("--idempotency-namespace must be a lowercase slug up to 64 characters");
+  }
+  if (process.argv.includes("--resume-existing-gallery") && !idempotencyNamespace) {
+    throw new Error("--resume-existing-gallery requires --idempotency-namespace");
+  }
   if (vercelCliPath) await fs.access(vercelCliPath);
   const envFile = argument("--env-file");
   const prepareOnly = process.argv.includes("--prepare-only");

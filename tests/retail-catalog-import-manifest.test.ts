@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { manifestFirstImageOrder } from "../scripts/retail-catalog-import-utils.mjs";
+import { manifestFirstImageOrder, resumableManifestPrefix } from "../scripts/retail-catalog-import-utils.mjs";
 
 type Variant = { sku: string; amountMinor?: number; onHand?: number; readiness: string; optionValues?: { en?: Record<string, string> } };
 type Style = { code: string; variants: Variant[] };
@@ -73,6 +73,20 @@ describe("retail 30-product import manifest", () => {
       .toThrow("Manifest image readback mismatch");
   });
 
+  it("only resumes an exact checksum, alt-text, and position prefix", () => {
+    const existing = [
+      { position: 0, sha256: "a".repeat(64), alt_en: "Amber — view 1", alt_ar: "عنبر — صورة 1" },
+      { position: 1, sha256: "b".repeat(64), alt_en: "Amber — view 2", alt_ar: "عنبر — صورة 2" },
+    ];
+    const prepared = [{ sha256: "a".repeat(64) }, { sha256: "b".repeat(64) }, { sha256: "c".repeat(64) }];
+    const alt = (index: number) => ({ altEn: `Amber — view ${index + 1}`, altAr: `عنبر — صورة ${index + 1}` });
+    expect(resumableManifestPrefix(existing, prepared, alt)).toBe(2);
+    expect(() => resumableManifestPrefix([{ ...existing[0], sha256: "c".repeat(64) }], prepared, alt))
+      .toThrow("Existing gallery image 1 is not an exact manifest match");
+    expect(() => resumableManifestPrefix([{ ...existing[0], position: 1 }], prepared, alt))
+      .toThrow("Existing gallery image 1 is not an exact manifest match");
+  });
+
   it("verifies the exact Vercel project before loading the write credential", () => {
     const importer = fs.readFileSync(path.join(root, "scripts/import-retail-hot-products-preview.mjs"), "utf8");
     expect(importer).toContain('const VERCEL_PROJECT = "tranquilbeads-site"');
@@ -102,6 +116,12 @@ describe("retail 30-product import manifest", () => {
     expect(importer).toContain("archive-conflict");
     expect(importer).not.toContain("if (uploaded[index]) continue");
     expect(importer).toContain("manifestFirstImageOrder(record.images, manifestImages)");
+    expect(importer).toContain('argument("--idempotency-namespace")');
+    expect(importer).toContain('process.argv.includes("--resume-existing-gallery")');
+    expect(importer).toContain("if (index < resumedImageCount) continue");
+    expect(importer).toContain("resumableManifestPrefix(record.images ?? [], product.preparedImages");
+    expect(importer).toContain('toFormat("jpeg")');
+    expect(importer).toContain("--resume-existing-gallery requires --idempotency-namespace");
     expect(importer).toContain("--logistics-only");
     expect(importer).toContain("Variant logistics readback mismatch");
     expect(importer).toContain('actionKey(`${product.slug}:variant:${variant.sku}:logistics`, request)');

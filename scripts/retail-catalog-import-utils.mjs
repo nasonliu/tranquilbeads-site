@@ -10,3 +10,21 @@ export function manifestFirstImageOrder(existingImages, manifestImages) {
   });
   return [...verifiedManifest, ...existingImages.filter((image) => !manifestIds.has(image.id))];
 }
+
+export function resumableManifestPrefix(existingImages, preparedImages, altForIndex) {
+  const comparableCount = Math.min(existingImages.length, preparedImages.length);
+  for (let index = 0; index < comparableCount; index += 1) {
+    const existing = existingImages[index];
+    const prepared = preparedImages[index];
+    const expected = altForIndex(index);
+    if (
+      Number(existing.position) !== index
+      || existing.alt_en !== expected.altEn
+      || existing.alt_ar !== expected.altAr
+      || existing.sha256 !== prepared.sha256
+    ) {
+      throw new Error(`Existing gallery image ${index + 1} is not an exact manifest match`);
+    }
+  }
+  return comparableCount;
+}
