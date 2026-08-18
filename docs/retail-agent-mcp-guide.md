@@ -40,7 +40,7 @@ Codex 注册命令只需要执行一次：
 
 ```bash
 codex mcp add tranquilbeads-retail-ops -- \
-  /absolute/path/to/scripts/run-retail-ops-mcp-keychain.sh
+  /bin/zsh /absolute/path/to/scripts/run-retail-ops-mcp-keychain.sh
 ```
 
 之后用 `codex mcp get tranquilbeads-retail-ops` 检查 command；不要用带 `-e
