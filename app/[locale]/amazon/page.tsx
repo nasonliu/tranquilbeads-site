@@ -132,10 +132,10 @@ function ProductCard({
             );
           })}
           <Link
-            href={withLocale(locale, "/contact")}
+            href={withLocale(locale, "/shop")}
             className="rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
           >
-            {locale === "en" ? "Ask wholesale" : "اسأل عن الجملة"}
+            {locale === "en" ? "Shop directly" : "تسوّق مباشرة"}
           </Link>
         </div>
       </div>
@@ -248,10 +248,10 @@ export default async function AmazonRetailPage({
             </p>
           </div>
           <Link
-            href={withLocale(locale, "/contact")}
+            href={withLocale(locale, "/shop")}
             className="rounded-full border border-accent/30 px-5 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
           >
-            {locale === "en" ? "Wholesale inquiry" : "طلب جملة"}
+            {locale === "en" ? "Shop directly" : "تسوّق مباشرة"}
           </Link>
         </div>
 

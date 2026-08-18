@@ -13,47 +13,31 @@ import WholesalePage from "@/app/[locale]/wholesale/page";
 import { getProductBySlug } from "@/src/data/site";
 
 describe("localized site rendering", () => {
-  it("renders the English homepage hero and featured collections", async () => {
+  it("renders the English retail-first homepage and gifting edit", async () => {
     render(await HomePage({ params: Promise.resolve({ locale: "en" }) }));
 
     expect(screen.getAllByText(/tranquilbeads/i).length).toBeGreaterThan(0);
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: /tasbih crafted for modern wholesale partners/i,
+        name: /a meaningful gift, chosen with care/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText(/featured collections/i).length).toBeGreaterThan(0);
-    expect(screen.getByRole("link", { name: /shop retail/i })).toHaveAttribute("href", "/en/shop");
-    expect(screen.getByRole("link", { name: /request catalog/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: /the gifting edit/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 2, name: /bestsellers/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /shop gifts/i })).toHaveAttribute("href", "/en/shop");
     expect(
-      screen.getByRole("button", { name: /next showcase item/i }),
+      screen.getByAltText(/natural kuka tasbih in a gift box/i),
     ).toBeInTheDocument();
-    expect(
-      screen.getByAltText(/natural kuka wood tasbih showcase/i),
-    ).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/1688|projectnoor|starting moq/i);
   });
 
-  it("uses collection-specific and product-specific homepage links", async () => {
+  it("uses retail material and bead-count links from the homepage", async () => {
     render(await HomePage({ params: Promise.resolve({ locale: "en" }) }));
 
-    const giftSetHeading = screen.getByRole("heading", {
-      level: 3,
-      name: /gift-ready sets/i,
-    });
-    const giftSetCard = giftSetHeading.closest("article");
-    expect(giftSetCard).not.toBeNull();
-    expect(
-      within(giftSetCard as HTMLElement).getByRole("link", {
-        name: /explore collection/i,
-      }),
-    ).toHaveAttribute("href", "/en/collections/gift-sets");
-
-    expect(
-      screen
-        .getAllByRole("link", { name: /baltic amber gift set/i })
-        .some((link) => link.getAttribute("href") === "/en/collections/gift-sets/baltic-amber-gift-set"),
-    ).toBe(true);
+    expect(screen.getByRole("link", { name: /discover amber/i })).toHaveAttribute("href", "/en/shop?material=Amber");
+    expect(screen.getByRole("link", { name: /find your count/i })).toHaveAttribute("href", "/en/shop?beadCount=99");
+    expect(screen.getByRole("link", { name: /view all tasbih/i })).toHaveAttribute("href", "/en/shop");
   });
 
   it("renders the Arabic layout in RTL mode", async () => {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GoogleTagManager } from "@next/third-parties/google";
 
 import "./globals.css";
+import "./maison.css";
 
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "GTM-M9JCZKFC";
 
@@ -10,15 +11,15 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL || "https://www.tranquilbeads.com",
   ),
   title: {
-    default: "TranquilBeads | Wholesale Tasbih, Misbaha & Prayer Beads Supplier",
+    default: "TranquilBeads | Premium Tasbih, Misbaha & Prayer Beads",
     template: "%s | TranquilBeads",
   },
   description:
-    "Wholesale tasbih, misbaha, tasbeeh and prayer beads supplier for boutiques, distributors, museum shops, and Ramadan or Eid gifting programs. MOQ 100 pcs with private-label packaging.",
+    "Shop premium tasbih, misbaha and prayer beads in amber, stone and kuka wood, chosen for daily reflection and meaningful gifting.",
   keywords: [
-    "wholesale tasbih",
-    "tasbih supplier",
-    "misbaha wholesale",
+    "premium tasbih",
+    "tasbih gift",
+    "misbaha prayer beads",
     "tasbeeh prayer beads",
     "Islamic prayer beads",
     "33 beads tasbih",
@@ -36,14 +37,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TranquilBeads",
     description:
-      "Premium tasbih, misbaha and Islamic prayer beads for wholesale buyers, distributors, and gifting partners.",
+      "Premium tasbih, misbaha and Islamic prayer beads for meaningful daily rituals and thoughtful gifting.",
     type: "website",
     images: [
       {
         url: "/images/real-products/natural-kuka-wood/hero.jpeg",
         width: 1200,
         height: 900,
-        alt: "Natural Kuka Wood Tasbih wholesale product photo",
+        alt: "Natural Kuka wood tasbih in a gift box",
       },
     ],
   },
@@ -51,7 +52,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TranquilBeads",
     description:
-      "Premium tasbih, misbaha and Islamic prayer beads for wholesale buyers and gifting partners.",
+      "Premium tasbih, misbaha and Islamic prayer beads for meaningful daily rituals and thoughtful gifting.",
     images: ["/images/real-products/natural-kuka-wood/hero.jpeg"],
   },
 };
@@ -64,6 +65,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       style={
         {
           "--font-display": "\"Iowan Old Style\", \"Palatino Linotype\", \"Book Antiqua\", Georgia, serif",

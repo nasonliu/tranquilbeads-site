@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserRound } from "lucide-react";
+import { Globe2, UserRound } from "lucide-react";
 
 import { siteSettings } from "@/src/data/site";
 import { retailPolicyPaths } from "@/src/data/retail/policies";
@@ -31,32 +31,29 @@ export function SiteShell({
   const isChinese = locale === "zh";
   const pathname = usePathname();
   const isRetailShop = /^\/(en|ar|zh)\/shop(?:\/|$)/.test(pathname ?? "");
-  const otherLocale = isRetailShop
-    ? locale === "en" ? "ar" : "en"
-    : locale === "en" ? "ar" : locale === "ar" ? "zh" : "en";
+  const isConsumerLocale = locale === "en" || locale === "ar";
+  const otherLocale = locale === "en" ? "ar" : "en";
   // Strip current locale prefix from pathname
   const pathWithoutLocale = (pathname ?? withLocale(locale)).replace(/^\/(en|ar|zh)/, "") || "/";
   const switchLocaleHref = `/${otherLocale}${pathWithoutLocale}`;
 
   return (
     <RetailCartProvider><div className="noor-shell">
-      <header className="sticky top-0 z-20 border-b border-border/70 bg-panel/90 backdrop-blur-xl">
-        <div className="noor-container flex items-center justify-between gap-3 py-4 sm:gap-6">
+      <header className="maison-site-header sticky top-0 z-20 border-b border-border/70 bg-[#fffaf3]/95 backdrop-blur-xl">
+        <div className="maison-announcement"><Globe2 aria-hidden="true" size={14} />{isArabic ? "توصيل دولي متتبع للوجهات المدعومة" : isChinese ? "支持地区可追踪配送" : "Worldwide tracked delivery to supported destinations"}</div>
+        <div className="noor-container flex items-center justify-between gap-3 py-3 sm:gap-5">
           <Link href={withLocale(locale)} prefetch={isRetailShop ? false : undefined} className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent/40 bg-[radial-gradient(circle_at_top,_rgba(173,132,86,0.35),_rgba(107,122,81,0.08))] text-sm font-semibold text-accent-deep">
-              PN
-            </div>
             <div className="min-w-0">
-              <p className="noor-title truncate text-xl sm:text-2xl">
+              <p className="noor-title truncate text-2xl sm:text-[1.7rem]">
                 {siteSettings.brandName}
               </p>
-              <p className="hidden text-xs uppercase tracking-[0.28em] text-muted sm:block">
-                {isArabic ? "تجارة راقية" : isChinese ? "优质贸易" : "Premium Trade"}
+              <p className="hidden text-[.58rem] uppercase tracking-[0.38em] text-muted sm:block">
+                {isArabic ? "تسابيح فاخرة" : isChinese ? "精选念珠" : "Premium Tasbih"}
               </p>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium text-muted lg:flex">
+          <nav className="hidden items-center gap-4 text-[.78rem] font-medium text-[#4f423c] xl:flex">
             {nav.map((item) => (
               <Link
                 key={item.href}
@@ -69,20 +66,24 @@ export function SiteShell({
             ))}
           </nav>
 
+          <div className="hidden border-s border-border/80 ps-4 text-[.63rem] leading-tight xl:block">
+            <p className="text-muted">{isArabic ? "أماكن الشراء" : "Where to buy"}</p>
+            <div className="mt-1 flex gap-3 text-xs font-semibold"><Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/amazon")}>Amazon</Link><Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/noon")}>Noon</Link></div>
+          </div>
+
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-            {isRetailShop ? <RetailCartButton locale={locale} /> : null}
-            {isRetailShop && locale !== "zh" ? <Link href={`/${locale}/shop/account`} aria-label={locale === "ar" ? "حسابي" : "My account"} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/80 bg-white/55"><UserRound aria-hidden="true" size={18} /></Link> : null}
+            {isConsumerLocale ? <RetailCartButton locale={locale} /> : null}
+            {isConsumerLocale ? <Link href={`/${locale}/shop/account`} aria-label={locale === "ar" ? "حسابي" : "My account"} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/80 bg-white/55"><UserRound aria-hidden="true" size={18} /></Link> : null}
             <Link
               href={switchLocaleHref}
               prefetch={isRetailShop ? false : undefined}
               className="rounded-full border border-border/80 bg-white/55 px-3 py-2 text-xs font-semibold text-muted transition hover:border-accent/40 hover:text-foreground"
             >
-              {otherLocale === "ar" ? "العربية" : otherLocale === "zh" ? "中文" : "English"}
+              {otherLocale === "ar" ? "العربية" : "English"}
             </Link>
-            <WhatsAppContactMenu locale={locale} variant="header" />
           </div>
         </div>
-        <div className="noor-container flex gap-2 overflow-x-auto pb-4 lg:hidden">
+        <div className="noor-container flex gap-2 overflow-x-auto pb-3 xl:hidden">
           {nav.map((item) => (
             <Link
               key={item.href}
@@ -93,18 +94,26 @@ export function SiteShell({
               {item.label}
             </Link>
           ))}
+          <Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/amazon")} className="shrink-0 rounded-full border border-border/80 bg-white/55 px-4 py-2 text-sm font-medium text-muted">Amazon</Link>
+          <Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/noon")} className="shrink-0 rounded-full border border-border/80 bg-white/55 px-4 py-2 text-sm font-medium text-muted">Noon</Link>
         </div>
       </header>
 
-      <main className="pb-24">{children}</main>
+      <main>{children}</main>
 
-      <footer className="border-t border-border/80 bg-[#1f1a15] text-[#efe6d8]">
-        <div className="noor-container grid gap-8 py-10 md:grid-cols-[1.3fr_1fr_1fr]">
+      <footer className="maison-footer border-t border-border/80 bg-[#25141d] text-[#f7eee4]">
+        <div className="noor-container grid gap-8 py-12 md:grid-cols-[1.25fr_1fr_1fr_1fr]">
           <div className="space-y-3">
             <p className="noor-title text-3xl">{siteSettings.brandName}</p>
-            <p className="max-w-xl text-sm leading-7 text-[#dcccb5]">
+            <p className="max-w-sm text-sm leading-7 text-[#dcccbf]">
               {footerCopy.summary}
             </p>
+          </div>
+          <div className="space-y-2 text-sm text-[#dcccbf]">
+            <p className="text-xs uppercase tracking-[0.24em] text-[#c3a16f]">{locale === "ar" ? "أماكن الشراء" : "Where to buy"}</p>
+            <Link prefetch={isRetailShop ? false : undefined} className="block hover:text-white" href={withLocale(locale, "/amazon")}>Amazon</Link>
+            <Link prefetch={isRetailShop ? false : undefined} className="block hover:text-white" href={withLocale(locale, "/noon")}>Noon</Link>
+            <Link prefetch={isRetailShop ? false : undefined} className="block pt-4 text-xs text-[#b7a99d] hover:text-white" href={withLocale(locale, "/wholesale")}>{locale === "ar" ? "استفسارات الجملة" : "Wholesale enquiries"}</Link>
           </div>
           <div className="space-y-2 text-sm text-[#dcccb5]">
             <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">

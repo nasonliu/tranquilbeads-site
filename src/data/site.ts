@@ -73,9 +73,9 @@ type ContactFormCopy = {
 export const siteSettings = {
   brandName: "TranquilBeads",
   tagline: {
-    en: "Elegant tasbih and Islamic culture products for modern wholesale partners.",
-    ar: "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء الجملة والتوزيع.",
-    zh: "为现代批发合作伙伴打造的雅致念珠与伊斯兰文化产品。",
+    en: "Premium tasbih and prayer beads chosen for meaningful daily rituals and thoughtful gifting.",
+    ar: "تسابيح وخرز صلاة راقية مختارة للذكر اليومي والهدايا ذات المعنى.",
+    zh: "为日常静心与用心赠礼精选的优质念珠。",
   },
   email: siteContentJson.siteSettings.email,
   whatsappHref: siteContentJson.siteSettings.whatsappHref,
@@ -107,14 +107,13 @@ export const siteSettings = {
 } as const;
 
 export const navItems: NavItem[] = [
-  { href: "/", label: { en: "Home", ar: "الرئيسية" } },
-  { href: "/collections", label: { en: "Collections", ar: "المجموعات" } },
-  { href: "/amazon", label: { en: "Amazon Retail", ar: "أمازون للتجزئة" } },
-  { href: "/noon", label: { en: "Noon Retail", ar: "نون للتجزئة" } },
-  { href: "/shop", label: { en: "Retail Shop", ar: "متجر التجزئة" } },
-  { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
-  { href: "/blog", label: { en: "Buyer's Guides", ar: "أدلة المشتري" } },
-  { href: "/contact", label: { en: "Contact", ar: "التواصل" } },
+  { href: "/shop", label: { en: "Shop", ar: "المتجر" } },
+  { href: "/shop?material=Amber", label: { en: "Amber", ar: "الكهرمان" } },
+  { href: "/shop?material=Stone", label: { en: "Stone", ar: "الحجر" } },
+  { href: "/shop?material=Kuka", label: { en: "Kuka", ar: "الكوكا" } },
+  { href: "/shop?beadCount=33", label: { en: "33 Beads", ar: "33 حبة" } },
+  { href: "/shop?beadCount=99", label: { en: "99 Beads", ar: "99 حبة" } },
+  { href: "/#gifting", label: { en: "Gifts", ar: "الهدايا" } },
 ];
 
 export const collections: Collection[] = [
@@ -1278,8 +1277,8 @@ export const contactFormCopy: ContactFormCopy = {
 
 const pageDescriptions = {
   home: {
-    en: "Wholesale tasbih, misbaha and prayer beads supplier — Kuka wood, Aqeeq agate, amber-style and gift box tasbih. MOQ 100 pcs, private label supported.",
-    ar: "مورد تسابيح ومسابح وخرز صلاة بالجملة — خشب الكوكا والعقيق والكهرمان ومجموعات الهدايا. موك 100 قطعة مع دعم التغليف الخاص.",
+    en: "Shop premium tasbih, misbaha and prayer beads in amber, stone, kuka wood, and gift-ready finishes with tracked international delivery.",
+    ar: "تسوّق تسابيح ومسابح راقية من الكهرمان والحجر وخشب الكوكا، مع تغليف هدايا وتوصيل دولي متتبع.",
   },
   collections: {
     en: "Browse wholesale tasbih collections: Misbaha prayer beads, Kuka wood, Aqeeq agate, amber-look, 33-bead and 99-bead gift box tasbih for retailers.",
@@ -1421,8 +1420,8 @@ export function getPageCopy(locale: Locale) {
       summary: siteSettings.tagline[locale] ?? siteSettings.tagline.en,
       rights:
         locale === "en"
-          ? "Premium tasbih and Islamic culture goods for contemporary trade partners."
-          : locale === "zh" ? "为现代消费者提供的雅致念珠与文化产品。" : "تسابيح ومنتجات ثقافية إسلامية راقية لشركاء التجارة المعاصرين。",
+          ? "Premium tasbih for daily reflection, meaningful gifting, and moments that matter."
+          : locale === "zh" ? "为现代消费者提供的雅致念珠与文化产品。" : "تسابيح راقية للتأمل اليومي والهدايا ذات المعنى واللحظات المهمة.",
     },
   };
 }

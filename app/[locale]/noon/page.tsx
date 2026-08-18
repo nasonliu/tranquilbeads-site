@@ -147,10 +147,10 @@ function ProductCard({
             </a>
           ) : null}
           <Link
-            href={withLocale(locale, "/contact")}
+            href={withLocale(locale, "/shop")}
             className="rounded-full border border-accent/30 px-4 py-2 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
           >
-            {locale === "en" ? "Ask wholesale" : "اسأل عن الجملة"}
+            {locale === "en" ? "Shop directly" : "تسوّق مباشرة"}
           </Link>
         </div>
       </div>
@@ -232,8 +232,8 @@ export default async function NoonRetailPage({
         }
         description={
           locale === "en"
-            ? "Selected TranquilBeads products now have direct Buy on Noon options for UAE and Saudi shoppers. Retail customers can buy regionally through Noon, while distributors can still request catalog pricing and wholesale support here."
-            : "تملك منتجات مختارة من TranquilBeads خيارات شراء مباشرة عبر نون الإمارات والسعودية. يمكن لعملاء التجزئة الشراء إقليميًا عبر نون، بينما يستطيع الموزعون طلب كتالوج وأسعار الجملة من هنا."
+            ? "Shop selected TranquilBeads products through Noon UAE and Saudi, or visit our direct shop for the full collection and worldwide delivery options."
+            : "تسوّق منتجات مختارة من TranquilBeads عبر نون الإمارات والسعودية، أو زر متجرنا المباشر للتشكيلة الكاملة وخيارات التوصيل الدولي."
         }
         actions={
           <>
@@ -273,10 +273,10 @@ export default async function NoonRetailPage({
             </p>
           </div>
           <Link
-            href={withLocale(locale, "/contact")}
+            href={withLocale(locale, "/shop")}
             className="rounded-full border border-accent/30 px-5 py-3 text-sm font-semibold text-accent-deep transition hover:bg-accent/10"
           >
-            {locale === "en" ? "Wholesale inquiry" : "طلب جملة"}
+            {locale === "en" ? "Shop directly" : "تسوّق مباشرة"}
           </Link>
         </div>
 

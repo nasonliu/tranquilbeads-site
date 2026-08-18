@@ -257,7 +257,7 @@ export function RetailShop({ locale, products, enabled, copy, initialFilters }: 
 
               <div className="mt-auto pt-3">
                 <p className="text-base font-semibold"><RetailReferenceMoney usdMinor={display.priceMinor} locale={locale} /></p>
-                <p className="mt-1 text-xs text-muted">{display.stock} {display.available ? copy.available : copy.outOfStock}</p>
+                <p className="mt-1 text-xs text-muted">{display.available ? copy.available : copy.outOfStock}</p>
 
                 {keys.length ? <fieldset className="mt-4 space-y-3">
                   <legend className="text-sm font-semibold">{copy.variants}</legend>

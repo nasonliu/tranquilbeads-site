@@ -97,33 +97,29 @@ export function useRetailReferenceCurrency(): ContextValue {
 
 function toolbarCopy(locale: ReferenceCurrencyLocale) {
   return locale === "zh" ? {
-    label: "显示币种（参考价）",
-    notice: "参考汇率仅用于浏览；PayPal 将以 USD 结算。",
-    updated: "汇率更新",
+    label: "币种",
+    notice: "结账时将通过 PayPal 以 USD 完成支付。",
   } : locale === "ar" ? {
-    label: "عملة العرض (سعر استرشادي)",
-    notice: "أسعار الصرف للعرض فقط؛ ستتم المحاسبة عبر PayPal بالدولار الأمريكي.",
-    updated: "تحديث السعر",
+    label: "العملة",
+    notice: "يتم إتمام الدفع عبر PayPal بالدولار الأمريكي عند إنهاء الطلب.",
   } : {
-    label: "Display currency (reference)",
-    notice: "Reference rates are for browsing only; PayPal charges in USD.",
-    updated: "Rate updated",
+    label: "Currency",
+    notice: "Checkout is completed in USD through PayPal.",
   };
 }
 
 export function RetailReferenceCurrencyToolbar({ locale }: { locale: ReferenceCurrencyLocale }) {
   const { currency, snapshot, setCurrency } = useRetailReferenceCurrency();
   const copy = toolbarCopy(locale);
-  const updated = new Intl.DateTimeFormat(locale === "zh" ? "zh-CN" : locale === "ar" ? "ar-AE" : "en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(snapshot.asOf));
-  return <div className="noor-container pt-5">
-    <section className="noor-panel flex flex-col gap-3 rounded-2xl px-5 py-4 text-sm md:flex-row md:items-center md:justify-between">
+  return <div className="noor-container pt-4">
+    <section className="flex flex-col gap-2 border-b border-border/70 pb-4 text-sm md:flex-row md:items-center md:justify-end md:gap-5">
       <label className="flex items-center gap-3 font-medium">
         <span>{copy.label}</span>
         <select aria-label={copy.label} value={currency} onChange={(event) => setCurrency(event.target.value as ReferenceCurrency)} className="rounded-lg border border-black/15 bg-transparent px-3 py-2">
           {REFERENCE_CURRENCIES.map((item) => <option key={item} value={item} disabled={!snapshot.rateMicros[item]}>{item}</option>)}
         </select>
       </label>
-      <p className="text-xs leading-5 text-muted">{copy.notice} {copy.updated}: {updated} · {snapshot.source}</p>
+      <p className="text-xs leading-5 text-muted">{copy.notice}</p>
     </section>
   </div>;
 }

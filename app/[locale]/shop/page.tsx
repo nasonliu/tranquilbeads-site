@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop">) 
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   if (locale === "zh") return { robots: { index: false, follow: true }, alternates: { canonical: `${SITE_URL}/en/shop`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
-  const title = locale === "ar" ? "متجر التجزئة" : "Retail Shop";
+  const title = locale === "ar" ? "تسوّق تسابيح TranquilBeads" : "Shop TranquilBeads";
   const description = locale === "ar" ? "تسوّق تسابيح TranquilBeads مباشرة مع شحن دولي متتبع." : "Shop TranquilBeads prayer beads directly with tracked international delivery.";
   return { title, description, alternates: { canonical: `${SITE_URL}${withLocale(locale, "/shop")}`, languages: { en: `${SITE_URL}/en/shop`, ar: `${SITE_URL}/ar/shop` } } };
 }
@@ -81,17 +81,17 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/[lo
   }));
   const enabled = config.enabled && products.length > 0;
   return <div className="space-y-8 pt-6 md:space-y-10">
-    <section className="noor-container"><div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-2xl bg-[#1f1a15] px-5 py-3 text-center text-sm text-[#f5eadb]">
-      <strong>{locale === "ar" ? "شحن مجاني للطلبات بقيمة 99 دولاراً أو أكثر" : "Free shipping on orders $99+"}</strong>
+    <section className="noor-container"><div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-2xl bg-[#351826] px-5 py-3 text-center text-sm text-[#f7eee4]">
+      <strong>{locale === "ar" ? "شحن مجاني للطلبات المؤهلة" : "Free shipping on eligible orders"}</strong>
       <span>{locale === "ar" ? "توصيل دولي متتبع حيث تتوفر خدمة YunExpress" : "Tracked international delivery where YunExpress service is available"}</span>
       <span>{locale === "ar" ? "تُطبّق العروض التلقائية عند الدفع" : "Automatic offers apply at checkout"}</span>
     </div></section>
     <section className="noor-container">
-      <div className="noor-panel noor-card-glow rounded-[1.75rem] px-6 py-7 sm:px-8">
-        <p className="noor-kicker text-xs font-semibold text-accent-deep">{copy.eyebrow}</p>
+      <div className="rounded-[1.75rem] border border-[#d8c8b7] bg-[#f3e9dd] px-6 py-8 sm:px-9">
+        <p className="noor-kicker text-xs font-semibold text-[#724257]">{locale === "ar" ? "تسابيح مختارة بعناية" : "Premium tasbih, chosen with care"}</p>
         <div className="mt-3 grid items-end gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(18rem,1.1fr)]">
-          <h1 className="noor-title text-4xl leading-tight text-foreground sm:text-5xl">{copy.title}</h1>
-          <p className="max-w-2xl text-sm leading-7 text-muted sm:text-base">{copy.description}</p>
+          <h1 className="noor-title text-4xl leading-tight text-[#2b1820] sm:text-5xl">{locale === "ar" ? "اختر قطعتك المميزة" : "Find a piece that feels personal"}</h1>
+          <p className="max-w-2xl text-sm leading-7 text-[#6f5c54] sm:text-base">{locale === "ar" ? "تسوّق حسب الخامة وعدد الحبات، واختر الهدية أو السبحة المناسبة لذكرك اليومي." : "Browse by material and bead count, then choose the gift or daily tasbih that feels right for you."}</p>
         </div>
       </div>
     </section>
