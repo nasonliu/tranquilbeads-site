@@ -15,6 +15,7 @@ import {
   EyeOff,
   FileImage,
   LayoutDashboard,
+  KeyRound,
   LogOut,
   Mail,
   MapPin,
@@ -71,6 +72,7 @@ type RetailAdminSection =
   | "finance"
   | "settlements"
   | "settings"
+  | "security"
   | "media"
   | "audit"
   | "system"
@@ -109,13 +111,14 @@ const sectionIcons: Record<Exclude<RetailAdminSection, "legacy">, LucideIcon> = 
   finance: CreditCard,
   settlements: CreditCard,
   settings: Settings,
+  security: KeyRound,
   media: FileImage,
   audit: ClipboardList,
   system: Wrench,
 };
 
 type AdminNavGroup = {
-  section: Exclude<RetailAdminSection, "legacy" | "catalog" | "media" | "audit" | "system" | "settlements" | "inventory" | "returns" | "promotions" | "marketing">;
+  section: Exclude<RetailAdminSection, "legacy" | "catalog" | "media" | "audit" | "system" | "settlements" | "inventory" | "returns" | "promotions" | "marketing" | "security">;
   children?: Array<Exclude<RetailAdminSection, "legacy" | "catalog">>;
 };
 
@@ -129,7 +132,7 @@ const adminNavGroups: AdminNavGroup[] = [
   { section: "orders", children: ["returns"] },
   { section: "customers", children: ["marketing", "promotions"] },
   { section: "finance", children: ["settlements"] },
-  { section: "settings", children: ["audit", "system"] },
+  { section: "settings", children: ["security", "audit", "system"] },
 ];
 const uuid = () => crypto.randomUUID();
 
@@ -262,7 +265,10 @@ export function RetailAdminLogin() {
               body: JSON.stringify({ actorId: actorId.trim() || undefined, password }),
             });
             if (response.ok) location.reload();
-            else setError(copy.loginUnavailable);
+            else {
+              const result = await response.json().catch(() => ({})) as { error?: string };
+              setError(response.status === 401 ? copy.loginInvalid : result.error === "rate_limited" ? copy.errorRateLimited : copy.loginUnavailable);
+            }
           }}
         >
           <div className="flex items-start justify-between gap-4">
@@ -1391,6 +1397,83 @@ function SettingsGuide({ locale }: { locale: AdminLocale }) {
   return <section className="mb-6"><div className="mb-4"><h2 className="text-xl font-semibold">{locale === "zh" ? "设置向导" : "Setup guide"}</h2><p className="mt-1 text-sm text-muted">{locale === "zh" ? "按业务目的进入设置，不需要理解数据库字段或技术名词。" : "Start from the business task; no database field knowledge is required."}</p></div><div className="grid gap-4 md:grid-cols-2">{items.map((item) => <article className="rounded-xl border border-[#dfd2c0] bg-white p-5" key={item.title}><h3 className="font-semibold">{item.title}</h3><p className="mt-2 text-sm text-muted">{item.body}</p><a className="mt-4 inline-flex rounded-md border border-[#cdbda9] px-3 py-2 text-sm" href={item.href}>{item.action}</a></article>)}</div></section>;
 }
 
+function PasswordSecurity({ locale }: { locale: AdminLocale }) {
+  const text = locale === "zh" ? {
+    title: "修改后台登录密码",
+    description: "第一次可使用 Vercel 中的初始密码。修改成功后，新密码保存在后台并覆盖初始密码，今后无需再修改 Vercel 环境变量。",
+    current: "当前密码",
+    next: "新密码",
+    confirm: "再次输入新密码",
+    action: "保存新密码",
+    pending: "正在保存…",
+    mismatch: "两次输入的新密码不一致。",
+    invalid: "当前密码不正确。",
+    reused: "新密码不能与当前密码相同。",
+    failed: "密码修改失败，请稍后重试。",
+    success: "密码已修改，所有旧登录会话都已退出。请使用新密码重新登录。",
+    signIn: "使用新密码重新登录",
+    rule: "至少 8 位。建议使用字母、数字和符号组合。",
+  } : {
+    title: "Change admin password",
+    description: "Use the Vercel password for the first sign-in. After this change, the stored admin password overrides it, so routine password changes no longer require Vercel.",
+    current: "Current password",
+    next: "New password",
+    confirm: "Confirm new password",
+    action: "Save new password",
+    pending: "Saving…",
+    mismatch: "The new passwords do not match.",
+    invalid: "The current password is incorrect.",
+    reused: "The new password must be different.",
+    failed: "Password change failed. Try again.",
+    success: "Password changed. All previous admin sessions were signed out. Sign in again with the new password.",
+    signIn: "Sign in with the new password",
+    rule: "Minimum 8 characters. A mix of letters, numbers, and symbols is recommended.",
+  };
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState("");
+  const [changed, setChanged] = useState(false);
+
+  return <section className="max-w-2xl rounded-xl border border-[#dfd2c0] bg-[#fbf7f1] p-6">
+    <h2 className="text-xl font-semibold">{text.title}</h2>
+    <p className="mt-2 text-sm leading-6 text-muted">{text.description}</p>
+    {changed ? <div className="mt-6 rounded-lg border border-[#a9b58e] bg-[#eef2e7] p-4" role="status">
+      <p className="text-sm">{text.success}</p>
+      <a className="mt-4 inline-flex rounded-md bg-accent px-4 py-2 text-sm text-white" href="/admin/retail/security">{text.signIn}</a>
+    </div> : <form className="mt-6 grid gap-4" onSubmit={async (event) => {
+      event.preventDefault();
+      const formElement = event.currentTarget;
+      setMessage("");
+      const form = new FormData(formElement);
+      const currentPassword = String(form.get("currentPassword") ?? "");
+      const newPassword = String(form.get("newPassword") ?? "");
+      const confirmPassword = String(form.get("confirmPassword") ?? "");
+      if (newPassword !== confirmPassword) { setMessage(text.mismatch); return; }
+      setPending(true);
+      try {
+        const response = await fetch("/api/admin/retail/auth/password", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+        });
+        const result = await response.json().catch(() => ({})) as { error?: string };
+        if (!response.ok) throw new Error(result.error ?? "request_failed");
+        formElement.reset();
+        setChanged(true);
+      } catch (error) {
+        const code = error instanceof Error ? error.message : "request_failed";
+        setMessage(code === "current_password_invalid" ? text.invalid : code === "password_reused" ? text.reused : text.failed);
+      } finally { setPending(false); }
+    }}>
+      <label className="text-sm font-medium">{text.current}<input className="mt-1 block w-full rounded-md border border-[#cdbda9] bg-white p-3" name="currentPassword" type="password" autoComplete="current-password" minLength={8} maxLength={256} required /></label>
+      <label className="text-sm font-medium">{text.next}<input className="mt-1 block w-full rounded-md border border-[#cdbda9] bg-white p-3" name="newPassword" type="password" autoComplete="new-password" minLength={8} maxLength={256} required /></label>
+      <label className="text-sm font-medium">{text.confirm}<input className="mt-1 block w-full rounded-md border border-[#cdbda9] bg-white p-3" name="confirmPassword" type="password" autoComplete="new-password" minLength={8} maxLength={256} required /></label>
+      <p className="text-xs text-muted">{text.rule}</p>
+      {message && <p className="text-sm text-red-700" role="alert">{message}</p>}
+      <button className="w-fit rounded-md bg-accent px-4 py-2 text-sm text-white disabled:opacity-50" disabled={pending}>{pending ? text.pending : text.action}</button>
+    </form>}
+  </section>;
+}
+
 export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdminSection }) {
   const [locale, setLocale] = useStoredLocale();
   const copy = getAdminCopy(locale);
@@ -1410,6 +1493,10 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
       if (section === "system") {
         const response = await fetch("/api/retail/health", { cache: "no-store" });
         setHealth(await response.json());
+        setMessage("");
+        return true;
+      }
+      if (section === "security") {
         setMessage("");
         return true;
       }
@@ -1631,6 +1718,9 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
       break;
     case "settings":
       body = <><SettingsGuide locale={locale}/><YunExpressProviderPanel locale={locale}/><div className="mt-6" id="shipping-zones"><ShippingZones zones={shippingZones} refresh={refresh} /></div></>;
+      break;
+    case "security":
+      body = <PasswordSecurity locale={locale} />;
       break;
     case "media":
       body = <ProductMedia products={products} refresh={refresh} />;

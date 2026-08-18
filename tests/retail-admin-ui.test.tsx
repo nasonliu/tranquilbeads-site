@@ -109,7 +109,29 @@ describe("retail admin console", () => {
 
     await waitFor(() => expect(fetcher).toHaveBeenCalledTimes(1));
     expect(requestBody(fetcher.mock.calls[0])).toEqual({ actorId: "inventory-manager", password: "a-valid-admin-password" });
-    expect(screen.getByText("Login unavailable.")).toBeInTheDocument();
+    expect(screen.getByText("The password or operator ID is incorrect.")).toBeInTheDocument();
+  });
+
+  it("changes the admin password from the security page and requires a fresh sign-in", async () => {
+    const fetcher = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input) === "/api/admin/retail/auth/password") {
+        return new Response(JSON.stringify({ ok: true, requiresSignIn: true }), { status: 200 });
+      }
+      return new Response(JSON.stringify(responseFor(String(input))), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetcher);
+    render(<RetailAdminConsole section="security" />);
+
+    fireEvent.change(screen.getByLabelText("Current password"), { target: { value: "old-password" } });
+    fireEvent.change(screen.getByLabelText("New password"), { target: { value: "new-password" } });
+    fireEvent.change(screen.getByLabelText("Confirm new password"), { target: { value: "new-password" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save new password" }));
+
+    expect(await screen.findByText(/Password changed/)).toBeInTheDocument();
+    const passwordCall = fetcher.mock.calls.find(([path]) => String(path) === "/api/admin/retail/auth/password");
+    expect(passwordCall).toBeDefined();
+    expect(requestBody(passwordCall!)).toEqual({ currentPassword: "old-password", newPassword: "new-password", confirmPassword: "new-password" });
+    expect(screen.getByRole("link", { name: "Sign in with the new password" })).toHaveAttribute("href", "/admin/retail/security");
   });
 
   it("sends audit filters and renders a paginated audit record", async () => {

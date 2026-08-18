@@ -6,6 +6,7 @@ import { consumeRetailAdminLoginRateLimit } from "./rate-limit";
 
 const COOKIE = "retail_admin";
 const MAX_AGE = 60 * 60 * 8;
+const SCRYPT_KEY_LENGTH = 32;
 
 export const retailRoles = ["owner", "operations", "warehouse", "finance", "viewer"] as const;
 export type RetailRole = (typeof retailRoles)[number];
@@ -26,6 +27,7 @@ const rolePermissions: Record<RetailRole, ReadonlySet<RetailPermission>> = {
 type ConfiguredOperator = RetailAdminActor & { password: string; email?: string };
 type SessionPayload = RetailAdminActor & { exp: number; v: 3; jti: string; cv: string };
 type ParsedSession = { actor: RetailAdminActor; exp: number; jti: string; cv: string };
+type StoredCredential = { password_salt: string; password_hash: string; credential_version: string };
 
 function config() {
   const password = process.env.ADMIN_RETAIL_PASSWORD;
@@ -40,6 +42,14 @@ function sha256(value: string) { return crypto.createHash("sha256").update(value
 function safeEqual(left: string, right: string) {
   const a = Buffer.from(left); const b = Buffer.from(right);
   return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+function derivePasswordHash(password: string, salt: string) {
+  return new Promise<string>((resolve, reject) => {
+    crypto.scrypt(password, salt, SCRYPT_KEY_LENGTH, (error, derivedKey) => {
+      if (error) reject(error);
+      else resolve(derivedKey.toString("hex"));
+    });
+  });
 }
 function legacyActor(): RetailAdminActor { return { id: "legacy-admin", name: "Legacy administrator", role: "owner", legacy: true }; }
 
@@ -83,6 +93,21 @@ function credentialVersion(actor: RetailAdminActor & { password: string }) {
   const { secret } = config();
   return sign(`${actor.id}\n${actor.name}\n${actor.role}\n${actor.legacy}\n${actor.password}`, secret);
 }
+function storedCredentialVersion(actor: RetailAdminActor, version: string) {
+  const { secret } = config();
+  return sign(`${actor.id}\n${actor.name}\n${actor.role}\n${actor.legacy}\nstored:${version}`, secret);
+}
+async function getStoredCredential(actorId: string): Promise<StoredCredential | null> {
+  const rows = await guardedRetailSql()`SELECT password_salt,password_hash,credential_version::text FROM retail_admin_password_credentials WHERE actor_id=${actorId} LIMIT 1`;
+  const row = rows[0] as Partial<StoredCredential> | undefined;
+  if (!row || typeof row.password_salt !== "string" || typeof row.password_hash !== "string" || typeof row.credential_version !== "string") return null;
+  if (!/^[0-9a-f]{32}$/i.test(row.password_salt) || !/^[0-9a-f]{64}$/i.test(row.password_hash) || !/^[0-9a-f-]{36}$/i.test(row.credential_version)) throw new Error("retail_admin_credential_invalid");
+  return row as StoredCredential;
+}
+async function activeCredentialVersion(actor: RetailAdminActor & { password: string }) {
+  const stored = await getStoredCredential(actor.id);
+  return stored ? storedCredentialVersion(actor, stored.credential_version) : credentialVersion(actor);
+}
 function cookieOptions() { return { httpOnly: true, sameSite: "strict" as const, secure: process.env.NODE_ENV === "production", maxAge: MAX_AGE, path: "/" }; }
 
 export function hasRetailPermission(actor: RetailAdminActor, permission: RetailPermission) { return rolePermissions[actor.role].has(permission); }
@@ -94,6 +119,17 @@ export function createRetailAdminSession(actor: RetailAdminActor = legacyActor()
   const payload = Buffer.from(JSON.stringify({
     id: active.id, name: active.name, role: active.role, legacy: active.legacy,
     exp: now + MAX_AGE * 1000, v: 3 satisfies 3, jti: crypto.randomUUID(), cv: credentialVersion(active),
+  } satisfies SessionPayload)).toString("base64url");
+  return `${payload}.${sign(payload, secret)}`;
+}
+
+async function createActiveRetailAdminSession(actor: RetailAdminActor = legacyActor(), now = Date.now()) {
+  const active = currentActor(actor.id, actor.legacy);
+  if (!active || active.name !== actor.name || active.role !== actor.role) throw new Error("retail_admin_actor_unavailable");
+  const { secret } = config();
+  const payload = Buffer.from(JSON.stringify({
+    id: active.id, name: active.name, role: active.role, legacy: active.legacy,
+    exp: now + MAX_AGE * 1000, v: 3 satisfies 3, jti: crypto.randomUUID(), cv: await activeCredentialVersion(active),
   } satisfies SessionPayload)).toString("base64url");
   return `${payload}.${sign(payload, secret)}`;
 }
@@ -118,7 +154,7 @@ export async function validateRetailAdminSession(value: string | undefined, now 
   const parsed = parseRetailAdminSession(value, now);
   if (!parsed) return null;
   const active = currentActor(parsed.actor.id, parsed.actor.legacy);
-  if (!active || !safeEqual(parsed.cv, credentialVersion(active))) return null;
+  if (!active || !safeEqual(parsed.cv, await activeCredentialVersion(active))) return null;
   const rows = await guardedRetailSql()`SELECT 1 FROM retail_admin_sessions WHERE session_hash=${sha256(parsed.jti)} AND actor_id=${active.id} AND credential_version_hash=${sha256(parsed.cv)} AND revoked_at IS NULL AND expires_at > now() LIMIT 1`;
   return rows.length === 1 ? { id: active.id, name: active.name, role: active.role, legacy: active.legacy } : null;
 }
@@ -131,6 +167,17 @@ export function authenticateRetailAdmin(password: string, actorId?: string): Ret
   }
   const operator = currentActor(selected, false);
   return operator && safeEqual(password, operator.password) ? { id: operator.id, name: operator.name, role: operator.role, legacy: false } : null;
+}
+
+export async function authenticateRetailAdminWithStoredPassword(password: string, actorId?: string): Promise<RetailAdminActor | null> {
+  const selected = actorId?.trim();
+  const active = selected ? currentActor(selected, false) : currentActor("legacy-admin", true);
+  if (!active) return null;
+  const stored = await getStoredCredential(active.id);
+  const matches = stored
+    ? safeEqual(await derivePasswordHash(password, stored.password_salt), stored.password_hash)
+    : safeEqual(password, active.password);
+  return matches ? actorWithoutCredential(active) : null;
 }
 
 function actorWithoutCredential(actor: RetailAdminActor & { password: string }) {
@@ -172,7 +219,7 @@ export async function requireRetailPermission(permission: RetailPermission) {
 export async function assertSameOrigin() { const h = await headers(); const origin = h.get("origin"); const host = h.get("host"); if (!origin || !host || new URL(origin).host !== host) throw new Error("csrf_rejected"); }
 
 export async function setRetailAdminSession(actor: RetailAdminActor = legacyActor()) {
-  const value = createRetailAdminSession(actor);
+  const value = await createActiveRetailAdminSession(actor);
   const parsed = parseRetailAdminSession(value);
   if (!parsed) throw new Error("retail_admin_session_invalid");
   await guardedRetailSql()`INSERT INTO retail_admin_sessions(session_hash,actor_id,credential_version_hash,expires_at) VALUES(${sha256(parsed.jti)},${parsed.actor.id},${sha256(parsed.cv)},${new Date(parsed.exp)})`;
@@ -184,5 +231,36 @@ export async function revokeRetailAdminSession(value: string | undefined) {
   await guardedRetailSql()`UPDATE retail_admin_sessions SET revoked_at=COALESCE(revoked_at,now()) WHERE session_hash=${sha256(parsed.jti)} AND revoked_at IS NULL`;
 }
 export async function clearRetailAdminSession() { (await cookies()).delete(COOKIE); }
+export async function changeRetailAdminPassword(actor: RetailAdminActor, currentPassword: string, newPassword: string) {
+  const authenticated = await authenticateRetailAdminWithStoredPassword(currentPassword, actor.legacy ? undefined : actor.id);
+  if (!authenticated || authenticated.id !== actor.id) throw new Error("current_password_invalid");
+  if (safeEqual(currentPassword, newPassword)) throw new Error("password_reused");
+
+  const salt = crypto.randomBytes(16).toString("hex");
+  const passwordHash = await derivePasswordHash(newPassword, salt);
+  const version = crypto.randomUUID();
+  const auditKey = crypto.randomUUID();
+  await guardedRetailSql()`
+    WITH credential AS (
+      INSERT INTO retail_admin_password_credentials(actor_id,password_salt,password_hash,credential_version,changed_at,changed_by)
+      VALUES(${actor.id},${salt},${passwordHash},${version}::uuid,now(),${actor.id})
+      ON CONFLICT(actor_id) DO UPDATE SET
+        password_salt=EXCLUDED.password_salt,
+        password_hash=EXCLUDED.password_hash,
+        credential_version=EXCLUDED.credential_version,
+        changed_at=now(),
+        changed_by=EXCLUDED.changed_by
+      RETURNING actor_id
+    ), revoked AS (
+      UPDATE retail_admin_sessions SET revoked_at=COALESCE(revoked_at,now())
+      WHERE actor_id=${actor.id} AND revoked_at IS NULL
+      RETURNING session_hash
+    )
+    INSERT INTO retail_admin_audit(action,entity_type,entity_id,detail,idempotency_key,actor_id,actor_name,actor_role,legacy_actor,actor_attributed)
+    SELECT 'admin.password.change','admin_operator',credential.actor_id,
+      jsonb_build_object('sessionsRevoked',(SELECT count(*) FROM revoked)),
+      ${auditKey}::uuid,${actor.id},${actor.name},${actor.role},${actor.legacy},true
+    FROM credential`;
+}
 export function verifyRetailAdminPassword(value: string) { const active = currentActor("legacy-admin", true); return Boolean(active && safeEqual(value, active.password)); }
 export async function consumeRetailAdminLoginFailure(request: Request, actorId?: string) { return consumeRetailAdminLoginRateLimit(request, actorId); }
