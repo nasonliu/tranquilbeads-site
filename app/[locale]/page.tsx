@@ -8,6 +8,8 @@ import { toRetailProduct } from "@/src/data/retail/product-view-model";
 import type { RetailProduct } from "@/src/data/retail/types";
 import { getPageMetadata } from "@/src/data/site";
 import { isLocale, withLocale } from "@/src/lib/i18n";
+import { selectHomepageProducts } from "@/src/lib/retail/homepage-config";
+import { getPublishedStorefrontHomepage } from "@/src/lib/retail/storefront-pages";
 import { listStorefrontV3Products } from "@/src/lib/retail/storefront-v3";
 
 export const dynamic = "force-dynamic";
@@ -71,26 +73,36 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   if (locale === "zh") redirect("/en");
   const language = locale as "en" | "ar";
   const t = copy[language];
-  const products = (await listStorefrontV3Products()).filter((product) => product.images[0]?.url && product.variants.length).slice(0, 5).map((product) => toRetailProduct(product, language));
+  const [homepage, storefrontProducts] = await Promise.all([getPublishedStorefrontHomepage(), listStorefrontV3Products()]);
+  const products = selectHomepageProducts(
+    storefrontProducts.filter((product) => product.images[0]?.url && product.variants.length),
+    homepage.featuredProductSkus,
+  ).map((product) => toRetailProduct(product, language));
 
   return <div className="maison-home">
     <section className="maison-hero" aria-labelledby="maison-hero-title">
       <div className="maison-hero-copy">
         <p className="maison-eyebrow">{language === "ar" ? "TranquilBeads · تسابيح فاخرة" : "TranquilBeads · Premium Tasbih"}</p>
-        <h1 id="maison-hero-title">{t.heroTitle}</h1>
-        <p>{t.heroBody}</p>
+        <h1 id="maison-hero-title">{homepage.hero.title[language]}</h1>
+        <p>{homepage.hero.body[language]}</p>
         <div className="maison-actions">
-          <Link className="maison-button maison-button-plum" href={withLocale(language, "/shop")}>{t.shopGifts}</Link>
-          <Link className="maison-button maison-button-emerald" href={withLocale(language, "/shop?material=Amber")}>{t.discoverAmber}</Link>
+          <Link className="maison-button maison-button-plum" href={withLocale(language, homepage.hero.primaryHref)}>{homepage.hero.primaryLabel[language]}</Link>
+          <Link className="maison-button maison-button-emerald" href={withLocale(language, homepage.hero.secondaryHref)}>{homepage.hero.secondaryLabel[language]}</Link>
         </div>
       </div>
-      <div className="maison-hero-image"><Image src="/images/real-products/natural-kuka-wood/hero.jpeg" alt={language === "ar" ? "سبحة كوكا في صندوق هدية" : "Natural kuka tasbih in a gift box"} fill loading="eager" fetchPriority="high" sizes="(max-width: 800px) 100vw, 66vw" /></div>
+      <div className="maison-hero-image"><Image src={homepage.hero.image} alt={homepage.hero.imageAlt[language]} fill loading="eager" fetchPriority="high" sizes="(max-width: 800px) 100vw, 66vw" unoptimized={homepage.hero.image.startsWith("https://")} /></div>
     </section>
 
     <section id="gifting" className="maison-edit-grid" aria-label={language === "ar" ? "طرق التسوق" : "Ways to shop"}>
-      <EditCard className="maison-edit-gift" href={withLocale(language, "/shop")} image="/images/factory-packaging.jpg" title={t.seasonal} body={t.seasonalBody} action={t.explore} />
-      <EditCard className="maison-edit-material" href={withLocale(language, "/shop?material=Amber")} image="/images/imported/faceted-orange/ambertasbish-66.jpg" title={t.materials} body={t.materialsBody} action={t.explore} />
-      <EditCard className="maison-edit-count" href={withLocale(language, "/shop?beadCount=99")} image="/images/noon/black-hematite-99.jpg" title={t.counts} body={t.countsBody} action={t.explore} />
+      {homepage.edits.map((card, index) => <EditCard
+        key={`${card.href}-${index}`}
+        className={["maison-edit-gift", "maison-edit-material", "maison-edit-count"][index]}
+        href={withLocale(language, card.href)}
+        image={card.image}
+        title={card.title[language]}
+        body={card.body[language]}
+        action={card.action[language]}
+      />)}
     </section>
 
     <section className="maison-bestsellers" aria-labelledby="bestseller-title">
@@ -116,7 +128,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
 }
 
 function EditCard({ className, href, image, title, body, action }: { className: string; href: string; image: string; title: string; body: string; action: string }) {
-  return <Link className={`maison-edit-card ${className}`} href={href}><div><h2>{title}</h2><p>{body}</p><span>{action} <ArrowUpRight aria-hidden="true" size={16} /></span></div><Image src={image} alt="" fill sizes="(max-width: 800px) 100vw, 33vw" /></Link>;
+  return <Link className={`maison-edit-card ${className}`} href={href}><div><h2>{title}</h2><p>{body}</p><span>{action} <ArrowUpRight aria-hidden="true" size={16} /></span></div><Image src={image} alt="" fill sizes="(max-width: 800px) 100vw, 33vw" unoptimized={image.startsWith("https://")} /></Link>;
 }
 
 function RetailProductCard({ product, locale }: { product: RetailProduct; locale: "en" | "ar" }) {

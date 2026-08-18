@@ -54,6 +54,7 @@ const migrationNames = [
   "20260829_retail_dynamic_shipping_return_fix.sql",
   "20260830_retail_dynamic_shipping_promotion_allocation_fix.sql",
   "20260831_retail_admin_password_credentials.sql",
+  "20260901_retail_storefront_pages.sql",
 ];
 
 const migrationTarget = process.env.RETAIL_MIGRATION_TARGET;

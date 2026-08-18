@@ -15,6 +15,7 @@ import {
   EyeOff,
   FileImage,
   LayoutDashboard,
+  LayoutTemplate,
   KeyRound,
   LogOut,
   Mail,
@@ -63,6 +64,7 @@ type RetailAdminSection =
   | "overview"
   | "orders"
   | "products"
+  | "pages"
   | "catalog"
   | "promotions"
   | "marketing"
@@ -102,6 +104,7 @@ const sectionIcons: Record<Exclude<RetailAdminSection, "legacy">, LucideIcon> = 
   overview: LayoutDashboard,
   orders: ShoppingBag,
   products: Package,
+  pages: LayoutTemplate,
   catalog: Package,
   promotions: ReceiptText,
   marketing: Mail,
@@ -128,6 +131,7 @@ type AdminNavGroup = {
 // a compatibility redirect.
 const adminNavGroups: AdminNavGroup[] = [
   { section: "overview" },
+  { section: "pages" },
   { section: "products", children: ["inventory"] },
   { section: "orders", children: ["returns"] },
   { section: "customers", children: ["marketing", "promotions"] },

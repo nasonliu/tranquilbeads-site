@@ -71,6 +71,31 @@ final result: passed
 
 ---
 
+# Retail homepage management QA
+
+## Operator workflow
+
+- Added one top-level `Page management / 页面管理` destination in the existing retail-admin shell.
+- Homepage editing is grouped into hero, three shopping cards, and an ordered five-product selection instead of exposing database IDs or a global media form.
+- Image replacement uploads directly inside the section it changes; the returned Blob URL is assigned to the current homepage draft.
+- Draft saving and publishing are separate. Publish stays disabled while local edits are unsaved, and the customer homepage reads only the published payload.
+- English and Arabic storefront content remain the only public homepage languages; Chinese is used only for the private admin interface.
+
+## Safety and verification
+
+- Homepage links accept internal paths only; image references accept bundled paths or credential-free HTTPS URLs.
+- Draft and publish writes use optimistic versions, UUID idempotency keys, attributed audit records, same-origin checks, permission checks, and post-write readback.
+- The public homepage falls back to the existing hardcoded presentation if the page table or stored payload is unavailable.
+- Targeted homepage/admin tests: 18 passed.
+- Full retail suite: 79 files and 366 tests passed.
+- Retail and admin TypeScript checks: passed.
+- Local and Vercel production builds: passed; the Preview migration applied successfully.
+- The protected Preview route opened at the expected retail-admin login screen; authenticated visual review remains available after the operator signs in.
+
+final result: passed for code, migration, build, and protected-route verification
+
+---
+
 # TranquilBeads retail-first storefront design QA
 
 Reference: Gulf Gifting Maison option 3.
