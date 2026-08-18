@@ -29,6 +29,28 @@ Codex/Claude Desktop 等支持 stdio MCP 的客户端可把 command 配为 `npm`
 `run --silent mcp:retail`，工作目录指向本仓库；环境变量通过客户端 secret/environment
 配置注入。不要把 token 写进模型 instruction。
 
+### macOS 本机免输入授权（推荐）
+
+生产 Agent token 存在 macOS 钥匙串的服务 `tranquilbeads-retail-ops`、账户
+`production-agent` 中。仓库提供的 `scripts/run-retail-ops-mcp-keychain.sh` 会在启动时读取
+钥匙串，并把 token 只注入 MCP 子进程；Codex 配置、Shell 历史、Prompt 和项目文件中都
+不会出现 token。
+
+Codex 注册命令只需要执行一次：
+
+```bash
+codex mcp add tranquilbeads-retail-ops -- \
+  /absolute/path/to/scripts/run-retail-ops-mcp-keychain.sh
+```
+
+之后用 `codex mcp get tranquilbeads-retail-ops` 检查 command；不要用带 `-e
+RETAIL_AGENT_TOKEN=...` 的注册方式。轮换凭据时只替换钥匙串记录和 Vercel 中对应机器
+principal，然后重新部署，不需要修改 MCP 配置。
+
+这个本机 principal 虽然拥有零售运营角色，但可调用面仍由 `/api/agent/retail/*` 白名单
+限制：没有退款、取消订单、客户 PII、任意 SQL、任意 HTTP 或 PayPal 写入工具。生产写入
+仍必须同时满足服务端开关、工具 `confirm=true`、稳定幂等键及真实 readback。
+
 ## 工具
 
 | 工具 | 读/写 | 用途 |

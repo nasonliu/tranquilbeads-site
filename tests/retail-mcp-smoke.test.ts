@@ -1,8 +1,18 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 
 describe("retail operations MCP stdio", () => {
+  it("loads production credentials from macOS Keychain without embedding a token", () => {
+    const wrapper = readFileSync("scripts/run-retail-ops-mcp-keychain.sh", "utf8");
+    expect(wrapper).toContain('keychain_service="tranquilbeads-retail-ops"');
+    expect(wrapper).toContain('security find-generic-password -w');
+    expect(wrapper).toContain('RETAIL_AGENT_BASE_URL:-https://www.tranquilbeads.com');
+    expect(wrapper).not.toMatch(/RETAIL_AGENT_TOKEN=["'][A-Za-z0-9_-]{32,}/);
+    expect(wrapper).not.toContain("echo $token");
+  });
+
   it("lists the guarded operations tools and performs a write dry-run without credentials", async () => {
     const client = new Client({ name: "retail-mcp-test", version: "1.0.0" });
     const transport = new StdioClientTransport({
