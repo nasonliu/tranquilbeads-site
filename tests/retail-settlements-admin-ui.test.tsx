@@ -35,6 +35,25 @@ describe("retail PayPal settlement admin",()=>{
     const write=fetcher.mock.calls.find(([,init])=>init?.method==="POST")!;const body=JSON.parse(String(write[1]?.body));expect(body).toMatchObject({filename:"paypal-report.csv",format:"csv"});expect(body.idempotencyKey).toMatch(/^[0-9a-f-]{36}$/i);expect(confirmer).toHaveBeenCalledWith(expect.stringContaining("Import this report"));expect(screen.getByText("report.csv")).toBeInTheDocument();
   });
 
+  it("syncs PayPal reports through the API and verifies the imported run by readback",async()=>{
+    let synced=false;
+    const fetcher=vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
+      if(String(input)==="/api/admin/retail/settlements/sync"&&init?.method==="POST"){
+        synced=true;
+        return new Response(JSON.stringify({ok:true,rowCount:1,imported:{import_id:importId}}),{status:200});
+      }
+      return new Response(JSON.stringify(payload({imported:synced})),{status:200});
+    });
+    vi.stubGlobal("fetch",fetcher);
+    render(<SettlementConsole view="imports"/>);
+    await screen.findByText("No records.");
+    fireEvent.click(screen.getByRole("button",{name:"Sync now"}));
+    expect(await screen.findByText("PayPal sync completed and readback confirmed.")).toBeInTheDocument();
+    expect(screen.getByText("report.csv")).toBeInTheDocument();
+    const sync=fetcher.mock.calls.find(([path,init])=>String(path).endsWith("/sync")&&init?.method==="POST")!;
+    expect(JSON.parse(String(sync[1]?.body))).toMatchObject({days:7});
+  });
+
   it("requires a review note and confirmation before closing an exception, then verifies readback",async()=>{
     let closed=false;const confirmer=vi.fn(()=>false);
     const fetcher=vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{if(init?.method==="POST"){closed=true;return new Response(JSON.stringify({ok:true}),{status:200})}return new Response(JSON.stringify(payload({closed})),{status:200})});

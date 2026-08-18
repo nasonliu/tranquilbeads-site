@@ -73,4 +73,17 @@ describe("retail catalogue and promotion administration", () => {
     expect(products).toContain('styles.filter((style) => style.status === "active")');
     expect(products).toContain('variants.filter((variant) => variant.status === "active" && styleById.has(String(variant.style_public_id)))');
   });
+
+  it("uses one product workspace and attaches required images during draft creation", () => {
+    const products = read("app/admin/retail/products/components/catalog-admin.tsx");
+    const admin = read("app/admin/retail/ui.tsx");
+    expect(products).toContain('name="mediaFiles"');
+    expect(products).toContain('multiple required');
+    expect(products).toContain('media.set("productId", createdId)');
+    expect(products).toContain('?mediaUpload=partial');
+    expect(products).toContain('Styles, SKUs, price & inventory');
+    expect(admin).toContain('{ section: "products", children: ["inventory"] }');
+    expect(admin).not.toContain('{ section: "catalog"');
+    expect(admin).not.toContain('{ section: "media"');
+  });
 });

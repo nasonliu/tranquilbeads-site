@@ -19,6 +19,7 @@
     "src/components/site-shell.tsx",
     "src/data/retail/types.ts",
     "src/lib/retail/**/*.ts",
+    "scripts/retail-ops-mcp.ts",
     "tests/retail-*.test.ts",
     "tests/retail-*.test.tsx"
   ],

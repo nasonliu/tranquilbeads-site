@@ -114,7 +114,23 @@ const sectionIcons: Record<Exclude<RetailAdminSection, "legacy">, LucideIcon> = 
   system: Wrench,
 };
 
-const sections = Object.keys(sectionIcons) as Array<Exclude<RetailAdminSection, "legacy">>;
+type AdminNavGroup = {
+  section: Exclude<RetailAdminSection, "legacy" | "catalog" | "media" | "audit" | "system" | "settlements" | "inventory" | "returns" | "promotions" | "marketing">;
+  children?: Array<Exclude<RetailAdminSection, "legacy" | "catalog">>;
+};
+
+// Keep operational tools discoverable without presenting every database domain
+// as an equally important top-level destination. Product variants and media are
+// managed from their owning product; the legacy /catalog route remains only as
+// a compatibility redirect.
+const adminNavGroups: AdminNavGroup[] = [
+  { section: "overview" },
+  { section: "products", children: ["inventory"] },
+  { section: "orders", children: ["returns"] },
+  { section: "customers", children: ["marketing", "promotions"] },
+  { section: "finance", children: ["settlements"] },
+  { section: "settings", children: ["audit", "system"] },
+];
 const uuid = () => crypto.randomUUID();
 
 function useAdminLocale() {
@@ -600,12 +616,12 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
               nameEn: String(data.get("nameEn")),
               nameAr: String(data.get("nameAr")),
               nameZh: String(data.get("nameZh")),
-              shippingMinor: Number(data.get("shippingMinor")),
+              shippingMinor: Math.round(Number(data.get("shippingUsd")) * 100),
               freeShippingThresholdMinor:
-                data.get("freeShippingThresholdMinor") === ""
+                data.get("freeShippingThresholdUsd") === ""
                   ? null
-                  : Number(data.get("freeShippingThresholdMinor")),
-              taxRateBps: Number(data.get("taxRateBps")),
+                  : Math.round(Number(data.get("freeShippingThresholdUsd")) * 100),
+              taxRateBps: Math.round(Number(data.get("taxPercent")) * 100),
               carrier: String(data.get("carrier")),
               serviceCode: String(data.get("serviceCode")) || null,
               deliveryMinDays: data.get("deliveryMinDays") === "" ? null : Number(data.get("deliveryMinDays")),
@@ -638,9 +654,9 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
           ["nameEn", "text"],
           ["nameAr", "text"],
           ["nameZh", "text"],
-          ["shippingMinor", "number"],
-          ["freeShippingThresholdMinor", "number"],
-          ["taxRateBps", "number"],
+          ["shippingUsd", "number"],
+          ["freeShippingThresholdUsd", "number"],
+          ["taxPercent", "number"],
           ["carrier", "text"],
           ["serviceCode", "text"],
           ["deliveryMinDays", "number"],
@@ -648,16 +664,18 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
           ["lastVerifiedAt", "date"],
         ].map(([name, type]) => (
           <label className="text-sm" key={name}>
-            {fieldCopy[locale][name] ?? name}
+            {name === "shippingUsd" ? (locale === "zh" ? "顾客运费（USD）" : "Customer shipping (USD)") : name === "freeShippingThresholdUsd" ? (locale === "zh" ? "满额免邮门槛（USD，可留空）" : "Free-shipping threshold (USD, optional)") : name === "taxPercent" ? (locale === "zh" ? "税率（%）" : "Tax rate (%)") : fieldCopy[locale][name] ?? name}
             <input
-              aria-label={fieldCopy[locale][name] ?? name}
+              aria-label={name === "shippingUsd" ? "Customer shipping USD" : name === "freeShippingThresholdUsd" ? "Free shipping threshold USD" : name === "taxPercent" ? "Tax rate percent" : fieldCopy[locale][name] ?? name}
               className="mt-1 w-full rounded-lg border border-[#cdbda9] bg-white p-2.5"
               name={name}
               type={type}
               maxLength={name === "country" ? 2 : undefined}
               min={type === "number" ? (["deliveryMinDays", "deliveryMaxDays"].includes(name) ? 1 : 0) : undefined}
+              max={name === "taxPercent" ? 100 : undefined}
+              step={["shippingUsd", "freeShippingThresholdUsd", "taxPercent"].includes(name) ? "0.01" : undefined}
               defaultValue={name === "carrier" ? "YunExpress" : undefined}
-              required={!['freeShippingThresholdMinor','serviceCode','deliveryMinDays','deliveryMaxDays','lastVerifiedAt'].includes(name)}
+              required={!['freeShippingThresholdUsd','serviceCode','deliveryMinDays','deliveryMaxDays','lastVerifiedAt'].includes(name)}
             />
           </label>
         ))}
@@ -710,7 +728,7 @@ function ShippingZones({ zones, refresh }: { zones: Row[]; refresh: () => Promis
                   "free_shipping_threshold_minor",
                   "tax_rate_bps",
                   "active",
-                ].map((column) => <td className="px-3 py-3" key={column}>{String(zone[column] ?? "—")}</td>)}
+                ].map((column) => <td className="px-3 py-3" key={column}>{column === "shipping_minor" || column === "free_shipping_threshold_minor" ? (zone[column] === null || zone[column] === undefined ? "—" : money(zone[column], "USD", locale)) : column === "tax_rate_bps" ? `${Number(zone[column] ?? 0) / 100}%` : String(zone[column] ?? "—")}</td>)}
                 <td className="px-3 py-3">
                   <button
                     className="rounded-md border border-[#cdbda9] px-3 py-1.5"
@@ -1173,16 +1191,15 @@ export function AdminShell({
       className={mobile ? "flex gap-1 overflow-x-auto px-4 py-2 lg:hidden" : "mt-9 space-y-1"}
       aria-label={copy.retailAdmin}
     >
-      {sections.map((item) => {
+      {adminNavGroups.map(({ section: item, children }) => {
         const Icon = sectionIcons[item];
-        const href = item === "settlements" ? "/admin/retail/settlements/imports" : `/admin/retail/${item}`;
-        return (
+        const groupActive = section === item || Boolean(children?.includes(section as never));
+        return <div className={mobile ? "contents" : "space-y-1"} key={item}>
           <a
-            key={item}
-            href={href}
+            href={`/admin/retail/${item}`}
             aria-current={section === item ? "page" : undefined}
             className={`flex shrink-0 items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${
-              section === item
+              groupActive
                 ? "bg-[#eadcc8] font-semibold text-[#5a442d]"
                 : "text-[#65584a] hover:bg-[#f1e7da]"
             }`}
@@ -1190,7 +1207,18 @@ export function AdminShell({
             <Icon aria-hidden="true" size={17} />
             <span>{copy[item]}</span>
           </a>
-        );
+          {children?.map((child) => {
+            const href = child === "settlements" ? "/admin/retail/settlements/imports" : `/admin/retail/${child}`;
+            return <a
+              key={child}
+              href={href}
+              aria-current={section === child ? "page" : undefined}
+              className={`${mobile ? "flex shrink-0 items-center rounded-lg border border-[#dfd2c0] px-3 py-2 text-xs" : "ml-7 block rounded-md px-3 py-1.5 text-xs"} ${section === child ? "font-semibold text-[#5a442d]" : "text-[#7a6b5a] hover:bg-[#f1e7da]"}`}
+            >
+              {child === "audit" && locale === "zh" ? "操作记录" : child === "audit" ? "Activity log" : child === "system" && locale === "zh" ? "系统健康" : child === "system" ? "System health" : child === "settlements" && locale === "zh" ? "PayPal 对账" : child === "settlements" ? "PayPal reconciliation" : copy[child]}
+            </a>;
+          })}
+        </div>;
       })}
     </nav>
   );
@@ -1346,6 +1374,21 @@ function Readiness({ health }: { health: Row | null }) {
       </p>
     </section>
   );
+}
+
+function SettingsGuide({ locale }: { locale: AdminLocale }) {
+  const items = locale === "zh" ? [
+    { title: "配送与免邮", body: "先用云途只读试算确认服务、时效和成本，再在下方按美元填写顾客运费与满额免邮门槛。", href: "#shipping-zones", action: "配置配送" },
+    { title: "PayPal 支付与对账", body: "顾客支付由 PayPal Checkout/Webhook 自动处理；交易和手续费可通过 Reporting API 自动同步。", href: "/admin/retail/settlements/imports", action: "打开 PayPal 对账" },
+    { title: "订单邮件与促销", body: "订单邮件、发件人和 Resend 状态在系统健康中检查；订阅者与活动在客户与营销下管理。", href: "/admin/retail/marketing", action: "打开邮件营销" },
+    { title: "Agent / MCP 运营", body: "Agent 通过专用机器接口操作，不使用管理员 Cookie；密钥只放在运行环境，所有写入先预览再确认。", href: "/admin/retail/system", action: "检查系统健康" },
+  ] : [
+    { title: "Shipping & free delivery", body: "Verify YunExpress service, timing, and cost with a read-only quote, then enter customer shipping and the free-shipping threshold in USD below.", href: "#shipping-zones", action: "Configure shipping" },
+    { title: "PayPal payment & reconciliation", body: "Checkout and webhooks handle customer payments; the Reporting API can sync transactions and fees for reconciliation.", href: "/admin/retail/settlements/imports", action: "Open PayPal reconciliation" },
+    { title: "Order email & campaigns", body: "Check Resend sender readiness in System health. Subscribers and campaigns live under Customers and marketing.", href: "/admin/retail/marketing", action: "Open email marketing" },
+    { title: "Agent / MCP operations", body: "Agents use a dedicated machine API, never the admin cookie. Secrets stay in the runtime and every write is previewed before confirmation.", href: "/admin/retail/system", action: "Check system health" },
+  ];
+  return <section className="mb-6"><div className="mb-4"><h2 className="text-xl font-semibold">{locale === "zh" ? "设置向导" : "Setup guide"}</h2><p className="mt-1 text-sm text-muted">{locale === "zh" ? "按业务目的进入设置，不需要理解数据库字段或技术名词。" : "Start from the business task; no database field knowledge is required."}</p></div><div className="grid gap-4 md:grid-cols-2">{items.map((item) => <article className="rounded-xl border border-[#dfd2c0] bg-white p-5" key={item.title}><h3 className="font-semibold">{item.title}</h3><p className="mt-2 text-sm text-muted">{item.body}</p><a className="mt-4 inline-flex rounded-md border border-[#cdbda9] px-3 py-2 text-sm" href={item.href}>{item.action}</a></article>)}</div></section>;
 }
 
 export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdminSection }) {
@@ -1587,7 +1630,7 @@ export function RetailAdminConsole({ section = "legacy" }: { section?: RetailAdm
       body = <section className="grid gap-5">{financeView}</section>;
       break;
     case "settings":
-      body = <><YunExpressProviderPanel locale={locale}/><ShippingZones zones={shippingZones} refresh={refresh} /></>;
+      body = <><SettingsGuide locale={locale}/><YunExpressProviderPanel locale={locale}/><div className="mt-6" id="shipping-zones"><ShippingZones zones={shippingZones} refresh={refresh} /></div></>;
       break;
     case "media":
       body = <ProductMedia products={products} refresh={refresh} />;

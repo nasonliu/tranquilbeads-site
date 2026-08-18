@@ -118,6 +118,18 @@ export async function listAdminOrders(status?: string) {
     ? q`SELECT ${q.unsafe(redactedOrderSelect)} FROM retail_orders o LEFT JOIN retail_order_snapshots s ON s.order_id=o.paypal_order_id WHERE o.status=${status} ORDER BY o.created_at DESC LIMIT 250`
     : q`SELECT ${q.unsafe(redactedOrderSelect)} FROM retail_orders o LEFT JOIN retail_order_snapshots s ON s.order_id=o.paypal_order_id ORDER BY o.created_at DESC LIMIT 250`;
 }
+export async function getRetailSalesSummary(days = 30) {
+  const q = sql();
+  const rows = await q`SELECT
+    ${days}::int AS days,
+    count(*) FILTER (WHERE status IN ('captured','fulfilled','refunded','partially_refunded'))::int AS paid_orders,
+    COALESCE(sum(amount_minor) FILTER (WHERE status IN ('captured','fulfilled','refunded','partially_refunded')),0)::bigint AS gross_minor,
+    COALESCE(sum(refunded_minor) FILTER (WHERE status IN ('refunded','partially_refunded')),0)::bigint AS refunded_minor,
+    count(*) FILTER (WHERE fulfilment_status='pending' AND status='captured')::int AS awaiting_fulfilment,
+    max(captured_at) AS latest_capture_at
+  FROM retail_orders WHERE created_at >= now() - (${days}::text || ' days')::interval`;
+  return rows[0] ?? { days, paid_orders: 0, gross_minor: 0, refunded_minor: 0, awaiting_fulfilment: 0, latest_capture_at: null };
+}
 export async function getAdminOrder(id: number) { const q = sql(); const rows = await q`SELECT ${q.unsafe(redactedOrderSelect)} FROM retail_orders o LEFT JOIN retail_order_snapshots s ON s.order_id=o.paypal_order_id WHERE o.id=${id} LIMIT 1`; return rows[0]; }
 export async function getAdminOrderPii(id: number, actor: RetailAdminActor) {
   const q = sql();

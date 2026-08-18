@@ -25,7 +25,8 @@
     "outreach:sync-openclaw-whatsapp": "tsx scripts/sync-openclaw-whatsapp-replies.ts",
     "google-ads:api": "tsx scripts/google-ads-api.ts",
     "google-ads:cold-start": "tsx scripts/create-google-ads-cold-start.ts",
-    "mcp:stdio": "tsx scripts/tranquilbeads-ops-mcp.ts"
+    "mcp:stdio": "tsx scripts/tranquilbeads-ops-mcp.ts",
+    "mcp:retail": "tsx scripts/retail-ops-mcp.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
