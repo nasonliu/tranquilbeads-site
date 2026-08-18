@@ -5,10 +5,14 @@ import { readFileSync } from "node:fs";
 
 describe("retail operations MCP stdio", () => {
   it("loads production credentials from macOS Keychain without embedding a token", () => {
-    const wrapper = readFileSync("scripts/run-retail-ops-mcp-keychain.sh", "utf8");
+    const wrapper = readFileSync("scripts/run-retail-ops-mcp.sh", "utf8");
     expect(wrapper).toContain('keychain_service="tranquilbeads-retail-ops"');
     expect(wrapper).toContain('security find-generic-password -w');
+    expect(wrapper).toContain("RETAIL_AGENT_TOKEN_FILE");
+    expect(wrapper).toContain("secret-tool lookup");
     expect(wrapper).toContain('RETAIL_AGENT_BASE_URL:-https://www.tranquilbeads.com');
+    expect(wrapper).toContain("NODE_USE_ENV_PROXY=1");
+    expect(wrapper).toContain("RETAIL_AGENT_PROXY_URL");
     expect(wrapper).not.toMatch(/RETAIL_AGENT_TOKEN=["'][A-Za-z0-9_-]{32,}/);
     expect(wrapper).not.toContain("echo $token");
   });

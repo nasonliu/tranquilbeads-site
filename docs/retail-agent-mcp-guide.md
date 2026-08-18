@@ -31,21 +31,45 @@ Codex/Claude Desktop 等支持 stdio MCP 的客户端可把 command 配为 `npm`
 
 ### macOS 本机免输入授权（推荐）
 
-生产 Agent token 存在 macOS 钥匙串的服务 `tranquilbeads-retail-ops`、账户
-`production-agent` 中。仓库提供的 `scripts/run-retail-ops-mcp-keychain.sh` 会在启动时读取
-钥匙串，并把 token 只注入 MCP 子进程；Codex 配置、Shell 历史、Prompt 和项目文件中都
-不会出现 token。
+跨平台启动器为 `scripts/run-retail-ops-mcp.sh`，按以下顺序读取凭据：已经注入的
+`RETAIL_AGENT_TOKEN`、`RETAIL_AGENT_TOKEN_FILE` 指定的只读 secret 文件、macOS
+钥匙串、Linux Secret Service。token 只进入 MCP 子进程；Codex 配置、Shell 历史、Prompt
+和项目文件中都不会出现 token。
 
 Codex 注册命令只需要执行一次：
 
 ```bash
 codex mcp add tranquilbeads-retail-ops -- \
-  /bin/zsh /absolute/path/to/scripts/run-retail-ops-mcp-keychain.sh
+  /bin/sh /absolute/path/to/scripts/run-retail-ops-mcp.sh
 ```
 
 之后用 `codex mcp get tranquilbeads-retail-ops` 检查 command；不要用带 `-e
 RETAIL_AGENT_TOKEN=...` 的注册方式。轮换凭据时只替换钥匙串记录和 Vercel 中对应机器
 principal，然后重新部署，不需要修改 MCP 配置。
+
+启动器会在未显式配置代理时检测本机 `127.0.0.1:7890`；可用时为 Node `fetch` 启用
+环境代理，避免浏览器能访问正式站而本地 MCP 报 `fetch failed`。如果 Agent 已经传入
+`HTTPS_PROXY` / `HTTP_PROXY`，启动器会保留现有设置。
+
+### 其他电脑与服务器
+
+每台机器应使用独立 principal/token，不要多人共用本机 `production-agent`。MCP 仍在各机器
+本地以 stdio 运行，只通过 HTTPS 调用 `www.tranquilbeads.com`，无需在防火墙上开放 MCP
+端口。
+
+- Linux 桌面：可用 `secret-tool store --label='TranquilBeads retail Agent' service
+  tranquilbeads-retail-ops account <machine-account>` 保存，然后设置
+  `RETAIL_AGENT_CREDENTIAL_ACCOUNT=<machine-account>`。
+- systemd：用 `LoadCredential=retail-agent-token:/secure/source`，并把
+  `RETAIL_AGENT_TOKEN_FILE` 指向 `/run/credentials/<unit>/retail-agent-token`。
+- Docker / Kubernetes：把 Secret 只读挂载为文件，设置
+  `RETAIL_AGENT_TOKEN_FILE=/run/secrets/tranquilbeads-retail-agent`；不要把 token 烘焙进镜像。
+- CI 或托管 Agent：用平台 Secret Manager 注入 `RETAIL_AGENT_TOKEN`，任务结束即销毁进程
+  环境。
+
+secret 文件权限必须为 `0400` 或 `0600`；启动器会拒绝组或其他用户可读的文件。需要代理
+的服务器显式配置 `RETAIL_AGENT_PROXY_URL` 或标准 `HTTPS_PROXY`，不依赖 Mac 的本地
+`127.0.0.1:7890`。
 
 这个本机 principal 虽然拥有零售运营角色，但可调用面仍由 `/api/agent/retail/*` 白名单
 限制：没有退款、取消订单、客户 PII、任意 SQL、任意 HTTP 或 PayPal 写入工具。生产写入
