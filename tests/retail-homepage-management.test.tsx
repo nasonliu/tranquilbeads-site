@@ -71,4 +71,15 @@ describe("retail homepage management", () => {
     expect(mediaRoute).toContain("uploadStorefrontHomepageImage");
     expect(adminUi).toContain('{ section: "pages" }');
   });
+
+  it("keeps native image processing out of the public homepage read module", () => {
+    const pageService = fs.readFileSync("src/lib/retail/storefront-pages.ts", "utf8");
+    const mediaService = fs.readFileSync("src/lib/retail/storefront-page-media.ts", "utf8");
+    const publicHomepage = fs.readFileSync("app/[locale]/page.tsx", "utf8");
+    expect(publicHomepage).toContain('from "@/src/lib/retail/storefront-pages"');
+    expect(pageService).not.toContain("upload-validation");
+    expect(pageService).not.toContain("sharp");
+    expect(pageService).not.toContain("@vercel/blob");
+    expect(mediaService).toContain('await import("./upload-validation")');
+  });
 });

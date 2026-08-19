@@ -1,5 +1,5 @@
 import { assertSameOrigin, requireRetailPermission } from "@/src/lib/retail/admin-auth";
-import { uploadStorefrontHomepageImage } from "@/src/lib/retail/storefront-pages";
+import { uploadStorefrontHomepageImage } from "@/src/lib/retail/storefront-page-media";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
