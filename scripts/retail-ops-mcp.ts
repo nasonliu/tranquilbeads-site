@@ -6,8 +6,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import * as z from "zod";
 
-dotenv.config({ path: resolve(process.cwd(), ".env.local") });
-dotenv.config();
+dotenv.config({ path: resolve(process.cwd(), ".env.local"), quiet: true });
+dotenv.config({ quiet: true });
 
 const baseUrl = (process.env.RETAIL_AGENT_BASE_URL ?? "").replace(/\/$/, "");
 const token = process.env.RETAIL_AGENT_TOKEN ?? "";

@@ -6,6 +6,7 @@ import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { spawn } from "node:child_process";
 
 const processEnv = Object.fromEntries(
   Object.entries(process.env).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
@@ -36,6 +37,60 @@ describe("retail operations MCP stdio", () => {
     expect(wrapper).not.toMatch(/RETAIL_AGENT_TOKEN=["'][A-Za-z0-9_-]{32,}/);
     expect(wrapper).not.toContain("echo $token");
   });
+
+  it("emits a JSON-RPC frame first without dotenv output on stdout", async () => {
+    const launcher = join(process.cwd(), "scripts/run-retail-ops-mcp.sh");
+    const childEnv: NodeJS.ProcessEnv = {
+      ...processEnv,
+      NODE_ENV: process.env.NODE_ENV ?? "test",
+      RETAIL_AGENT_BASE_URL: "http://127.0.0.1:9",
+      RETAIL_AGENT_TOKEN: "t".repeat(32),
+    };
+    const child = spawn(launcher, [], {
+      cwd: process.cwd(),
+      env: childEnv,
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.setEncoding("utf8");
+    child.stderr.setEncoding("utf8");
+    child.stdout.on("data", (chunk: string) => { stdout += chunk; });
+    child.stderr.on("data", (chunk: string) => { stderr += chunk; });
+
+    try {
+      child.stdin.write(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2025-06-18",
+          capabilities: {},
+          clientInfo: { name: "stdout-contract-test", version: "1.0.0" },
+        },
+      }) + "\n");
+
+      const firstLine = await new Promise<string>((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error(`mcp_stdout_timeout:${stderr.slice(0, 120)}`)), 5_000);
+        const poll = () => {
+          const newline = stdout.indexOf("\n");
+          if (newline >= 0) {
+            clearTimeout(timeout);
+            resolve(stdout.slice(0, newline));
+            return;
+          }
+          setTimeout(poll, 10);
+        };
+        poll();
+      });
+      const frame = JSON.parse(firstLine) as Record<string, unknown>;
+      expect(frame).toMatchObject({ jsonrpc: "2.0", id: 1 });
+      expect(firstLine).not.toMatch(/dotenv|injected env|dotenvx/i);
+    } finally {
+      child.kill("SIGTERM");
+      await new Promise<void>((resolve) => child.once("close", () => resolve()));
+    }
+  }, 10_000);
 
   it("lists the guarded operations tools and performs a write dry-run without credentials", async () => {
     const client = new Client({ name: "retail-mcp-test", version: "1.0.0" });
