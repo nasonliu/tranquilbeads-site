@@ -10,15 +10,41 @@ token="${RETAIL_AGENT_TOKEN:-}"
 
 if [ -z "$token" ] && [ -n "${RETAIL_AGENT_TOKEN_FILE:-}" ]; then
   token_file=$RETAIL_AGENT_TOKEN_FILE
-  if [ ! -f "$token_file" ] || [ ! -r "$token_file" ]; then
+  if [ -L "$token_file" ] || [ ! -f "$token_file" ] || [ ! -r "$token_file" ]; then
     printf '%s\n' "RETAIL_AGENT_TOKEN_FILE is not a readable regular file." >&2
     exit 1
   fi
-  if mode=$(stat -c '%a' "$token_file" 2>/dev/null); then :
-  elif mode=$(stat -f '%Lp' "$token_file" 2>/dev/null); then :
-  else mode=""; fi
-  if [ -n "$mode" ] && [ $((0$mode & 077)) -ne 0 ]; then
-    printf '%s\n' "RETAIL_AGENT_TOKEN_FILE must not be readable by group or other users." >&2
+
+  if metadata=$(stat -c '%a:%u:%g' -- "$token_file" 2>/dev/null); then :
+  elif metadata=$(stat -f '%Lp:%u:%g' "$token_file" 2>/dev/null); then :
+  else
+    printf '%s\n' "RETAIL_AGENT_TOKEN_FILE permissions could not be verified." >&2
+    exit 1
+  fi
+
+  mode=${metadata%%:*}
+  owner_group=${metadata#*:}
+  owner_uid=${owner_group%%:*}
+  owner_gid=${owner_group#*:}
+  case "$mode" in ''|*[!0-9]*) metadata_valid=false ;; *) metadata_valid=true ;; esac
+  case "$owner_uid" in ''|*[!0-9]*) metadata_valid=false ;; esac
+  case "$owner_gid" in ''|*[!0-9]*) metadata_valid=false ;; esac
+  if [ "$metadata_valid" != "true" ]; then
+      printf '%s\n' "RETAIL_AGENT_TOKEN_FILE permissions could not be verified." >&2
+      exit 1
+  fi
+
+  systemd_credential=false
+  if [ "$mode" = "440" ] && [ "$owner_uid" = "0" ] && [ "$owner_gid" = "0" ] && [ -n "${CREDENTIALS_DIRECTORY:-}" ]; then
+    token_parent=$(CDPATH= cd -P "$(dirname -- "$token_file")" 2>/dev/null && pwd -P) || token_parent=""
+    credentials_parent=$(CDPATH= cd -P "$CREDENTIALS_DIRECTORY" 2>/dev/null && pwd -P) || credentials_parent=""
+    if [ -n "$token_parent" ] && [ "$token_parent" = "$credentials_parent" ]; then
+      systemd_credential=true
+    fi
+  fi
+
+  if [ "$mode" != "400" ] && [ "$mode" != "600" ] && [ "$systemd_credential" != "true" ]; then
+    printf '%s\n' "RETAIL_AGENT_TOKEN_FILE permissions are not allowed." >&2
     exit 1
   fi
   token=$(tr -d '\r\n' < "$token_file")

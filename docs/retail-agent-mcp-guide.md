@@ -81,9 +81,11 @@ Production secret，VM 侧同一凭据只经 systemd `LoadCredential` 注入启�
 - CI 或托管 Agent：用平台 Secret Manager 注入 `RETAIL_AGENT_TOKEN`，任务结束即销毁进程
   环境。
 
-secret 文件权限必须为 `0400` 或 `0600`；启动器会拒绝组或其他用户可读的文件。需要代理
-的服务器显式配置 `RETAIL_AGENT_PROXY_URL` 或标准 `HTTPS_PROXY`，不依赖 Mac 的本地
-`127.0.0.1:7890`。
+普通 secret 文件权限必须严格为 `0400` 或 `0600`。systemd `LoadCredential` 是唯一例外：
+只有文件位于 `$CREDENTIALS_DIRECTORY` 的同一物理目录、权限严格为 `0440`，并且所有者和
+组均为 root（uid/gid 0）时才接受。普通目录中的 `0440`、`0640`、`0644`、符号链接或无法
+读取权限元数据的文件都会失败关闭。需要代理的服务器显式配置 `RETAIL_AGENT_PROXY_URL`
+或标准 `HTTPS_PROXY`，不依赖 Mac 的本地 `127.0.0.1:7890`。
 
 这个本机 principal 虽然拥有零售运营角色，但可调用面仍由 `/api/agent/retail/*` 白名单
 限制：没有退款、取消订单、客户 PII、任意 SQL、任意 HTTP 或 PayPal 写入工具。生产写入
