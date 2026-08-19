@@ -244,34 +244,18 @@ describe("GoogleAdsClickTracker", () => {
 });
 
 describe("root Google Ads integration", () => {
-  it("uses the direct Google tag and shared click tracker without GTM", () => {
+  it("keeps the legacy direct tag disabled when the production GTM container owns global tracking", () => {
     const layoutSource = readFileSync(path.join(process.cwd(), "app/layout.tsx"), "utf8");
-    const expectedInitScript = `const googleAdsInitScript = \`
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'AW-18288748181');
-\`;`;
 
-    expect(layoutSource).not.toContain("@next/third-parties/google");
-    expect(layoutSource).not.toContain("GoogleTagManager");
-    expect(layoutSource).not.toContain("gtmId");
-    expect(layoutSource).not.toContain("GTM-");
+    expect(layoutSource).toContain("@next/third-parties/google");
+    expect(layoutSource).toContain("GoogleTagManager");
+    expect(layoutSource).toContain('process.env.NEXT_PUBLIC_GTM_ID || "GTM-M9JCZKFC"');
+    expect(layoutSource.match(/<GoogleTagManager gtmId=\{gtmId\}\s*\/>/g)).toHaveLength(1);
+    expect(layoutSource).not.toContain("<GoogleAdsClickTracker />");
+    expect(layoutSource).not.toContain("googleAdsInitScript");
     expect(layoutSource).not.toContain("googletagmanager.com/gtm.js");
     expect(layoutSource).not.toContain("outboundRetailConversionScript");
     expect(layoutSource).not.toContain("document.addEventListener");
-    expect(layoutSource.match(/<GoogleAdsClickTracker\s*\/>/g)).toHaveLength(1);
-    expect(layoutSource).toContain('const googleAdsId = "AW-18288748181";');
-    expect(layoutSource).toContain(
-      "https://www.googletagmanager.com/gtag/js?id=${googleAdsId}",
-    );
-    expect(layoutSource).toMatch(
-      /id="google-ads-init"\s+strategy="beforeInteractive"/,
-    );
-    expect(layoutSource).not.toContain("dangerouslySetInnerHTML");
-    expect(layoutSource).toContain(expectedInitScript);
-    expect(layoutSource.indexOf('id="google-ads-init"')).toBeLessThan(
-      layoutSource.indexOf("googletagmanager.com/gtag/js"),
-    );
+    expect(layoutSource).not.toContain("gtag/js?id=");
   });
 });
