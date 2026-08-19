@@ -40,6 +40,7 @@ fi
 export RETAIL_AGENT_TOKEN="$token"
 export RETAIL_AGENT_BASE_URL="${RETAIL_AGENT_BASE_URL:-https://www.tranquilbeads.com}"
 export RETAIL_AGENT_MEDIA_ROOT="${RETAIL_AGENT_MEDIA_ROOT:-$repo_dir/retail-agent-media}"
+export RETAIL_AGENT_EXPORT_ROOT="${RETAIL_AGENT_EXPORT_ROOT:-$repo_dir/retail-agent-exports}"
 
 if [ -n "${RETAIL_AGENT_PROXY_URL:-}" ]; then
   export HTTPS_PROXY="$RETAIL_AGENT_PROXY_URL"

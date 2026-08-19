@@ -13,6 +13,7 @@
 export RETAIL_AGENT_BASE_URL='https://your-preview.example.com'
 export RETAIL_AGENT_TOKEN='read-from-your-secret-manager'
 export RETAIL_AGENT_MEDIA_ROOT='/absolute/path/to/approved-product-media'
+export RETAIL_AGENT_EXPORT_ROOT='/absolute/path/to/private-agent-exports'
 npm run mcp:retail
 ```
 
@@ -57,6 +58,10 @@ principal，然后重新部署，不需要修改 MCP 配置。
 本地以 stdio 运行，只通过 HTTPS 调用 `www.tranquilbeads.com`，无需在防火墙上开放 MCP
 端口。
 
+这里不是把 MCP Server 部署到 Vercel：Vercel 承载的是受控的
+`/api/agent/retail/*` HTTPS API、数据库与 Blob；MCP Server 在每台受信任的 Mac、Linux
+服务器或 Agent 容器中以 stdio 运行。这样无需公开 MCP 端口，也不会把机器凭据交给网页。
+
 - Linux 桌面：可用 `secret-tool store --label='TranquilBeads retail Agent' service
   tranquilbeads-retail-ops account <machine-account>` 保存，然后设置
   `RETAIL_AGENT_CREDENTIAL_ACCOUNT=<machine-account>`。
@@ -81,17 +86,31 @@ secret 文件权限必须为 `0400` 或 `0600`；启动器会拒绝组或其他�
 | --- | --- | --- |
 | `retail_catalog_get` | 读 | Product、SKC、SKU、价格、库存、图片完整快照 |
 | `retail_product_create_draft` | 写 | 新建草稿商品和默认 SKU |
+| `retail_product_update` | 写 | 更新商品标题、描述、slug 或草稿/归档状态 |
+| `retail_product_content_replace` | 写 | 整体更新五点描述、详情表和 A+ 模块 |
+| `retail_style_create` / `retail_style_update` | 写 | 新建或更新 SKC/款式及款式主图 |
+| `retail_variant_create` | 写 | 新建可售 SKU、价格、库存和物流事实 |
 | `retail_variant_update` | 写 | 更新 SKU 价格、库存、状态、重量和包裹尺寸 |
 | `retail_media_upload` | 写 | 从允许的本地媒体目录上传并关联当前商品图片 |
+| `retail_media_reorder` | 写 | 设置主图并重排当前商品完整图片集合 |
+| `retail_product_publish` | 写 | 独立的最终发布动作，默认只预览不写入 |
 | `retail_inventory_get` | 读 | 库存余额和调整流水 |
 | `retail_inventory_adjust` | 写 | 有理由的库存增减 |
 | `retail_orders_list` | 读 | 脱敏订单列表，不返回完整客户资料 |
+| `retail_orders_export` | 本地写文件 | 分页导出脱敏订单 JSON/CSV |
 | `retail_order_fulfil` | 写 | 写入承运商、追踪号并标记发货 |
 | `retail_sales_summary` | 读 | 指定周期的订单额、退款额、待发货汇总 |
+| `retail_sales_breakdown` | 读 | 按日期或 SKU 分页读取销量、件数和销售额 |
+| `retail_sales_export` | 本地写文件 | 按日期或 SKU 导出销量 JSON/CSV |
 | `retail_activity_log` | 读 | 管理员与 Agent 的操作回执 |
 
 首版明确不提供：退款、取消订单、商品/图片删除、客户 PII、PayPal 报表导入、任意 SQL、
 任意外链图片抓取。此类动作应继续由后台人工执行并经过独立权限检查。
+
+订单导出仍是脱敏数据：邮箱为掩码，地址只保留国家/地区/城市，不含姓名、电话、街道或
+邮编。导出文件只能写到 `RETAIL_AGENT_EXPORT_ROOT`，目录权限为 `0700`、新文件权限为
+`0600`，同名文件不会被覆盖。建议不同 Agent/服务器使用各自的私有导出目录，并由操作系统
+负责到期清理。
 
 ## 写入协议
 
@@ -130,6 +149,18 @@ secret 文件权限必须为 `0400` 或 `0600`；启动器会拒绝组或其他�
 款式，不能把多个规格的库存合并写到 Product。价格使用美元最小单位，例如 `6900` 表示
 `USD 69.00`；尺寸单位为毫米，运输重量单位为克。
 
+推荐的智能上新顺序：
+
+1. `retail_catalog_get` 检查 SKU、slug 和图片哈希，先去重。
+2. `retail_product_create_draft` 创建草稿并读回默认 SKC/SKU。
+3. `retail_media_upload` 上传审核过的本地图片，再用 `retail_media_reorder` 设置主图和顺序。
+4. `retail_product_update` 与 `retail_product_content_replace` 完善标题、描述、五点、详情和 A+。
+5. 用 `retail_style_create/update` 管理 SKC，用 `retail_variant_create/update` 管理 SKU、价格、库存、重量和尺寸。
+6. 读取目录并人工查看公开预览；最后单独调用 `retail_product_publish`，先 `confirm=false`，确认后才写入。
+
+任何一步的确认写入都必须使用预览时相同的 payload 和相同 `idempotencyKey`；不能把创建草稿
+和发布合并为一次不可审查的动作。
+
 ## 图片
 
 `retail_media_upload` 只读取 `RETAIL_AGENT_MEDIA_ROOT` 内的本地 PNG/JPEG/WebP，服务端会重新
@@ -150,3 +181,23 @@ secret 文件权限必须为 `0400` 或 `0600`；启动器会拒绝组或其他�
 
 更底层的 Catalog REST 字段、幂等语义和完整上新顺序见
 [`retail-catalog-agent-api.md`](./retail-catalog-agent-api.md)。
+
+## 交给另一个 Agent 会话试用
+
+同一台 Mac 上已经注册过 `tranquilbeads-retail-ops` 时，新建一个 Codex 会话即可重新加载
+最新工具；不要把 token 写进交接提示。建议先发送下面这段只读验收任务：
+
+```text
+请使用 tranquilbeads-retail-ops MCP 做只读验收：
+1. 调用 retail_catalog_get；
+2. 调用 retail_orders_list，limit=5；
+3. 调用 retail_sales_summary，days=30；
+4. 调用 retail_sales_breakdown，groupBy=sku，limit=10；
+5. 汇报连接状态、工具总数、返回水位和脱敏边界。
+不要执行任何写入，不要索要、读取或打印认证 token。
+```
+
+如要验证上新流程，只先使用 `confirm=false` 和测试 UUID，确认返回
+`dryRun=true`、`confirmationRequired=true`；未取得用户对具体商品的确认，不得改成
+`confirm=true`。另一台电脑或服务器必须建立自己的 machine principal，并按“其他电脑与服务器”
+一节从该机器的 Secret Manager 注入凭据，不能复制这台 Mac 的钥匙串条目。

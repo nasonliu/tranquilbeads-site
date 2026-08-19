@@ -118,6 +118,74 @@ export async function listAdminOrders(status?: string) {
     ? q`SELECT ${q.unsafe(redactedOrderSelect)} FROM retail_orders o LEFT JOIN retail_order_snapshots s ON s.order_id=o.paypal_order_id WHERE o.status=${status} ORDER BY o.created_at DESC LIMIT 250`
     : q`SELECT ${q.unsafe(redactedOrderSelect)} FROM retail_orders o LEFT JOIN retail_order_snapshots s ON s.order_id=o.paypal_order_id ORDER BY o.created_at DESC LIMIT 250`;
 }
+export type RetailAgentOrderQuery = {
+  status?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  limit: number;
+  offset: number;
+};
+export async function listAgentOrders(input: RetailAgentOrderQuery) {
+  const q = sql();
+  const status = input.status ?? null;
+  const dateFrom = input.dateFrom ?? null;
+  const dateTo = input.dateTo ?? null;
+  return q`SELECT ${q.unsafe(redactedOrderSelect)}
+    FROM retail_orders o
+    LEFT JOIN retail_order_snapshots s ON s.order_id=o.paypal_order_id
+    WHERE (${status}::text IS NULL OR o.status=${status})
+      AND (${dateFrom}::timestamptz IS NULL OR o.created_at>=${dateFrom}::timestamptz)
+      AND (${dateTo}::timestamptz IS NULL OR o.created_at<${dateTo}::timestamptz)
+    ORDER BY o.created_at DESC,o.id DESC
+    LIMIT ${input.limit} OFFSET ${input.offset}`;
+}
+export type RetailAgentSalesQuery = {
+  groupBy: "day" | "sku";
+  dateFrom?: string;
+  dateTo?: string;
+  sku?: string;
+  limit: number;
+  offset: number;
+};
+export async function listRetailSalesRows(input: RetailAgentSalesQuery) {
+  const q = sql();
+  const dateFrom = input.dateFrom ?? null;
+  const dateTo = input.dateTo ?? null;
+  const sku = input.sku ?? null;
+  if (input.groupBy === "day") {
+    return q`SELECT
+      date_trunc('day',COALESCE(o.captured_at,o.created_at))::date AS day,
+      o.currency,
+      count(*)::int AS paid_orders,
+      COALESCE(sum(o.amount_minor),0)::bigint AS gross_minor,
+      COALESCE(sum(o.refunded_minor),0)::bigint AS refunded_minor,
+      COALESCE(sum(o.amount_minor-o.refunded_minor),0)::bigint AS net_minor,
+      count(*) FILTER(WHERE o.fulfilment_status='pending')::int AS awaiting_fulfilment
+    FROM retail_orders o
+    WHERE o.status IN ('captured','fulfilled','refunded','partially_refunded')
+      AND (${dateFrom}::timestamptz IS NULL OR o.created_at>=${dateFrom}::timestamptz)
+      AND (${dateTo}::timestamptz IS NULL OR o.created_at<${dateTo}::timestamptz)
+    GROUP BY 1,o.currency
+    ORDER BY 1 DESC,o.currency
+    LIMIT ${input.limit} OFFSET ${input.offset}`;
+  }
+  return q`SELECT
+    l.product_sku,l.variant_sku,l.title_en,l.title_ar,l.title_zh,o.currency,
+    count(DISTINCT o.id)::int AS paid_orders,
+    COALESCE(sum(l.quantity),0)::bigint AS units,
+    COALESCE(sum(l.quantity*l.unit_amount_minor-l.discount_minor),0)::bigint AS gross_minor,
+    min(COALESCE(o.captured_at,o.created_at)) AS first_sale_at,
+    max(COALESCE(o.captured_at,o.created_at)) AS latest_sale_at
+  FROM retail_order_lines l
+  JOIN retail_orders o ON o.id=l.order_id
+  WHERE o.status IN ('captured','fulfilled','refunded','partially_refunded')
+    AND (${dateFrom}::timestamptz IS NULL OR o.created_at>=${dateFrom}::timestamptz)
+    AND (${dateTo}::timestamptz IS NULL OR o.created_at<${dateTo}::timestamptz)
+    AND (${sku}::text IS NULL OR l.variant_sku=${sku} OR l.product_sku=${sku})
+  GROUP BY l.product_sku,l.variant_sku,l.title_en,l.title_ar,l.title_zh,o.currency
+  ORDER BY gross_minor DESC,l.variant_sku
+  LIMIT ${input.limit} OFFSET ${input.offset}`;
+}
 export async function getRetailSalesSummary(days = 30) {
   const q = sql();
   const rows = await q`SELECT

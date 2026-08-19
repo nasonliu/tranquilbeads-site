@@ -8,7 +8,10 @@ describe("retail operations Agent and MCP contract", () => {
   const guide = readFileSync("docs/retail-agent-mcp-guide.md", "utf8");
 
   it("keeps machine reads scoped and every operational write confirm-gated with readback", () => {
-    expect(route).toContain('z.enum(["inventory", "orders", "sales", "audit"])');
+    expect(route).toContain('z.enum(["inventory", "orders", "sales", "sales_detail", "audit"])');
+    expect(route).toContain("listAgentOrders(input)");
+    expect(route).toContain("listRetailSalesRows(input)");
+    expect(route).toContain("hasMore");
     expect(route).toContain('action: z.literal("inventory.adjust")');
     expect(route).toContain('action: z.literal("order.fulfil")');
     expect(route).toContain("if (!input.confirm)");
@@ -18,9 +21,20 @@ describe("retail operations Agent and MCP contract", () => {
   });
 
   it("exposes retail tools without embedding credentials or arbitrary URL/SQL tools", () => {
-    for (const tool of ["retail_catalog_get", "retail_product_create_draft", "retail_variant_update", "retail_media_upload", "retail_inventory_get", "retail_inventory_adjust", "retail_orders_list", "retail_order_fulfil", "retail_sales_summary", "retail_activity_log"]) expect(mcp).toContain(`\"${tool}\"`);
+    for (const tool of [
+      "retail_catalog_get", "retail_product_create_draft", "retail_product_update",
+      "retail_product_content_replace", "retail_style_create", "retail_style_update",
+      "retail_variant_create", "retail_variant_update", "retail_media_upload",
+      "retail_media_reorder", "retail_product_publish", "retail_inventory_get",
+      "retail_inventory_adjust", "retail_orders_list", "retail_orders_export",
+      "retail_order_fulfil", "retail_sales_summary", "retail_sales_breakdown",
+      "retail_sales_export", "retail_activity_log",
+    ]) expect(mcp).toContain(`\"${tool}\"`);
     expect(mcp).toContain("process.env.RETAIL_AGENT_TOKEN");
     expect(mcp).toContain("RETAIL_AGENT_MEDIA_ROOT");
+    expect(mcp).toContain("RETAIL_AGENT_EXPORT_ROOT");
+    expect(mcp).toContain('flag: "wx"');
+    expect(mcp).toContain("mode: 0o600");
     expect(mcp).not.toMatch(/RETAIL_AGENT_TOKEN\s*=\s*["'][^"']{32}/);
     expect(mcp).not.toContain("raw_sql");
     expect(mcp).not.toContain("arbitrary_http");

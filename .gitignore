@@ -50,3 +50,5 @@ factory/
 !.env.local.example
 handoff-private/
 .artifacts/
+/retail-agent-media/
+/retail-agent-exports/

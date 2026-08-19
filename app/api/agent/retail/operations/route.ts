@@ -1,19 +1,26 @@
 import { z } from "zod";
 
 import { requireRetailAgentPermission } from "@/src/lib/retail/agent-auth";
-import { adjustInventory, fulfilAdminOrder, getAdminOrder, getRetailSalesSummary, inventoryAdjustmentDto, listAdminOrders, listInventory, listInventoryLedger, listRetailAdminAudit } from "@/src/lib/retail/operations";
+import { adjustInventory, fulfilAdminOrder, getAdminOrder, getRetailSalesSummary, inventoryAdjustmentDto, listAgentOrders, listInventory, listInventoryLedger, listRetailAdminAudit, listRetailSalesRows } from "@/src/lib/retail/operations";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const headers = { "cache-control": "no-store" };
 
 const queryDto = z.object({
-  resource: z.enum(["inventory", "orders", "sales", "audit"]),
+  resource: z.enum(["inventory", "orders", "sales", "sales_detail", "audit"]),
   productId: z.string().uuid().optional(),
   status: z.string().trim().max(80).optional(),
+  dateFrom: z.string().datetime({ offset: true }).optional(),
+  dateTo: z.string().datetime({ offset: true }).optional(),
+  groupBy: z.enum(["day", "sku"]).default("day"),
+  sku: z.string().trim().min(1).max(100).optional(),
+  offset: z.coerce.number().int().min(0).max(1_000_000).default(0),
   days: z.coerce.number().int().min(1).max(365).default(30),
-  limit: z.coerce.number().int().min(1).max(100).default(50),
-}).strict();
+  limit: z.coerce.number().int().min(1).max(250).default(50),
+}).strict().superRefine((value, ctx) => {
+  if (value.dateFrom && value.dateTo && new Date(value.dateTo) <= new Date(value.dateFrom)) ctx.addIssue({ code: "custom", message: "dateTo must be after dateFrom" });
+});
 const actionDto = z.discriminatedUnion("action", [
   inventoryAdjustmentDto.extend({ action: z.literal("inventory.adjust"), confirm: z.boolean().default(false) }),
   z.object({ action: z.literal("order.fulfil"), orderId: z.number().int().positive(), carrier: z.string().trim().max(100), tracking: z.string().trim().max(200), note: z.string().trim().max(2000).default(""), idempotencyKey: z.string().uuid(), confirm: z.boolean().default(false) }).strict(),
@@ -34,11 +41,17 @@ export async function GET(request: Request) {
     }
     if (input.resource === "orders") {
       requireRetailAgentPermission(request, "orders:read");
-      return Response.json({ ok: true, resource: input.resource, orders: (await listAdminOrders(input.status)).slice(0, input.limit) }, { headers });
+      const orders = await listAgentOrders(input);
+      return Response.json({ ok: true, resource: input.resource, orders, offset: input.offset, limit: input.limit, hasMore: orders.length === input.limit }, { headers });
     }
     if (input.resource === "sales") {
       requireRetailAgentPermission(request, "finance:read");
       return Response.json({ ok: true, resource: input.resource, summary: await getRetailSalesSummary(input.days) }, { headers });
+    }
+    if (input.resource === "sales_detail") {
+      requireRetailAgentPermission(request, "finance:read");
+      const rows = await listRetailSalesRows(input);
+      return Response.json({ ok: true, resource: input.resource, groupBy: input.groupBy, rows, offset: input.offset, limit: input.limit, hasMore: rows.length === input.limit }, { headers });
     }
     requireRetailAgentPermission(request, "audit:read");
     return Response.json({ ok: true, resource: input.resource, entries: await listRetailAdminAudit({ limit: input.limit }) }, { headers });

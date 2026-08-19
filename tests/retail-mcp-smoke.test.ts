@@ -9,6 +9,7 @@ describe("retail operations MCP stdio", () => {
     expect(wrapper).toContain('keychain_service="tranquilbeads-retail-ops"');
     expect(wrapper).toContain('security find-generic-password -w');
     expect(wrapper).toContain("RETAIL_AGENT_TOKEN_FILE");
+    expect(wrapper).toContain("RETAIL_AGENT_EXPORT_ROOT");
     expect(wrapper).toContain("secret-tool lookup");
     expect(wrapper).toContain('RETAIL_AGENT_BASE_URL:-https://www.tranquilbeads.com');
     expect(wrapper).toContain("NODE_USE_ENV_PROXY=1");
@@ -31,10 +32,19 @@ describe("retail operations MCP stdio", () => {
       expect(tools.tools.map((tool) => tool.name)).toEqual(expect.arrayContaining([
         "retail_catalog_get",
         "retail_product_create_draft",
+        "retail_product_update",
+        "retail_product_content_replace",
+        "retail_style_create",
+        "retail_variant_create",
         "retail_media_upload",
+        "retail_media_reorder",
+        "retail_product_publish",
         "retail_inventory_adjust",
+        "retail_orders_export",
         "retail_order_fulfil",
         "retail_sales_summary",
+        "retail_sales_breakdown",
+        "retail_sales_export",
       ]));
       const result = await client.callTool({
         name: "retail_product_create_draft",
@@ -50,6 +60,16 @@ describe("retail operations MCP stdio", () => {
         },
       });
       expect(result.structuredContent).toMatchObject({ ok: true, dryRun: true, confirmationRequired: true });
+
+      const publish = await client.callTool({
+        name: "retail_product_publish",
+        arguments: {
+          confirm: false,
+          idempotencyKey: "22222222-2222-4222-8222-222222222222",
+          productId: "33333333-3333-4333-8333-333333333333",
+        },
+      });
+      expect(publish.structuredContent).toMatchObject({ ok: true, dryRun: true, confirmationRequired: true });
     } finally {
       await transport.close();
     }
