@@ -103,7 +103,7 @@ async function writeExport(kind: "orders" | "sales", format: "json" | "csv", row
 }
 
 async function main() {
-  const server = new McpServer({ name: "tranquilbeads-retail-ops", version: "1.1.0" });
+  const server = new McpServer({ name: "tranquilbeads-retail-ops", version: "1.1.1" });
 
   server.registerTool("retail_catalog_get", { description: "Read products, SKCs/styles, SKUs/variants, prices, stock, and product media. No write.", inputSchema: {} }, async () => result("Retail catalogue snapshot loaded.", await api("/api/agent/retail/catalog")));
 

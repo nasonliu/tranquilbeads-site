@@ -1,0 +1,90 @@
+{
+  "id": "tranquilbeads-retail-ops",
+  "displayName": "TranquilBeads Retail Operations",
+  "serverVersion": "1.1.1",
+  "transport": {
+    "type": "stdio",
+    "launcher": "scripts/run-retail-ops-mcp.sh",
+    "workingDirectory": "."
+  },
+  "environment": {
+    "RETAIL_AGENT_BASE_URL": {
+      "required": true,
+      "secret": false,
+      "default": "https://www.tranquilbeads.com"
+    },
+    "RETAIL_AGENT_TOKEN": {
+      "required": true,
+      "secret": true,
+      "source": "machine_secret_manager_or_load_credential"
+    },
+    "RETAIL_AGENT_MEDIA_ROOT": {
+      "requiredFor": ["retail_media_upload"],
+      "secret": false
+    },
+    "RETAIL_AGENT_EXPORT_ROOT": {
+      "requiredFor": ["retail_orders_export", "retail_sales_export"],
+      "secret": false
+    }
+  },
+  "toolAllowlist": [
+    "retail_catalog_get",
+    "retail_product_create_draft",
+    "retail_product_update",
+    "retail_product_content_replace",
+    "retail_style_create",
+    "retail_style_update",
+    "retail_variant_create",
+    "retail_variant_update",
+    "retail_media_upload",
+    "retail_media_reorder",
+    "retail_product_publish",
+    "retail_inventory_get",
+    "retail_inventory_adjust",
+    "retail_orders_list",
+    "retail_orders_export",
+    "retail_order_fulfil",
+    "retail_sales_summary",
+    "retail_sales_breakdown",
+    "retail_sales_export",
+    "retail_activity_log"
+  ],
+  "businessWriteTools": [
+    "retail_product_create_draft",
+    "retail_product_update",
+    "retail_product_content_replace",
+    "retail_style_create",
+    "retail_style_update",
+    "retail_variant_create",
+    "retail_variant_update",
+    "retail_media_upload",
+    "retail_media_reorder",
+    "retail_product_publish",
+    "retail_inventory_adjust",
+    "retail_order_fulfil"
+  ],
+  "localWriteTools": ["retail_orders_export", "retail_sales_export"],
+  "writeProtocol": {
+    "preview": "confirm=false",
+    "apply": "same_payload_same_idempotencyKey_confirm=true",
+    "successRequires": "authoritative_readback"
+  },
+  "readiness": {
+    "toolsListExactCount": 20,
+    "readChecks": [
+      "retail_catalog_get",
+      "retail_orders_list",
+      "retail_sales_summary",
+      "retail_sales_breakdown"
+    ],
+    "healthyRequires": "all_read_checks_ok_and_observedAt_present"
+  },
+  "prohibitedCapabilities": [
+    "raw_sql",
+    "arbitrary_http",
+    "full_customer_pii",
+    "refund",
+    "order_cancel",
+    "paypal_write"
+  ]
+}

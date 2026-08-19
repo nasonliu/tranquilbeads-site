@@ -201,3 +201,8 @@ secret 文件权限必须为 `0400` 或 `0600`；启动器会拒绝组或其他�
 `dryRun=true`、`confirmationRequired=true`；未取得用户对具体商品的确认，不得改成
 `confirm=true`。另一台电脑或服务器必须建立自己的 machine principal，并按“其他电脑与服务器”
 一节从该机器的 Secret Manager 注入凭据，不能复制这台 Mac 的钥匙串条目。
+
+PPC-ME Integration Hub 可读取同目录的
+[`retail-agent-hub.registration.json`](./retail-agent-hub.registration.json) 作为非秘密注册描述。
+它只定义 reviewed stdio launcher、20-tool allowlist、写工具分组和 readiness 检查；真实机器
+凭据仍必须由 Hub 的 `passEnv` allowlist 配合 LoadCredential/Secret Manager 注入。

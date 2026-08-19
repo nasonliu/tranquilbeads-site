@@ -98,6 +98,7 @@ jobs:
           psql "$DATABASE_URL" -f tests/retail-rma.integration.sql
           psql "$DATABASE_URL" -f tests/retail-variant-authority.integration.sql
           psql "$DATABASE_URL" -f tests/retail-product-styles.integration.sql
+          psql "$DATABASE_URL" -f tests/retail-agent-catalog-schema.integration.sql
           psql "$DATABASE_URL" -f tests/retail-customer-address-admin.integration.sql
 
       - name: Run retail concurrency gate

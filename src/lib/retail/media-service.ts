@@ -6,7 +6,6 @@ import { z } from "zod";
 import type { RetailAdminActor } from "./admin-auth";
 import { assertRetailBlobUrl, getRetailBlobConfig } from "./blob";
 import { attachRetailProductImage, detachRetailProductImage, findRetailProductImageByIdempotency, listRetailBlobDeleteOutbox, markRetailBlobDeleteOutbox, mediaDeleteDto, mediaReorderDto, queueRetailBlobDelete, reorderRetailProductMedia } from "./operations";
-import { validateRetailImage } from "./upload-validation";
 
 const uploadFields = z.object({ productId: z.string().uuid(), idempotencyKey: z.string().uuid(), altEn: z.string().trim().max(300).default(""), altAr: z.string().trim().max(300).default("") });
 const knownAttachRejections = new Set(["product not found", "product image limit reached"]);
@@ -31,6 +30,10 @@ export async function uploadRetailProductImage(request: Request, actor: RetailAd
   const input = uploadFields.parse({ productId: form.get("productId"), idempotencyKey: form.get("idempotencyKey"), altEn: form.get("altEn") ?? "", altAr: form.get("altAr") ?? "" });
   const file = form.get("file");
   if (!(file instanceof File)) throw new Error("invalid_image");
+  // Keep the native image decoder outside catalogue reads, media capability
+  // checks, deletes, and reorders. Vercel must only load sharp for an actual
+  // upload request, never while importing a read-only Agent route.
+  const { validateRetailImage } = await import("./upload-validation");
   const validated = await validateRetailImage(file);
   const blobConfig = getRetailBlobConfig();
   const key = `retail/products/${input.productId}/${input.idempotencyKey}-${validated.sha256}.${validated.extension}`;

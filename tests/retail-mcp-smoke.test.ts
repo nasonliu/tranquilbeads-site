@@ -1,7 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
@@ -10,10 +10,21 @@ import { join } from "node:path";
 const processEnv = Object.fromEntries(
   Object.entries(process.env).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
 );
+const exactTools = [
+  "retail_catalog_get", "retail_product_create_draft", "retail_product_update",
+  "retail_product_content_replace", "retail_style_create", "retail_style_update",
+  "retail_variant_create", "retail_variant_update", "retail_media_upload",
+  "retail_media_reorder", "retail_product_publish", "retail_inventory_get",
+  "retail_inventory_adjust", "retail_orders_list", "retail_orders_export",
+  "retail_order_fulfil", "retail_sales_summary", "retail_sales_breakdown",
+  "retail_sales_export", "retail_activity_log",
+].sort();
 
 describe("retail operations MCP stdio", () => {
   it("loads production credentials from macOS Keychain without embedding a token", () => {
     const wrapper = readFileSync("scripts/run-retail-ops-mcp.sh", "utf8");
+    expect(statSync("scripts/run-retail-ops-mcp.sh").mode & 0o111).not.toBe(0);
+    expect(wrapper.startsWith("#!/bin/sh\n")).toBe(true);
     expect(wrapper).toContain('keychain_service="tranquilbeads-retail-ops"');
     expect(wrapper).toContain('security find-generic-password -w');
     expect(wrapper).toContain("RETAIL_AGENT_TOKEN_FILE");
@@ -37,23 +48,7 @@ describe("retail operations MCP stdio", () => {
     try {
       await client.connect(transport);
       const tools = await client.listTools();
-      expect(tools.tools.map((tool) => tool.name)).toEqual(expect.arrayContaining([
-        "retail_catalog_get",
-        "retail_product_create_draft",
-        "retail_product_update",
-        "retail_product_content_replace",
-        "retail_style_create",
-        "retail_variant_create",
-        "retail_media_upload",
-        "retail_media_reorder",
-        "retail_product_publish",
-        "retail_inventory_adjust",
-        "retail_orders_export",
-        "retail_order_fulfil",
-        "retail_sales_summary",
-        "retail_sales_breakdown",
-        "retail_sales_export",
-      ]));
+      expect(tools.tools.map((tool) => tool.name).sort()).toEqual(exactTools);
       const result = await client.callTool({
         name: "retail_product_create_draft",
         arguments: {
@@ -83,16 +78,29 @@ describe("retail operations MCP stdio", () => {
     }
   }, 20_000);
 
-  it("writes an actual redacted order CSV only inside the private export root", async () => {
+  it("completes four read-only calls and writes a redacted CSV only inside the private export root", async () => {
     const exportRoot = await mkdtemp(join(tmpdir(), "retail-agent-export-"));
     const api = createServer((request, response) => {
       const url = new URL(request.url ?? "/", "http://localhost");
       expect(request.headers.authorization).toBe(`Bearer ${"t".repeat(32)}`);
-      expect(url.searchParams.get("resource")).toBe("orders");
       response.setHeader("content-type", "application/json");
-      response.end(JSON.stringify({
-        ok: true,
-        orders: [{
+      const observedAt = "2026-08-19T07:00:00.000Z";
+      if (url.pathname === "/api/agent/retail/catalog") {
+        response.end(JSON.stringify({ ok: true, snapshot: { products: [], styles: [], variants: [] }, observedAt, count: 0, counts: { products: 0, styles: 0, variants: 0 }, empty: true, sourceWindow: { type: "full_catalog_snapshot" }, watermarks: { productsUpdatedAt: null, stylesUpdatedAt: null, variantsUpdatedAt: null } }));
+        return;
+      }
+      const resource = url.searchParams.get("resource");
+      if (resource === "sales") {
+        response.end(JSON.stringify({ ok: true, resource, summary: { paid_orders: 0, latest_capture_at: null }, observedAt, count: 0, empty: true, sourceWindow: { type: "relative_days", days: 30 }, watermarks: { latestCaptureAt: null } }));
+        return;
+      }
+      if (resource === "sales_detail") {
+        response.end(JSON.stringify({ ok: true, resource, rows: [], observedAt, count: 0, empty: true, offset: 0, limit: 10, hasMore: false, sourceWindow: { groupBy: "sku", sku: null, dateFrom: null, dateTo: null }, watermarks: { pageLatestSaleAt: null } }));
+        return;
+      }
+      expect(resource).toBe("orders");
+      const exportRequest = url.searchParams.get("limit") === "2";
+      const orders = exportRequest ? [{
           id: 7,
           public_id: "ORDER-7",
           status: "captured",
@@ -101,11 +109,8 @@ describe("retail operations MCP stdio", () => {
           checkout_email: "j***@example.com",
           shipping_snapshot: { recipient: "J***", country: "US", region: "CA", city: "Irvine" },
           order_lines: [{ variantSku: "SKU-33", quantity: 1 }],
-        }],
-        offset: 0,
-        limit: 2,
-        hasMore: false,
-      }));
+        }] : [];
+      response.end(JSON.stringify({ ok: true, resource, orders, observedAt, count: orders.length, empty: orders.length === 0, offset: 0, limit: exportRequest ? 2 : 5, hasMore: false, sourceWindow: { status: null, dateFrom: null, dateTo: null }, watermarks: { pageLatestOrderUpdatedAt: null, pageLatestCaptureAt: null } }));
     });
     await new Promise<void>((resolve) => api.listen(0, "127.0.0.1", resolve));
     const address = api.address();
@@ -125,6 +130,16 @@ describe("retail operations MCP stdio", () => {
     });
     try {
       await client.connect(transport);
+      for (const [name, argumentsValue] of [
+        ["retail_catalog_get", {}],
+        ["retail_orders_list", { limit: 5 }],
+        ["retail_sales_summary", { days: 30 }],
+        ["retail_sales_breakdown", { groupBy: "sku", limit: 10 }],
+      ] as const) {
+        const read = await client.callTool({ name, arguments: argumentsValue });
+        expect(read.isError).not.toBe(true);
+        expect(read.structuredContent).toMatchObject({ ok: true, observedAt: "2026-08-19T07:00:00.000Z", count: 0, empty: true });
+      }
       const result = await client.callTool({
         name: "retail_orders_export",
         arguments: { format: "csv", fileName: "orders-test.csv", maxRows: 2 },

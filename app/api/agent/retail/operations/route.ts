@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireRetailAgentPermission } from "@/src/lib/retail/agent-auth";
+import { agentObservedAt, latestAgentTimestamp } from "@/src/lib/retail/agent-response";
 import { adjustInventory, fulfilAdminOrder, getAdminOrder, getRetailSalesSummary, inventoryAdjustmentDto, listAgentOrders, listInventory, listInventoryLedger, listRetailAdminAudit, listRetailSalesRows } from "@/src/lib/retail/operations";
 
 export const runtime = "nodejs";
@@ -42,16 +43,38 @@ export async function GET(request: Request) {
     if (input.resource === "orders") {
       requireRetailAgentPermission(request, "orders:read");
       const orders = await listAgentOrders(input);
-      return Response.json({ ok: true, resource: input.resource, orders, offset: input.offset, limit: input.limit, hasMore: orders.length === input.limit }, { headers });
+      return Response.json({
+        ok: true, resource: input.resource, orders, offset: input.offset, limit: input.limit, hasMore: orders.length === input.limit,
+        observedAt: agentObservedAt(), count: orders.length, empty: orders.length === 0,
+        sourceWindow: { status: input.status ?? null, dateFrom: input.dateFrom ?? null, dateTo: input.dateTo ?? null },
+        watermarks: {
+          pageLatestOrderUpdatedAt: latestAgentTimestamp(orders, ["updated_at", "created_at"]),
+          pageLatestCaptureAt: latestAgentTimestamp(orders, ["captured_at"]),
+        },
+      }, { headers });
     }
     if (input.resource === "sales") {
       requireRetailAgentPermission(request, "finance:read");
-      return Response.json({ ok: true, resource: input.resource, summary: await getRetailSalesSummary(input.days) }, { headers });
+      const summary = await getRetailSalesSummary(input.days);
+      const count = Number(summary.paid_orders ?? 0);
+      return Response.json({
+        ok: true, resource: input.resource, summary,
+        observedAt: agentObservedAt(), count, empty: count === 0,
+        sourceWindow: { type: "relative_days", days: input.days },
+        watermarks: { latestCaptureAt: latestAgentTimestamp([summary], ["latest_capture_at"]) },
+      }, { headers });
     }
     if (input.resource === "sales_detail") {
       requireRetailAgentPermission(request, "finance:read");
       const rows = await listRetailSalesRows(input);
-      return Response.json({ ok: true, resource: input.resource, groupBy: input.groupBy, rows, offset: input.offset, limit: input.limit, hasMore: rows.length === input.limit }, { headers });
+      return Response.json({
+        ok: true, resource: input.resource, groupBy: input.groupBy, rows, offset: input.offset, limit: input.limit, hasMore: rows.length === input.limit,
+        observedAt: agentObservedAt(), count: rows.length, empty: rows.length === 0,
+        sourceWindow: { groupBy: input.groupBy, sku: input.sku ?? null, dateFrom: input.dateFrom ?? null, dateTo: input.dateTo ?? null },
+        watermarks: input.groupBy === "sku"
+          ? { pageLatestSaleAt: latestAgentTimestamp(rows, ["latest_sale_at"]) }
+          : { pageLatestDay: latestAgentTimestamp(rows, ["day"]) },
+      }, { headers });
     }
     requireRetailAgentPermission(request, "audit:read");
     return Response.json({ ok: true, resource: input.resource, entries: await listRetailAdminAudit({ limit: input.limit }) }, { headers });
