@@ -23,6 +23,10 @@ npm run mcp:retail
 - `RETAIL_AGENT_CATALOG_WRITE_ENABLED=true`：允许确认后的写入。
 - Production 只有在 `RETAIL_AGENT_PRODUCTION_ENABLED=true` 时才允许写；默认关闭。
 - `RETAIL_AGENT_OPERATORS_JSON`：配置机器 principal、角色和至少 32 字符的 token。
+- `RETAIL_AGENT_HUB_TOKEN`：仅 Production 生效的独立 Hub secret；固定映射为
+  `ppcme-agent-hub-vm104` / `PPC-ME Agent Hub VM 104` / `owner`。缺失、字面量
+  `[SENSITIVE]` 或少于 32 字符时会被忽略并失败关闭。它不会替换或改写
+  `RETAIL_AGENT_OPERATORS_JSON`。
 
 建议先只连接 Preview。Production 使用单独 principal 和 token，角色按最小权限分配。
 
@@ -57,6 +61,11 @@ principal，然后重新部署，不需要修改 MCP 配置。
 每台机器应使用独立 principal/token，不要多人共用本机 `production-agent`。MCP 仍在各机器
 本地以 stdio 运行，只通过 HTTPS 调用 `www.tranquilbeads.com`，无需在防火墙上开放 MCP
 端口。
+
+PPC-ME Agent Hub VM 104 使用独立的 `RETAIL_AGENT_HUB_TOKEN`：服务端值只放在 Vercel
+Production secret，VM 侧同一凭据只经 systemd `LoadCredential` 注入启动器。注册 JSON、命令
+参数、日志和 Prompt 只记录变量名，不记录值。该固定 principal 的 `owner` 角色仅用于覆盖
+现有只读目录、订单、销售和审计接口；Hub 工具白名单与服务端写开关仍独立失败关闭。
 
 这里不是把 MCP Server 部署到 Vercel：Vercel 承载的是受控的
 `/api/agent/retail/*` HTTPS API、数据库与 Blob；MCP Server 在每台受信任的 Mac、Linux

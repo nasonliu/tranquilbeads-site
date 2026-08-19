@@ -12,6 +12,13 @@
 `RETAIL_AGENT_PRODUCTION_ENABLED`；疑似泄露时先关闭总开关，再替换受影响 principal 的 token
 并审计其 actor 和幂等键。
 
+PPC-ME Agent Hub VM 104 使用附加的 Production-only `RETAIL_AGENT_HUB_TOKEN`，固定映射为
+`ppcme-agent-hub-vm104` / `PPC-ME Agent Hub VM 104` / `owner`。该变量与
+`RETAIL_AGENT_OPERATORS_JSON` 独立，不能为了追加 Hub 而读取、重写或覆盖原 JSON。变量缺失
+或少于 32 字符时不会创建 principal。只在 Vercel Production secret 与 VM 的 systemd
+`LoadCredential` 中注入值；不要放入注册 JSON、命令参数、日志、截图或 Prompt。这个附加
+principal 不会绕过总开关、写开关或 Production 写入确认开关。
+
 首次 Preview 批量导入可使用独立的短期 `RETAIL_AGENT_PREVIEW_IMPORT_TOKEN`。该凭证仅在
 `VERCEL_ENV=preview` 生效；导入器必须先通过 Vercel 控制面确认目标 deployment 属于
 `tranquilbeads/tranquilbeads-site` 且为 READY Preview，随后才读取凭证。完整回读成功后，立即

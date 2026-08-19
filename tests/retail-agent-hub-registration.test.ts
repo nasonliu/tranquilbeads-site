@@ -9,6 +9,14 @@ describe("retail Agent Hub registration", () => {
     expect(registration).toMatchObject({
       id: "tranquilbeads-retail-ops",
       serverVersion: "1.1.1",
+      productionPrincipal: {
+        id: "ppcme-agent-hub-vm104",
+        name: "PPC-ME Agent Hub VM 104",
+        role: "owner",
+        tokenEnvironment: "RETAIL_AGENT_HUB_TOKEN",
+        productionOnly: true,
+        secretValueIncluded: false,
+      },
       transport: { type: "stdio", launcher: "scripts/run-retail-ops-mcp.sh" },
       readiness: { toolsListExactCount: 20 },
     });

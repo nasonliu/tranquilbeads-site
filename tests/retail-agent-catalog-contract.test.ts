@@ -43,6 +43,92 @@ describe("retail agent catalog API contract", () => {
     }
   });
 
+  it("adds the fixed Hub principal only in Production without replacing legacy principals", () => {
+    const keys = [
+      "VERCEL_ENV",
+      "RETAIL_AGENT_HUB_TOKEN",
+      "RETAIL_AGENT_OPERATORS_JSON",
+      "RETAIL_AGENT_ENABLED",
+      "RETAIL_AGENT_CATALOG_WRITE_ENABLED",
+      "RETAIL_AGENT_PRODUCTION_ENABLED",
+    ] as const;
+    const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+    const hubToken = "h".repeat(64);
+    const legacyToken = "l".repeat(64);
+    const hubRequest = new Request("http://localhost", { headers: { authorization: `Bearer ${hubToken}` } });
+    const legacyRequest = new Request("http://localhost", { headers: { authorization: `Bearer ${legacyToken}` } });
+    try {
+      process.env.RETAIL_AGENT_HUB_TOKEN = hubToken;
+      process.env.RETAIL_AGENT_OPERATORS_JSON = JSON.stringify([
+        { id: "existing-mac-principal", name: "Existing Mac principal", role: "operations", token: legacyToken },
+      ]);
+
+      process.env.VERCEL_ENV = "preview";
+      expect(authenticateRetailAgent(hubRequest)).toBeNull();
+      expect(authenticateRetailAgent(legacyRequest)).toMatchObject({ id: "existing-mac-principal", role: "operations" });
+
+      process.env.VERCEL_ENV = "production";
+      expect(authenticateRetailAgent(hubRequest)).toEqual({
+        id: "ppcme-agent-hub-vm104",
+        name: "PPC-ME Agent Hub VM 104",
+        role: "owner",
+        legacy: false,
+      });
+      expect(authenticateRetailAgent(legacyRequest)).toMatchObject({ id: "existing-mac-principal", role: "operations" });
+
+      process.env.RETAIL_AGENT_ENABLED = "true";
+      for (const permission of ["products:write", "inventory:write", "orders:read", "finance:read", "audit:read"] as const) {
+        expect(requireRetailAgentPermission(hubRequest, permission)).toMatchObject({ id: "ppcme-agent-hub-vm104" });
+      }
+      process.env.RETAIL_AGENT_CATALOG_WRITE_ENABLED = "false";
+      expect(() => requireRetailAgentPermission(hubRequest, "products:write", true)).toThrow("agent_write_disabled");
+      process.env.RETAIL_AGENT_CATALOG_WRITE_ENABLED = "true";
+      process.env.RETAIL_AGENT_PRODUCTION_ENABLED = "false";
+      expect(() => requireRetailAgentPermission(hubRequest, "products:write", true)).toThrow("agent_production_write_disabled");
+    } finally {
+      for (const key of keys) {
+        const value = saved[key];
+        if (value === undefined) delete process.env[key]; else process.env[key] = value;
+      }
+    }
+  });
+
+  it("ignores missing, short, redacted, and malformed Hub credentials fail closed", () => {
+    const saved = {
+      vercel: process.env.VERCEL_ENV,
+      hub: process.env.RETAIL_AGENT_HUB_TOKEN,
+      operators: process.env.RETAIL_AGENT_OPERATORS_JSON,
+    };
+    const requestFor = (token: string) => new Request("http://localhost", { headers: { authorization: `Bearer ${token}` } });
+    try {
+      process.env.VERCEL_ENV = "production";
+      delete process.env.RETAIL_AGENT_OPERATORS_JSON;
+      for (const token of ["", "short", "[SENSITIVE]"]) {
+        process.env.RETAIL_AGENT_HUB_TOKEN = token;
+        expect(authenticateRetailAgent(requestFor(token || "not-configured"))).toBeNull();
+      }
+
+      const hubToken = "z".repeat(64);
+      process.env.RETAIL_AGENT_HUB_TOKEN = hubToken;
+      process.env.RETAIL_AGENT_OPERATORS_JSON = "not-json";
+      expect(authenticateRetailAgent(requestFor(hubToken))).toMatchObject({ id: "ppcme-agent-hub-vm104", role: "owner" });
+
+      process.env.RETAIL_AGENT_OPERATORS_JSON = JSON.stringify([
+        { id: "ppcme-agent-hub-vm104", name: "Untrusted override", role: "viewer", token: "o".repeat(64) },
+      ]);
+      expect(authenticateRetailAgent(requestFor("o".repeat(64)))).toBeNull();
+      expect(authenticateRetailAgent(requestFor(hubToken))).toMatchObject({
+        id: "ppcme-agent-hub-vm104",
+        name: "PPC-ME Agent Hub VM 104",
+        role: "owner",
+      });
+    } finally {
+      if (saved.vercel === undefined) delete process.env.VERCEL_ENV; else process.env.VERCEL_ENV = saved.vercel;
+      if (saved.hub === undefined) delete process.env.RETAIL_AGENT_HUB_TOKEN; else process.env.RETAIL_AGENT_HUB_TOKEN = saved.hub;
+      if (saved.operators === undefined) delete process.env.RETAIL_AGENT_OPERATORS_JSON; else process.env.RETAIL_AGENT_OPERATORS_JSON = saved.operators;
+    }
+  });
+
   it("keeps reads and writes behind explicit, independently revocable switches", () => {
     const saved = { enabled: process.env.RETAIL_AGENT_ENABLED, write: process.env.RETAIL_AGENT_CATALOG_WRITE_ENABLED, production: process.env.RETAIL_AGENT_PRODUCTION_ENABLED, vercel: process.env.VERCEL_ENV, operators: process.env.RETAIL_AGENT_OPERATORS_JSON };
     const request = new Request("http://localhost", { headers: { authorization: `Bearer ${"t".repeat(32)}` } });

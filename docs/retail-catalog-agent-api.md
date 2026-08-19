@@ -21,6 +21,11 @@ principal：每项含 `id`、`name`、零售角色
 `products:write` 权限；token 仅保存在 server-side secret manager，绝不写入代码、浏览器、
 日志、截图、Prompt 或 `NEXT_PUBLIC_*`。
 
+Production 还支持独立的 `RETAIL_AGENT_HUB_TOKEN`，其非秘密 metadata 固定为
+`ppcme-agent-hub-vm104` / `PPC-ME Agent Hub VM 104` / `owner`。该变量不解析或覆盖
+`RETAIL_AGENT_OPERATORS_JSON`；仅 `VERCEL_ENV=production` 且值至少 32 字符时参与认证。
+缺失、过短或误填字面量 `[SENSITIVE]` 都会失败关闭。它仍受下面三个开关约束。
+
 ```bash
 export RETAIL_AGENT_BASE_URL='https://preview.example.com'
 export RETAIL_AGENT_TOKEN='replace-with-configured-machine-token'
