@@ -1,3 +1,4 @@
+.page { position: relative; z-index: 1; }
 .productGrid {
   display: grid;
   gap: 2.25rem;
@@ -9,7 +10,8 @@
 .mainImage {
   aspect-ratio: 1;
   width: 100%;
-  border-radius: 1.75rem;
+  border: 1px solid rgba(67, 46, 37, .12);
+  border-radius: .5rem;
   object-fit: cover;
   background: var(--background-soft);
 }
@@ -19,7 +21,7 @@
 .thumbnail[aria-pressed="true"] { border-color: var(--accent); }
 .thumbnail:focus-visible, .optionButton:focus-visible, .quantity button:focus-visible, .addButton:focus-visible { outline: 3px solid rgba(173, 132, 86, .38); outline-offset: 2px; }
 
-.purchasePanel { align-self: start; border-radius: 1.75rem; padding: 1.5rem; }
+.purchasePanel { align-self: start; border-radius: .5rem; padding: 1.5rem; background: #fffdfa; box-shadow: 0 18px 46px rgba(44, 31, 17, .08); }
 .price { margin-top: 1.5rem; font-size: 1.65rem; font-weight: 650; letter-spacing: -.03em; }
 .highlights { margin-top: 1.5rem; padding: 1.1rem 1.25rem; border-radius: 1rem; background: rgba(173, 132, 86, .09); }
 .highlights h2, .details h2 { font-size: .95rem; font-weight: 700; }
@@ -28,7 +30,9 @@
 
 .optionButton { border: 1px solid rgba(62, 49, 34, .2); border-radius: 9999px; padding: .5rem 1rem; font-size: .875rem; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
 .optionButton[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: white; }
-.stock { margin-top: 1.75rem; border-top: 1px solid var(--border); padding-top: 1.25rem; font-size: .875rem; }
+.available, .unavailable { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem; font-size: .82rem; font-weight: 650; }
+.available { color: #1c5d4a; }
+.unavailable { color: #8b3e4c; }
 .purchaseControls { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .8rem; margin-top: 1.5rem; align-items: end; }
 .quantity > span { display: block; margin-bottom: .45rem; font-size: .75rem; color: var(--muted); }
 .quantity > div { display: flex; height: 3rem; overflow: hidden; border: 1px solid var(--border); border-radius: 999px; }
@@ -36,7 +40,7 @@
 .quantity button:disabled { color: var(--muted); opacity: .45; }
 .quantity input { width: 2.3rem; border: 0; background: transparent; text-align: center; -moz-appearance: textfield; }
 .quantity input::-webkit-inner-spin-button { appearance: none; }
-.addButton { min-height: 3rem; border-radius: 999px; background: var(--accent); padding: .7rem 1rem; color: white; font-size: .9rem; font-weight: 700; }
+.addButton { min-height: 3rem; border-radius: .25rem; background: #51253d; padding: .7rem 1rem; color: white; font-size: .9rem; font-weight: 700; }
 .addButton:disabled { cursor: not-allowed; opacity: .5; }
 
 .trust { display: grid; gap: .75rem; margin-top: 1.25rem; padding: 1rem; border-block: 1px solid var(--border); color: var(--muted); font-size: .8rem; text-align: center; }

@@ -11,6 +11,18 @@ type ProductRecord = {
 };
 
 type LocalizedText = { en: string; ar: string; zh?: string };
+const INTERNAL_CUSTOMER_TERMS = [
+  /\bsku\b/i,
+  /\bskc\b/i,
+  /product code/i,
+  /رمز\s+(?:sku|skc|المنتج)/iu,
+  /(?:商品|产品)编码/u,
+];
+
+function containsInternalCustomerTerm(value: LocalizedText) {
+  return Object.values(value).some((text) => INTERNAL_CUSTOMER_TERMS.some((pattern) => pattern.test(text)));
+}
+
 function localizedText(value: unknown): LocalizedText | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
   const input = value as Record<string, unknown>;
@@ -20,7 +32,9 @@ function localizedText(value: unknown): LocalizedText | undefined {
 function localizedArray(value: unknown, limit: number): LocalizedText[] | undefined {
   if (!Array.isArray(value) || value.length > limit) return undefined;
   const result = value.map(localizedText);
-  return result.every(Boolean) ? result as LocalizedText[] : undefined;
+  if (!result.every(Boolean)) return undefined;
+  const publicItems = (result as LocalizedText[]).filter((item) => !containsInternalCustomerTerm(item));
+  return publicItems.length ? publicItems : undefined;
 }
 function productDetails(value: unknown) {
   if (!Array.isArray(value) || value.length > 12) return undefined;
@@ -29,7 +43,13 @@ function productDetails(value: unknown) {
     const row = item as Record<string, unknown>; const label = localizedText(row.label); const detailValue = localizedText(row.value);
     return label && detailValue ? { label, value: detailValue } : undefined;
   });
-  return result.every(Boolean) ? result as Array<{ label: LocalizedText; value: LocalizedText }> : undefined;
+  if (!result.every(Boolean)) return undefined;
+  const internalLabels = ["sku", "skc", "product code", "retail product code", "direct retail product code", "رمز المنتج", "رمز منتج البيع المباشر", "商品编码", "产品代码"];
+  const publicDetails = (result as Array<{ label: LocalizedText; value: LocalizedText }>).filter((detail) => {
+    const labels = Object.values(detail.label).map((label) => label.trim().toLocaleLowerCase());
+    return !labels.some((label) => internalLabels.some((internal) => label === internal || label.includes(internal)));
+  });
+  return publicDetails.length ? publicDetails : undefined;
 }
 function productAPlus(value: unknown) {
   if (!Array.isArray(value) || value.length > 6) return undefined;
@@ -41,7 +61,13 @@ function productAPlus(value: unknown) {
     return title && body && (row.eyebrow === undefined || eyebrow) && (row.image === undefined || image)
       ? { ...(eyebrow ? { eyebrow } : {}), title, body, ...(image ? { image } : {}) } : undefined;
   });
-  return result.every(Boolean) ? result as Array<{ eyebrow?: LocalizedText; title: LocalizedText; body: LocalizedText; image?: string }> : undefined;
+  if (!result.every(Boolean)) return undefined;
+  const publicSections = (result as Array<{ eyebrow?: LocalizedText; title: LocalizedText; body: LocalizedText; image?: string }>).filter((section) =>
+    !containsInternalCustomerTerm(section.title)
+    && !containsInternalCustomerTerm(section.body)
+    && (!section.eyebrow || !containsInternalCustomerTerm(section.eyebrow)),
+  );
+  return publicSections.length ? publicSections : undefined;
 }
 
 /** Shared PDP view model for public and authenticated draft previews. */

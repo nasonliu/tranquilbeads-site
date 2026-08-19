@@ -53,7 +53,7 @@ export function SiteShell({
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-4 text-[.78rem] font-medium text-[#4f423c] xl:flex">
+          <nav className="hidden items-center gap-6 text-[.78rem] font-medium text-[#4f423c] xl:flex" aria-label={isArabic ? "التنقل الرئيسي" : "Primary navigation"}>
             {nav.map((item) => (
               <Link
                 key={item.href}
@@ -65,11 +65,6 @@ export function SiteShell({
               </Link>
             ))}
           </nav>
-
-          <div className="hidden border-s border-border/80 ps-4 text-[.63rem] leading-tight xl:block">
-            <p className="text-muted">{isArabic ? "أماكن الشراء" : "Where to buy"}</p>
-            <div className="mt-1 flex gap-3 text-xs font-semibold"><Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/amazon")}>Amazon</Link><Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/noon")}>Noon</Link></div>
-          </div>
 
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {isConsumerLocale ? <RetailCartButton locale={locale} /> : null}
@@ -94,12 +89,10 @@ export function SiteShell({
               {item.label}
             </Link>
           ))}
-          <Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/amazon")} className="shrink-0 rounded-full border border-border/80 bg-white/55 px-4 py-2 text-sm font-medium text-muted">Amazon</Link>
-          <Link prefetch={isRetailShop ? false : undefined} href={withLocale(locale, "/noon")} className="shrink-0 rounded-full border border-border/80 bg-white/55 px-4 py-2 text-sm font-medium text-muted">Noon</Link>
         </div>
       </header>
 
-      <main>{children}</main>
+      <main className="maison-main">{children}</main>
 
       <footer className="maison-footer border-t border-border/80 bg-[#25141d] text-[#f7eee4]">
         <div className="noor-container grid gap-8 py-12 md:grid-cols-[1.25fr_1fr_1fr_1fr]">
@@ -110,46 +103,28 @@ export function SiteShell({
             </p>
           </div>
           <div className="space-y-2 text-sm text-[#dcccbf]">
-            <p className="text-xs uppercase tracking-[0.24em] text-[#c3a16f]">{locale === "ar" ? "أماكن الشراء" : "Where to buy"}</p>
-            <Link prefetch={isRetailShop ? false : undefined} className="block hover:text-white" href={withLocale(locale, "/amazon")}>Amazon</Link>
-            <Link prefetch={isRetailShop ? false : undefined} className="block hover:text-white" href={withLocale(locale, "/noon")}>Noon</Link>
-            <Link prefetch={isRetailShop ? false : undefined} className="block pt-4 text-xs text-[#b7a99d] hover:text-white" href={withLocale(locale, "/wholesale")}>{locale === "ar" ? "استفسارات الجملة" : "Wholesale enquiries"}</Link>
+            <p className="text-xs uppercase tracking-[0.24em] text-[#c3a16f]">{locale === "ar" ? "تسوّق" : isChinese ? "商店" : "Shop"}</p>
+            <Link className="block hover:text-white" href={withLocale(locale, "/shop")}>{locale === "ar" ? "كل التسابيح" : isChinese ? "所有商品" : "All tasbih"}</Link>
+            {isConsumerLocale ? <Link className="block hover:text-white" href={withLocale(locale, "/#bestsellers")}>{locale === "ar" ? "الجديد والمميز" : "New & featured"}</Link> : null}
+            {isConsumerLocale ? <Link className="block hover:text-white" href={withLocale(locale, "/#gifting")}>{locale === "ar" ? "الهدايا" : "Gifts"}</Link> : null}
           </div>
           <div className="space-y-2 text-sm text-[#dcccb5]">
             <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
-              {locale === "en" ? "Quick links" : isChinese ? "快速链接" : "روابط سريعة"}
+              {locale === "en" ? "For partners" : isChinese ? "合作" : "للشركاء"}
             </p>
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={withLocale(locale, item.href)}
-                prefetch={isRetailShop ? false : undefined}
-                className="block transition-colors hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <div className="pt-3">
-              <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
-                {locale === "en" ? "Retail policies" : isChinese ? "零售政策" : "سياسات التجزئة"}
-              </p>
-              <div className="mt-2 grid gap-2">
-                {[
-                  [retailPolicyPaths.privacy, locale === "en" ? "Privacy" : isChinese ? "隐私政策" : "الخصوصية"],
-                  [retailPolicyPaths.terms, locale === "en" ? "Terms of sale" : isChinese ? "销售条款" : "شروط البيع"],
-                  [retailPolicyPaths["shipping-returns"], locale === "en" ? "Shipping & returns" : isChinese ? "配送与退货" : "الشحن والإرجاع"],
-                ].map(([href, label]) => (
-                  <Link key={href} href={withLocale(locale, href)} className="block transition-colors hover:text-white">
-                    {label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            {isConsumerLocale ? <Link className="block hover:text-white" href={withLocale(locale, "/wholesale")}>{locale === "ar" ? "برنامج الجملة" : "Wholesale program"}</Link> : null}
+            {isConsumerLocale ? <Link className="block hover:text-white" href={withLocale(locale, "/collections")}>{locale === "ar" ? "كتالوج الجملة" : "Wholesale catalog"}</Link> : null}
+            {isConsumerLocale ? <Link className="block hover:text-white" href={withLocale(locale, "/contact")}>{locale === "ar" ? "اطلب قائمة الأسعار" : "Request a price list"}</Link> : null}
+            {isConsumerLocale ? <p className="pt-3 text-xs uppercase tracking-[0.2em] text-[#a88a61]">{locale === "ar" ? "متوفر أيضًا على" : "Also available on"}</p> : null}
+            {isConsumerLocale ? <div className="flex gap-4"><Link className="hover:text-white" href={withLocale(locale, "/amazon")}>Amazon</Link><Link className="hover:text-white" href={withLocale(locale, "/noon")}>Noon</Link></div> : null}
           </div>
           <div className="space-y-2 text-sm text-[#dcccb5]">
             <p className="text-xs uppercase tracking-[0.24em] text-[#a88a61]">
-              {locale === "en" ? "Contact" : isChinese ? "联系我们" : "التواصل"}
+              {locale === "en" ? "Help & contact" : isChinese ? "帮助与联系" : "المساعدة والتواصل"}
             </p>
+            <Link className="block hover:text-white" href={withLocale(locale, retailPolicyPaths["shipping-returns"])}>{locale === "ar" ? "الشحن والإرجاع" : isChinese ? "配送与退货" : "Shipping & returns"}</Link>
+            <Link className="block hover:text-white" href={withLocale(locale, retailPolicyPaths.privacy)}>{locale === "ar" ? "الخصوصية" : isChinese ? "隐私政策" : "Privacy"}</Link>
+            <Link className="block hover:text-white" href={withLocale(locale, retailPolicyPaths.terms)}>{locale === "ar" ? "شروط البيع" : isChinese ? "销售条款" : "Terms of sale"}</Link>
             <p>{siteSettings.email}</p>
             {siteSettings.whatsappContacts.map((contact) => (
               <a

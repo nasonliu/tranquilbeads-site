@@ -105,14 +105,14 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       />)}
     </section>
 
-    <section className="maison-bestsellers" aria-labelledby="bestseller-title">
+    <section id="bestsellers" className="maison-bestsellers" aria-labelledby="bestseller-title">
       <header><p className="maison-eyebrow">TranquilBeads edit</p><h2 id="bestseller-title">{t.bestsellers}</h2><p>{t.bestsellersBody}</p><Link href={withLocale(language, "/shop")}>{t.all} <ArrowUpRight aria-hidden="true" size={16} /></Link></header>
       <div className="maison-product-grid">
         {products.length ? products.map((product) => <RetailProductCard key={product.sku} product={product} locale={language} />) : fallbackProducts.map((product) => <Link key={product.image} className="maison-product-card" href={withLocale(language, product.href)}><span className="maison-product-image"><Image src={product.image} alt={product.name[language]} fill sizes="(max-width: 700px) 50vw, 20vw" /></span><span className="maison-product-copy"><small>{product.material[language]}</small><strong>{product.name[language]}</strong><em>{t.noPrice}</em></span></Link>)}
       </div>
     </section>
 
-    <section className="maison-story-grid">
+    <section id="our-story" className="maison-story-grid">
       <article><div className="maison-story-image"><Image src="/images/factory-packaging.jpg" alt="" fill sizes="(max-width: 800px) 100vw, 25vw" /></div><div><Gift aria-hidden="true" /><h2>{t.personalized}</h2><p>{t.personalizedBody}</p></div></article>
       <article><div className="maison-story-image"><Image src="/images/imported/blackagate/tasbih-19.jpg" alt="" fill sizes="(max-width: 800px) 100vw, 25vw" /></div><div><PackageCheck aria-hidden="true" /><h2>{t.crafted}</h2><p>{t.craftedBody}</p><Link href={withLocale(language, "/blog")}>{t.story} <ArrowUpRight aria-hidden="true" size={15} /></Link></div></article>
       <article className="maison-confidence"><CreditCard aria-hidden="true" /><div><h2>{t.checkout}</h2><p>{t.checkoutBody}</p></div></article>

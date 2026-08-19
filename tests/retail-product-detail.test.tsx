@@ -19,14 +19,16 @@ const product = {
 };
 
 describe("retail product detail", () => {
-  it("separates SKC style selection from SKU specification selection and persists only the sellable SKU", () => {
+  it("separates style selection from product options without exposing internal commerce codes", () => {
     render(<RetailProductDetail locale="zh" product={product} images={["/one.jpg", "/two.jpg"]} />);
     expect(screen.getByRole("heading", { name: "念珠" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "红色" }));
     expect(screen.getByText("USD 14.00")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "请选择完整规格" })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "33" }));
-    expect(screen.getByText("beads-red-33")).toBeInTheDocument();
+    expect(screen.queryByText("beads-red-33")).not.toBeInTheDocument();
+    expect(screen.queryByText(/SKC|SKU/)).not.toBeInTheDocument();
+    expect(screen.getByText("有货，可下单")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "加入购物车" }));
     expect(window.localStorage.getItem("noor-retail-cart-v1")).toBe('{"beads-red-33":1}');
   });

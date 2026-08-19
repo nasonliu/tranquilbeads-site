@@ -69,6 +69,17 @@ describe("localized site rendering", () => {
     expect(container.textContent).not.toMatch(/china team|uk team|\+86 189|\+44 7840/i);
   });
 
+  it("keeps product filters inside the shop and gives wholesale a primary navigation entry", async () => {
+    render(await LocaleLayout({ children: <div>English layout</div>, params: Promise.resolve({ locale: "en" }) }));
+    const primary = screen.getByRole("navigation", { name: /primary navigation/i });
+    expect(within(primary).getByRole("link", { name: "Shop" })).toHaveAttribute("href", "/en/shop");
+    expect(within(primary).getByRole("link", { name: "Wholesale" })).toHaveAttribute("href", "/en/wholesale");
+    expect(within(primary).queryByRole("link", { name: "Amber" })).not.toBeInTheDocument();
+    expect(within(primary).queryByRole("link", { name: "33 Beads" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Where to buy")).not.toBeInTheDocument();
+    expect(screen.getByText("Also available on")).toBeInTheDocument();
+  });
+
   it("renders the collections page with collection highlights", async () => {
     render(await CollectionsPage({ params: Promise.resolve({ locale: "en" }) }));
 
@@ -84,11 +95,13 @@ describe("localized site rendering", () => {
   });
 
   it("renders the wholesale page with core cooperation details", async () => {
-    render(await WholesalePage({ params: Promise.resolve({ locale: "ar" }) }));
+    render(await WholesalePage({ params: Promise.resolve({ locale: "en" }) }));
 
-    expect(screen.getByRole("heading", { level: 1, name: /مصمم للتوزيع والجملة/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/موك يبدأ من/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/التغليف الخاص/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { level: 1, name: /dependable wholesale partner/i })).toBeInTheDocument();
+    expect(screen.getAllByText(/MOQ starts from 100/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/private-label/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: /view wholesale catalog/i })).toHaveAttribute("href", "/en/collections");
+    expect(screen.getByRole("link", { name: /request price list/i })).toHaveAttribute("href", "/en/contact");
   });
 
   it("renders the contact page with the inquiry form fields", async () => {

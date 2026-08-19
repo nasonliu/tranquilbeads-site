@@ -1,178 +1,64 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BadgeCheck, Globe2, Handshake, PackageCheck } from "lucide-react";
 
-import { getPageCopy, getPageMetadata } from "@/src/data/site";
-import { PageHero } from "@/src/components/page-hero";
+import { getPageCopy, getPageMetadata, siteSettings } from "@/src/data/site";
 import { isWholesaleLocale, withLocale } from "@/src/lib/i18n";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/wholesale">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/wholesale">) {
   const { locale } = await params;
-
-  if (!isWholesaleLocale(locale)) {
-    return {};
-  }
-
-  return getPageMetadata(
-    locale,
-    "wholesale",
-    locale === "en" ? "Wholesale Tasbih & Misbaha Sourcing" : "توريد تسابيح ومسابح بالجملة",
-  );
+  if (!isWholesaleLocale(locale)) return {};
+  return getPageMetadata(locale, "wholesale", locale === "en" ? "Wholesale Tasbih & Misbaha Sourcing" : "توريد تسابيح ومسابح بالجملة");
 }
 
-export default async function WholesalePage({
-  params,
-}: PageProps<"/[locale]/wholesale">) {
+export default async function WholesalePage({ params }: PageProps<"/[locale]/wholesale">) {
   const { locale } = await params;
-
-  if (!isWholesaleLocale(locale)) {
-    notFound();
-  }
-
+  if (!isWholesaleLocale(locale)) notFound();
   const copy = getPageCopy(locale);
+  const english = locale === "en";
 
-  return (
-    <div className="space-y-12 pt-8 md:space-y-16">
-      <PageHero
-        eyebrow={locale === "en" ? "Wholesale program" : "برنامج الجملة"}
-        title={copy.wholesalePage.title}
-        description={copy.wholesalePage.description}
-        actions={
-          <Link
-            href={withLocale(locale, "/contact")}
-            className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-deep"
-          >
-            {locale === "en" ? "Discuss your market" : "ناقش سوقك"}
-          </Link>
-        }
-        aside={
-          <div className="noor-panel rounded-[1.75rem] p-6">
-            <p className="text-xs uppercase tracking-[0.24em] text-accent-deep">
-              {locale === "en" ? "What partners ask first" : "أهم ما يسأل عنه الشركاء"}
-            </p>
-            <ul className="mt-4 grid gap-3 text-sm leading-7 text-muted">
-              {copy.wholesalePage.bullets.map((bullet) => (
-                <li key={bullet} className="rounded-2xl bg-white/55 px-4 py-3">
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          </div>
-        }
-      />
+  const strengths = [
+    { icon: BadgeCheck, title: english ? "Clear product facts" : "معلومات واضحة", body: english ? "Specifications and material claims are confirmed item by item." : "يتم تأكيد المواصفات وادعاءات الخامة لكل صنف." },
+    { icon: PackageCheck, title: english ? "Private-label ready" : "جاهز للعلامة الخاصة", body: english ? "Gift boxes, sleeves, insert cards, and bilingual presentation options." : "علب هدايا وأغلفة وبطاقات داخلية وخيارات عرض ثنائية اللغة." },
+    { icon: Globe2, title: english ? "Tracked global delivery" : "شحن دولي متتبع", body: english ? "Routes, timing, and costs are confirmed for supported destinations in the quote." : "يتم تأكيد المسار والمدة والتكلفة للوجهات المدعومة ضمن عرض السعر." },
+    { icon: Handshake, title: english ? "Tailored commercial terms" : "شروط تجارية مخصصة", body: english ? "Pricing is shaped around quantity, material, packaging, and destination." : "يتحدد السعر حسب الكمية والخامة والتغليف ووجهة الشحن." },
+  ];
 
-      <section className="noor-container grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="noor-panel rounded-[1.75rem] p-6 sm:p-8">
-          <p className="noor-kicker text-xs font-semibold text-accent-deep">
-            {copy.wholesalePage.flowTitle}
-          </p>
-          <div className="mt-6 grid gap-4">
-            {copy.wholesalePage.flow.map((item, index) => (
-              <div
-                key={item}
-                className="grid gap-4 rounded-[1.25rem] border border-border/70 bg-white/55 p-5 sm:grid-cols-[auto_1fr]"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-white">
-                  {index + 1}
-                </div>
-                <p className="text-sm leading-7 text-muted">{item}</p>
-              </div>
-            ))}
-          </div>
+  return <div className="maison-page pb-16 pt-8 md:pt-12">
+    <section className="noor-container maison-wholesale-hero">
+      <div className="maison-wholesale-copy">
+        <p className="maison-eyebrow">{english ? "TranquilBeads wholesale" : "جملة TranquilBeads"}</p>
+        <h1>{copy.wholesalePage.title}</h1>
+        <p>{copy.wholesalePage.description}</p>
+        <div className="maison-actions">
+          <Link className="maison-button maison-button-plum" href={withLocale(locale, "/collections")}>{english ? "View wholesale catalog" : "عرض كتالوج الجملة"}</Link>
+          <Link className="maison-button maison-button-emerald" href={withLocale(locale, "/contact")}>{english ? "Request price list" : "اطلب قائمة الأسعار"}</Link>
         </div>
+      </div>
+      <div className="maison-wholesale-image"><Image src="/images/factory-packaging.jpg" alt={english ? "TranquilBeads gift packaging and wholesale preparation" : "تجهيز وتغليف طلبات الجملة من TranquilBeads"} fill priority sizes="(max-width: 800px) 100vw, 48vw" /></div>
+    </section>
 
-        <div className="grid gap-4">
-          {[
-            {
-              title: locale === "en" ? "MOQ starts from 100" : "موك يبدأ من 100",
-              body:
-                locale === "en"
-                  ? "Ideal for testing a clean first order without overloading a new market."
-                  : "مناسب لتجربة أول طلب بشكل واضح دون إرهاق السوق الجديد.",
-            },
-            {
-              title: locale === "en" ? "Custom packaging" : "التغليف الخاص",
-              body:
-                locale === "en"
-                  ? "Sleeves, insert cards, and bilingual presentation details can be matched to your channel."
-                  : "يمكن مواءمة الأغلفة والبطاقات وتفاصيل العرض الثنائي اللغة مع قناتك البيعية.",
-            },
-            {
-              title: locale === "en" ? "Lead time clarity" : "وضوح زمن التوريد",
-              body:
-                locale === "en"
-                  ? "We keep the initial assortment focused so approvals and replenishment stay predictable."
-                  : "نبقي التشكيلة الأولى مركزة حتى تظل الموافقات وإعادة التوريد قابلة للتنبؤ.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="rounded-[1.5rem] border border-border/70 bg-[#1f1a15] p-6 text-[#efe6d8]">
-              <h2 className="noor-title text-3xl text-white">{item.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-[#dfcfb8]">{item.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+    <section className="noor-container maison-wholesale-strengths" aria-label={english ? "Wholesale service strengths" : "مزايا خدمة الجملة"}>
+      {strengths.map((item) => <article key={item.title}><item.icon aria-hidden="true" size={22} /><h2>{item.title}</h2><p>{item.body}</p></article>)}
+    </section>
 
-      <section className="noor-container">
-        <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <p className="noor-kicker text-xs font-semibold text-accent-deep">
-              {locale === "en" ? "Market-local SEO naming" : "تسمية مناسبة لكل سوق"}
-            </p>
-            <h2 className="noor-title mt-2 text-3xl">
-              {locale === "en"
-                ? "One tasbih catalog, different search languages"
-                : "كتالوج تسابيح واحد بلغات بحث مختلفة"}
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-muted">
-              {locale === "en"
-                ? "We help wholesale partners describe the same product accurately for each channel, from Gulf English listings to German-Turkish search terms, while keeping material claims conservative and certificate-based."
-                : "نساعد شركاء الجملة على وصف المنتج بدقة حسب كل قناة، من قوائم الخليج إلى مصطلحات البحث التركية والألمانية، مع الحفاظ على ادعاءات الخامة مبنية على الشهادات."}
-            </p>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {[
-              {
-                title: locale === "en" ? "Gulf / UAE / Saudi" : "الخليج / الإمارات / السعودية",
-                body:
-                  locale === "en"
-                    ? "Tasbih, Misbaha, Tasbeeh, Prayer Beads, 33 Beads, 99 Beads, Gift Box, Eid Gift, Ramadan Gift, Aqeeq and Aqiq."
-                    : "تسبيح، مسبحة، خرز صلاة، 33 حبة، 99 حبة، علبة هدية، هدية العيد ورمضان، عقيق.",
-              },
-              {
-                title: locale === "en" ? "Germany / Turkish diaspora" : "ألمانيا والجالية التركية",
-                body:
-                  locale === "en"
-                    ? "Tesbih, Tespih, Gebetskette, Kehribar, Bernstein, 33 Perlen, Geschenkbox, Misbaha and worry beads when the channel is more lifestyle-led."
-                    : "تيسبيح، تيسبيه، خرز صلاة، كهرمان، 33 خرزة، علبة هدية، ومسبحة حسب القناة.",
-              },
-              {
-                title: locale === "en" ? "South Asia" : "جنوب آسيا",
-                body:
-                  locale === "en"
-                    ? "Tasbeeh, Tasbih, Aqeeq, Aqiq, Hakik, Hakeek, Sulemani Aqeeq and Carnelian Aqeeq where the material pattern supports it."
-                    : "تسبيح، عقيق، عقيق سليماني وعقيق كارنيليان عندما تدعم الخامة ذلك.",
-              },
-              {
-                title: locale === "en" ? "Southeast Asia" : "جنوب شرق آسيا",
-                body:
-                  locale === "en"
-                    ? "Tasbih Kokka, Kaukah, Kaokah, Koka, Kayu Kokka, original, certified, 33 beads and doorgift for Malay and Indonesian channels."
-                    : "تسبيح كوكا وكوكا خشب، أصلي، معتمد، 33 حبة وهدايا مناسبات لقنوات الملايو وإندونيسيا.",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-[1.25rem] border border-border/70 bg-white/65 p-5"
-              >
-                <h3 className="font-semibold text-foreground">{item.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-muted">{item.body}</p>
-              </div>
-            ))}
-          </div>
+    <section className="noor-container maison-wholesale-details">
+      <div className="maison-wholesale-panel">
+        <p className="maison-eyebrow">{copy.wholesalePage.flowTitle}</p>
+        <div className="maison-wholesale-flow">
+          {copy.wholesalePage.flow.map((item, index) => <div key={item}><span>{index + 1}</span><p>{item}</p></div>)}
         </div>
-      </section>
-    </div>
-  );
+      </div>
+      <div className="maison-wholesale-panel maison-wholesale-terms">
+        <p className="maison-eyebrow">{english ? "What you can request" : "ما يمكنك طلبه"}</p>
+        <ul>{copy.wholesalePage.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
+      </div>
+    </section>
+
+    <section className="noor-container maison-wholesale-contact">
+      <div><p className="maison-eyebrow">{english ? "Talk to our wholesale team" : "تواصل مع فريق الجملة"}</p><h2>{english ? "Tell us your market, quantity, and target price." : "شاركنا السوق والكمية والسعر المستهدف."}</h2><p>{english ? "We will reply with a focused assortment, a tailored quotation, and the next sample or approval step." : "سنرد بتشكيلة مركزة وعرض سعر مخصص وخطوة العينة أو الاعتماد التالية."}</p></div>
+      <div className="maison-actions"><Link className="maison-button maison-button-plum" href={withLocale(locale, "/contact")}>{english ? "Start a wholesale enquiry" : "ابدأ استفسار جملة"}</Link><a className="maison-button maison-button-emerald" href={`mailto:${siteSettings.email}`}>{siteSettings.email}</a></div>
+    </section>
+  </div>;
 }

@@ -108,12 +108,10 @@ export const siteSettings = {
 
 export const navItems: NavItem[] = [
   { href: "/shop", label: { en: "Shop", ar: "المتجر" } },
-  { href: "/shop?material=Amber", label: { en: "Amber", ar: "الكهرمان" } },
-  { href: "/shop?material=Stone", label: { en: "Stone", ar: "الحجر" } },
-  { href: "/shop?material=Kuka", label: { en: "Kuka", ar: "الكوكا" } },
-  { href: "/shop?beadCount=33", label: { en: "33 Beads", ar: "33 حبة" } },
-  { href: "/shop?beadCount=99", label: { en: "99 Beads", ar: "99 حبة" } },
+  { href: "/#bestsellers", label: { en: "New & Featured", ar: "الجديد والمميز" } },
   { href: "/#gifting", label: { en: "Gifts", ar: "الهدايا" } },
+  { href: "/wholesale", label: { en: "Wholesale", ar: "الجملة" } },
+  { href: "/#our-story", label: { en: "Our Story", ar: "قصتنا" } },
 ];
 
 export const collections: Collection[] = [
@@ -1376,30 +1374,30 @@ export function getPageCopy(locale: Locale) {
       detailLabel: locale === "en" ? "View details" : "عرض التفاصيل",
     },
     wholesalePage: {
-      title: locale === "en" ? "Built for retail and wholesale rollout" : "مصمم للتوزيع والجملة",
+      title: locale === "en" ? "A dependable wholesale partner for premium tasbih" : "شريك جملة موثوق للتسابيح الراقية",
       description:
         locale === "en"
-          ? "Everything on the first release is shaped around fast distributor onboarding: MOQ clarity, gift box packaging, market-local naming, customization, and dependable lead times."
-          : "تم تصميم الإصدار الأول لتسهيل انطلاق الشركاء بسرعة: وضوح الحد الأدنى، التغليف، التخصيص، ومواعيد التوريد الموثوقة.",
+          ? "Build a focused assortment with tailored pricing, private-label options, clear approvals, and tracked international delivery to supported destinations."
+          : "كوّن تشكيلة مركزة مع أسعار مخصصة وخيارات علامة خاصة واعتمادات واضحة وشحن دولي متتبع للوجهات المدعومة.",
       bullets:
         locale === "en"
           ? [
               "MOQ starts from 100 pieces across tasbih, misbaha, and prayer beads assortments.",
-              "Private label sleeves, insert cards, bilingual packaging, and gift boxes available.",
-              "Average lead time from approval to dispatch is 21 days.",
-              "Market-local naming can cover Tasbih, Misbaha, Tasbeeh, Tesbih, Tespih, Gebetskette, Kehribar, and Bernstein without unsupported material claims.",
+              "Volume pricing is quoted around quantity, material, packaging, and destination.",
+              "Private-label sleeves, insert cards, bilingual packaging, gift boxes, and selected product customization are available.",
+              "Product specifications and material claims are confirmed item by item before production.",
             ]
           : [
               "موك يبدأ من 100 قطعة ضمن تشكيلات تركز على التسابيح.",
-              "التغليف الخاص وبطاقات الإدراج والتغليف الثنائي اللغة متاح.",
-              "متوسط زمن التوريد من الاعتماد إلى الشحن هو 21 يومًا.",
-              "يمكن مواءمة أسماء السوق مثل تسبيح ومسبحة وخرز صلاة وتسبیح/تسبيه وتيسبيح دون ادعاءات غير مثبتة عن الخامات.",
+              "يتم إعداد سعر الكمية حسب العدد والخامة والتغليف ووجهة الشحن.",
+              "تتوفر أغطية بعلامة خاصة وبطاقات داخلية وتغليف ثنائي اللغة وعلب هدايا وتخصيصات مختارة.",
+              "يتم تأكيد مواصفات المنتج وادعاءات الخامة لكل صنف قبل الإنتاج.",
             ],
       flowTitle: locale === "en" ? "How cooperation works" : "كيف تتم الشراكة",
       flow:
         locale === "en"
-          ? ["Share your market and quantity targets", "Receive a tight assortment proposal", "Approve packaging and launch timeline"]
-          : ["شاركنا السوق والكمية المستهدفة", "استلم اقتراح تشكيلة مركزة", "اعتمد التغليف والجدول الزمني للإطلاق"],
+          ? ["Share your market, quantity, and target price", "Receive a focused catalog and tailored quotation", "Approve samples, packaging, and the delivery plan"]
+          : ["شاركنا السوق والكمية والسعر المستهدف", "استلم كتالوجًا مركزًا وعرض سعر مخصصًا", "اعتمد العينات والتغليف وخطة التسليم"],
     },
     contactPage: {
       title: contactFormCopy.title[locale] ?? contactFormCopy.title.en,
