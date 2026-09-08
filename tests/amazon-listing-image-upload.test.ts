@@ -92,6 +92,18 @@ describe("Amazon listing image upload", () => {
     expect(mocks.put).not.toHaveBeenCalled();
   });
 
+  it("rejects a configured public key that is not Ed25519 before writing a blob", async () => {
+    const { publicKey: rsaPublicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+    process.env.PPCME_IMAGE_UPLOAD_ED25519_PUBLIC_KEY = rsaPublicKey
+      .export({ type: "spki", format: "der" })
+      .toString("base64");
+
+    const response = await POST(signedRequest());
+
+    expect(response.status).toBe(503);
+    expect(mocks.put).not.toHaveBeenCalled();
+  });
+
   it("rejects a timestamp more than five minutes old", async () => {
     const response = await POST(signedRequest({ timestamp: nowSeconds - 301 }));
 

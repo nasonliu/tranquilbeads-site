@@ -91,23 +91,23 @@ function publicKeyFromEnvironment() {
   if (!configured) {
     throw new AmazonListingImageUploadError("image upload public key is not configured", 503);
   }
-  if (configured.startsWith("-----BEGIN")) return createPublicKey(configured);
-
-  let decoded: Buffer;
+  let publicKey;
   try {
-    decoded = Buffer.from(configured, "base64");
+    if (configured.startsWith("-----BEGIN")) {
+      publicKey = createPublicKey(configured);
+    } else {
+      const decoded = Buffer.from(configured, "base64");
+      if (!decoded.length) throw new Error("empty key");
+      const der = decoded.length === 32 ? Buffer.concat([ED25519_RAW_SPKI_PREFIX, decoded]) : decoded;
+      publicKey = createPublicKey({ key: der, type: "spki", format: "der" });
+    }
   } catch {
     throw new AmazonListingImageUploadError("image upload public key is invalid", 503);
   }
-  if (!decoded.length) {
+  if (publicKey.asymmetricKeyType !== "ed25519") {
     throw new AmazonListingImageUploadError("image upload public key is invalid", 503);
   }
-  const der = decoded.length === 32 ? Buffer.concat([ED25519_RAW_SPKI_PREFIX, decoded]) : decoded;
-  try {
-    return createPublicKey({ key: der, type: "spki", format: "der" });
-  } catch {
-    throw new AmazonListingImageUploadError("image upload public key is invalid", 503);
-  }
+  return publicKey;
 }
 
 function verifyRequestSignature(metadata: UploadMetadata) {
