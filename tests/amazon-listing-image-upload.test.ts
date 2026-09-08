@@ -86,9 +86,13 @@ describe("Amazon listing image upload", () => {
   });
 
   it("rejects an invalid signature before writing a blob", async () => {
-    const response = await POST(signedRequest({ signature: Buffer.alloc(64).toString("base64") }));
+    const request = signedRequest({ signature: Buffer.alloc(64).toString("base64") });
+    const arrayBuffer = vi.spyOn(request, "arrayBuffer");
+
+    const response = await POST(request);
 
     expect(response.status).toBe(401);
+    expect(arrayBuffer).not.toHaveBeenCalled();
     expect(mocks.put).not.toHaveBeenCalled();
   });
 
@@ -125,10 +129,23 @@ describe("Amazon listing image upload", () => {
     expect(mocks.put).not.toHaveBeenCalled();
   });
 
-  it("rejects a declared payload over 10 MiB without reading or storing it", async () => {
-    const response = await POST(signedRequest({ contentLength: 10 * 1024 * 1024 + 1 }));
+  it("accepts an image exactly at the 4 MiB ingress-safe boundary", async () => {
+    const boundaryBody = Buffer.alloc(4 * 1024 * 1024, 7);
+
+    const response = await POST(signedRequest({ body: boundaryBody }));
+
+    expect(response.status).toBe(200);
+    expect(mocks.put).toHaveBeenCalledOnce();
+  });
+
+  it("rejects a declared payload over 4 MiB without reading or storing it", async () => {
+    const request = signedRequest({ contentLength: 4 * 1024 * 1024 + 1 });
+    const arrayBuffer = vi.spyOn(request, "arrayBuffer");
+
+    const response = await POST(request);
 
     expect(response.status).toBe(413);
+    expect(arrayBuffer).not.toHaveBeenCalled();
     expect(mocks.put).not.toHaveBeenCalled();
   });
 

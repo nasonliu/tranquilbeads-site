@@ -3,7 +3,7 @@ import "server-only";
 import { createHash, createPublicKey, timingSafeEqual, verify } from "node:crypto";
 import { put } from "@vercel/blob";
 
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024;
 const MAX_CLOCK_SKEW_SECONDS = 5 * 60;
 const SAFE_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
 const SHA256_HEX = /^[a-f0-9]{64}$/;
@@ -60,7 +60,7 @@ function readMetadata(request: Request): UploadMetadata {
     throw new AmazonListingImageUploadError("invalid content length", 400);
   }
   if (contentLength > MAX_BYTES) {
-    throw new AmazonListingImageUploadError("image exceeds 10 MiB", 413);
+    throw new AmazonListingImageUploadError("image exceeds 4 MiB", 413);
   }
   if (!SHA256_HEX.test(sha256)) {
     throw new AmazonListingImageUploadError("invalid SHA-256 digest", 400);
@@ -136,12 +136,14 @@ function verifyRequestSignature(metadata: UploadMetadata) {
 
 export async function uploadAmazonListingImage(request: Request) {
   const metadata = readMetadata(request);
+  verifyRequestSignature(metadata);
+
   const bytes = Buffer.from(await request.arrayBuffer());
   if (bytes.byteLength !== metadata.contentLength) {
     throw new AmazonListingImageUploadError("content length does not match body", 400);
   }
   if (bytes.byteLength > MAX_BYTES) {
-    throw new AmazonListingImageUploadError("image exceeds 10 MiB", 413);
+    throw new AmazonListingImageUploadError("image exceeds 4 MiB", 413);
   }
 
   const actualDigest = createHash("sha256").update(bytes).digest();
@@ -149,8 +151,6 @@ export async function uploadAmazonListingImage(request: Request) {
   if (!timingSafeEqual(actualDigest, declaredDigest)) {
     throw new AmazonListingImageUploadError("SHA-256 digest does not match body", 400);
   }
-  verifyRequestSignature(metadata);
-
   const extension = MIME_EXTENSIONS[metadata.mimeType];
   const pathname = `amazon-listings/${metadata.sellerSku}/${metadata.sha256}.${extension}`;
   const blob = await put(pathname, bytes, {
