@@ -58,6 +58,9 @@ describe("Amazon listing image upload", () => {
     vi.resetAllMocks();
     vi.spyOn(Date, "now").mockReturnValue(nowSeconds * 1000);
     process.env.PPCME_IMAGE_UPLOAD_ED25519_PUBLIC_KEY = publicKeyDer;
+    process.env.RETAIL_BLOB_READ_WRITE_TOKEN = "vercel_blob_rw_store123_secret";
+    process.env.RETAIL_BLOB_STORE_ID = "store123";
+    process.env.RETAIL_BLOB_HOSTNAME = "store123.public.blob.vercel-storage.com";
     mocks.put.mockResolvedValue({
       url: `https://public.blob.vercel-storage.com/amazon-listings/TBP-000082-001/${digest}.jpg`,
       pathname: `amazon-listings/TBP-000082-001/${digest}.jpg`,
@@ -81,7 +84,14 @@ describe("Amazon listing image upload", () => {
     expect(mocks.put).toHaveBeenCalledWith(
       `amazon-listings/TBP-000082-001/${digest}.jpg`,
       expect.any(Uint8Array),
-      { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "image/jpeg" },
+      {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "image/jpeg",
+        token: "vercel_blob_rw_store123_secret",
+        storeId: "store123",
+      },
     );
   });
 

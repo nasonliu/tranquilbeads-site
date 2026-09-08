@@ -3,6 +3,8 @@ import "server-only";
 import { createHash, createPublicKey, timingSafeEqual, verify } from "node:crypto";
 import { put } from "@vercel/blob";
 
+import { getRetailBlobConfig } from "./retail/blob";
+
 const MAX_BYTES = 4 * 1024 * 1024;
 const MAX_CLOCK_SKEW_SECONDS = 5 * 60;
 const SAFE_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
@@ -152,11 +154,13 @@ export async function uploadAmazonListingImage(request: Request) {
   }
   const extension = MIME_EXTENSIONS[metadata.mimeType];
   const pathname = `amazon-listings/${metadata.sellerSku}/${metadata.sha256}.${extension}`;
+  const blobConfig = getRetailBlobConfig();
   const blob = await put(pathname, bytes, {
     access: "public",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: metadata.mimeType,
+    ...blobConfig.auth,
   });
 
   return {
