@@ -8,6 +8,7 @@ const MAX_CLOCK_SKEW_SECONDS = 5 * 60;
 const SAFE_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
 const SHA256_HEX = /^[a-f0-9]{64}$/;
 const ED25519_RAW_SPKI_PREFIX = Buffer.from("302a300506032b6570032100", "hex");
+const PPCME_IMAGE_UPLOAD_ED25519_PUBLIC_KEY = "4xVuKSOLNM/Z0AJnLlmbEJvFM0Kr2fe8LiaUb4B/dHc=";
 
 const MIME_EXTENSIONS = {
   "image/jpeg": "jpg",
@@ -87,10 +88,8 @@ function readMetadata(request: Request): UploadMetadata {
 }
 
 function publicKeyFromEnvironment() {
-  const configured = process.env.PPCME_IMAGE_UPLOAD_ED25519_PUBLIC_KEY?.trim();
-  if (!configured) {
-    throw new AmazonListingImageUploadError("image upload public key is not configured", 503);
-  }
+  const configured = process.env.PPCME_IMAGE_UPLOAD_ED25519_PUBLIC_KEY?.trim()
+    || PPCME_IMAGE_UPLOAD_ED25519_PUBLIC_KEY;
   let publicKey;
   try {
     if (configured.startsWith("-----BEGIN")) {
