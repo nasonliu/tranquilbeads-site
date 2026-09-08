@@ -139,8 +139,8 @@ describe("Amazon listing image upload", () => {
     expect(mocks.put).not.toHaveBeenCalled();
   });
 
-  it("accepts an image exactly at the 4 MiB ingress-safe boundary", async () => {
-    const boundaryBody = Buffer.alloc(4 * 1024 * 1024, 7);
+  it("accepts an image exactly at the 4.5 MB ingress-safe boundary", async () => {
+    const boundaryBody = Buffer.alloc(4_500_000, 7);
 
     const response = await POST(signedRequest({ body: boundaryBody }));
 
@@ -148,8 +148,8 @@ describe("Amazon listing image upload", () => {
     expect(mocks.put).toHaveBeenCalledOnce();
   });
 
-  it("rejects a declared payload over 4 MiB without reading or storing it", async () => {
-    const request = signedRequest({ contentLength: 4 * 1024 * 1024 + 1 });
+  it("rejects a declared payload over 4.5 MB without reading or storing it", async () => {
+    const request = signedRequest({ contentLength: 4_500_001 });
     const arrayBuffer = vi.spyOn(request, "arrayBuffer");
 
     const response = await POST(request);

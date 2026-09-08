@@ -5,7 +5,7 @@ import { put } from "@vercel/blob";
 
 import { getRetailBlobConfig } from "./retail/blob";
 
-const MAX_BYTES = 4 * 1024 * 1024;
+const MAX_BYTES = 4_500_000;
 const MAX_CLOCK_SKEW_SECONDS = 5 * 60;
 const SAFE_IDENTIFIER = /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/;
 const SHA256_HEX = /^[a-f0-9]{64}$/;
@@ -63,7 +63,7 @@ function readMetadata(request: Request): UploadMetadata {
     throw new AmazonListingImageUploadError("invalid content length", 400);
   }
   if (contentLength > MAX_BYTES) {
-    throw new AmazonListingImageUploadError("image exceeds 4 MiB", 413);
+    throw new AmazonListingImageUploadError("image exceeds 4.5 MB", 413);
   }
   if (!SHA256_HEX.test(sha256)) {
     throw new AmazonListingImageUploadError("invalid SHA-256 digest", 400);
@@ -144,7 +144,7 @@ export async function uploadAmazonListingImage(request: Request) {
     throw new AmazonListingImageUploadError("content length does not match body", 400);
   }
   if (bytes.byteLength > MAX_BYTES) {
-    throw new AmazonListingImageUploadError("image exceeds 4 MiB", 413);
+    throw new AmazonListingImageUploadError("image exceeds 4.5 MB", 413);
   }
 
   const actualDigest = createHash("sha256").update(bytes).digest();
