@@ -173,8 +173,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/noon">) 
     locale,
     "noon",
     locale === "en"
-      ? "Shop TranquilBeads on Noon UAE and Saudi"
-      : "تسوق TranquilBeads على نون الإمارات والسعودية",
+      ? "Noon UAE & Saudi Channel Links"
+      : "روابط قناة نون الإمارات والسعودية",
   );
 }
 
@@ -227,13 +227,13 @@ export default async function NoonRetailPage({
         eyebrow={locale === "en" ? "Noon UAE & Saudi" : "نون الإمارات والسعودية"}
         title={
           locale === "en"
-            ? "Shop TranquilBeads on Noon"
-            : "تسوق TranquilBeads على نون"
+            ? "Noon marketplace links for UAE & Saudi"
+            : "روابط نون للإمارات والسعودية"
         }
         description={
           locale === "en"
-            ? "Shop selected TranquilBeads products through Noon UAE and Saudi, or visit our direct shop for the full collection and worldwide delivery options."
-            : "تسوّق منتجات مختارة من TranquilBeads عبر نون الإمارات والسعودية، أو زر متجرنا المباشر للتشكيلة الكاملة وخيارات التوصيل الدولي."
+            ? "This page is our Noon marketplace channel for UAE and Saudi. Use the buy links below for regional Noon checkout, or open our direct shop for the full collection and worldwide delivery."
+            : "هذه الصفحة هي قناة سوق نون للإمارات والسعودية. استخدم روابط الشراء أدناه لإتمام الشراء عبر نون في منطقتك، أو افتح متجرنا المباشر للتشكيلة الكاملة والتوصيل الدولي."
         }
         actions={
           <>
