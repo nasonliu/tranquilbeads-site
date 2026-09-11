@@ -65,8 +65,8 @@ export const blogArticles = [
   },
   {
     slug: "how-to-identify-real-amber-tasbih",
-    title_en: "How to Tell if Amber Tasbih Is Real: Safe Tests for Buyers",
-    title_ar: "كيف تعرف أن سبحة الكهرمان أصلية: اختبارات آمنة للمشترين",
+    title_en: "How to Identify Real Amber Tasbih (Certificate & Safe Tests)",
+    title_ar: "كيف تميز سبحة الكهرمان الأصلية (الشهادة والاختبارات الآمنة)",
     heroImage: "/images/real-products/baltic-amber/hero.jpeg",
     heroAlt_en: "Real Baltic amber tasbih wholesale authentication",
     heroAlt_ar: "التسبيح الكهرماني البلطيقي الحقيقي بالجملة",
@@ -78,8 +78,8 @@ export const blogArticles = [
     ],
     intro_en: "Amber tasbih attracts premium buyers, but it is also easy to mislabel: plastic, pressed resin, glass, and young copal can all be sold as amber. For wholesale buyers, the goal is not to rely on one dramatic test. Use a practical sequence: inspect the beads, run safe field checks, request documentation, and keep one reference sample from every approved batch.",
     intro_ar: "تجذب سبحة الكهرمان المشترين الباحثين عن القطع الفاخرة، لكنها من أكثر المواد عرضة للالتباس في السوق؛ فقد تُباع أنواع من البلاستيك أو الراتنج المضغوط أو الزجاج أو الكوبال على أنها كهرمان. لمشتري الجملة، الأفضل ألا تعتمد على اختبار واحد فقط، بل تتبع تسلسلًا واضحًا: الفحص البصري، الاختبارات الآمنة، طلب الوثائق، والاحتفاظ بعينة مرجعية من كل دفعة معتمدة.",
-    seoDescription_en: "Safe amber tasbih authentication guide: field checks, traceable certificates, professional lab identification, documents, and batch QC.",
-    seoDescription_ar: "دليل آمن لفحص سبحة الكهرمان: فحوصات ميدانية، شهادات قابلة للتتبع، فحص مختبر متخصص، وثائق، وضبط الدفعات.",
+    seoDescription_en: "Identify real amber tasbih with safe field checks, red flags, and what a professional lab certificate means for buyers and gift shoppers.",
+    seoDescription_ar: "ميّز سبحة الكهرمان الأصلية بفحوصات آمنة، وعلامات التحذير، ومعنى شهادة المختبر المتخصص للمشترين وهدايا التسبيح.",
     sections_en: [
       { title: "Start With the Seller's Claim", body: "Before testing, write down exactly what the supplier is claiming: Baltic amber, natural amber, pressed amber, copal, resin, or amber-look beads. These are not the same product. If a supplier cannot state the material clearly on the invoice, packaging, and sample label, treat the item as amber-look until proven otherwise." },
       { title: "Visual Check: Color, Drill Holes, and Inclusions", body: "Use a 10x loupe and inspect several beads, not just the hero bead. Natural amber usually has soft internal clouds, small bubbles, flow lines, or organic inclusions that look irregular and three-dimensional. Plastic beads often show repeated patterns, perfectly centered decorative inclusions, mold seams, or a glossy surface that looks too uniform around the drill hole." },
@@ -197,8 +197,8 @@ export const blogArticles = [
   },
   {
     slug: "why-people-keep-tasbih-in-their-cars",
-    title_en: "Why People Keep Tasbih in Their Cars: A Cultural Accessory for Modern Life",
-    title_ar: "لماذا يحتفظ الناس بالتسبيح في سياراتهم: إكسسوار ثقافي للحياة العصرية",
+    title_en: "Car Hanging Tasbih: Why Drivers Keep Prayer Beads in the Car",
+    title_ar: "تسبيح تعليق السيارة: لماذا يضع السائقون خرز الصلاة في السيارة",
     heroImage: "/images/real-products/terahertz-pendant/hero.jpeg",
     heroAlt_en: "Car hanging tasbih wholesale for mindful driving",
     heroAlt_ar: "سبح تعليق السيارة بالجملة للقيادة الواعية",
@@ -208,8 +208,8 @@ export const blogArticles = [
       "oud2",
       "kechainrose",
     ],
-    seoDescription_en: "Car hanging tasbih and rearview mirror prayer beads as cultural accessories: gift-ready misbaha, 33/99 beads, wholesale display and sourcing notes.",
-    seoDescription_ar: "تسابيح تعليق السيارة وخرز الصلاة للمرآة كإكسسوارات ثقافية: مسابح جاهزة للهدايا، 33/99 حبة، العرض والتوريد بالجملة.",
+    seoDescription_en: "Why people hang tasbih from the rearview mirror, how to choose a car hanging misbaha, and gift-ready options for new drivers.",
+    seoDescription_ar: "لماذا يُعلَّق التسبيح على مرآة السيارة، وكيف تختار مسبحة تعليق مناسبة، وخيارات جاهزة للهدايا للسائقين الجدد.",
     intro_en: "The car hanging tasbih has become one of the most visible cultural accessories in modern driving life. Hanging from rearview mirrors or resting on dashboards, tasbih serves as a mindful companion during commutes, a symbol of identity, and a decorative element that personalizes the driving space. For wholesalers, this is a high-velocity, gift-friendly product category.",
     intro_ar: "أصبحت سبح تعليق السيارات من أكثر الإكسسوارات الثقافية ظهورًا في حياة القيادة الحديثة. المعلقة من مرايا الرؤية الخلفية أو المركونة على شاشات القيادة، تخدم كرفيق واعٍ خلال التنقل، ورمز للهوية، وعنصر زخرفي يخصص مساحة القيادة. للجملة، هذه فئة منتج عالية السرعة وصديقة للهدايا.",
     sections_en: [
