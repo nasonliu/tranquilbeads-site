@@ -76,8 +76,8 @@ describe("SEO helpers", () => {
     const articleJsonLd = buildBlogArticleJsonLd("en", article!);
     const faqJsonLd = buildBlogFaqJsonLd("en", article!);
 
-    expect(metadata.title).toBe("How to Tell if Amber Tasbih Is Real: Safe Tests for Buyers");
-    expect(metadata.description).toContain("Safe amber tasbih authentication guide");
+    expect(metadata.title).toBe("How to Identify Real Amber Tasbih (Certificate & Safe Tests)");
+    expect(metadata.description).toContain("Identify real amber tasbih with safe field checks");
     expect(metadata.openGraph?.type).toBe("article");
     expect(articleJsonLd["@type"]).toBe("Article");
     expect(articleJsonLd.dateModified).toBe("2026-06-27");
