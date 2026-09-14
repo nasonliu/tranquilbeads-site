@@ -169,13 +169,24 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/noon">) 
     return {};
   }
 
-  return getPageMetadata(
-    locale,
-    "noon",
+  const title =
     locale === "en"
-      ? "Noon UAE & Saudi Channel Links"
-      : "روابط قناة نون الإمارات والسعودية",
-  );
+      ? "Buy Tasbih on Noon UAE & Saudi"
+      : "اشترِ تسابيح على نون الإمارات والسعودية";
+  const description =
+    locale === "en"
+      ? "Buy tasbih on Noon UAE and Noon Saudi — amber, kuka wood, and stone prayer beads with regional checkout. 33 and 99-bead options. Worldwide catalog on our site."
+      : "اشترِ تسابيح TranquilBeads على نون الإمارات ونون السعودية — كهرمان وخشب كوكا وأحجار مع إتمام شراء محلي. خيارات 33 و99 حبة. للتشكيلة الدولية تسوّق من موقعنا.";
+  const metadata = getPageMetadata(locale, "noon", title);
+  return {
+    ...metadata,
+    description,
+    openGraph: {
+      ...metadata.openGraph,
+      title,
+      description,
+    },
+  };
 }
 
 export default async function NoonRetailPage({
@@ -227,13 +238,13 @@ export default async function NoonRetailPage({
         eyebrow={locale === "en" ? "Noon UAE & Saudi" : "نون الإمارات والسعودية"}
         title={
           locale === "en"
-            ? "Noon marketplace links for UAE & Saudi"
-            : "روابط نون للإمارات والسعودية"
+            ? "Buy tasbih on Noon UAE and Saudi"
+            : "اشترِ تسابيح على نون الإمارات والسعودية"
         }
         description={
           locale === "en"
-            ? "This page is our Noon marketplace channel for UAE and Saudi. Use the buy links below for regional Noon checkout, or open our direct shop for the full collection and worldwide delivery."
-            : "هذه الصفحة هي قناة سوق نون للإمارات والسعودية. استخدم روابط الشراء أدناه لإتمام الشراء عبر نون في منطقتك، أو افتح متجرنا المباشر للتشكيلة الكاملة والتوصيل الدولي."
+            ? "Official Noon UAE and Noon Saudi buy links for TranquilBeads tasbih — amber, kuka wood, and stone, 33 or 99 beads. Checkout on Noon in your region, or open our shop for worldwide delivery."
+            : "روابط الشراء الرسمية على نون الإمارات ونون السعودية لتسابيح TranquilBeads — كهرمان وخشب كوكا وأحجار، 33 أو 99 حبة. أتمم الشراء عبر نون في منطقتك، أو افتح متجرنا للتوصيل الدولي."
         }
         actions={
           <>
